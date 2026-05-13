@@ -241,7 +241,7 @@ const _supabase = (typeof supabaseJs !== 'undefined' ? supabaseJs : supabase);
 if (!_supabase || !_supabase.createClient) {
   throw new Error('Supabase客户端加载失败，请刷新页面重试');
 }
-const supabase = _supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = _supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ===== State =====
 let userIP = null;
@@ -370,7 +370,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 // ===== Supabase: Check if voted today =====
 async function checkVotedToday(ip) {
   const today = new Date().toISOString().split('T')[0];
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('votes')
     .select('vote')
     .eq('ip_address', ip)
@@ -395,7 +395,7 @@ async function castVote(vote) {
 
   try {
     const today = new Date().toISOString().split('T')[0];
-    const { error } = await supabase
+    const { error } = await sb
       .from('votes')
       .insert({ ip_address: userIP, vote: vote, vote_date: today });
 
@@ -434,7 +434,7 @@ async function castVote(vote) {
 
 // ===== Supabase: Fetch results =====
 async function fetchResults() {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from('votes')
     .select('vote');
 
