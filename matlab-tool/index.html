@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MATLAB AI 代码生成 · LiHongwei</title>
+<style>
+:root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#6c8cff;--green:#4ade80;--orange:#fb923c}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);min-height:100vh;line-height:1.7}
+.container{max-width:820px;margin:0 auto;padding:32px 24px 80px}
+
+/* header */
+.project-header{text-align:center;padding:48px 0 40px}
+.project-tag{display:inline-block;background:rgba(108,140,255,0.15);color:var(--accent);border:1px solid rgba(108,140,255,0.25);padding:4px 14px;border-radius:20px;font-size:12px;margin-bottom:16px;letter-spacing:1px}
+.project-header h1{font-size:32px;font-weight:800;background:linear-gradient(135deg,#6c8cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px}
+.project-header .sub{font-size:15px;color:var(--dim);max-width:500px;margin:0 auto}
+.project-links{display:flex;justify-content:center;gap:12px;margin-top:24px;flex-wrap:wrap}
+.project-links a{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:12px;font-size:14px;text-decoration:none;transition:all 0.25s}
+.project-links .btn-primary{background:var(--accent);color:#fff}
+.project-links .btn-primary:hover{background:#7d9aff;transform:translateY(-2px)}
+.project-links .btn-secondary{background:var(--card);border:1px solid var(--border);color:var(--text)}
+.project-links .btn-secondary:hover{background:rgba(255,255,255,0.08);transform:translateY(-2px)}
+
+/* section */
+.section{margin-bottom:40px}
+.section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(108,140,255,0.15);color:var(--accent);font-size:14px;font-weight:700}
+
+/* feature cards */
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.feature-card .icon{font-size:24px;margin-bottom:8px}
+.feature-card h3{font-size:15px;font-weight:600;margin-bottom:4px}
+.feature-card p{font-size:13px;color:var(--dim);line-height:1.6}
+
+/* step list */
+.step-list{counter-reset:step}
+.step-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:12px;position:relative;padding-left:64px}
+.step-item::before{counter-increment:step;content:counter(step);position:absolute;left:20px;top:20px;width:28px;height:28px;border-radius:8px;background:rgba(108,140,255,0.15);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.step-item h3{font-size:15px;font-weight:600;margin-bottom:4px}
+.step-item p{font-size:13px;color:var(--dim);line-height:1.6}
+.step-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:#a78bfa}
+.step-item .cmd-block{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:12px 16px;margin-top:8px;font-family:'Consolas','Courier New',monospace;font-size:13px;color:#b8c7ff;overflow-x:auto;white-space:pre}
+.step-item .cmd-block .comment{color:var(--dim);font-style:italic}
+
+/* tip */
+.tip{background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.15);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--orange);margin-top:12px}
+.tip.info{background:rgba(108,140,255,0.08);border-color:rgba(108,140,255,0.15);color:var(--accent)}
+.tip.warn{background:rgba(239,68,68,0.08);border-color:rgba(239,68,68,0.15);color:#f87171}
+
+/* arch */
+.arch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.arch-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+.arch-card .icon{font-size:28px;margin-bottom:6px}
+.arch-card h4{font-size:14px;font-weight:600}
+.arch-card p{font-size:12px;color:var(--dim);margin-top:2px}
+
+/* back link */
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:24px;transition:color 0.2s}
+.back-link:hover{color:var(--text)}
+
+/* file list */
+.file-list{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px}
+.file-list .file-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px}
+.file-list .file-row:last-child{border-bottom:none}
+.file-list .file-name{font-family:'Consolas','Courier New',monospace;color:#a78bfa}
+.file-list .file-desc{color:var(--dim)}
+
+/* footer */
+.footer{text-align:center;padding:40px 0 20px;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:40px}
+
+@media(max-width:600px){
+  .container{padding:20px 16px 60px}
+  .project-header h1{font-size:26px}
+  .step-item{padding:16px 16px 16px 52px}
+  .step-item::before{left:14px;top:16px;width:24px;height:24px;font-size:12px}
+  .project-links a{padding:8px 16px;font-size:13px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="../">← 返回主页</a>
+
+  <div class="project-header">
+    <div class="project-tag">新能源汽车工程 · MATLAB 工具链</div>
+    <h1>MATLAB AI 代码生成<br>+ 笔记本一键运行</h1>
+    <p class="sub">AI 生成 MATLAB 仿真代码 → 提交到 GitHub → 笔记本上双击运行</p>
+    <div class="project-links">
+      <a class="btn-primary" href="https://github.com/LiHongwei-ch/lihongwei-ch" target="_blank">GitHub 仓库</a>
+      <a class="btn-secondary" href="#guide">操作说明 ↓</a>
+    </div>
+  </div>
+
+  <!-- 项目简介 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">◆</span> 这是什么</h2>
+    <p style="font-size:14px;color:var(--dim);margin-bottom:16px">
+      一套面向新能源汽车工程的 MATLAB 仿真工具链。用 AI（Claude Code / DeepSeek）生成车辆动力学、电机控制、能量管理策略等 MATLAB 代码，提交到 GitHub 后，在学校笔记本上 <strong style="color:var(--text)">双击 bat 文件即可运行</strong>，无需配置环境。
+    </p>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="icon">🤖</div>
+        <h3>AI 生成代码</h3>
+        <p>用自然语言描述需求，AI 直接生成可运行的 MATLAB 脚本</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">⚡</div>
+        <h3>一键启动</h3>
+        <p>双击 matlab.bat，自动设好工作目录，直接敲命令运行</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📱</div>
+        <h3>Telegram 遥控</h3>
+        <p>手机发消息给 Bot，DeepSeek 生成代码，随时随地问</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🔄</div>
+        <h3>自动同步</h3>
+        <p>代码自动 commit + push，笔记本上 git pull 即用</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 架构 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">◆</span> 工具架构</h2>
+    <div class="arch-grid">
+      <div class="arch-card">
+        <div class="icon">💻</div>
+        <h4>主电脑</h4>
+        <p>Claude Code 生成 MATLAB 代码 → 提交到 GitHub</p>
+      </div>
+      <div class="arch-card">
+        <div class="icon">📁</div>
+        <h4>GitHub</h4>
+        <p>代码仓库，自动保存所有版本</p>
+      </div>
+      <div class="arch-card">
+        <div class="icon">📘</div>
+        <h4>笔记本</h4>
+        <p>克隆仓库 → 双击 matlab.bat → 运行代码</p>
+      </div>
+      <div class="arch-card">
+        <div class="icon">📱</div>
+        <h4>Telegram Bot</h4>
+        <p>DeepSeek 驱动，手机上随时生成代码/回答问题</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 操作说明 -->
+  <div class="section" id="guide">
+    <h2 class="section-title"><span class="num">1</span> 第一次使用（笔记本）</h2>
+    <div class="step-list">
+      <div class="step-item">
+        <h3>获取代码</h3>
+        <p>桌面空白处右键 → <strong>Git Bash Here</strong>，输入：</p>
+        <div class="cmd-block">cd Desktop<br>git clone https://github.com/LiHongwei-ch/lihongwei-ch.git</div>
+        <p>等下载完成，关掉 Git Bash。</p>
+      </div>
+      <div class="step-item">
+        <h3>启动 MATLAB</h3>
+        <p>打开 <code>Desktop\lihongwei-ch\</code> 文件夹，<strong>双击 <code>matlab.bat</code></strong></p>
+        <p>MATLAB 会自动打开，工作目录已设到 <code>matlab\</code>。</p>
+      </div>
+      <div class="step-item">
+        <h3>配置路径（仅首次）</h3>
+        <p>在 MATLAB Command Window（<code>>></code> 提示符处）输入：</p>
+        <div class="cmd-block">startup_setup</div>
+        <p>按回车，只需做一次。</p>
+      </div>
+      <div class="step-item">
+        <h3>运行仿真</h3>
+        <p>输入以下任意命令运行：</p>
+        <div class="cmd-block"><span class="comment">% 车辆动力学仿真，弹出曲线图</span><br>vehicle_dynamics<br><br><span class="comment">% PMSM 电机 FOC 控制仿真，弹出波形图</span><br>motor_control<br><br><span class="comment">% 自动生成定速巡航 Simulink 模型并打开</span><br>generate_cruise_model</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title"><span class="num">2</span> 以后每次使用</h2>
+    <div class="step-list">
+      <div class="step-item">
+        <h3>更新代码</h3>
+        <p>主电脑有新内容时，在 Git Bash 输入：</p>
+        <div class="cmd-block">cd ~/Desktop/lihongwei-ch && git pull</div>
+      </div>
+      <div class="step-item">
+        <h3>启动并运行</h3>
+        <p>双击 <code>matlab.bat</code> → 直接在 Command Window 输入命令</p>
+        <p class="tip info">不再需要 <code>cd</code> 和 <code>startup_setup</code>，工作目录和路径已自动配置。</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title"><span class="num">3</span> 用完还电脑</h2>
+    <div class="step-list">
+      <div class="step-item">
+        <h3>清理痕迹</h3>
+        <div class="cmd-block"><span class="comment"># 删除项目文件</span><br>rm -rf ~/Desktop/lihongwei-ch<br><br><span class="comment">% MATLAB 中注销许可证</span><br>deactivate</div>
+        <p>然后 设置 → 重置此电脑 → 删除所有内容</p>
+        <div class="tip warn">学校电脑注意清理个人文件，不要遗留代码或账户信息。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Telegram Bot -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">◆</span> Telegram Bot</h2>
+    <p style="font-size:14px;color:var(--dim);margin-bottom:12px">
+      手机端 MATLAB 代码生成助手，基于 DeepSeek 模型，支持文字问答和图片分析。
+    </p>
+    <div class="feature-grid" style="margin-bottom:12px">
+      <div class="feature-card">
+        <div class="icon">💬</div>
+        <h3>MATLAB 代码生成</h3>
+        <p>描述需求即得可运行代码，参数带推荐值</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📷</div>
+        <h3>图片分析</h3>
+        <p>拍照发 Bot，分析仿真曲线或电路图</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">📝</div>
+        <h3>学术写作</h3>
+        <p>实验报告、论文大纲、答辩稿直接输出</p>
+      </div>
+    </div>
+    <div class="tip info">Bot 地址：<a href="https://t.me/lihongwei_ev_bot" style="color:var(--accent)">@lihongwei_ev_bot</a>（如需使用请联系我获取访问权限）</div>
+  </div>
+
+  <!-- 项目文件 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">◆</span> 项目文件结构</h2>
+    <div class="file-list">
+      <div class="file-row"><span class="file-name">matlab.bat</span><span class="file-desc">MATLAB 一键启动脚本</span></div>
+      <div class="file-row"><span class="file-name">matlab/examples/vehicle_dynamics.m</span><span class="file-desc">车辆纵向动力学仿真</span></div>
+      <div class="file-row"><span class="file-name">matlab/examples/motor_control.m</span><span class="file-desc">PMSM 电机 FOC 控制仿真</span></div>
+      <div class="file-row"><span class="file-name">matlab/examples/generate_cruise_model.m</span><span class="file-desc">定速巡航 Simulink 模型生成</span></div>
+      <div class="file-row"><span class="file-name">matlab/carsim/sim_setup.m</span><span class="file-desc">CarSim 联合仿真配置</span></div>
+      <div class="file-row"><span class="file-name">matlab/utils/</span><span class="file-desc">工具函数（FFT、滤波、RMS 等）</span></div>
+      <div class="file-row"><span class="file-name">matlab/startup_setup.m</span><span class="file-desc">首次路径配置脚本</span></div>
+      <div class="file-row"><span class="file-name">bot/tgbot.py</span><span class="file-desc">Telegram Bot（DeepSeek 驱动）</span></div>
+      <div class="file-row"><span class="file-name">docs/笔记本操作说明.md</span><span class="file-desc">操作文档</span></div>
+      <div class="file-row"><span class="file-name">tools/autosave.py</span><span class="file-desc">自动保存脚本</span></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="https://github.com/LiHongwei-ch/lihongwei-ch" style="color:rgba(255,255,255,0.3);text-decoration:none">GitHub ↗</a>
+    &nbsp;·&nbsp; LiHongwei · 新能源汽车工程
+  </div>
+</div>
+</body>
+</html>
