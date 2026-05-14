@@ -2,14 +2,21 @@
 
 新能源汽车工程 · MATLAB · Python · Web
 
-📦 **[下载 Starter Kit](matlab-tool/matlab-ai-starter.zip)** — 通用安装包，关联自己的 GitHub 即可使用
+---
 
-🌐 **项目入口页** → **[lihongwei-ch.github.io/matlab-tool](https://lihongwei-ch.github.io/matlab-tool/)**
-📄 **操作指南** → **[guide.txt](matlab-tool/guide.txt)**
+<div align="center">
+
+# ⬇️ 立即下载安装包
+
+**MATLAB AI 仿真工具包** — AI 生成代码 → Git 同步 → 任何电脑上一键运行
+
+[📦 下载安装包（ZIP）](matlab-tool/matlab-ai-starter.zip) ｜ [📖 查看操作说明](matlab-tool/guide.txt) ｜ [🌐 项目详情页](https://lihongwei-ch.github.io/matlab-tool/)
+
+*ZIP 压缩包 · 11 KB · 包含 16 个文件 · 免费开源*
 
 ---
 
-```
+</div>```
 1/
 ├── matlab-tool/           项目入口页面 + 安装包下载
 ├── starter-kit/           通用安装包源码（开源模板）
