@@ -50,7 +50,7 @@ def detect_intent(text: str) -> str:
     code_score = sum(1 for kw in code_keywords if kw in text_lower)
     doc_score = sum(1 for kw in doc_keywords if kw in text_lower)
     if code_score > 0:
-        return 'code'
+        return 'simulink'
     elif doc_score > 0:
         return 'doc'
     else:
@@ -98,8 +98,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_message = update.message.text
     intent = detect_intent(user_message)
 
-    if intent == 'code':
-        fname = submit_task('code', user_message, update.message.chat_id)
+    if intent == 'simulink':
+        fname = submit_task('simulink', user_message, update.message.chat_id)
         await update.message.reply_text("已提交，处理中…")
     elif intent == 'doc':
         fname = submit_task('doc', user_message, update.message.chat_id)
@@ -124,7 +124,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     caption = update.message.caption or ""
     intent = detect_intent(caption)
 
-    if intent in ('code', 'doc'):
+    if intent in ('simulink', 'doc'):
         fname = submit_task(intent, caption, update.message.chat_id, has_photo=True)
         await update.message.reply_text("已提交（含图片），处理中…")
     else:
@@ -156,5 +156,5 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
-print("Bot 已启动（任务转发模式 — code/doc 转交 Claude Code，chat 仍用 DeepSeek）")
+print("Bot 已启动（Simulink 模式 — 代码类任务默认生成 Simulink 模型）")
 app.run_polling()
