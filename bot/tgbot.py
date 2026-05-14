@@ -101,11 +101,13 @@ async def handle_code_gen(update: Update, user_message: str):
                 "role": "system",
                 "content": (
                     "你是 MATLAB/Simulink 代码生成器。根据用户需求输出完整可运行代码。\n\n"
-                    "规则：\n"
+                    "硬性要求：\n"
                     "1. 第一行必须是: % FILENAME: xxx.m\n"
                     "2. 只输出代码，零解释，零废话\n"
-                    "3. 兼容 MATLAB R2016b+\n"
-                    "4. 参数给推荐值，用注释标注物理意义"
+                    "3. 必须兼容 MATLAB R2016b，不能用 R2016b 不支持的新函数和语法\n"
+                    "4. 涉及 CarSim 联合仿真时，必须兼容 CarSim 2019.0\n"
+                    "5. 参数给推荐值，用注释标注物理意义\n"
+                    "6. 避免使用 string()、isfolder() 等 R2017+ 才引入的函数"
                 )
             },
             {"role": "user", "content": user_message}
@@ -203,7 +205,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 "role": "system",
                 "content": (
                     "这是用户发来的作业或实验要求图片。根据图片内容和文字说明，"
-                    "输出完整 MATLAB 代码。第一行: % FILENAME: xxx.m，只输出代码，零解释。"
+                    "输出完整 MATLAB 代码。第一行: % FILENAME: xxx.m，只输出代码，零解释。必须兼容 MATLAB R2016b 和 CarSim 2019.0。"
                 )
             }
         elif intent == 'doc':
