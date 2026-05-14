@@ -1,6 +1,6 @@
 # LiHongwei 项目仓库
 
-新能源汽车工程 · MATLAB · Python · Web
+MATLAB 仿真 · AI 工具开发
 
 ---
 
@@ -8,7 +8,7 @@
 
 # ⬇️ 立即下载安装包
 
-**MATLAB AI 仿真工具包** — AI 生成代码 → Git 同步 → 任何电脑上一键运行
+**MATLAB AI 仿真工具包** — AI 生成代码 → Git 同步 → 任何电脑上一键运行。车辆动力学、电机控制、定速巡航仿真。
 
 [📦 下载安装包（ZIP）](matlab-tool/matlab-ai-starter.zip) ｜ [📖 查看操作说明](matlab-tool/guide.txt) ｜ [🌐 项目详情页](https://lihongwei-ch.github.io/matlab-tool/)
 
@@ -23,7 +23,6 @@
 ├── matlab-tool/           项目入口页面 + 安装包下载
 ├── vpn-guide/             免费 VPN 自建指南（零度解说教程）
 ├── starter-kit/           通用安装包源码（开源模板）
-├── vote/                  米塔投票应用（网页）
 ├── bot/                   Telegram 机器人（DeepSeek 驱动）
 ├── tools/                 工具脚本（自动保存、启动脚本等）
 ├── matlab/                MATLAB/Simulink 仿真代码 (R2016b)
@@ -64,33 +63,33 @@
 
 基于 Cloudflare 免费套餐自建 VPN 的完整教程，参考 YouTube 博主 **零度解说** 的 2026 年教程整理。
 
-包含两种方法：
-- **方法 A**：Cloudflare Zero Trust + WARP（推荐，适合新手）
-- **方法 B**：Cloudflare Pages + edgetunnel（进阶，配合 Clash 使用）
-
-另附 Clash 客户端下载地址（Clash Verge Rev / FlClash）及详细使用指南。
+两种方法 + 全平台客户端配置：
+- **方法 A**：Cloudflare Zero Trust + WARP + MASQUE 协议（推荐新手，全程无需梯子）
+- **方法 B**：Cloudflare Pages + edgetunnel（进阶，配合 Clash 分流使用）
+- **客户端**：Windows / Mac / Android / iOS 全平台详细配置
 
 🔗 [查看完整教程](https://lihongwei-ch.github.io/vpn-guide/)
 
-## Windows 优化工具教程
+## Windows 系统优化教程
 
-一行命令启动 WinUtil（Chris Titus Windows Utility），完成系统优化、更新控制、故障修复、制作纯净系统安装 U 盘。
+一行命令启动 WinUtil（Chris Titus Windows Utility），完成系统优化、更新控制、故障修复、制作纯净系统安装盘。
 
-- **WinUtil**：管理员 PowerShell 输入 `irm "https://christitus.com/win" | iex` 即可
-- **WinHance**：零度解说推荐的可视化 Windows 优化工具，纯图形界面操作
+- **WinUtil**：PowerShell 输入 `irm "https://christitus.com/win" | iex` 即可启动
+- **WinHance**：零度解说推荐的图形化优化工具，纯界面操作
 
-涵盖系统瘦身、隐私保护、Windows 更新控制、一键启用 WSL/Hyper-V、MicroWin 制作纯净 ISO + Ventoy 启动盘。
+涵盖系统瘦身、隐私保护、更新控制、WSL/Hyper-V 一键启用、MicroWin 纯净 ISO 制作 + Ventoy 启动盘。
 
 🔗 [查看完整教程](https://lihongwei-ch.github.io/win-optimize/)
 
-## Claude Code 小白教程
+## Claude Code 从零入门教程
 
-目前最好的 Agent 框架 Claude Code 的从零安装教程。Mac / Windows 双平台，有魔法没魔法都有对应方案。
+Claude Code 的完整入门教程。Mac / Windows 双平台，有魔法没魔法都有对应方案。
 
-- **Claude Code 安装**：Mac（官方命令 / Homebrew） + Windows（官方命令 / WinGet）
-- **接入国产模型**：CC Switch + GLM-5.1 替代方案，不需要 Claude 账号
-- **CLAUDE.md 规范**：全局 + 项目级约束体系
-- **Telegram 机器人**：DeepSeek 驱动的 AI 机器人搭建
+- **安装 Claude Code**：Mac（官方命令 / Homebrew）+ Windows（官方命令 / WinGet）
+- **接入国产模型**：DeepSeek API 直连，不需要 Claude 账号、不需要魔法
+- **CLAUDE.md 规范**：全局 + 项目级约束体系配置
+- **桌面快捷方式**：Windows 双击启动脚本
+- **Telegram 机器人**：DeepSeek 驱动的 AI 机器人完整搭建
 
 🔗 [查看完整教程](https://lihongwei-ch.github.io/claude-code-tutorial/)
 

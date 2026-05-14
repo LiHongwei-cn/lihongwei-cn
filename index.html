@@ -3,96 +3,245 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LiHongwei · 主页</title>
+<title>LiHongwei</title>
 <style>
-:root{--bg:#0f0c29;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#6c8cff}
+:root{
+  --bg: #09090b;
+  --card: rgba(255,255,255,0.03);
+  --card-hover: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --text: #e4e4e7;
+  --dim: rgba(255,255,255,0.4);
+  --accent: #818cf8;
+}
 *{margin:0;padding:0;box-sizing:border-box}
 html{height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-.container{width:100%;max-width:480px}
+
+body{
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* subtle background glow */
+body::before{
+  content: '';
+  position: fixed;
+  top: -40%;
+  left: -20%;
+  width: 140%;
+  height: 140%;
+  background: radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.06) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 80%, rgba(168,85,247,0.04) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container{
+  width: 100%;
+  max-width: 440px;
+  position: relative;
+  z-index: 1;
+}
 
 /* header */
-.header{text-align:center;margin-bottom:32px}
-.avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#6c8cff,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px;color:#fff;font-weight:600}
-.name{font-size:20px;font-weight:700;margin-bottom:4px}
-.bio{font-size:13px;color:var(--dim);line-height:1.6}
+.header{
+  text-align: center;
+  margin-bottom: 36px;
+}
 
-/* nav cards */
-.nav-grid{display:flex;flex-direction:column;gap:12px}
-.card{display:flex;align-items:center;gap:16px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px 20px;text-decoration:none;color:inherit;transition:all 0.25s ease;cursor:pointer}
-.card:hover{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);transform:translateY(-2px)}
-.card-icon{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
-.card-icon.vote{background:linear-gradient(135deg,#ff416c,#ff4b2b)}
-.card-icon.tool{background:linear-gradient(135deg,#00b4db,#0083b0)}
-.card-icon.file{background:linear-gradient(135deg,#f6d365,#fda085)}
-.card-icon.link{background:linear-gradient(135deg,#a78bfa,#6c8cff)}
-.card-icon.vpn{background:linear-gradient(135deg,#f87171,#fb923c)}
-.card-body{flex:1;min-width:0}
-.card-title{font-size:15px;font-weight:600;margin-bottom:2px}
-.card-desc{font-size:12px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.card-arrow{color:var(--dim);font-size:16px;flex-shrink:0}
+.avatar-wrap{
+  position: relative;
+  display: inline-block;
+  margin-bottom: 14px;
+}
+
+.avatar-wrap::after{
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(135deg, #818cf8, #a78bfa, #c084fc);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+}
+
+.avatar{
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  display: block;
+  object-fit: cover;
+}
+
+.name{
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+/* nav */
+.nav-grid{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 18px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before{
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.card:nth-child(1)::before{ background: linear-gradient(180deg, #00b4db, #0083b0); }
+.card:nth-child(2)::before{ background: linear-gradient(180deg, #f87171, #fb923c); }
+.card:nth-child(3)::before{ background: linear-gradient(180deg, #22d3ee, #6366f1); }
+.card:nth-child(4)::before{ background: linear-gradient(180deg, #a78bfa, #818cf8); }
+
+.card:hover{
+  background: var(--card-hover);
+  border-color: var(--border-hover);
+  transform: translateX(4px);
+}
+
+.card:hover::before{ opacity: 1; }
+
+.card-icon{
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.card-body{ flex: 1; min-width: 0; }
+
+.card-title{
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 3px;
+  letter-spacing: -0.2px;
+}
+
+.card-desc{
+  font-size: 12px;
+  color: var(--dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-arrow{
+  color: rgba(255,255,255,0.15);
+  font-size: 14px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+.card:hover .card-arrow{
+  color: rgba(255,255,255,0.35);
+  transform: translateX(2px);
+}
 
 /* footer */
-.footer{text-align:center;margin-top:40px;font-size:12px;color:rgba(255,255,255,0.2)}
+.footer{
+  text-align: center;
+  margin-top: 40px;
+  font-size: 12px;
+}
 
-@media(max-width:400px){
-  .card{padding:14px 16px;gap:12px}
-  .card-icon{width:36px;height:36px;font-size:16px}
+.footer a{
+  color: rgba(255,255,255,0.18);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer a:hover{ color: rgba(255,255,255,0.35); }
+
+@media(max-width: 400px){
+  .card{ padding: 14px 16px; gap: 12px; }
+  .card-icon{ width: 36px; height: 36px; font-size: 16px; }
+  .avatar{ width: 56px; height: 56px; }
 }
 </style>
 </head>
 <body>
+
 <div class="container">
 
   <div class="header">
-    <div class="avatar">L</div>
+    <div class="avatar-wrap">
+      <img class="avatar" src="avatar.jpg" alt="LiHongwei" />
+    </div>
     <div class="name">LiHongwei</div>
-    <div class="bio">新能源汽车工程 · 大三<br>MATLAB · Python · 嵌入式</div>
   </div>
 
   <div class="nav-grid">
 
-    <a class="card" href="vote/">
-      <div class="card-icon vote">🗳️</div>
-      <div class="card-body">
-        <div class="card-title">米塔投票</div>
-        <div class="card-desc">每日一票 · 全民公投</div>
-      </div>
-      <span class="card-arrow">→</span>
-    </a>
-
     <a class="card" href="matlab-tool/">
-      <div class="card-icon tool">⚡</div>
+      <div class="card-icon" style="background:linear-gradient(135deg,#00b4db,#0083b0)">⚡</div>
       <div class="card-body">
-        <div class="card-title">MATLAB AI 代码生成</div>
-        <div class="card-desc">AI 生成仿真代码 · 笔记本一键运行 · 免费下载</div>
+        <div class="card-title">MATLAB AI 仿真工具包</div>
+        <div class="card-desc">AI 生成代码 · 车辆动力学 · 电机控制 · 一键运行</div>
       </div>
       <span class="card-arrow">→</span>
     </a>
 
     <a class="card" href="vpn-guide/">
-      <div class="card-icon vpn">🔒</div>
+      <div class="card-icon" style="background:linear-gradient(135deg,#f87171,#fb923c)">🔒</div>
       <div class="card-body">
         <div class="card-title">免费 VPN 自建指南</div>
-        <div class="card-desc">Cloudflare 零成本搭建 · Clash 使用 · 零度解说教程</div>
+        <div class="card-desc">Cloudflare 零成本搭建 · 全平台客户端 · 无需技术背景</div>
       </div>
       <span class="card-arrow">→</span>
     </a>
 
     <a class="card" href="win-optimize/">
-      <div class="card-icon" style="background:linear-gradient(135deg,#22d3ee,#6c8cff)">🖥️</div>
+      <div class="card-icon" style="background:linear-gradient(135deg,#22d3ee,#6366f1)">🖥️</div>
       <div class="card-body">
-        <div class="card-title">Windows 优化工具</div>
-        <div class="card-desc">一行命令系统瘦身 · 纯净安装盘制作 · WinHance</div>
+        <div class="card-title">Windows 系统优化教程</div>
+        <div class="card-desc">一行命令瘦身 · 纯净安装盘制作 · 隐私保护</div>
       </div>
       <span class="card-arrow">→</span>
     </a>
 
     <a class="card" href="claude-code-tutorial/">
-      <div class="card-icon" style="background:linear-gradient(135deg,#a78bfa,#6c8cff)">🦀</div>
+      <div class="card-icon" style="background:linear-gradient(135deg,#a78bfa,#818cf8)">🦀</div>
       <div class="card-body">
-        <div class="card-title">Claude Code 小白教程</div>
-        <div class="card-desc">从零安装 · 接入国产模型 · Telegram 机器人</div>
+        <div class="card-title">Claude Code 从零入门教程</div>
+        <div class="card-desc">Win/Mac 安装 · 国产模型接入 · Telegram 机器人</div>
       </div>
       <span class="card-arrow">→</span>
     </a>
@@ -100,7 +249,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
   </div>
 
   <div class="footer">
-    <a href="https://github.com/LiHongwei-ch" style="color:rgba(255,255,255,0.3);text-decoration:none">GitHub ↗</a>
+    <a href="https://github.com/LiHongwei-ch">GitHub ↗</a>
   </div>
 
 </div>
