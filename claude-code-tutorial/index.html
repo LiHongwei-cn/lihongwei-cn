@@ -428,6 +428,14 @@ pause</div>
         <p>⑤ 退出 Claude Code 后，终端会暂停显示"按任意键关闭"，方便查看退出信息</p>
       </div>
 
+      <div class="step-item" style="border-color:rgba(251,191,36,0.2)">
+        <h3>⚠ 常见问题：启动时打开了 VS Code 怎么办</h3>
+        <p>Claude Code 在某些 Windows 系统上检测到 VS Code 后会尝试自动连接，导致 VS Code 窗口弹出。</p>
+        <p><strong>原因：</strong> Claude Code 的 IDE 集成功能自动扫描到已安装的 VS Code。</p>
+        <p><strong>解决方法：</strong> 确保 <code>claude-desktop.bat</code> 中包含 <code>set CLAUDE_CODE_ENTRYPOINT=cli</code> 这一行（仓库中的脚本已内置）。这一行强制终端模式，阻止 IDE 自动连接。</p>
+        <p>如果问题依旧，在 <code>claude</code> 命令后加上 <code>--no-chrome</code> 参数：<code>claude --dangerously-skip-permissions --no-chrome</code></p>
+      </div>
+
       <div class="step-item">
         <h3>（可选）加上代理 <span class="badge caution">⚡ 需要代理时用</span></h3>
         <p>如果你需要代理才能访问网络，编辑 <code>claude-desktop.bat</code>，找到下面这行，去掉前面的 <code>::</code> 注释：</p>
