@@ -355,31 +355,55 @@ td a:hover{text-decoration:underline}
       客户端下载不了？安装好方法一的 WARP 后再下载，或者找国内网盘搬运版（百度搜索 "Clash Verge Rev 下载"）。
     </div>
 
-    <h3 style="font-size:15px;font-weight:600;margin-bottom:10px">Clash Verge Rev 快速上手</h3>
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:10px">▎Clash Verge Rev 下载与安装（Windows 为例）</h3>
     <div class="step-list">
       <div class="step-item">
-        <h3>下载安装</h3>
-        <p>Windows 选 <code>Clash.Verge_Windows_x64-setup.exe</code></p>
-        <p>macOS Intel 选 <code>_x64.dmg</code>，M 芯片选 <code>_aarch64.dmg</code></p>
+        <h3>打开 Releases 页面 <span class="badge need">⚠️ 需要梯子</span></h3>
+        <p>浏览器打开 <a href="https://github.com/clash-verge-rev/clash-verge-rev/releases" target="_blank">github.com/clash-verge-rev/clash-verge-rev/releases</a></p>
+        <p>页面会按时间倒序显示所有版本，最上面一条就是最新版（显示 "Latest" 标签）。</p>
       </div>
       <div class="step-item">
-        <h3>添加订阅</h3>
-        <p>打开 Clash Verge Rev → <strong>订阅</strong> → <strong>新建</strong> → 粘贴 URL → 导入 → 启用。</p>
-        <p>订阅地址从哪里来？方法二搭建成功后获取，或使用其他机场订阅链接。</p>
+        <h3>下载正确的安装包</h3>
+        <p>在最新版本下，找到 <strong>"Assets"</strong>（资源）区域，里面有一列文件：</p>
+        <p>① <strong>Windows</strong>：选 <code>Clash.Verge_Windows_x64-setup.exe</code>（或文件名带 x64-setup 的）</p>
+        <p>② <strong>macOS Intel 芯片</strong>：选文件名带 <code>_x64.dmg</code> 的</p>
+        <p>③ <strong>macOS M 芯片</strong>：选文件名带 <code>_aarch64.dmg</code> 的</p>
+        <p>④ <strong>Linux</strong>：选 <code>.deb</code> 或 <code>.AppImage</code> 结尾的文件</p>
+        <p>点击文件名即可自动下载。下载完成后双击安装包 → 一路点"下一步"完成安装。</p>
+      </div>
+      <div class="step-item">
+        <h3>添加订阅 <span class="badge ok">✅ 无需梯子</span></h3>
+        <p>安装后打开 Clash Verge Rev，你会看到主界面分为左侧导航栏和右侧内容区：</p>
+        <p>① 点击左侧的 <strong>"订阅"</strong> 标签（图标像一个文件夹）</p>
+        <p>② 在右侧页面中，点击右上角的 <strong>"新建"</strong> 按钮（蓝色，带 + 号）</p>
+        <p>③ 在弹出的对话框中的 <strong>"URL"</strong> 输入框里，粘贴你的订阅地址</p>
+        <p>④ <strong>"名称"</strong> 输入框随便填（如"我的节点"）</p>
+        <p>⑤ 点击 <strong>"导入"</strong> 按钮</p>
+        <p>⑥ 导入成功后，回到订阅页面，点击该订阅行最右侧的 <strong>"启用"</strong> 开关（变蓝色表示启用）</p>
+        <p>⑦ 稍等几秒，节点信息会自动加载到"代理"页面中</p>
+        <div class="tip info">订阅地址从哪里来？方法二搭建成功后获得的 Clash 订阅链接，或者你在其他地方购买的机场订阅链接。</div>
       </div>
       <div class="step-item">
         <h3>开启代理</h3>
-        <p><strong>设置</strong> → 打开 <strong>系统代理</strong>。或使用 <strong>TUN 模式</strong>（所有流量自动接管）。</p>
+        <p>确保订阅已启用后：</p>
+        <p>① 点击左侧 <strong>"设置"</strong> 标签（齿轮图标）</p>
+        <p>② 在右侧页面中，找到 <strong>"系统代理"</strong> → 打开右边的开关（变成蓝色）</p>
+        <p>③ 如果需要接管所有流量（包括游戏、命令行等），在同一页面找到 <strong>"TUN 模式"</strong> → 也打开</p>
+        <p>④ 打开 TUN 模式后，Windows 可能会弹出"防火墙警告" → 勾选"专用网络" → 点击"允许访问"</p>
       </div>
       <div class="step-item">
-        <h3>选模式</h3>
-        <p><strong>Rule（规则）</strong>：国内直连，国外走代理（推荐日常）</p>
-        <p><strong>Global（全局）</strong>：所有流量走代理</p>
-        <p><strong>Direct（直连）</strong>：所有流量不走代理</p>
+        <h3>选择模式和节点</h3>
+        <p>点击左侧 <strong>"代理"</strong> 标签（地球图标）：</p>
+        <p>① 在顶部的模式下拉框中，建议选 <strong>"Rule"（规则）</strong>：国内网站直连，国外走代理（日常使用最合适）</p>
+        <p>   - <strong>Global（全局）</strong>：所有流量都走代理，适合访问被屏蔽网站</p>
+        <p>   - <strong>Direct（直连）</strong>：所有流量都不走代理，相当于关闭</p>
+        <p>② 在代理节点列表中，选择延迟最低的节点（点击节点可以看到延迟测试数字）</p>
       </div>
       <div class="step-item">
-        <h3>更新订阅</h3>
-        <p>点击 <strong>刷新</strong> 手动更新。可在 <strong>设置 → 订阅设置</strong> 开启自动更新。</p>
+        <h3>更新订阅（定期操作）</h3>
+        <p>节点信息会过期，建议定期更新：</p>
+        <p>① 回到 <strong>"订阅"</strong> 页面 → 点击订阅行右侧的 <strong>"刷新"</strong> 按钮（循环箭头图标）</p>
+        <p>② 或者开启自动更新：<strong>"设置"</strong> → <strong>"订阅设置"</strong> → 打开 <strong>"自动更新"</strong> 开关 → 设置更新间隔（如 6 小时）</p>
       </div>
     </div>
   </div>
