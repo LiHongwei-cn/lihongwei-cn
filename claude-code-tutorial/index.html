@@ -481,7 +481,7 @@ pause</div>
   <div class="section">
     <h2 class="section-title"><span class="num">6</span> 搭建 Telegram AI 机器人</h2>
     <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
-      把 AI 接入 Telegram，这样你在手机/电脑上就能直接通过 Telegram 使用 AI 对话。机器人由 <strong>DeepSeek 模型驱动</strong>，支持文字对话和图片分析。
+      把 AI 接入 Telegram，通过 <code>/gen</code> 命令直接把 MATLAB 作业要求发给机器人，<strong>自动生成代码并推送到 GitHub</strong>，笔记本上双击 matlab.bat 即可运行最新代码。
     </p>
 
     <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--purple)">准备工作</h3>
@@ -510,45 +510,59 @@ pause</div>
 
       <div class="step-item">
         <h3>创建机器人脚本 <span class="badge ok">✅ 无需魔法</span></h3>
-        <p>新建一个文件，命名为 <code>tgbot.py</code>，用记事本/VS Code 打开，复制以下代码：</p>
-        <div class="cmd" style="font-size:11px;max-height:300px;overflow-y:auto">import asyncio
-import base64
+        <p>新建一个文件，命名为 <code>tgbot.py</code>，完整代码可在仓库 <code>bot/tgbot.py</code> 中获取。<br>以下为简化版，包含最核心的 <code>/gen</code> 命令逻辑：</p>
+        <div class="cmd" style="font-size:11px;max-height:300px;overflow-y:auto">import subprocess
 from telegram import Update
-from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 from openai import OpenAI
 
-TELEGRAM_TOKEN = "你的_BotFather_给的token"
-DEEPSEEK_API_KEY = "你的_deepseek_api_key"
+TELEGRAM_TOKEN = "你的token"
+DEEPSEEK_API_KEY = "你的key"
+REPO_PATH = r"C:\Users\你的用户名\Desktop\lihongwei-ch"
 
-client = OpenAI(
-    api_key=DEEPSEEK_API_KEY,
-    base_url="https://api.deepseek.com"
-)
+client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url="https://api.deepseek.com")
 
-SYSTEM_PROMPT = """## 身份
-你是一个智能助手，由 DeepSeek 模型驱动。
+async def cmd_gen(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """生成 MATLAB 代码并推送到 GitHub"""
+    requirements = ' '.join(context.args)
+    if not requirements:
+        await update.message.reply_text("用法: /gen <MATLAB作业要求>")
+        return
 
-## 回复原则
-1. 直接简洁，给结论，零废话
-2. 不说"好的""当然""我来帮你"，直接说内容
-3. 代码直接输出，不加多余解释
-4. 回复默认中文"""
+    msg = await update.message.reply_text("正在生成代码...")
 
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     response = client.chat.completions.create(
         model="deepseek-v4-pro",
         messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": update.message.text}
+            {"role": "system", "content": "你是MATLAB代码生成器。只输出可运行代码，第一行注释标注文件名: % FILENAME: xxx.m"},
+            {"role": "user", "content": requirements}
         ]
+    )
+
+    code_text = response.choices[0].message.content
+    # 提取文件名和代码，保存到 matlab/examples/
+    # ...（完整版见仓库）...
+
+    # 推送到 GitHub
+    subprocess.run(["git", "add", "-A"], cwd=REPO_PATH)
+    subprocess.run(["git", "commit", "-m", f"bot: auto-generate"], cwd=REPO_PATH)
+    subprocess.run(["git", "push"], cwd=REPO_PATH)
+
+    await msg.edit_text("代码已生成并推送到 GitHub")
+
+# 普通对话仍可用
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    response = client.chat.completions.create(
+        model="deepseek-v4-pro",
+        messages=[{"role": "user", "content": update.message.text}]
     )
     await update.message.reply_text(response.choices[0].message.content)
 
 app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
+app.add_handler(CommandHandler("gen", cmd_gen))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-print("Bot 已启动，等待消息...")
 app.run_polling()</div>
-        <div class="tip warn">注意替换代码中 <code>TELEGRAM_TOKEN</code> 和 <code>DEEPSEEK_API_KEY</code> 为你自己的值。Token 和 Key 要保密，不要上传到 GitHub。</div>
+        <div class="tip info">完整代码见 GitHub 仓库 <code>bot/tgbot.py</code>，包含 <code>/gen</code>（生成代码+推送）、<code>/pull</code>（拉取最新）以及图片分析功能。</div>
       </div>
 
       <div class="step-item">
@@ -557,6 +571,27 @@ app.run_polling()</div>
         <div class="cmd">python tgbot.py</div>
         <p>看到 <strong>"Bot 已启动，等待消息..."</strong> 即表示运行成功。</p>
         <p>此时去 Telegram 找到你的机器人（搜索你之前 @BotFather 给它取的名字），发一条消息测试。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>使用 /gen 生成 MATLAB 代码 <span class="badge purple">⭐ 核心功能</span></h3>
+        <p>给机器人发送 <code>/gen</code> 命令，它会自动生成代码并推送到 GitHub：</p>
+        <div class="cmd">/gen 写一个电池SOC安时积分法估算的MATLAB代码</div>
+        <p>机器人处理流程：</p>
+        <p>① AI 根据需求生成完整的 MATLAB 脚本</p>
+        <p>② 代码自动保存到 <code>matlab/examples/</code> 目录</p>
+        <p>③ 自动 <code>git commit</code> 并 <code>git push</code> 到 GitHub</p>
+        <p>④ 机器人回复文件名和确认信息</p>
+        <div class="tip green">作业要求可以是文字描述，也可以是图片（拍照发给机器人即可，支持 OCR + 图片分析）。文字聊天功能不变，照常可用。</div>
+      </div>
+
+      <div class="step-item">
+        <h3>笔记本一键运行最新代码 <span class="badge ok">✅ 无需魔法</span></h3>
+        <p>在笔记本上操作：<code>matlab.bat</code> 已升级，启动前会自动 <code>git pull</code>。</p>
+        <p>① 安装 Git（首次）→ 克隆仓库到桌面</p>
+        <p>② 双击 <code>matlab.bat</code> → 自动拉取最新代码 → 启动 MATLAB</p>
+        <p>③ 在 Command Window 直接输入脚本名运行</p>
+        <div class="tip info">完整工作流：手机发 /gen → 代码自动到 GitHub → 笔记本双击 bat → git pull 自动拉取 → 运行。全程不需要手动输入 git 命令。</div>
       </div>
 
       <div class="step-item">

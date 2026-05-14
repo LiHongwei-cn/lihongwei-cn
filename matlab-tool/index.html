@@ -179,7 +179,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <div class="step-item">
         <h3>启动 MATLAB</h3>
         <p>打开 <code>Desktop\你的仓库名\</code> 文件夹，<strong>双击 <code>matlab.bat</code></strong></p>
-        <p>MATLAB 自动打开，工作目录自动设到 <code>matlab/</code>。</p>
+        <p>脚本会自动 <code>git pull</code> 获取最新代码，然后启动 MATLAB，工作目录自动设到 <code>matlab/</code>。</p>
+        <div class="tip info">每次双击都会先拉取最新代码，不需要手动输 git 命令。如果有新代码推送到 GitHub，双击 bat 后自动同步。</div>
       </div>
 
       <div class="step-item">
