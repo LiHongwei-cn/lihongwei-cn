@@ -24,7 +24,12 @@
       "Bash(curl -sL --max-time 10 -o /tmp/claude-icon.svg \"https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/claude.svg\")",
       "Bash(cat)",
       "Bash(python3 /tmp/create_icon.py)",
-      "Bash(/c/Users/HP/AppData/Local/Programs/Python/Python312/python *)"
+      "Bash(/c/Users/HP/AppData/Local/Programs/Python/Python312/python *)",
+      "Bash(claude --version)",
+      "Bash(assoc .bat)",
+      "Bash(ftype batfile *)",
+      "Bash(code --version)",
+      "Bash(env)"
     ]
   },
   "hooks": {

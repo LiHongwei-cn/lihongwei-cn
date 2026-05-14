@@ -14,6 +14,9 @@ set WORK_DIR=%~dp0..
 :: 代理设置（如需代理请取消注释并修改端口）
 :: set HTTPS_PROXY=http://127.0.0.1:7897
 
+:: 强制 CLI 模式，防止自动打开 VS Code
+set CLAUDE_CODE_ENTRYPOINT=cli
+
 echo.
 echo  🦀 Claude Code 启动中...
 echo  ═══════════════════════════════════
