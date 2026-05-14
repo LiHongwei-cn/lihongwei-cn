@@ -58,6 +58,18 @@
 
 完整操作指南见 [项目页面](https://lihongwei-ch.github.io/matlab-tool/)。
 
+## 免费 VPN 自建指南
+
+基于 Cloudflare 免费套餐自建 VPN 的完整教程，参考 YouTube 博主 **零度解说** 的 2026 年教程整理。
+
+包含两种方法：
+- **方法 A**：Cloudflare Zero Trust + WARP（推荐，适合新手）
+- **方法 B**：Cloudflare Pages + edgetunnel（进阶，配合 Clash 使用）
+
+另附 Clash 客户端下载地址（Clash Verge Rev / FlClash）及详细使用指南。
+
+🔗 [查看完整教程](https://lihongwei-ch.github.io/vpn-guide/)
+
 ## 笔记本操作流程
 
 ```bash
