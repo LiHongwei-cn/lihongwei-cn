@@ -21,6 +21,7 @@
 ```
 1/
 ├── matlab-tool/           项目入口页面 + 安装包下载
+├── vpn-guide/             免费 VPN 自建指南（零度解说教程）
 ├── starter-kit/           通用安装包源码（开源模板）
 ├── vote/                  米塔投票应用（网页）
 ├── bot/                   Telegram 机器人（DeepSeek 驱动）
