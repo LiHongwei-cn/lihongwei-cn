@@ -31,6 +31,7 @@
 │   ├── carsim/            CarSim 联合仿真配置
 │   └── utils/             工具函数
 ├── docs/                  论文、实验报告、文档
+├── win-optimize/           Windows 优化工具教程（WinUtil + WinHance）
 ├── index.html             个人主页（GitHub Pages）
 │
 ├── .claude/               Claude Code 配置
