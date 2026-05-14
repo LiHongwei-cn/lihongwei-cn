@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>免费VPN自建指南 · LiHongwei</title>
+<style>
+:root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#6c8cff;--green:#4ade80;--orange:#fb923c;--red:#f87171}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);min-height:100vh;line-height:1.7}
+.container{max-width:900px;margin:0 auto;padding:32px 24px 80px}
+
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color 0.2s}
+.back-link:hover{color:var(--text)}
+
+/* hero */
+.hero{text-align:center;padding:40px 0 24px}
+.hero-badge{display:inline-block;background:rgba(248,113,113,0.12);color:var(--red);border:1px solid rgba(248,113,113,0.2);padding:4px 14px;border-radius:20px;font-size:12px;margin-bottom:16px;letter-spacing:1px}
+.hero h1{font-size:34px;font-weight:800;background:linear-gradient(135deg,#f87171,#fb923c);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
+.hero p{font-size:15px;color:var(--dim);max-width:600px;margin:0 auto}
+.hero .disclaimer{margin-top:14px;font-size:12px;color:var(--dim);border:1px solid rgba(248,113,113,0.15);background:rgba(248,113,113,0.05);border-radius:10px;padding:10px 16px;display:inline-block}
+
+/* section */
+.section{margin-bottom:40px}
+.section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(108,140,255,0.12);color:var(--accent);font-size:14px;font-weight:700;flex-shrink:0}
+.section-title .method-a{background:rgba(108,140,255,0.12);color:var(--accent)}
+.section-title .method-b{background:rgba(251,191,36,0.12);color:var(--orange)}
+.section-title .link-icon{background:rgba(74,222,128,0.12);color:var(--green)}
+
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.feature-card .f-icon{font-size:22px;margin-bottom:8px}
+.feature-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.feature-card p{font-size:13px;color:var(--dim);line-height:1.6}
+
+/* steps */
+.step-list{counter-reset:step;display:flex;flex-direction:column;gap:10px}
+.step-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;position:relative;padding-left:60px}
+.step-item::before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:20px;width:26px;height:26px;border-radius:8px;background:rgba(108,140,255,0.12);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.step-item h3{font-size:15px;font-weight:600;margin-bottom:4px}
+.step-item p{font-size:13px;color:var(--dim);line-height:1.6}
+.step-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:#a78bfa}
+.step-item .cmd{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 16px;margin-top:8px;font-family:'Consolas','Courier New',monospace;font-size:13px;color:#b8c7ff;overflow-x:auto;white-space:pre}
+.step-item .cmd .cm{color:var(--dim);font-style:italic}
+.step-item a{color:var(--accent)}
+.step-item strong{color:var(--text)}
+
+/* link block */
+.link-block{background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.1);border-radius:14px;padding:20px 24px;margin-bottom:12px}
+.link-block h3{font-size:15px;font-weight:600;margin-bottom:10px;color:var(--green)}
+.link-block .link-row{display:flex;align-items:center;padding:6px 0;font-size:13px;gap:8px}
+.link-block .link-row .label{color:var(--dim);min-width:80px;flex-shrink:0}
+.link-block .link-row .url{color:var(--accent);word-break:break-all}
+.link-block .link-row a{color:var(--accent);text-decoration:none}
+.link-block .link-row a:hover{text-decoration:underline}
+
+/* tip */
+.tip{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.12);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--orange);margin-top:10px}
+.tip.info{background:rgba(108,140,255,0.07);border-color:rgba(108,140,255,0.12);color:var(--accent)}
+.tip.warn{background:rgba(248,113,113,0.07);border-color:rgba(248,113,113,0.12);color:var(--red)}
+
+/* table */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow-x:auto;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 16px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.04)}
+th{color:var(--dim);font-weight:600;background:rgba(255,255,255,0.02)}
+td{color:var(--text)}
+tr:last-child td{border-bottom:none}
+td a{color:var(--accent);text-decoration:none}
+td a:hover{text-decoration:underline}
+
+.footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:32px}
+.footer a{color:rgba(255,255,255,0.3);text-decoration:none}
+.footer a:hover{color:rgba(255,255,255,0.5)}
+
+@media(max-width:640px){
+  .container{padding:20px 16px 60px}
+  .hero h1{font-size:26px}
+  .step-item{padding:16px 16px 16px 48px}
+  .step-item::before{left:14px;top:16px;width:22px;height:22px;font-size:12px}
+  .link-block{padding:16px}
+  .link-block .link-row{flex-wrap:wrap}
+  .link-block .link-row .label{min-width:auto}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="../">← 返回主页</a>
+
+  <div class="hero">
+    <div class="hero-badge">教程 · 2026</div>
+    <h1>免费 VPN 自建指南</h1>
+    <p>基于 Cloudflare 免费套餐，零成本搭建属于你自己的 VPN 节点。<br>参考 YouTube 博主 <strong>零度解说</strong> 的 2026 年最新教程整理。</p>
+    <div class="disclaimer">⚠️ 本教程仅用于学习和研究网络技术，请遵守当地法律法规，勿用于非法用途。</div>
+  </div>
+
+  <!-- ===== 方法一：Cloudflare Zero Trust ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num method-a">A</span> 方法一：Cloudflare Zero Trust + WARP（推荐）</h2>
+    <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
+      利用 Cloudflare 官方的 Zero Trust 平台 + WARP 客户端，免费、稳定、速度快（实测支持千兆宽带）。适合不想折腾代码、希望即开即用的用户。
+    </p>
+
+    <div class="step-list">
+      <div class="step-item">
+        <h3>注册 Cloudflare 账号</h3>
+        <p>打开 <a href="https://dash.cloudflare.com/sign-up" target="_blank">dash.cloudflare.com/sign-up</a>，用邮箱注册一个免费账号。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>进入 Zero Trust 仪表盘</h3>
+        <p>登录后进入 <a href="https://one.dash.cloudflare.com/" target="_blank">one.dash.cloudflare.com</a>。</p>
+        <p>根据提示：</p>
+        <p>① 输入一个 <strong>团队名称</strong>（随便写，如你的名字拼音）</p>
+        <p>② 选择 <strong>Free 免费套餐</strong>（最多支持 50 个席位，完全够用）</p>
+      </div>
+
+      <div class="step-item">
+        <h3>创建 WARP 设备注册策略</h3>
+        <p>进入 <strong>Settings → WARP Client → Device enrollment permissions</strong>，点击 <strong>Manage</strong>。</p>
+        <p>添加一条规则：<strong>Anyone with an email</strong> → 输入你的邮箱地址 → 保存。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>下载并安装 WARP 客户端</h3>
+        <p>从 Cloudflare 官方下载 WARP 客户端：</p>
+        <p><a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/download-warp/" target="_blank">developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/download-warp/</a></p>
+        <p>支持 Windows / macOS / Linux / Android / iOS。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>登录 WARP 客户端</h3>
+        <p>安装后打开 WARP 客户端 → <strong>设置 → 账户 → 登录</strong>，选择 <strong>Cloudflare Zero Trust</strong>。</p>
+        <p>浏览器会自动打开，输入你刚才设置的 <strong>团队名称</strong>，然后用邮箱登录。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>切换为 MASQUE 协议（关键步骤）</h3>
+        <p>这一步解决了运营商封锁 WARP 的问题，速度也比默认的 WireGuard 快约 1 倍。</p>
+        <p>在 Zero Trust 后台 → <strong>Settings → WARP Client → Profile settings → Default</strong>：</p>
+        <p>① 找到 <strong>Transport protocol</strong>，从 <strong>WireGuard</strong> 改为 <strong>MASQUE</strong></p>
+        <p>② 保存后客户端会自动重新连接</p>
+        <div class="tip">MASQUE 协议是 Cloudflare 最新的传输协议，基于 HTTP/3 (QUIC)，速度快且不容易被识别封锁。实测可跑满千兆带宽。</div>
+      </div>
+
+      <div class="step-item">
+        <h3>使用 WARP</h3>
+        <p>客户端连接成功后，开关切换到 <strong>已连接</strong> 状态即可。</p>
+        <p>如果只需访问特定网站（分流通代理），可以在 WARP 客户端设置 <strong>Split Tunnels</strong>（分离隧道）模式。</p>
+      </div>
+    </div>
+
+    <div class="tip warn" style="margin-top:16px">
+      手机端（iOS/Android）需要使用 <strong>WireGuard 协议</strong>（不支持 MASQUE），下载 <strong>1.1.1.1 + WARP</strong> 或 <strong>Cloudflare One Agent</strong> 即可。
+    </div>
+
+    <div class="link-block" style="margin-top:16px">
+      <h3>🔗 方法一所有网址汇总</h3>
+      <div class="link-row"><span class="label">Cloudflare 注册</span><span class="url"><a href="https://dash.cloudflare.com/sign-up" target="_blank">dash.cloudflare.com/sign-up</a></span></div>
+      <div class="link-row"><span class="label">Zero Trust 后台</span><span class="url"><a href="https://one.dash.cloudflare.com/" target="_blank">one.dash.cloudflare.com</a></span></div>
+      <div class="link-row"><span class="label">WARP 下载页</span><span class="url"><a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/download-warp/" target="_blank">developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/download-warp/</a></span></div>
+      <div class="link-row"><span class="label">视频教程</span><span class="url"><a href="https://www.youtube.com/@零度解说" target="_blank">YouTube 搜索 "零度解说 Cloudflare WARP"</a></span></div>
+      <div class="link-row"><span class="label">配套文章</span><span class="url"><a href="https://www.freedidi.com/23223.html" target="_blank">freedidi.com/23223.html</a></span></div>
+    </div>
+  </div>
+
+  <!-- ===== 方法二：Cloudflare Pages + edgetunnel ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num method-b">B</span> 方法二：Cloudflare Pages + edgetunnel（进阶）</h2>
+    <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
+      利用 Cloudflare Pages 部署 VLESS 代理服务，配合 Clash 等客户端使用。适合希望自定义节点、使用 Clash 分流管理的用户。
+    </p>
+
+    <div class="step-list">
+      <div class="step-item">
+        <h3>注册 Cloudflare 账号</h3>
+        <p>打开 <a href="https://dash.cloudflare.com/sign-up" target="_blank">dash.cloudflare.com/sign-up</a> 注册免费账号。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>Fork edgetunnel 项目</h3>
+        <p>打开 <a href="https://github.com/cmliu/edgetunnel" target="_blank">github.com/cmliu/edgetunnel</a>，点击右上角 <strong>Fork</strong>，将项目复制到你的 GitHub 账号下。</p>
+        <div class="tip info">项目名称不要用 "edgetunnel"，改为其他任意名称。</div>
+      </div>
+
+      <div class="step-item">
+        <h3>生成 UUID</h3>
+        <p>UUID 是你的节点身份标识。打开以下网址生成一个：</p>
+        <p><a href="https://www.uuidgenerator.net/" target="_blank">www.uuidgenerator.net</a></p>
+        <p>点击 <strong>"Generate"</strong>，复制生成的 UUID 字符串。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>创建 Pages 项目</h3>
+        <p>进入 Cloudflare 后台 → <strong>Workers 和 Pages</strong> → <strong>Pages</strong> → <strong>创建</strong> → <strong>连接到 Git</strong>。</p>
+        <p>选择你 Fork 的 edgetunnel 仓库 → <strong>保存并部署</strong>。</p>
+        <p>首次部署会失败，正常现象。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>配置环境变量</h3>
+        <p>进入 Pages 项目 → <strong>设置 → 变量和机密 → 添加变量</strong>：</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>变量名</th><th>说明</th><th>示例值</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>UUID</strong></td><td>你的节点标识（必填）</td><td>你生成的 UUID</td></tr>
+              <tr><td><strong>PROXYIP</strong></td><td>代理转发地址（推荐）</td><td>proxyip.cmliussss.net</td></tr>
+              <tr><td><strong>ADD</strong></td><td>优选 IP 列表（可选）</td><td>[2400:cb00::...]</td></tr>
+              <tr><td><strong>ADMIN</strong></td><td>管理面板密码（可选）</td><td>任意密码</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:10px">添加完成后，返回部署页面点击 <strong>重试部署</strong>。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>获取订阅链接</h3>
+        <p>部署成功后，访问：</p>
+        <div class="cmd">https://你的项目名.pages.dev/你的UUID</div>
+        <p>页面会返回 VLESS 节点链接和 Clash 订阅地址。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>导入客户端使用</h3>
+        <p>复制 Clash 订阅地址，在 Clash Verge Rev 或 FlClash 中导入即可使用。</p>
+        <div class="tip info">如需自定义域名，在 Pages 设置中添加已托管在 Cloudflare 的域名即可。</div>
+      </div>
+    </div>
+
+    <div class="tip warn" style="margin-top:16px">
+      Cloudflare 明确禁止使用 Workers/Pages 部署代理服务，存在封号风险。建议仅用于学习和实验，不要大规模传播节点信息。
+    </div>
+
+    <div class="link-block" style="margin-top:16px">
+      <h3>🔗 方法二所有网址汇总</h3>
+      <div class="link-row"><span class="label">Cloudflare 注册</span><span class="url"><a href="https://dash.cloudflare.com/sign-up" target="_blank">dash.cloudflare.com/sign-up</a></span></div>
+      <div class="link-row"><span class="label">edgetunnel 仓库</span><span class="url"><a href="https://github.com/cmliu/edgetunnel" target="_blank">github.com/cmliu/edgetunnel</a></span></div>
+      <div class="link-row"><span class="label">UUID 生成器</span><span class="url"><a href="https://www.uuidgenerator.net/" target="_blank">www.uuidgenerator.net</a></span></div>
+      <div class="link-row"><span class="label">Cloudflare 后台</span><span class="url"><a href="https://dash.cloudflare.com/" target="_blank">dash.cloudflare.com</a></span></div>
+    </div>
+  </div>
+
+  <!-- ===== Clash 客户端 ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num link-icon">C</span> Clash 客户端下载与使用</h2>
+    <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
+      Clash 是目前最主流的代理客户端，支持规则分流、自动选择节点、订阅更新等功能。以下推荐 2026 年仍在活跃维护的开源版本。
+    </p>
+
+    <div class="feature-grid" style="margin-bottom:16px">
+      <div class="feature-card">
+        <div class="f-icon">🪟</div>
+        <h3>Windows</h3>
+        <p><strong>Clash Verge Rev</strong><br>功能最全，界面现代</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">🍎</div>
+        <h3>macOS</h3>
+        <p><strong>Clash Verge Rev</strong><br>或 ClashX Pro</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">📱</div>
+        <h3>Android</h3>
+        <p><strong>FlClash</strong><br>开源无广告，全平台</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">🐧</div>
+        <h3>Linux</h3>
+        <p><strong>Clash Verge Rev</strong><br>支持 DEB/RPM 包</p>
+      </div>
+    </div>
+
+    <div class="table-wrap" style="margin-bottom:16px">
+      <table>
+        <thead>
+          <tr><th>客户端</th><th>平台</th><th>下载地址</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Clash Verge Rev</strong></td>
+            <td>Windows / macOS / Linux</td>
+            <td><a href="https://github.com/clash-verge-rev/clash-verge-rev/releases" target="_blank">GitHub Releases</a></td>
+          </tr>
+          <tr>
+            <td><strong>FlClash</strong></td>
+            <td>Android / Windows / macOS / Linux</td>
+            <td><a href="https://github.com/chen08209/FlClash/releases" target="_blank">GitHub Releases</a></td>
+          </tr>
+          <tr>
+            <td><strong>ClashX Pro</strong></td>
+            <td>macOS</td>
+            <td><a href="https://github.com/ClashX-Pro/ClashX/releases" target="_blank">GitHub Releases</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:10px">Clash Verge Rev 快速上手</h3>
+    <div class="step-list">
+      <div class="step-item">
+        <h3>下载安装</h3>
+        <p>根据你的系统下载对应版本：</p>
+        <p>Windows：<code>Clash.Verge_Windows_版本号_x64-setup.exe</code></p>
+        <p>macOS Intel：<code>Clash.Verge_macOS_版本号_x64.dmg</code></p>
+        <p>macOS M1/M2/M3：<code>Clash.Verge_macOS_版本号_aarch64.dmg</code></p>
+      </div>
+
+      <div class="step-item">
+        <h3>添加订阅</h3>
+        <p>打开 Clash Verge Rev → <strong>订阅</strong> → <strong>新建</strong>：</p>
+        <p>① 在 <strong>URL</strong> 一栏粘贴你的订阅链接</p>
+        <p>② 点击 <strong>导入</strong></p>
+        <p>③ 点击 <strong>启用</strong> 开关</p>
+      </div>
+
+      <div class="step-item">
+        <h3>开启系统代理</h3>
+        <p>在 <strong>设置</strong> 页面打开 <strong>系统代理</strong> 开关。</p>
+        <p>或者使用 <strong>TUN 模式</strong>（虚拟网卡模式，所有流量自动接管，无需配置浏览器）。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>选择节点模式</h3>
+        <p>Clash 有三种模式：</p>
+        <p><strong>Rule（规则）</strong>：国内流量直连，国外走代理（推荐日常使用）</p>
+        <p><strong>Global（全局）</strong>：所有流量都走代理</p>
+        <p><strong>Direct（直连）</strong>：所有流量都不走代理</p>
+        <div class="tip">日常使用选 <strong>Rule</strong> 模式即可。访问国内网站不受影响，访问国外网站自动走代理。</div>
+      </div>
+
+      <div class="step-item">
+        <h3>更新订阅</h3>
+        <p>订阅链接失效或节点更新时，点击订阅旁的 <strong>刷新</strong> 按钮即可手动更新。</p>
+        <p>也可在 <strong>设置 → 订阅设置</strong> 中开启 <strong>自动更新</strong>。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 所有网址汇总 ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num link-icon">◆</span> 所有网址汇总</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>用途</th><th>网址</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Cloudflare 注册</td><td><a href="https://dash.cloudflare.com/sign-up" target="_blank">dash.cloudflare.com/sign-up</a></td></tr>
+          <tr><td>Cloudflare 登录后台</td><td><a href="https://dash.cloudflare.com/" target="_blank">dash.cloudflare.com</a></td></tr>
+          <tr><td>Zero Trust 仪表盘</td><td><a href="https://one.dash.cloudflare.com/" target="_blank">one.dash.cloudflare.com</a></td></tr>
+          <tr><td>WARP 客户端下载</td><td><a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/download-warp/" target="_blank">developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/download-warp/</a></td></tr>
+          <tr><td>edgetunnel 项目</td><td><a href="https://github.com/cmliu/edgetunnel" target="_blank">github.com/cmliu/edgetunnel</a></td></tr>
+          <tr><td>UUID 生成器</td><td><a href="https://www.uuidgenerator.net/" target="_blank">www.uuidgenerator.net</a></td></tr>
+          <tr><td>Clash Verge Rev</td><td><a href="https://github.com/clash-verge-rev/clash-verge-rev/releases" target="_blank">github.com/clash-verge-rev/clash-verge-rev/releases</a></td></tr>
+          <tr><td>FlClash</td><td><a href="https://github.com/chen08209/FlClash/releases" target="_blank">github.com/chen08209/FlClash/releases</a></td></tr>
+          <tr><td>ClashX Pro</td><td><a href="https://github.com/ClashX-Pro/ClashX/releases" target="_blank">github.com/ClashX-Pro/ClashX/releases</a></td></tr>
+          <tr><td>零度解说文章</td><td><a href="https://www.freedidi.com/23223.html" target="_blank">freedidi.com/23223.html</a></td></tr>
+          <tr><td>YouTube 零度解说</td><td><a href="https://www.youtube.com/@freedidi/videos" target="_blank">youtube.com/@freedidi/videos</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="https://github.com/LiHongwei-ch/lihongwei-ch" target="_blank">GitHub</a>
+    &nbsp;·&nbsp; 教程整理自公开网络资源
+    &nbsp;·&nbsp; LiHongwei
+  </div>
+</div>
+</body>
+</html>
