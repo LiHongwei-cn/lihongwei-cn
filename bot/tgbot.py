@@ -57,8 +57,17 @@ def detect_intent(text: str) -> str:
         return 'chat'
 
 
-def submit_task(intent: str, user_message: str, has_photo: bool = False) -> str:
+CHAT_ID_FILE = Path(REPO_PATH) / "bot" / "chat_id.txt"
+
+
+def save_chat_id(chat_id: int):
+    CHAT_ID_FILE.write_text(str(chat_id))
+
+
+def submit_task(intent: str, user_message: str, chat_id: int, has_photo: bool = False) -> str:
     """写任务文件并推送到 GitHub，等待 Claude Code 处理"""
+    save_chat_id(chat_id)
+
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"task_{ts}.txt"
     filepath = TASKS_DIR / filename
@@ -90,11 +99,11 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     intent = detect_intent(user_message)
 
     if intent == 'code':
-        fname = submit_task('code', user_message)
-        await update.message.reply_text(f"已提交，处理中…\n完成后在教室电脑 git pull 即可")
+        fname = submit_task('code', user_message, update.message.chat_id)
+        await update.message.reply_text("已提交，处理中…")
     elif intent == 'doc':
-        fname = submit_task('doc', user_message)
-        await update.message.reply_text(f"已提交，处理中…\n完成后在教室电脑 git pull 即可")
+        fname = submit_task('doc', user_message, update.message.chat_id)
+        await update.message.reply_text("已提交，处理中…")
     else:
         await handle_chat(update, user_message)
 
@@ -116,8 +125,8 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     intent = detect_intent(caption)
 
     if intent in ('code', 'doc'):
-        fname = submit_task(intent, caption, has_photo=True)
-        await update.message.reply_text(f"已提交（含图片），处理中…\n完成后在教室电脑 git pull 即可")
+        fname = submit_task(intent, caption, update.message.chat_id, has_photo=True)
+        await update.message.reply_text("已提交（含图片），处理中…")
     else:
         # 聊天模式的图片，仍用 DeepSeek 回答
         photo = update.message.photo[-1]
