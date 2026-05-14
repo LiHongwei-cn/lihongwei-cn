@@ -83,6 +83,17 @@
 
 🔗 [查看完整教程](https://lihongwei-ch.github.io/win-optimize/)
 
+## Claude Code 小白教程
+
+目前最好的 Agent 框架 Claude Code 的从零安装教程。Mac / Windows 双平台，有魔法没魔法都有对应方案。
+
+- **Claude Code 安装**：Mac（官方命令 / Homebrew） + Windows（官方命令 / WinGet）
+- **接入国产模型**：CC Switch + GLM-5.1 替代方案，不需要 Claude 账号
+- **CLAUDE.md 规范**：全局 + 项目级约束体系
+- **Telegram 机器人**：DeepSeek 驱动的 AI 机器人搭建
+
+🔗 [查看完整教程](https://lihongwei-ch.github.io/claude-code-tutorial/)
+
 ## 笔记本操作流程
 
 ```bash
