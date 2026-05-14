@@ -113,50 +113,87 @@ td a:hover{text-decoration:underline}
     <div class="step-list">
       <div class="step-item">
         <h3>注册 Cloudflare 账号 <span class="badge ok">✅ 无需梯子</span></h3>
-        <p>打开 <a href="https://dash.cloudflare.com/sign-up" target="_blank">dash.cloudflare.com/sign-up</a>，用邮箱注册一个免费账号。</p>
-        <p>Cloudflare 在国内有服务器，注册页面可直接打开。</p>
+        <p>打开浏览器 → 地址栏输入 <a href="https://dash.cloudflare.com/sign-up" target="_blank">dash.cloudflare.com/sign-up</a> 并回车。</p>
+        <p>页面正中间会出现注册表单，依次填写：</p>
+        <p>① <strong>Email</strong> 输入框：填你的邮箱地址</p>
+        <p>② <strong>Password</strong> 输入框：设一个密码（至少 8 位，含大小写字母）</p>
+        <p>③ 点击下方蓝色的 <strong>"Create Account"</strong> 按钮</p>
+        <p>④ 去邮箱收件箱找到 Cloudflare 发的验证邮件，点击其中的 <strong>"Verify email"</strong> 按钮</p>
+        <p>⑤ 验证成功后自动跳转回 Cloudflare 后台首页（显示 "Welcome to Cloudflare"）</p>
+        <div class="tip info">Cloudflare 在国内有服务器，注册页可直接打开。如果显示英文界面，左下角有个地球图标可以切换语言。</div>
       </div>
 
       <div class="step-item">
         <h3>进入 Zero Trust 仪表盘 <span class="badge ok">✅ 无需梯子</span></h3>
-        <p>登录后进入 <a href="https://one.dash.cloudflare.com/" target="_blank">one.dash.cloudflare.com</a>。</p>
-        <p>① 输入一个 <strong>团队名称</strong>（随便写，如你的名字拼音）</p>
-        <p>② 选择 <strong>Free 免费套餐</strong>（最多支持 50 个席位）</p>
+        <p>在 Cloudflare 后台首页，找到左侧蓝色的 <strong>"Zero Trust"</strong> 图标（像个盾牌）并点击。</p>
+        <p>如果找不到：直接在浏览器地址栏打开 <a href="https://one.dash.cloudflare.com/" target="_blank">one.dash.cloudflare.com</a>。</p>
+        <p>首次进入会看到"Onboard to Cloudflare Zero Trust"页面：</p>
+        <p>① 在页面正中间的输入框中，输入一个 <strong>团队名称</strong>（随意，比如你的名字拼音，记下来后面要用）</p>
+        <p>② 页面下方会出现三个套餐卡片，点击 <strong>"Free"</strong> 那张卡片（上面写着 "Free $0/seat"）</p>
+        <p>③ 点击右下角的蓝色 <strong>"Continue"</strong> 按钮</p>
+        <p>④ 弹出一个确认弹窗，核对套餐无误后点击 <strong>"Proceed"</strong></p>
+        <p>⑤ 等待几秒，自动进入 Zero Trust 后台主页</p>
       </div>
 
       <div class="step-item">
         <h3>创建设备注册策略 <span class="badge ok">✅ 无需梯子</span></h3>
-        <p><strong>Settings → WARP Client → Device enrollment permissions → Manage</strong></p>
-        <p>添加规则：<strong>Anyone with an email</strong> → 输入你的邮箱 → 保存。</p>
+        <p>进入 Zero Trust 后台后，看左侧深色导航栏：</p>
+        <p>① 点击 <strong>"Settings"</strong>（齿轮图标，在导航栏靠下方）</p>
+        <p>② 在右侧页面中，点击顶部导航的 <strong>"WARP Client"</strong> 标签页</p>
+        <p>③ 往下翻找到 <strong>"Device enrollment permissions"</strong> 一栏，点击右侧的蓝色 <strong>"Manage"</strong> 按钮</p>
+        <p>④ 会打开一个规则编辑页面，点击 <strong>"Add a rule"</strong> 按钮</p>
+        <p>⑤ 规则名称随便填（如 "allow all"），规则条件设置：</p>
+        <p>   - 下拉框选 <strong>"Anyone with an email"</strong></p>
+        <p>   - 输入框填你的邮箱地址</p>
+        <p>⑥ 点击右下角的蓝色 <strong>"Save"</strong> 按钮</p>
+        <p>⑦ 页面提示 "Success" 表示创建成功</p>
       </div>
 
       <div class="step-item">
         <h3>下载 WARP 客户端 <span class="badge ok">✅ 无需梯子</span></h3>
-        <p>官方下载页（国内可打开）：<br>
+        <p>打开新标签页，访问官方下载页：<br>
         <a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/download-warp/" target="_blank">developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/download-warp/</a></p>
-        <p>支持 Windows / macOS / Linux / Android / iOS。</p>
-        <div class="tip info">如果官方下载慢，可在百度搜索 "WARP 客户端 下载" 找国内镜像。</div>
+        <p>页面往下翻，会看到一个操作系统列表表格：</p>
+        <p>① <strong>Windows</strong>：点击表格中 "Windows" 那行的下载链接（下载 .msi 安装包）</p>
+        <p>② <strong>macOS</strong>：对应行下载 .pkg 安装包</p>
+        <p>③ <strong>Android / iOS</strong>：去应用商店分别搜索 "1.1.1.1 + WARP" 或 "Cloudflare One Agent"</p>
+        <p>下载完成后，双击安装包按提示安装（一路点"下一步"即可）。</p>
+        <div class="tip info">如果官方下载慢，可在百度搜索 "WARP 客户端 下载" 找国内网盘搬运版。</div>
       </div>
 
       <div class="step-item">
         <h3>登录 WARP 客户端 <span class="badge ok">✅ 无需梯子</span></h3>
-        <p>打开 WARP → <strong>设置 → 账户 → 登录</strong>，选择 <strong>Cloudflare Zero Trust</strong>。</p>
-        <p>浏览器会自动打开，输入 <strong>团队名称</strong>，用邮箱登录。</p>
+        <p>安装完成后启动 WARP：</p>
+        <p>① 在桌面右下角任务栏找到 WARP 图标（蓝色圆形小图标）→ 右键 → 点击 <strong>"Preferences"</strong>（首选项）</p>
+        <p>② 或者双击任务栏图标打开 WARP 窗口 → 点击右上角的 <strong>齿轮图标</strong>（Settings）</p>
+        <p>③ 在设置页面点击 <strong>"Account"</strong>（账户）选项卡</p>
+        <p>④ 点击 <strong>"Login with Cloudflare Zero Trust"</strong> 按钮（蓝色）</p>
+        <p>⑤ 浏览器会自动打开一个页面，输入你之前设的 <strong>团队名称</strong> → 点击 <strong>"Continue"</strong></p>
+        <p>⑥ 浏览器跳转到 Cloudflare 登录页面，输入你的邮箱 → 获取验证码 → 登录</p>
+        <p>⑦ 登录成功后会提示 "You are now logged in"，可以关掉浏览器回到 WARP 窗口</p>
       </div>
 
       <div class="step-item">
         <h3>切换为 MASQUE 协议 <span class="badge ok">✅ 无需梯子</span></h3>
-        <p>解决运营商封锁，速度比默认 WireGuard 快约 1 倍。</p>
-        <p>Zero Trust 后台 → <strong>Settings → WARP Client → Profile settings → Default</strong>：</p>
-        <p>找到 <strong>Transport protocol</strong>，从 <strong>WireGuard</strong> 改为 <strong>MASQUE</strong> → 保存。</p>
-        <div class="tip">MASQUE 基于 HTTP/3 (QUIC)，速度快且不容易被识别封锁，实测可跑满千兆带宽。</div>
+        <p>回到浏览器，进入 Zero Trust 后台：</p>
+        <p>① 左侧导航栏点击 <strong>"Settings"</strong>（齿轮图标）</p>
+        <p>② 顶部标签页点 <strong>"WARP Client"</strong></p>
+        <p>③ 找到 <strong>"Profile settings"</strong> 一栏 → 点击 <strong>"Default"</strong> 右侧的 <strong>齿轮图标</strong>（编辑按钮）</p>
+        <p>④ 在弹出的编辑页面中，找到 <strong>"Transport protocol"</strong>（传输协议）下拉框</p>
+        <p>⑤ 默认是 <strong>"WireGuard"</strong>，改成 <strong>"MASQUE"</strong></p>
+        <p>⑥ 点击页面下方的蓝色 <strong>"Save"</strong> 按钮</p>
+        <p>⑦ 提示保存成功后关闭页面</p>
+        <div class="tip">MASQUE 基于 HTTP/3 (QUIC)，速度比默认 WireGuard 约快 1 倍，且不容易被运营商识别封锁，实测可跑满千兆带宽。</div>
       </div>
 
       <div class="step-item">
         <h3>开始使用 WARP <span class="badge caution">⚡ 搭建成功即可用</span></h3>
-        <p>客户端开关切换到 <strong>已连接</strong>，此时你的网络已通过 Cloudflare 全球网络转发。</p>
-        <p>以后每次使用只需打开 WARP 客户端连接即可。</p>
-        <div class="tip warn">手机端 iOS/Android 需用 <strong>WireGuard 协议</strong>（不支持 MASQUE），下载 <strong>1.1.1.1 + WARP</strong> 或 <strong>Cloudflare One Agent</strong>。</div>
+        <p>回到 WARP 桌面客户端主窗口：</p>
+        <p>① 你会看到页面正中间有一个大大的开关按钮，上面写着 <strong>"Disconnected"</strong>（未连接）</p>
+        <p>② 点击这个开关，它会开始切换，几秒后变成 <strong>"Connected"</strong>（已连接），按钮变成绿色</p>
+        <p>③ 此时你的网络已经通过 Cloudflare 全球网络转发，可以访问被屏蔽的网站了</p>
+        <p>④ 以后每次使用：打开 WARP 客户端 → 点击开关连接即可</p>
+        <div class="tip warn">手机端 iOS/Android 不支持 MASQUE 协议，下载 <strong>"1.1.1.1 + WARP"</strong> App → 设置 → 账户 → 同样用 Zero Trust 登录即可（手机端走 WireGuard 协议，速度会比桌面端慢一点）。</div>
       </div>
     </div>
 
