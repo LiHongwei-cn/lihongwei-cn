@@ -227,47 +227,77 @@ td a:hover{text-decoration:underline}
 
   <!-- ===== 二、接模型 ===== -->
   <div class="section">
-    <h2 class="section-title"><span class="num">2</span> 接入国产模型（以 GLM-5.1 为例）</h2>
+    <h2 class="section-title"><span class="num">2</span> 接入 DeepSeek 模型（国产，免费额度）</h2>
     <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
       Claude Code 装好之后只是一个空壳，还需要接上模型才能用。如果<strong>有 Claude 账号</strong>，直接用 <code>claude</code> 命令登录即可（本文不展开）。<br>
-      这里教大家<strong>接国产模型</strong>，不需要 Claude 账号、不需要魔法、不需要外国手机号，推荐用 <strong>CC Switch</strong> 工具来管理模型切换。
+      这里教大家<strong>接 DeepSeek</strong>（国产模型），不需要 Claude 账号、不需要魔法、不需要外国手机号。<strong>以下两种方法二选一。</strong>
     </p>
 
     <div class="tip info" style="margin-bottom:16px">
-      <strong>模型推荐：</strong>GLM-5.1（智谱）是目前国产模型中效果最接近 Claude Opus 4.6 的。备选：MiniMax M2.7、K2.5（月之暗面）。GLM 官方提供一行命令安装 <code>npx @z_ai/coding-helper</code>，但下面教更通用的 CC Switch 方案。
+      <strong>为什么选 DeepSeek？</strong>国产模型中性价比最高，有免费额度，API 国内可以直接访问。模型效果稳定，对 Claude Code 兼容性好。<br>
+      需要先做一件事：去 <a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a> 注册账号 → 控制台 → API Keys → 创建新 Key → 复制保存。
     </div>
 
-    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;margin-top:4px;color:var(--purple)">▎安装 CC Switch（模型切换器）</h3>
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;margin-top:4px;color:var(--purple)">▎方法一（推荐⭐）：直接配置环境变量</h3>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:10px">
+      不需要装任何额外工具，直接修改 Claude Code 的配置文件即可。这是最简单、最稳定的方式。
+    </p>
 
     <div class="step-list" style="counter-reset:step 0">
       <div class="step-item">
-        <h3>Mac 安装 CC Switch</h3>
-        <p>在终端中依次执行以下两行命令（第二行如果报错请手动敲或让 AI 帮忙修正）：</p>
+        <h3>找到配置文件位置 <span class="badge ok">✅ 无需魔法</span></h3>
+        <p>在电脑上找到 <strong>Claude Code 的配置文件</strong>：</p>
+        <p><strong>Mac</strong>：打开终端 → <code>open ~/.claude/settings.json</code></p>
+        <p><strong>Windows</strong>：在文件管理器地址栏输入 <code>%USERPROFILE%\.claude\settings.json</code> 回车</p>
+        <p>如果这个文件还不存在，创建一个新文件命名为 <code>settings.json</code> 放到 <code>.claude</code> 文件夹里。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>写入 DeepSeek 配置 <span class="badge ok">✅ 无需魔法</span></h3>
+        <p>用记事本/文本编辑打开 <code>settings.json</code>，粘贴以下内容：</p>
+        <div class="cmd">{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
+    "ANTHROPIC_AUTH_TOKEN": "sk-你的deepseek_api_key",
+    "ANTHROPIC_MODEL": "deepseek-v4-flash",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "deepseek-v4-flash",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "deepseek-v4-flash"
+  },
+  "theme": "dark"
+}</div>
+        <p>记得把 <code>sk-你的deepseek_api_key</code> 替换成你在 DeepSeek 平台创建的真正 API Key。</p>
+        <div class="tip green">这六行环境变量的意思是：把 Claude Code 内部调用的所有模型（Haiku/Sonnet/Opus）都指向 DeepSeek 的接口。这样无论 Claude Code 请求哪个模型，实际走的都是 DeepSeek。</div>
+      </div>
+
+      <div class="step-item">
+        <h3>验证配置 <span class="badge ok">✅ 无需魔法</span></h3>
+        <p>保存文件后，在终端输入 <code>claude</code> 启动 Claude Code。</p>
+        <p>如果能正常进入对话界面（看到小螃蟹 🦀 和 <code>&gt;</code> 输入框），说明 DeepSeek 接入成功。</p>
+        <p>如果提示 API Key 错误，回 DeepSeek 平台检查你的 Key 是否正确、账户是否有余额/免费额度。</p>
+      </div>
+    </div>
+
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;margin-top:28px;color:var(--accent)">▎方法二（备选）：CC Switch 图形化工具</h3>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:10px">
+      如果不想手动编辑配置文件，也可以用 CC Switch 这个图形化工具来管理模型切换（<a href="https://github.com/farion1231/cc-switch/releases" target="_blank">GitHub 下载</a>，需魔法）。
+    </p>
+    <div class="step-list" style="counter-reset:step 0">
+      <div class="step-item">
+        <h3>安装 CC Switch</h3>
+        <p><strong>Mac</strong>：终端依次执行：</p>
         <div class="cmd">brew tap farion1231/ccswitch</div>
         <div class="cmd" style="margin-top:4px">brew install --cask cc-switch</div>
-        <p>等待安装完成即可。</p>
+        <p><strong>Windows</strong>：下载安装包双击运行，一路 Next 完成安装。</p>
       </div>
-
       <div class="step-item">
-        <h3>Windows 安装 CC Switch <span class="badge need">⚠️ 下载可能需要魔法</span></h3>
-        <p>方法一：从 GitHub 下载安装包（需要魔法）：</p>
-        <p>打开 <a href="https://github.com/farion1231/cc-switch/releases" target="_blank">github.com/farion1231/cc-switch/releases</a> → 下载最新版安装包 → 双击运行 → 一路 Next 完成安装。</p>
-        <p>方法二：如果 GitHub 打不开，去百度搜索 "CC Switch 下载" 找国内网盘搬运版。</p>
-        <p>方法三：先用方法一的 WARP 连上后下载（见本网站 VPN 教程）。</p>
-      </div>
-
-      <div class="step-item">
-        <h3>配置 CC Switch <span class="badge ok">✅ 无需魔法</span> <span class="badge purple">Mac / Windows 通用</span></h3>
-        <p>装好后打开 CC Switch（安装后在开始菜单/启动台里找）：</p>
-        <p>① 打开后，你会看到它支持 Claude Code / Codex / 小龙虾等多个框架</p>
-        <p>② 在 <strong>Claude Code</strong> 那一栏下，点击右上角的 <strong>"+"</strong>（加号）→ 新增模型配置</p>
-        <p>③ 选择模型提供商：选 <strong>GLM 国内版</strong>（或你想要的模型）</p>
-        <p>④ 填写以下两项：</p>
-        <p>   - <strong>API Key</strong>：去智谱开放平台（bigmodel.cn）注册 → 创建 API Key → 复制粘贴到这里</p>
-        <p>   - <strong>模型配置</strong>：填写你使用的模型名（如 GLM-5.1 或其他）</p>
-        <p>⑤ 其他选项自动填充，点击右下角 <strong>"添加"</strong> 按钮</p>
-        <p>⑥ CC Switch 自动切换到配置好的模型</p>
-        <div class="tip green">不知道 API Key 是什么？去智谱官网 bigmodel.cn 注册账号 → 控制台 → API Keys → 创建新的 Key。几乎所有国产模型平台都有这个功能。</div>
+        <h3>配置 DeepSeek</h3>
+        <p>打开 CC Switch → 在 <strong>Claude Code</strong> 栏下点右上角 <strong>"+"</strong> → 选 <strong>DeepSeek 或自定义</strong>：</p>
+        <p>   - <strong>API Key</strong>：填你的 DeepSeek API Key</p>
+        <p>   - <strong>Base URL</strong>：填 <code>https://api.deepseek.com/anthropic</code></p>
+        <p>   - <strong>模型名</strong>：填 <code>deepseek-v4-flash</code></p>
+        <p>   - 其他选项保持默认 → 点击 <strong>"添加"</strong> → 自动切换到此模型</p>
+        <p>之后在 Claude Code 中输入 <code>/model</code> 即可切换模型。</p>
       </div>
     </div>
   </div>
