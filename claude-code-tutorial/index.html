@@ -409,23 +409,39 @@ title Claude Code - AI 编程助手
 :: 工作目录（改成你自己的项目目录）
 set WORK_DIR=C:\Users\你的用户名\Desktop\你的项目
 
-:: 防止自动打开 VS Code（重要！）
+:: 强制 CLI 模式，防止自动打开 VS Code
 set CLAUDE_CODE_ENTRYPOINT=cli
 
 cd /d "%WORK_DIR%"
-claude --dangerously-skip-permissions
 
+:: 检测 Windows Terminal，有则用它打开（支持交互界面）
+where wt.exe >nul 2>&1
+if %errorlevel% equ 0 (
+    wt -d "%WORK_DIR%" cmd /k "set CLAUDE_CODE_ENTRYPOINT=cli && claude --dangerously-skip-permissions --no-chrome"
+    exit /b
+)
+
+:: 无 Windows Terminal 时直接启动
+claude --dangerously-skip-permissions --no-chrome
 pause</div>
       </div>
 
       <div class="step-item">
         <h3>双击启动 <span class="badge ok">✅ 无需魔法</span></h3>
         <p>找到 <code>claude-desktop.bat</code>，双击运行：</p>
-        <p>① 自动打开终端窗口，显示"Claude Code 启动中..."</p>
+        <p>① 自动检测 Windows Terminal（Win11 自带），用新标签页打开 Claude Code</p>
         <p>② 自动 <code>cd</code> 到你的项目目录</p>
-        <p>③ 自动执行 <code>claude --dangerously-skip-permissions</code>（跳过每次操作确认）</p>
+        <p>③ 自动执行 <code>claude --dangerously-skip-permissions --no-chrome</code></p>
         <p>④ 出现小螃蟹 🦀 图标后即可开始对话</p>
-        <p>⑤ 退出 Claude Code 后，终端会暂停显示"按任意键关闭"，方便查看退出信息</p>
+        <p>⑤ 退出 Claude Code 后窗口自动关闭</p>
+      </div>
+
+      <div class="step-item" style="border-color:rgba(251,191,36,0.2)">
+        <h3>⚠ 常见问题：打不开对话框 / 启动后闪退</h3>
+        <p>双击后弹出一个旧式黑窗口，但看不到 Claude Code 的对话界面（<code>&gt;</code> 输入框）。</p>
+        <p><strong>原因：</strong> Windows 旧版控制台（conhost.exe）不支持 Claude Code 的交互式界面，需要 Windows Terminal。</p>
+        <p><strong>解决方法：</strong> 仓库中的 <code>claude-desktop.bat</code> 已内置修复——双击时会自动检测 <code>wt.exe</code>（Windows Terminal），在新标签页中启动。</p>
+        <p>如果仍然不生效：① 微软商店安装 Windows Terminal（免费）② 运行 <code>create-shortcut.ps1</code> 重新创建桌面快捷方式</p>
       </div>
 
       <div class="step-item" style="border-color:rgba(251,191,36,0.2)">
@@ -433,7 +449,6 @@ pause</div>
         <p>Claude Code 在某些 Windows 系统上检测到 VS Code 后会尝试自动连接，导致 VS Code 窗口弹出。</p>
         <p><strong>原因：</strong> Claude Code 的 IDE 集成功能自动扫描到已安装的 VS Code。</p>
         <p><strong>解决方法：</strong> 确保 <code>claude-desktop.bat</code> 中包含 <code>set CLAUDE_CODE_ENTRYPOINT=cli</code> 这一行（仓库中的脚本已内置）。这一行强制终端模式，阻止 IDE 自动连接。</p>
-        <p>如果问题依旧，在 <code>claude</code> 命令后加上 <code>--no-chrome</code> 参数：<code>claude --dangerously-skip-permissions --no-chrome</code></p>
       </div>
 
       <div class="step-item">
