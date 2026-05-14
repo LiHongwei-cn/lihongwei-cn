@@ -391,7 +391,66 @@ td a:hover{text-decoration:underline}
     <div class="tip green">举个例子：如果你有一个 <code>code/my</code> 文件夹用来放各种实验小项目，在里面放一个项目级 CLAUDE.md，告诉它"如果是一个新需求，自动创建子文件夹存放"，以后你只管提需求，文件管理都交给它。</div>
   </div>
 
-  <!-- ===== 五、Telegram 机器人搭建 ===== -->
+  <!-- ===== 五、桌面快捷启动 ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">5</span> 桌面快捷启动（Windows）</h2>
+    <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
+      每次打开终端输命令太麻烦？创建一个桌面快捷方式，双击就能启动 Claude Code，自动进入你的工作目录。
+    </p>
+
+    <div class="step-list">
+      <div class="step-item">
+        <h3>下载启动脚本 <span class="badge ok">✅ 无需魔法</span></h3>
+        <p>在仓库 <code>tools/claude-desktop.bat</code> 中已准备好启动脚本。你也可以自己创建一个文本文件，重命名为 <code>claude-desktop.bat</code>，写入以下内容：</p>
+        <div class="cmd">@echo off
+chcp 65001 >nul
+title Claude Code - AI 编程助手
+
+:: 工作目录（改成你自己的项目目录）
+set WORK_DIR=C:\Users\你的用户名\Desktop\你的项目
+
+cd /d "%WORK_DIR%"
+claude --dangerously-skip-permissions
+
+pause</div>
+      </div>
+
+      <div class="step-item">
+        <h3>双击启动 <span class="badge ok">✅ 无需魔法</span></h3>
+        <p>找到 <code>claude-desktop.bat</code>，双击运行：</p>
+        <p>① 自动打开终端窗口，显示"Claude Code 启动中..."</p>
+        <p>② 自动 <code>cd</code> 到你的项目目录</p>
+        <p>③ 自动执行 <code>claude --dangerously-skip-permissions</code>（跳过每次操作确认）</p>
+        <p>④ 出现小螃蟹 🦀 图标后即可开始对话</p>
+        <p>⑤ 退出 Claude Code 后，终端会暂停显示"按任意键关闭"，方便查看退出信息</p>
+      </div>
+
+      <div class="step-item">
+        <h3>（可选）加上代理 <span class="badge caution">⚡ 需要代理时用</span></h3>
+        <p>如果你需要代理才能访问网络，编辑 <code>claude-desktop.bat</code>，找到下面这行，去掉前面的 <code>::</code> 注释：</p>
+        <div class="cmd">set HTTPS_PROXY=http://127.0.0.1:7897</div>
+        <p>把端口改成你实际使用的代理端口即可。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>（进阶）更换快捷方式图标</h3>
+        <p>如果想给 BAT 文件换个好看的图标：</p>
+        <p>① 桌面右键 → <strong>"新建 → 快捷方式"</strong></p>
+        <p>② 位置填：<code>C:\Users\HP\Desktop\1\tools\claude-desktop.bat</code>（改为你的实际路径）</p>
+        <p>③ 名称填：<strong>Claude Code</strong></p>
+        <p>④ 创建完成后 → 右键快捷方式 → <strong>"属性"</strong> → <strong>"快捷方式"</strong> 选项卡 → <strong>"更改图标"</strong></p>
+        <p>⑤ 在输入框填 <code>C:\Windows\System32\imageres.dll</code> → 回车 → 选一个你喜欢的图标（如终端/命令行图标）→ 确定</p>
+      </div>
+    </div>
+
+    <div class="link-block" style="margin-top:8px">
+      <h3>🔗 相关文件</h3>
+      <div class="link-row"><span class="label">启动脚本</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/claude-desktop.bat" target="_blank">github.com/LiHongwei-ch/lihongwei-ch/tools/claude-desktop.bat</a> <span class="badge need">⚠️</span></span></div>
+      <div class="link-row"><span class="label">创建脚本</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/create-shortcut.ps1" target="_blank">create-shortcut.ps1（自动创建桌面快捷方式的 PowerShell 脚本）</a> <span class="badge need">⚠️</span></span></div>
+    </div>
+  </div>
+
+  <!-- ===== 六、Telegram 机器人搭建 ===== -->
   <div class="section">
     <h2 class="section-title"><span class="num">5</span> 搭建 Telegram AI 机器人</h2>
     <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
