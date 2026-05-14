@@ -409,6 +409,9 @@ title Claude Code - AI 编程助手
 :: 工作目录（改成你自己的项目目录）
 set WORK_DIR=C:\Users\你的用户名\Desktop\你的项目
 
+:: 防止自动打开 VS Code（重要！）
+set CLAUDE_CODE_ENTRYPOINT=cli
+
 cd /d "%WORK_DIR%"
 claude --dangerously-skip-permissions
 
