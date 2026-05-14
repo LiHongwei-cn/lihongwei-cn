@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "export HTTPS_PROXY=http://127.0.0.1:7897 && cd /c/Users/HP/Desktop/1 && git add -A && git diff --cached --quiet || (git commit -m \"autosave $(date '+%Y-%m-%d %H:%M:%S')\" --allow-empty-message 2>/dev/null && git push 2>/dev/null) || true",
+            "timeout": 30,
+            "statusMessage": "Auto-saving to GitHub..."
+          }
+        ]
+      }
+    ]
+  }
+}
