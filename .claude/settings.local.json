@@ -1,4 +1,12 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(HTTPS_PROXY=http://127.0.0.1:7897 git add vpn-guide/index.html)",
+      "Bash(git commit -m ' *)",
+      "Bash(HTTPS_PROXY=http://127.0.0.1:7897 git push origin main)",
+      "Bash(HTTPS_PROXY=http://127.0.0.1:7897 git commit -m \"细化 VPN 教程全部操作步骤到点击级精度\")"
+    ]
+  },
   "hooks": {
     "PostToolUse": [
       {
