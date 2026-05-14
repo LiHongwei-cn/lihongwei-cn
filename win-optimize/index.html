@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Windows 优化工具教程 · LiHongwei</title>
+<style>
+:root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#6c8cff;--green:#4ade80;--orange:#fb923c;--red:#f87171;--cyan:#22d3ee;--cyan-dim:rgba(34,211,238,0.12)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);min-height:100vh;line-height:1.7}
+.container{max-width:900px;margin:0 auto;padding:32px 24px 80px}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color 0.2s}
+.back-link:hover{color:var(--text)}
+
+/* hero */
+.hero{text-align:center;padding:40px 0 24px}
+.hero-badge{display:inline-block;background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(34,211,238,0.2);padding:4px 14px;border-radius:20px;font-size:12px;margin-bottom:16px;letter-spacing:1px}
+.hero h1{font-size:34px;font-weight:800;background:linear-gradient(135deg,#22d3ee,#6c8cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
+.hero p{font-size:15px;color:var(--dim);max-width:600px;margin:0 auto}
+.hero .cmd-inline{background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:16px 20px;margin:16px auto 0;max-width:500px;font-family:'Consolas','Courier New',monospace;font-size:14px;color:#b8c7ff;text-align:center}
+
+/* section */
+.section{margin-bottom:40px}
+.section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--cyan-dim);color:var(--cyan);font-size:14px;font-weight:700;flex-shrink:0}
+.section-title .m-icon{background:rgba(108,140,255,0.12);color:var(--accent)}
+
+/* badge */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:6px;font-size:11px;font-weight:600;margin-left:6px;vertical-align:middle}
+.badge.ok{background:rgba(74,222,128,0.1);color:var(--green);border:1px solid rgba(74,222,128,0.15)}
+.badge.need{background:rgba(248,113,113,0.1);color:var(--red);border:1px solid rgba(248,113,113,0.15)}
+.badge.caution{background:rgba(251,191,36,0.1);color:var(--orange);border:1px solid rgba(251,191,36,0.15)}
+.badge.cyan{background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(34,211,238,0.15)}
+
+/* step list */
+.step-list{counter-reset:step;display:flex;flex-direction:column;gap:10px}
+.step-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;position:relative;padding-left:60px}
+.step-item::before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:20px;width:26px;height:26px;border-radius:8px;background:var(--cyan-dim);color:var(--cyan);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.step-item h3{font-size:15px;font-weight:600;margin-bottom:6px}
+.step-item p{font-size:13px;color:var(--dim);line-height:1.6}
+.step-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:#a78bfa}
+.step-item .cmd{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 16px;margin-top:8px;font-family:'Consolas','Courier New',monospace;font-size:13px;color:#b8c7ff;overflow-x:auto;white-space:pre}
+.step-item a{color:var(--accent)}
+.step-item strong{color:var(--text)}
+.step-item .cm{color:var(--dim);font-style:italic}
+
+/* feature grid */
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.feature-card .f-icon{font-size:22px;margin-bottom:8px}
+.feature-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.feature-card p{font-size:13px;color:var(--dim);line-height:1.6}
+
+/* table */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow-x:auto;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 16px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.04)}
+th{color:var(--dim);font-weight:600;background:rgba(255,255,255,0.02)}
+td{color:var(--text)}
+tr:last-child td{border-bottom:none}
+td a{color:var(--accent);text-decoration:none}
+td a:hover{text-decoration:underline}
+
+/* link block */
+.link-block{background:rgba(34,211,238,0.04);border:1px solid rgba(34,211,238,0.1);border-radius:14px;padding:20px 24px;margin-bottom:12px}
+.link-block h3{font-size:15px;font-weight:600;margin-bottom:10px;color:var(--cyan)}
+.link-block .link-row{display:flex;align-items:center;padding:6px 0;font-size:13px;gap:8px}
+.link-block .link-row .label{color:var(--dim);min-width:80px;flex-shrink:0}
+.link-block .link-row .url{color:var(--accent);word-break:break-all}
+.link-block .link-row a{color:var(--accent);text-decoration:none}
+.link-block .link-row a:hover{text-decoration:underline}
+
+/* tip */
+.tip{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.12);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--orange);margin-top:10px}
+.tip.info{background:rgba(108,140,255,0.07);border-color:rgba(108,140,255,0.12);color:var(--accent)}
+.tip.warn{background:rgba(248,113,113,0.07);border-color:rgba(248,113,113,0.12);color:var(--red)}
+.tip.green{background:rgba(74,222,128,0.07);border-color:rgba(74,222,128,0.12);color:var(--green)}
+
+/* tab indicator */
+.tab-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.tab-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 16px;font-size:13px;color:var(--dim);display:flex;align-items:center;gap:6px}
+.tab-item.active{background:var(--cyan-dim);border-color:rgba(34,211,238,0.2);color:var(--cyan)}
+
+.footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:32px}
+.footer a{color:rgba(255,255,255,0.3);text-decoration:none}
+.footer a:hover{color:rgba(255,255,255,0.5)}
+
+@media(max-width:640px){
+  .container{padding:20px 16px 60px}
+  .hero h1{font-size:26px}
+  .step-item{padding:16px 16px 16px 48px}
+  .step-item::before{left:14px;top:16px;width:22px;height:22px;font-size:12px}
+  .link-block{padding:16px}
+  .link-block .link-row{flex-wrap:wrap}
+  .link-block .link-row .label{min-width:auto}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="../">← 返回主页</a>
+
+  <div class="hero">
+    <div class="hero-badge">免费 · 开源 · 一款命令搞定</div>
+    <h1>Windows 系统优化工具教程</h1>
+    <p>在终端输入一行命令，即可打开 Windows 优化工具。<br>系统瘦身 · 性能优化 · 更新控制 · 自建纯净系统安装盘</p>
+    <div class="cmd-inline">管理员 PowerShell 输入：</span><br><strong>irm "https://christitus.com/win" | iex</strong></div>
+  </div>
+
+  <!-- 图例 -->
+  <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;font-size:13px">
+    <span><span class="badge ok" style="font-size:12px">✅ 安全通用</span> 适合所有用户</span>
+    <span><span class="badge caution" style="font-size:12px">⚡ 谨慎操作</span> 建议了解后再用</span>
+    <span><span class="badge need" style="font-size:12px">⚠️ 需注意</span> 可能有风险</span>
+  </div>
+
+  <!-- ===== 1. 工具简介 ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">1</span> 这是什么工具？</h2>
+    <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
+      这个命令打开的是 <strong>Chris Titus Tech's Windows Utility（简称 WinUtil）</strong>，一个完全免费开源的 Windows 优化工具箱。开发者 Chris Titus 是知名的 YouTube 技术博主，工具代码在 GitHub 上公开可查，没有病毒后门。
+    </p>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="f-icon">📦</div>
+        <h3>无需安装</h3>
+        <p>命令运行后直接在内存中启动图形界面，关掉就消失，不留痕迹</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">⚙️</div>
+        <h3>五大功能</h3>
+        <p>安装软件 · 系统优化 · 故障修复 · 更新管理 · 制作纯净ISO</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">🛡️</div>
+        <h3>可还原</h3>
+        <p>每次操作前自动创建还原点，任何改动都能一键恢复</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">🌍</div>
+        <h3>全球社区</h3>
+        <p>GitHub 上数万 Star，社区活跃更新频繁，2025-2026 年仍在持续维护</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 2. 下载与卸载 ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">2</span> 下载与卸载</h2>
+
+    <div class="step-list">
+      <div class="step-item">
+        <h3>启动 WinUtil <span class="badge ok">✅ 无需梯子</span></h3>
+        <p>右键点击 <strong>开始菜单</strong> → <strong>Windows PowerShell (管理员)</strong> 或 <strong>终端 (管理员)</strong>，粘贴以下命令后按回车：</p>
+        <div class="cmd">irm "https://christitus.com/win" | iex</div>
+        <p>工具会自动从 GitHub 下载最新版本并启动图形界面（首次加载约 10-30 秒）。</p>
+        <div class="tip info">如果提示"无法加载"，先执行 <code>Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser</code> 解除 PowerShell 限制，再重新运行。</div>
+      </div>
+
+      <div class="step-item">
+        <h3>使用 Dev 分支（可选）</h3>
+        <p>想体验最新功能但可能不稳定，用以下命令：</p>
+        <div class="cmd">irm "https://christitus.com/windev" | iex</div>
+      </div>
+
+      <div class="step-item">
+        <h3>如果网站打不开（备用方法）</h3>
+        <p>直接从 GitHub 加载：</p>
+        <div class="cmd">irm https://raw.githubusercontent.com/ChrisTitusTech/winutil/main/winutil.ps1 | iex</div>
+        <p class="cm">GitHub 需要梯子才能访问，所以这个备用方法在无梯环境下可能也失效，优先用第一条命令。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>卸载 / 关闭 WinUtil <span class="badge ok">✅ 无需梯子</span></h3>
+        <p><strong>直接关掉窗口即可。</strong> WinUtil 是"绿色软件"，运行时只在内存中生效，不写入系统文件、不修改注册表、不添加开机启动项。关闭窗口 = 完全卸载。</p>
+        <div class="tip green">放心使用：工具不会在系统里留下任何残留，不存在"卸载不干净"的问题。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 3. 系统优化（Tweaks） ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">3</span> Windows 系统优化</h2>
+    <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
+      这是 WinUtil 最核心的功能。打开工具后切换到 <strong>Tweaks</strong> 选项卡，你会看到一系列优化开关，按安全程度分为以下几类：
+    </p>
+
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--green)">✅ 基础优化（安全，建议全开）</h3>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:16px">
+      <table style="font-size:13px">
+        <thead>
+          <tr><th>功能</th><th>说明</th><th>效果</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Create Restore Point</td><td>创建系统还原点</td><td>操作前自动备份，后悔了可还原</td></tr>
+          <tr><td>Disable Telemetry</td><td>禁用遥测收集</td><td>阻止微软收集你的使用数据</td></tr>
+          <tr><td>Disable Activity History</td><td>禁用活动历史记录</td><td>微软不会记录你的操作轨迹</td></tr>
+          <tr><td>Disable Location Tracking</td><td>禁用定位追踪</td><td>保护隐私位置信息</td></tr>
+          <tr><td>Delete Temporary Files</td><td>删除临时文件</td><td>释放磁盘空间（通常几 GB）</td></tr>
+          <tr><td>Run Disk Cleanup</td><td>运行磁盘清理</td><td>进一步清理系统缓存</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--orange)">⚡ 进阶优化（按需开启）</h3>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:16px">
+      <table style="font-size:13px">
+        <thead>
+          <tr><th>功能</th><th>说明</th><th>推荐度</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Disable Copilot</td><td>禁用 Windows AI 助手</td><td><span class="badge ok">推荐</span> 用不上的可以关</td></tr>
+          <tr><td>Disable OneDrive</td><td>禁用 OneDrive 同步</td><td><span class="badge ok">推荐</span> 不用网盘就关掉</td></tr>
+          <tr><td>Disable Storage Sense</td><td>禁用存储感知</td><td>视情况，想手动管理可关</td></tr>
+          <tr><td>Modern Standby Fix</td><td>修复现代待机</td><td><span class="badge ok">推荐</span> 笔记本合盖后不会异常发热</td></tr>
+          <tr><td>Disable Edge Bloat</td><td>精简 Edge 浏览器</td><td>保留 Edge 但去掉多余服务</td></tr>
+          <tr><td>Set Services to Manual</td><td>多余服务改为手动</td><td>减少后台资源占用</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--red)">⚠️ 高级优化（谨慎操作）</h3>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:16px">
+      <table style="font-size:13px">
+        <thead>
+          <tr><th>功能</th><th>说明</th><th>风险</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Remove Edge Completely</td><td>彻底卸载 Edge</td><td>部分网页依赖 Edge 内核，建议保留</td></tr>
+          <tr><td>Disable UAC</td><td>禁用用户账户控制</td><td>降低系统安全性，不建议关</td></tr>
+          <tr><td>Remove Cortana</td><td>移除小娜</td><td>无害，Win11 已不再内置</td></tr>
+          <tr><td>Block Adobe Activity</td><td>拦截 Adobe 网络活动</td><td>如果你不用 Adobe 软件，可开启</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip" style="margin-top:12px">
+      <strong>操作方法：</strong>在 Tweaks 页面勾选想开的选项 → 点击 <strong>"Run Tweaks"</strong> 执行。想撤销就再次选中该项目 → 点击 <strong>"Undo Selected Tweaks"</strong>。
+    </div>
+  </div>
+
+  <!-- ===== 4. 更新控制 ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">4</span> Windows 更新控制</h2>
+    <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
+      切换到 <strong>Updates</strong> 选项卡，可以精细控制 Windows 更新的行为，不再被强制重启或自动更新打扰。
+    </p>
+
+    <div class="table-wrap" style="margin-bottom:16px">
+      <table>
+        <thead>
+          <tr><th>选项</th><th>说明</th><th>推荐</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Default</strong></td>
+            <td>恢复 Windows 更新默认行为（微软标准推送）</td>
+            <td><span class="badge caution">重置</span></td>
+          </tr>
+          <tr>
+            <td><strong>Security (Recommended)</strong></td>
+            <td>仅安装安全更新，功能更新推迟 2 年，安全更新延迟 4 天推送</td>
+            <td><span class="badge ok">✅ 强烈推荐</span></td>
+          </tr>
+          <tr>
+            <td><strong>Disable All Updates</strong></td>
+            <td>完全关闭 Windows 更新</td>
+            <td><span class="badge need">⚠️ 不推荐</span></td>
+          </tr>
+          <tr>
+            <td><strong>Pause Updates</strong></td>
+            <td>暂停更新一段时间</td>
+            <td>适合临时需要时用</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip info">建议选 <strong>Security (Recommended)</strong>，既能收到安全补丁保证系统安全，又不会被大型功能更新打断工作和重启。</div>
+  </div>
+
+  <!-- ===== 5. 功能直接开启 ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">5</span> 功能快速开关 / 系统修复</h2>
+    <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
+      切换到 <strong>Config</strong> 选项卡，可以一键启用 Windows 隐藏功能或快速修复常见问题。
+    </p>
+
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--accent)">一键启用功能</h3>
+    <div class="feature-grid" style="margin-bottom:16px">
+      <div class="feature-card">
+        <h3>WSL</h3>
+        <p>Windows 内置 Linux 子系统，开发必备</p>
+      </div>
+      <div class="feature-card">
+        <h3>Hyper-V</h3>
+        <p>Windows 虚拟机平台，运行其他操作系统</p>
+      </div>
+      <div class="feature-card">
+        <h3>.NET Frameworks</h3>
+        <p>运行旧版软件所需的系统组件</p>
+      </div>
+      <div class="feature-card">
+        <h3>Legacy Media</h3>
+        <p>旧版媒体播放支持（兼容老游戏/软件）</p>
+      </div>
+    </div>
+
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--green)">快速修复</h3>
+    <div class="table-wrap" style="margin-bottom:16px">
+      <table>
+        <thead>
+          <tr><th>功能</th><th>作用</th><th>使用场景</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Reset Network</strong></td><td>重置网络配置</td><td>上不去网、DNS 异常时</td></tr>
+          <tr><td><strong>Repair System Files</strong></td><td>运行 SFC / DISM 扫描修复系统文件</td><td>系统蓝屏、报错、文件损坏时</td></tr>
+          <tr><td><strong>Fix Windows Update</strong></td><td>重置 Windows 更新组件</td><td>更新卡住、报错、下载不动时</td></tr>
+          <tr><td><strong>Reset WinGet</strong></td><td>重置包管理器</td><td>安装软件无反应时</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip green">
+      <strong>额外小功能（Tweaks → Toggle）：</strong><br>
+      ① <strong>Dark Mode</strong> — 一键切换深色/浅色模式<br>
+      ② <strong>Show File Extensions</strong> — 显示文件扩展名（推荐开启）<br>
+      ③ <strong>Show Hidden Files</strong> — 显示隐藏文件<br>
+      ④ <strong>Sticky Keys</strong> — 关闭粘滞键（防止游戏弹出提示）<br>
+      ⑤ <strong>Numlock on Startup</strong> — 开机自动开启小键盘<br>
+      以上全部是开关式操作，点一下立即生效，不像改注册表那样麻烦。
+    </div>
+  </div>
+
+  <!-- ===== 6. 自建纯净系统安装 U 盘 ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">6</span> 自建纯净系统安装 U 盘</h2>
+    <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
+      这是 WinUtil 最强大的功能之一 —— <strong>MicroWin</strong>（也称 Win11 Creator）。它从微软官方 ISO 出发，<br>
+      在制作安装盘之前就把臃肿预装软件、遥测、硬件限制全部剔除，装出来就是干净的系统。
+    </p>
+
+    <div class="tip info" style="margin-bottom:16px">
+      <strong>与传统方式的区别：</strong>传统做法是装完系统后再用工具"杀毒式"卸载预装软件，而 MicroWin 是在制作安装盘时就物理移除，装出来根本不会有这些垃圾。
+    </div>
+
+    <div class="step-list">
+      <div class="step-item">
+        <h3>准备工作 <span class="badge ok">✅ 无需梯子</span></h3>
+        <p>① <strong>下载微软官方 Windows ISO</strong>：从 <a href="https://www.microsoft.com/zh-cn/software-download/windows11" target="_blank">微软官网</a> 下载官方 Windows 11/10 镜像文件（约 5-6 GB）</p>
+        <p>② <strong>准备一个 16GB+ 的 U 盘</strong>（用于最后制作启动盘）</p>
+        <p>③ <strong>腾出约 15GB 磁盘空间</strong>（制作过程中需要临时缓存）</p>
+        <div class="tip">制作过程不需要梯子，但下载微软 ISO 如果慢，可以用第三方工具如 Fido 或 HeiDoc.net 加速。</div>
+      </div>
+
+      <div class="step-item">
+        <h3>启动 WinUtil 进入 MicroWin <span class="badge ok">✅ 无需梯子</span></h3>
+        <p>管理员 PowerShell 运行：</p>
+        <div class="cmd">irm "https://christitus.com/win" | iex</div>
+        <p>WinUtil 启动后，切换到 <strong>MicroWin</strong> 选项卡（旧版本可能叫 Win11 Creator）。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>选择 ISO 并挂载</h3>
+        <p>① 点击 <strong>"Select Windows ISO"</strong> → 选择你下载好的官方 ISO</p>
+        <p>② 点击 <strong>"Mount & Verify ISO"</strong> → 工具会自动挂载并检测可用版本</p>
+      </div>
+
+      <div class="step-item">
+        <h3>配置要移除的组件</h3>
+        <p>勾选你想从安装盘中永久移除的项目：</p>
+        <p><strong>预装 App</strong>（自动勾选）：Clipchamp、Teams、Copilot、Dev Home、OneDrive 设置、Outlook 新版、Bing 应用、纸牌等 40+</p>
+        <p><strong>系统限制</strong>（自动勾选）：</p>
+        <p>✅ 绕过 TPM 2.0 检测（老电脑也能装 Win11）</p>
+        <p>✅ 绕过 Secure Boot 检测</p>
+        <p>✅ 绕过 CPU/内存/存储检测</p>
+        <p>✅ 启用本地账户（跳过微软账户登录）</p>
+        <p>✅ 禁用 BitLocker 和磁盘加密</p>
+        <p>✅ 禁用遥测和广告 ID</p>
+        <div class="tip warn">
+          <strong>建议保留的项目：</strong>Windows Defender（杀毒软件）、计算器、截图工具、画图。保留这些不会影响纯净度，但要全部移除后自己找替代品。
+        </div>
+      </div>
+
+      <div class="step-item">
+        <h3>开始制作</h3>
+        <p>点击 <strong>"Start the process"</strong>，工具会自动：</p>
+        <p>① 解压 ISO → ② 移除勾选的组件 → ③ 清理组件存储（DISM 清理，释放 300-800 MB）→ ④ 注入自动应答文件（autounattend.xml）</p>
+        <p>整个过程约 <strong>10-30 分钟</strong>，取决于你的硬盘速度。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>保存 ISO 或直写 U 盘</h3>
+        <p>完成后可以选择：</p>
+        <p>① <strong>Save as ISO</strong> — 保存为自定义 ISO 文件（默认桌面，文件名 Win11_Modified_日期.iso）</p>
+        <p>② <strong>Copy to USB</strong> — 直接写入 U 盘（需提前插入）</p>
+      </div>
+
+      <div class="step-item">
+        <h3>制作启动 U 盘（推荐用 Ventoy）</h3>
+        <p>如果你选择了保存 ISO，推荐用 <strong>Ventoy</strong> 制作启动盘，比 Rufus 更灵活：</p>
+        <p>① 下载 <a href="https://ventoy.net/cn/download.html" target="_blank">Ventoy</a>（国内可访问）</p>
+        <p>② 插入 U 盘 → 打开 Ventoy2Disk.exe → 选择 U 盘 → 点击"安装"</p>
+        <p>③ 安装完成后，把自定义 ISO 文件<strong>直接复制</strong>到 U 盘里即可</p>
+        <div class="tip green">Ventoy 的优势：一个 U 盘可以放多个 ISO，启动时选哪个装哪个，不需要反复格式化。想换系统直接把新 ISO 拖进去就行。</div>
+      </div>
+
+      <div class="step-item">
+        <h3>用 U 盘安装系统</h3>
+        <p>① 插入 U 盘 → 重启电脑 → 按 F12 / F2 / Del 键进入启动菜单（不同品牌按键不同）</p>
+        <p>② 选择你的 U 盘启动 → 进入 Ventoy 菜单 → 选择自定义 ISO</p>
+        <p>③ 开始安装 → 由于硬件检测已绕过、微软账户登录已跳过，整个过程比官方版顺畅很多</p>
+        <div class="tip info">装机完成后，你装出来的系统就是纯净版 —— 没有 Copilot、没有 OneDrive、没有 Xbox 垃圾、没有广告推送。开机内存占用比原版少 1-2 GB。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 7. 补充：零度解说的 WinHance 工具 ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num m-icon">+</span> 补充：零度解说曾推荐的 WinHance</h2>
+    <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
+      除了上面主推的 WinUtil，YouTube 博主<strong>零度解说</strong>也曾在视频中推荐过另一款 Windows 优化工具 —— <strong>WinHance</strong>（一位国外开发者制作的开源工具）。<br>
+      相比 WinUtil，WinHance 更<strong>侧重可视化开关操作</strong>，适合不太习惯命令行的用户。
+    </p>
+
+    <div class="feature-grid" style="margin-bottom:16px">
+      <div class="feature-card">
+        <div class="f-icon">🪟</div>
+        <h3>纯图形界面</h3>
+        <p>像 Windows 设置一样直观，所有操作都是开关和勾选</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">📦</div>
+        <h3>仅 460 KB</h3>
+        <p>体积极小，绿色免安装，运行后即可使用</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">🔄</div>
+        <h3>配置导出</h3>
+        <p>设置好的优化方案可导出成文件，装多台电脑时一键套用</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">🗑️</div>
+        <h3>一键卸载预装</h3>
+        <p>Edge、OneDrive、Copilot 等预装 App，勾选后一键批量移除</p>
+      </div>
+    </div>
+
+    <div class="table-wrap" style="margin-bottom:16px">
+      <table>
+        <thead>
+          <tr><th>功能</th><th>WinUtil（本文主推）</th><th>WinHance（零度推荐）</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>启动方式</td><td>PowerShell 一键命令</td><td>下载 EXE 双击运行</td></tr>
+          <tr><td>制作纯净 ISO</td><td>✅ 内置 MicroWin</td><td>❌ 不支持</td></tr>
+          <tr><td>安装软件</td><td>✅ 集成 WinGet 商店</td><td>❌ 不支持</td></tr>
+          <tr><td>系统优化开关</td><td>✅ 丰富</td><td>✅ 丰富</td></tr>
+          <tr><td>个性化定制</td><td>部分支持</td><td>✅ 更强（任务栏/开始菜单/右键菜单）</td></tr>
+          <tr><td>界面风格</td><td>深色系 PowerShell GUI</td><td>WinUI 3 现代风格，与 Win11 一致</td></tr>
+          <tr><td>适合人群</td><td>愿意输一条命令</td><td>完全不想碰命令行</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="font-size:14px;color:var(--dim);margin-bottom:12px">
+      <strong>WinHance 下载地址：</strong>GitHub 搜索 "Winhance"（需要梯子），或者零度解说的博客 freedidi.com 可能有搬运链接。注意从官方渠道下载，避免第三方修改版。
+    </p>
+    <p style="font-size:14px;color:var(--dim)">
+      <strong>建议：</strong>如果你只想要<strong>一个工具解决所有问题</strong>（优化 + 更新控制 + 做安装盘），用 WinUtil。
+      如果你觉得输命令麻烦、只想通过<strong>勾勾开关</strong>完成优化，可以试试 WinHance。
+    </p>
+  </div>
+
+  <!-- ===== 8. 常见问题 ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num m-icon">◆</span> 常见问题</h2>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
+        <p style="font-weight:600;margin-bottom:4px">Q：WinUtil 安全吗？会不会有病毒？</p>
+        <p style="font-size:13px;color:var(--dim)">完全开源，代码在 GitHub 上所有人可见。杀毒软件可能会报毒（因为工具需要以管理员权限修改系统设置），这是误报。如果你不放心，可以去 GitHub 查看源码确认。</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
+        <p style="font-weight:600;margin-bottom:4px">Q：优化之后能还原吗？</p>
+        <p style="font-size:13px;color:var(--dim)">可以。WinUtil 执行修改前会自动创建系统还原点。想撤销时，同样打开 WinUtil → Tweaks → 选中之前勾过的项目 → 点击 "Undo Selected Tweaks"。</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
+        <p style="font-weight:600;margin-bottom:4px">Q：做完优化后 Windows 更新会被永久关闭吗？</p>
+        <p style="font-size:13px;color:var(--dim)">不会。如果你选的是 "Security (Recommended)"，安全更新一直正常接收。如果选了 "Disable All Updates"，之后也可以随时改回 Default。</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
+        <p style="font-weight:600;margin-bottom:4px">Q：我英语不好，工具界面都是英文怎么办？</p>
+        <p style="font-size:13px;color:var(--dim)">界面的英文比较基础，主要是按钮和开关标签。本教程已覆盖最常用的功能，跟着步骤操作即可。你也可以用手机拍照翻译，或者试试 WinHance（有社区汉化版）。</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
+        <p style="font-weight:600;margin-bottom:4px">Q：制作 MicroWin 需要什么条件？</p>
+        <p style="font-size:13px;color:var(--dim)">需要从微软官网下载的官方 Windows ISO（4GB+），不建议用网上别人修改过的 ISO。制作过程需要约 15GB 临时空间，耗时 10-30 分钟。</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
+        <p style="font-weight:600;margin-bottom:4px">Q：WinHance 和 WinUtil 哪个更好？</p>
+        <p style="font-size:13px;color:var(--dim)">各有所长。WinUtil 功能更全（能做安装盘、装软件），WinHance 界面更友好、个性化选项更多。建议先试 WinUtil，如果觉得命令行麻烦再试 WinHance。两个都不冲突，可以同时用。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 所有网址汇总 ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num m-icon">◆</span> 所有网址汇总</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>用途</th><th>网址</th><th>需梯子</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>WinUtil 启动命令</td><td><code>irm "https://christitus.com/win" | iex</code></td><td><span class="badge ok">✅ 无需</span></td></tr>
+          <tr><td>WinUtil 官方文档</td><td><a href="https://winutil.christitus.com/" target="_blank">winutil.christitus.com</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
+          <tr><td>WinUtil GitHub</td><td><a href="https://github.com/ChrisTitusTech/winutil" target="_blank">github.com/ChrisTitusTech/winutil</a></td><td><span class="badge need">⚠️ 需要</span></td></tr>
+          <tr><td>WinHance 下载</td><td><a href="https://github.com/memstechtips/Winhance" target="_blank">GitHub 搜索 "Winhance"</a></td><td><span class="badge need">⚠️ 需要</span></td></tr>
+          <tr><td>微软 Windows 11 下载</td><td><a href="https://www.microsoft.com/zh-cn/software-download/windows11" target="_blank">microsoft.com/software-download/windows11</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
+          <tr><td>Microsoft 官方 ISO</td><td><a href="https://www.microsoft.com/zh-cn/software-download/windows11" target="_blank">microsoft.com</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
+          <tr><td>Ventoy（制作启动盘）</td><td><a href="https://ventoy.net/cn/download.html" target="_blank">ventoy.net</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
+          <tr><td>Rufus（备用启动盘工具）</td><td><a href="https://rufus.ie" target="_blank">rufus.ie</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
+          <tr><td>Chris Titus YouTube</td><td><a href="https://www.youtube.com/@ChrisTitusTech" target="_blank">youtube.com/@ChrisTitusTech</a></td><td><span class="badge need">⚠️ 需要</span></td></tr>
+          <tr><td>零度解说 YouTube</td><td><a href="https://www.youtube.com/@freedidi/videos" target="_blank">youtube.com/@freedidi/videos</a></td><td><span class="badge need">⚠️ 需要</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="tip info" style="margin-top:12px">
+      <strong>注意：</strong>christitus.com 和微软官网国内可直接访问，无需梯子。GitHub 相关链接需要梯子。Ventoy 官网国内可访问。
+    </div>
+  </div>
+
+  <div class="footer">
+    <a href="https://github.com/LiHongwei-ch/lihongwei-ch" target="_blank">GitHub</a>
+    &nbsp;·&nbsp; 教程整理自公开网络资源
+    &nbsp;·&nbsp; LiHongwei
+  </div>
+</div>
+</body>
+</html>
