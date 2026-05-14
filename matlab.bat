@@ -1,5 +1,5 @@
 @echo off
-cd /d %USERPROFILE%\Desktop\lihongwei-ch
+cd /d "%~dp0"
 echo 正在获取最新代码...
 git pull
 cd matlab
