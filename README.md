@@ -2,6 +2,8 @@
 
 新能源汽车工程 · MATLAB · Python · Web
 
+📦 **[下载 Starter Kit](matlab-tool/matlab-ai-starter.zip)** — 通用安装包，关联自己的 GitHub 即可使用
+
 🌐 **项目入口页** → **[lihongwei-ch.github.io/matlab-tool](https://lihongwei-ch.github.io/matlab-tool/)**
 📄 **操作指南** → **[guide.txt](matlab-tool/guide.txt)**
 
@@ -9,7 +11,8 @@
 
 ```
 1/
-├── matlab-tool/           项目入口页面 + 操作指南
+├── matlab-tool/           项目入口页面 + 安装包下载
+├── starter-kit/           通用安装包源码（开源模板）
 ├── vote/                  米塔投票应用（网页）
 ├── bot/                   Telegram 机器人（DeepSeek 驱动）
 ├── tools/                 工具脚本（自动保存、启动脚本等）
@@ -33,6 +36,17 @@
 - `vehicle_dynamics` — 车辆纵向动力学仿真
 - `motor_control` — PMSM 电机 FOC 控制仿真
 - `generate_cruise_model` — 生成定速巡航 Simulink 模型
+
+## 通用安装包（Starter Kit）
+
+任何人都可以免费下载使用此工具：
+
+1. 下载 [matlab-ai-starter.zip](matlab-tool/matlab-ai-starter.zip)
+2. 创建自己的 GitHub 仓库
+3. 解压后将远程仓库改为你自己的地址
+4. 在笔记本上 `git clone` 你的仓库 → 双击 `matlab.bat` → 运行
+
+完整操作指南见 [项目页面](https://lihongwei-ch.github.io/matlab-tool/)。
 
 ## 笔记本操作流程
 
