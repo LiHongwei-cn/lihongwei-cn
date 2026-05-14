@@ -311,6 +311,198 @@ td a:hover{text-decoration:underline}
     </div>
   </div>
 
+  <!-- ===== 安卓手机 ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num method-a">D</span> 安卓手机：Clash Meta for Android 配置</h2>
+    <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
+      安卓端推荐使用 <strong>Clash Meta for Android</strong>（基于 Mihomo 内核），支持最新协议。旧版 Clash for Android 已停止维护，建议迁移。
+    </p>
+
+    <div class="feature-grid" style="margin-bottom:16px">
+      <div class="feature-card">
+        <div class="f-icon">📱</div>
+        <h3>Clash Meta</h3>
+        <p>功能最强，支持最新协议<br>VLESS/Reality/Hysteria2</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">📥</div>
+        <h3>下载方式</h3>
+        <p>GitHub 官方源下载 APK<br>选 arm64-v8a 版本</p>
+      </div>
+    </div>
+
+    <div class="step-list">
+      <div class="step-item">
+        <h3>下载 Clash Meta for Android <span class="badge need">⚠️ 需要梯子</span></h3>
+        <p>打开 <a href="https://github.com/MetaCubeX/ClashMetaForAndroid/releases" target="_blank">github.com/MetaCubeX/ClashMetaForAndroid/releases</a>，下载最新版 APK。</p>
+        <p>芯片选择：<strong>arm64-v8a</strong>（绝大多数手机）/ <strong>universal</strong>（不确定时选这个）。</p>
+        <div class="tip info">如果 GitHub 打不开，可先通过方法一的 WARP 连上后再下载，或找国内网盘搬运版。</div>
+      </div>
+
+      <div class="step-item">
+        <h3>安装 APK</h3>
+        <p>将下载的 APK 传到手机 → 点击安装 → 允许"安装未知来源应用"。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>导入订阅链接 <span class="badge ok">✅ 无需梯子</span></h3>
+        <p>① 打开 App，点击底部 <strong>"配置"</strong>（Profiles）</p>
+        <p>② 点击右上角 <strong>➕</strong> → 选择 <strong>"从 URL 导入"</strong></p>
+        <p>③ 填写名称（随意），在 URL 处粘贴你的订阅地址</p>
+        <p>④ 保存 → 回到配置页选中该配置</p>
+      </div>
+
+      <div class="step-item">
+        <h3>启动代理 <span class="badge ok">✅ 无需梯子</span></h3>
+        <p>回到首页 → 点击 <strong>"已停止"</strong> → 启动。</p>
+        <p>系统会提示"VPN 连接请求"，点击 <strong>确定</strong>。</p>
+        <p>状态变为绿色即表示运行中。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>选择节点与模式</h3>
+        <p>点击底部 <strong>"代理"</strong>（Proxy）→ 选择一个延迟低的节点。</p>
+        <p>首页模式建议选 <strong>Rule（规则）</strong>：国内直连，国外走代理。</p>
+        <p>如需全部走代理，切换到 <strong>Global（全局）</strong>。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>进阶设置（推荐）</h3>
+        <p>右上角 → <strong>设置</strong>：</p>
+        <p>① <strong>网络 → DNS 劫持</strong> → 关闭（避免与系统 DNS 冲突）</p>
+        <p>② <strong>Meta 特性 → 嗅探设置</strong> → 不修改</p>
+        <p>③ 开启 <strong>自动更新订阅</strong>（保持节点最新）</p>
+      </div>
+    </div>
+
+    <div class="link-block">
+      <h3>🔗 安卓相关网址</h3>
+      <div class="link-row"><span class="label">Clash Meta 下载</span><span class="url"><a href="https://github.com/MetaCubeX/ClashMetaForAndroid/releases" target="_blank">github.com/MetaCubeX/ClashMetaForAndroid/releases</a> <span class="badge need">⚠️</span></span></div>
+      <div class="link-row"><span class="label">备用教程</span><span class="url"><a href="https://github.com/mowei-ie/router-vpn" target="_blank">github.com/mowei-ie/router-vpn</a> <span class="badge need">⚠️</span></span></div>
+    </div>
+  </div>
+
+  <!-- ===== 苹果手机：Shadowrocket ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num method-b">E</span> 苹果手机：Shadowrocket（小火箭）配置</h2>
+    <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
+      iOS 端最主流的代理客户端，支持 SS/SSR/Vmess/VLESS/Trojan 等多种协议。此应用需要 <strong>美区 Apple ID</strong> 才能下载（售价 $2.99）。<br>
+      下方先教你怎么创建美区 ID。
+    </p>
+
+    <!-- 美区 ID -->
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;margin-top:24px;color:var(--orange)}">▎前置准备：注册美区 Apple ID</h3>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:12px">
+      以下方法 2026 年实测有效，不需要美国信用卡，用国内手机号即可完成。
+    </p>
+
+    <div class="step-list" style="counter-reset:step 0">
+      <div class="step-item">
+        <h3>准备工作 <span class="badge ok">✅ 无需梯子</span></h3>
+        <p><strong>邮箱</strong>：注册一个新邮箱（推荐 Gmail/Outlook，不要用 QQ/163 邮箱，易触发风控）</p>
+        <p><strong>手机号</strong>：国内 +86 手机号（确保能收国际短信）</p>
+        <p><strong>地址</strong>：准备一个美国免税州地址（俄勒冈 Oregon / 特拉华 Delaware / 阿拉斯加 Alaska）</p>
+        <p><strong>网络</strong>：建议用手机自带流量 + Safari 浏览器，<strong>关闭代理</strong></p>
+        <div class="tip info">为什么要用免税州地址？美国部分州购买数字产品要交消费税，俄勒冈等州没有消费税，选地址时选这些州可省税。</div>
+      </div>
+
+      <div class="step-item">
+        <h3>在苹果官网创建账号 <span class="badge ok">✅ 无需梯子</span></h3>
+        <p>用手机 Safari 打开 <a href="https://account.apple.com/" target="_blank">account.apple.com</a></p>
+        <p>点击 <strong>"创建你的 Apple 账户"</strong>，按提示填写：</p>
+        <p>① <strong>国家/地区</strong>：一定要选 <strong>「United States」</strong></p>
+        <p>② <strong>姓名</strong>：填拼音（如 Xiaoming Wang）</p>
+        <p>③ <strong>出生日期</strong>：必须大于 18 岁</p>
+        <p>④ <strong>手机号</strong>：选中国（+86），填你的手机号</p>
+        <p>⑤ <strong>密码</strong>：至少 8 位，含大小写+数字，不能含姓名/生日/邮箱前缀</p>
+        <p>依次输入邮箱验证码 + 手机短信验证码，完成注册。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>登录 App Store 激活（最关键） <span class="badge ok">✅ 无需梯子</span></h3>
+        <p><strong>⚠️ 绝对不要在「设置」里登录 iCloud！</strong></p>
+        <p>① 打开 <strong>App Store</strong> → 点右上角头像 → 退出当前账号</p>
+        <p>② 用新注册的美区账号登录</p>
+        <p>③ 搜索一个 <strong>免费 App</strong>（如 YouTube、TikTok、Instagram）</p>
+        <p>④ 点击「获取」，系统会弹出 <strong>"检查"</strong> 提示</p>
+        <p>⑤ <strong>付款方式选「None/无」</strong>（关键！如果有信用卡选项说明国家没选对）</p>
+        <p>⑥ 填写地址：填写你准备的 <strong>免税州地址</strong>，电话填 000-000-0000</p>
+        <p>⑦ 提交 → 激活成功！</p>
+        <div class="tip warn">付款方式没有「None」选项？说明注册时国家没选美国，需要重新注册。关闭代理 + 用蜂窝数据 + Safari 无痕模式重试。</div>
+      </div>
+
+      <div class="step-item">
+        <h3>验证可用</h3>
+        <p>激活后搜索 <strong>Shadowrocket</strong>，如果能看到此应用（售价 $2.99），说明美区 ID 已生效。</p>
+        <p>以后每次下载美区 App，App Store 会提示你输入此账号的密码。</p>
+      </div>
+    </div>
+
+    <div class="tip warn" style="margin-top:16px">
+      <strong>美区账号安全铁律：</strong><br>
+      ① 此账号<strong>仅在 App Store 登录</strong>，绝不登录 iCloud（否则可能被锁机）<br>
+      ② 需要付费买 App 时，去 <strong>亚马逊美国官网</strong> 或 <strong>苹果美国官网</strong> 买电子礼品卡充值，不要在淘宝买（黑卡会封号）<br>
+      ③ 切回国内 App Store 后，之前用美区下的 App 依然能正常更新
+    </div>
+
+    <!-- 免税州地址 -->
+    <div class="link-block" style="margin-top:16px">
+      <h3>🔗 美区 Apple ID 相关网址</h3>
+      <div class="link-row"><span class="label">苹果官网</span><span class="url"><a href="https://account.apple.com/" target="_blank">account.apple.com</a> <span class="badge ok">✅</span></span></div>
+      <div class="link-row"><span class="label">地址生成器</span><span class="url"><a href="https://www.meiguodizhi.com/" target="_blank">meiguodizhi.com</a>（美国地址生成） <span class="badge ok">✅</span></span></div>
+      <div class="link-row"><span class="label">备用生成器</span><span class="url"><a href="https://www.fakexy.com/" target="_blank">fakexy.com</a>（虚假身份生成） <span class="badge ok">✅</span></span></div>
+    </div>
+
+    <!-- Shadowrocket 配置 -->
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;margin-top:28px;color:var(--orange)}">▎Shadowrocket 配置使用</h3>
+
+    <div class="step-list" style="counter-reset:step 0">
+      <div class="step-item">
+        <h3>购买并下载 Shadowrocket <span class="badge ok">✅ 美区 ID 登录后</span></h3>
+        <p>美区 App Store 搜索 <strong>Shadowrocket</strong> → 售价 $2.99 → 购买下载。</p>
+        <p>没有美区礼品卡？跳过购买，改用 <strong>Stash</strong>（国区可下）或 <strong>Sing-box</strong>（免费开源）替代。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>导入订阅 <span class="badge ok">✅ 无需梯子</span></h3>
+        <p>① 打开 Shadowrocket → 底部 <strong>"设置"</strong> → 进入 <strong>"服务器订阅"</strong></p>
+        <p>② 打开 <strong>"打开时更新"</strong> 开关</p>
+        <p>③ 返回首页 → 点右上角 <strong>➕</strong> → 类型改为 <strong>Subscribe</strong></p>
+        <p>④ URL 处粘贴你的订阅链接 → <strong>"备注"</strong> 填名称 → 保存</p>
+        <p>⑤ App 自动更新服务器列表</p>
+      </div>
+
+      <div class="step-item">
+        <h3>开启代理 <span class="badge ok">✅ 无需梯子</span></h3>
+        <p>① 首页选择一个节点（看延迟值，越低越好）</p>
+        <p>② 打开顶部 <strong>"连接"</strong> 开关</p>
+        <p>③ 首次会提示"添加 VPN 配置" → 点 <strong>允许</strong> → 验证 Face ID</p>
+      </div>
+
+      <div class="step-item">
+        <h3>设置分流规则</h3>
+        <p>首页顶部 <strong>"全局路由"</strong> 选 <strong>"配置"</strong> 模式：</p>
+        <p><strong>Rule（配置）</strong>：国内直连，国外代理（推荐日常）</p>
+        <p><strong>Proxy（代理）</strong>：全部走代理</p>
+        <p><strong>Direct（直连）</strong>：全部不走代理</p>
+      </div>
+
+      <div class="step-item">
+        <h3>其他建议</h3>
+        <p><strong>延迟测试</strong>：设置 → 延迟测试方法 → 改为 <strong>CONNECT</strong>（更准确）</p>
+        <p><strong>测速选节点</strong>：首页点 "连通性测试" 测速，选延迟低、速度快的节点</p>
+        <p><strong>更新订阅</strong>：下拉首页即自动刷新节点</p>
+      </div>
+    </div>
+
+    <div class="link-block" style="margin-top:16px">
+      <h3>🔗 苹果相关网址</h3>
+      <div class="link-row"><span class="label">Shadowrocket</span><span class="url">美区 App Store 搜索 "Shadowrocket" <span class="badge need">⚠️ 需美区ID</span></span></div>
+      <div class="link-row"><span class="label">备用客户端</span><span class="url"><a href="https://apps.apple.com/app/stash/id1596063349" target="_blank">Stash（国区可下载）</a> <span class="badge ok">✅</span></span></div>
+      <div class="link-row"><span class="label">免费开源</span><span class="url"><a href="https://sing-box.sagernet.org/" target="_blank">Sing-box（全平台免费）</a></span></div>
+    </div>
+  </div>
+
   <!-- ===== 所有网址汇总 ===== -->
   <div class="section">
     <h2 class="section-title"><span class="num link-icon">◆</span> 所有网址汇总（含梯子提示）</h2>
