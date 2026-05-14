@@ -1,5 +1,8 @@
 @echo off
-cd /d %USERPROFILE%\Desktop\lihongwei-ch\matlab
+cd /d %USERPROFILE%\Desktop\lihongwei-ch
+echo 正在获取最新代码...
+git pull
+cd matlab
 start matlab.exe
 echo MATLAB R2016b 已启动
 echo 工作目录自动设为 matlab/
