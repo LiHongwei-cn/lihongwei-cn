@@ -36,6 +36,11 @@ TASKS_DIR = Path(REPO_PATH) / "tasks"
 
 def detect_intent(text: str) -> str:
     text_lower = text.lower()
+    fix_keywords = [
+        '报错', '错误', '出错', '修复', '改一下', '不行',
+        '有问题', '不运行', 'bug', 'fix', 'error', '改正',
+        '改改', '修正', '改错', '不对'
+    ]
     code_keywords = [
         'matlab', 'simulink', '.m', '代码', '仿真', 'carsim',
         '电机', '电池', 'soc', 'pmsm', 'foc', '车辆', '巡航',
@@ -47,9 +52,12 @@ def detect_intent(text: str) -> str:
         '正文', '摘要', '引言', '结论', '参考文献', '写一篇',
         '绪论', 'word', 'doc'
     ]
+    fix_score = sum(1 for kw in fix_keywords if kw in text_lower)
     code_score = sum(1 for kw in code_keywords if kw in text_lower)
     doc_score = sum(1 for kw in doc_keywords if kw in text_lower)
-    if code_score > 0:
+    if fix_score > 0:
+        return 'fix'
+    elif code_score > 0:
         return 'simulink'
     elif doc_score > 0:
         return 'doc'
@@ -98,11 +106,14 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_message = update.message.text
     intent = detect_intent(user_message)
 
-    if intent == 'simulink':
-        fname = submit_task('simulink', user_message, update.message.chat_id)
+    if intent == 'fix':
+        submit_task('fix', user_message, update.message.chat_id)
+        await update.message.reply_text("已提交修复请求，处理中…")
+    elif intent == 'simulink':
+        submit_task('simulink', user_message, update.message.chat_id)
         await update.message.reply_text("已提交，处理中…")
     elif intent == 'doc':
-        fname = submit_task('doc', user_message, update.message.chat_id)
+        submit_task('doc', user_message, update.message.chat_id)
         await update.message.reply_text("已提交，处理中…")
     else:
         await handle_chat(update, user_message)
@@ -124,7 +135,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     caption = update.message.caption or ""
     intent = detect_intent(caption)
 
-    if intent in ('simulink', 'doc'):
+    if intent in ('fix', 'simulink', 'doc'):
         fname = submit_task(intent, caption, update.message.chat_id, has_photo=True)
         await update.message.reply_text("已提交（含图片），处理中…")
     else:
