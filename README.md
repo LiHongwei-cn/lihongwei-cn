@@ -71,6 +71,17 @@
 
 🔗 [查看完整教程](https://lihongwei-ch.github.io/vpn-guide/)
 
+## Windows 优化工具教程
+
+一行命令启动 WinUtil（Chris Titus Windows Utility），完成系统优化、更新控制、故障修复、制作纯净系统安装 U 盘。
+
+- **WinUtil**：管理员 PowerShell 输入 `irm "https://christitus.com/win" | iex` 即可
+- **WinHance**：零度解说推荐的可视化 Windows 优化工具，纯图形界面操作
+
+涵盖系统瘦身、隐私保护、Windows 更新控制、一键启用 WSL/Hyper-V、MicroWin 制作纯净 ISO + Ventoy 启动盘。
+
+🔗 [查看完整教程](https://lihongwei-ch.github.io/win-optimize/)
+
 ## 笔记本操作流程
 
 ```bash
