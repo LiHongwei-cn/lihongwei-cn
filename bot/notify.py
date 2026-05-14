@@ -1,5 +1,5 @@
 import sys
-import json
+import ssl
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.parse import urlencode
@@ -7,6 +7,11 @@ from urllib.error import URLError
 
 TOKEN = "8868453528:AAFFdqlRUG48wo0nMnOm4xsUKhNTCbvpwVk"
 CHAT_ID_FILE = Path(__file__).parent / "chat_id.txt"
+
+CTX = ssl.create_default_context()
+CTX.check_hostname = False
+CTX.verify_mode = ssl.CERT_NONE
+
 
 def send_telegram(text: str):
     if not CHAT_ID_FILE.exists():
@@ -19,7 +24,7 @@ def send_telegram(text: str):
 
     try:
         req = Request(url, data=data)
-        urlopen(req, timeout=10)
+        urlopen(req, timeout=10, context=CTX)
         print("通知已发送")
     except URLError as e:
         print(f"通知发送失败: {e}")
