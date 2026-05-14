@@ -6,16 +6,14 @@
 <title>LiHongwei</title>
 <style>
 :root{
-  --bg: #f8f7f4;
-  --card: #ffffff;
-  --card-hover: #fafaf9;
-  --border: rgba(0,0,0,0.06);
-  --border-hover: rgba(0,0,0,0.12);
-  --text: #1c1c1e;
-  --dim: rgba(0,0,0,0.45);
-  --accent: #6366f1;
-  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
-  --shadow-hover: 0 4px 12px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --bg: #12121a;
+  --card: rgba(255,255,255,0.04);
+  --card-hover: rgba(255,255,255,0.07);
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --text: #e4e4e7;
+  --dim: rgba(255,255,255,0.4);
+  --accent: #818cf8;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{height:100%}
@@ -31,9 +29,24 @@ body{
   padding: 24px;
 }
 
+body::before{
+  content: '';
+  position: fixed;
+  top: -40%;
+  left: -20%;
+  width: 140%;
+  height: 140%;
+  background: radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 80%, rgba(168,85,247,0.05) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
 .container{
   width: 100%;
   max-width: 420px;
+  position: relative;
+  z-index: 1;
 }
 
 /* header */
@@ -49,14 +62,12 @@ body{
   display: block;
   margin: 0 auto 12px;
   object-fit: cover;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 .name{
   font-size: 20px;
   font-weight: 700;
   letter-spacing: -0.3px;
-  color: var(--text);
 }
 
 /* nav */
@@ -78,13 +89,11 @@ body{
   color: inherit;
   transition: all 0.2s ease;
   cursor: pointer;
-  box-shadow: var(--shadow);
 }
 
 .card:hover{
   background: var(--card-hover);
   border-color: var(--border-hover);
-  box-shadow: var(--shadow-hover);
   transform: translateY(-1px);
 }
 
@@ -117,13 +126,13 @@ body{
 }
 
 .card-arrow{
-  color: rgba(0,0,0,0.15);
+  color: rgba(255,255,255,0.15);
   font-size: 15px;
   flex-shrink: 0;
   transition: all 0.2s ease;
 }
 .card:hover .card-arrow{
-  color: rgba(0,0,0,0.3);
+  color: rgba(255,255,255,0.35);
   transform: translateX(2px);
 }
 
@@ -135,11 +144,11 @@ body{
 }
 
 .footer a{
-  color: rgba(0,0,0,0.25);
+  color: rgba(255,255,255,0.2);
   text-decoration: none;
   transition: color 0.2s;
 }
-.footer a:hover{ color: rgba(0,0,0,0.45); }
+.footer a:hover{ color: rgba(255,255,255,0.4); }
 
 @media(max-width: 400px){
   .card{ padding: 14px 16px; gap: 12px; }
@@ -160,7 +169,7 @@ body{
   <div class="nav-grid">
 
     <a class="card" href="matlab-tool/">
-      <div class="card-icon" style="background:linear-gradient(135deg,#e0f2fe,#bae6fd);color:#0369a1">⚡</div>
+      <div class="card-icon" style="background:linear-gradient(135deg,#0e7490,#0369a1)">⚡</div>
       <div class="card-body">
         <div class="card-title">MATLAB AI 仿真工具包</div>
         <div class="card-desc">AI 生成代码 · 车辆动力学 · 电机控制 · 一键运行</div>
@@ -169,7 +178,7 @@ body{
     </a>
 
     <a class="card" href="vpn-guide/">
-      <div class="card-icon" style="background:linear-gradient(135deg,#fee2e2,#fecaca);color:#b91c1c">🔒</div>
+      <div class="card-icon" style="background:linear-gradient(135deg,#b91c1c,#991b1b)">🔒</div>
       <div class="card-body">
         <div class="card-title">免费 VPN 自建指南</div>
         <div class="card-desc">Cloudflare 零成本搭建 · 全平台客户端 · 无需技术背景</div>
@@ -178,7 +187,7 @@ body{
     </a>
 
     <a class="card" href="win-optimize/">
-      <div class="card-icon" style="background:linear-gradient(135deg,#cffafe,#a5f3fc);color:#0e7490">🖥️</div>
+      <div class="card-icon" style="background:linear-gradient(135deg,#0e7490,#155e75)">🖥️</div>
       <div class="card-body">
         <div class="card-title">Windows 系统优化教程</div>
         <div class="card-desc">一行命令瘦身 · 纯净安装盘制作 · 隐私保护</div>
@@ -187,7 +196,7 @@ body{
     </a>
 
     <a class="card" href="claude-code-tutorial/">
-      <div class="card-icon" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);color:#6d28d9">🦀</div>
+      <div class="card-icon" style="background:linear-gradient(135deg,#6d28d9,#5b21b6)">🦀</div>
       <div class="card-body">
         <div class="card-title">Claude Code 从零入门教程</div>
         <div class="card-desc">Win/Mac 安装 · 国产模型接入 · Telegram 机器人</div>
