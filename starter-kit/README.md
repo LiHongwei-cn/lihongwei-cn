@@ -64,8 +64,15 @@ AI 直接生成可运行的 MATLAB 脚本，保存到 `matlab/examples/`。
 
 ## 将此模板连接到你的 GitHub
 
+先找到你的准确信息：
+1. **用户名**：打开 github.com 登录 → 点右上角头像 → Signed in as 后面就是用户名
+2. **仓库名**：点进你刚创建的仓库 → 浏览器地址栏 `github.com/用户名/仓库名`
+
+例如地址栏是 `github.com/zhangsan/matlab-project`，用户名 = `zhangsan`，仓库名 = `matlab-project`。
+
+然后在项目文件夹右键 → Git Bash Here，执行（把中文替换掉）：
+
 ```bash
-# 在 GitHub 创建新仓库后
 git remote set-url origin https://github.com/你的用户名/你的仓库名.git
 git push -u origin main
 ```
