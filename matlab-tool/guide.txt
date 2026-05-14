@@ -1,0 +1,102 @@
+========================================
+MATLAB AI 代码生成工具 - 操作说明
+========================================
+
+GitHub: https://github.com/LiHongwei-ch/lihongwei-ch
+项目页: https://lihongwei-ch.github.io/matlab-tool/
+
+
+一、这是什么
+----------------------------------------
+
+AI 生成 MATLAB 仿真代码，提交到 GitHub 后，
+在学校笔记本上双击 bat 文件即可运行。
+
+支持：车辆动力学、电机控制、能量管理、CarSim 联合仿真
+
+
+二、第一次使用（笔记本）
+----------------------------------------
+
+步骤 1：获取代码
+
+  桌面空白处右键 → Git Bash Here，输入：
+
+    cd Desktop
+    git clone https://github.com/LiHongwei-ch/lihongwei-ch.git
+
+  等下载完成，关掉 Git Bash。
+
+
+步骤 2：启动 MATLAB
+
+  打开 Desktop\lihongwei-ch\ 文件夹，双击 matlab.bat
+  MATLAB 会自动打开，工作目录已设到 matlab\。
+
+
+步骤 3：配置路径（仅首次）
+
+  在 MATLAB Command Window (>> 提示符处) 输入：
+
+    startup_setup
+
+  按回车，只需做一次。
+
+
+步骤 4：运行仿真
+
+  输入以下任意命令运行：
+
+    vehicle_dynamics      - 车辆动力学仿真，弹出曲线图
+    motor_control         - PMSM 电机 FOC 控制仿真，弹出波形图
+    generate_cruise_model - 自动生成定速巡航 Simulink 模型并打开
+
+
+三、以后每次使用
+----------------------------------------
+
+  1. 更新代码（主电脑有新内容时）：
+     Git Bash 输入：
+       cd ~/Desktop/lihongwei-ch && git pull
+
+  2. 启动 MATLAB：双击 matlab.bat
+
+  3. 运行：直接在 Command Window 输入命令，不再需要 cd 和 startup_setup
+
+
+四、用完还电脑
+----------------------------------------
+
+  1. 删除项目文件：
+     rm -rf ~/Desktop/lihongwei-ch
+
+  2. MATLAB 中注销许可证：
+     deactivate
+
+  3. 设置 → 重置此电脑 → 删除所有内容
+
+  注意：学校电脑注意清理个人文件，不要遗留代码或账户信息。
+
+
+五、Telegram Bot
+----------------------------------------
+
+  手机端 MATLAB 代码生成助手，基于 DeepSeek 模型。
+  支持文字问答和图片分析。
+
+  Bot 地址：@lihongwei_ev_bot（需获取访问权限）
+
+
+六、可用仿真脚本
+----------------------------------------
+
+  matlab/examples/vehicle_dynamics.m      - 车辆纵向动力学
+  matlab/examples/motor_control.m         - PMSM 电机 FOC 控制
+  matlab/examples/generate_cruise_model.m - 定速巡航 Simulink 模型
+  matlab/carsim/sim_setup.m              - CarSim 联合仿真
+  matlab/utils/fft_analysis.m            - FFT 分析
+  matlab/utils/lowpass_filter.m          - 低通滤波
+  matlab/utils/rms_calculation.m         - RMS 计算
+
+
+兼容性：MATLAB R2016b + CarSim 2019.0
