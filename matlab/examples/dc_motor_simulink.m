@@ -40,9 +40,11 @@ set_param([model '/Speed Ref'], ...
 % 比例
 add_block('simulink/Commonly Used Blocks/Gain', [model '/Kp']);
 set_param([model '/Kp'], 'Gain', 'Kp');
-% 积分
+% 积分增益
+add_block('simulink/Commonly Used Blocks/Gain', [model '/Ki Gain']);
+set_param([model '/Ki Gain'], 'Gain', 'Ki');
+% 积分器
 add_block('simulink/Commonly Used Blocks/Integrator', [model '/Ki Integrator']);
-set_param([model '/Ki Integrator'], 'Gain', 'Ki');
 % PI 求和
 add_block('simulink/Commonly Used Blocks/Sum', [model '/PI Sum']);
 set_param([model '/PI Sum'], 'Inputs', '|++');
@@ -100,8 +102,9 @@ set_param([model '/Scope'], ...
 % --- 布局 ---
 set_param([model '/Speed Ref'],     'Position', [30  180 70  210]);
 set_param([model '/Speed Error'],   'Position', [130 180 170 220]);
-set_param([model '/Kp'],            'Position', [230 140 270 180]);
-set_param([model '/Ki Integrator'], 'Position', [230 200 270 240]);
+set_param([model '/Kp'],            'Position', [230 130 270 170]);
+set_param([model '/Ki Gain'],       'Position', [230 190 270 230]);
+set_param([model '/Ki Integrator'], 'Position', [330 200 370 240]);
 set_param([model '/PI Sum'],        'Position', [330 150 370 210]);
 set_param([model '/Duty Limit'],    'Position', [430 160 470 200]);
 set_param([model '/Vdc'],           'Position', [530 160 570 200]);
@@ -122,11 +125,12 @@ add_line(model, 'Speed Ref/1', 'Speed Error/1');
 % 机械输出 → Error (-)
 add_line(model, 'Mechanical/1', 'Speed Error/2');
 
-% Error → Kp & Ki
+% Error → Kp & Ki Gain
 add_line(model, 'Speed Error/1', 'Kp/1');
-add_line(model, 'Speed Error/1', 'Ki Integrator/1');
+add_line(model, 'Speed Error/1', 'Ki Gain/1');
+add_line(model, 'Ki Gain/1', 'Ki Integrator/1');
 
-% Kp, Ki → PI Sum
+% Kp, Ki Integrator → PI Sum
 add_line(model, 'Kp/1', 'PI Sum/1');
 add_line(model, 'Ki Integrator/1', 'PI Sum/2');
 
