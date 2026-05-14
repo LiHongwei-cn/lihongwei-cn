@@ -218,56 +218,92 @@ td a:hover{text-decoration:underline}
     <div class="step-list">
       <div class="step-item">
         <h3>注册 Cloudflare 账号 <span class="badge ok">✅ 无需梯子</span></h3>
-        <p>打开 <a href="https://dash.cloudflare.com/sign-up" target="_blank">dash.cloudflare.com/sign-up</a> 注册免费账号。</p>
+        <p>如果之前没有 Cloudflare 账号，打开 <a href="https://dash.cloudflare.com/sign-up" target="_blank">dash.cloudflare.com/sign-up</a> → 填邮箱 → 设密码 → 收验证邮件 → 点击"Verify email"完成注册。</p>
+        <p>步骤与方法一完全一样，注册过的直接跳过这步。</p>
       </div>
 
       <div class="step-item">
         <h3>Fork edgetunnel 项目 <span class="badge need">⚠️ 需要梯子</span></h3>
-        <p>打开 <a href="https://github.com/cmliu/edgetunnel" target="_blank">github.com/cmliu/edgetunnel</a>（GitHub 需梯子才能访问），点击 <strong>Fork</strong> 复制到你的账号下。</p>
-        <div class="tip info">如果暂时没梯子，可以找人帮你 Fork 后把仓库权限转给你，或者用 <a href="https://gitclone.com/" target="_blank">gitclone.com</a> 加速。项目名不要用 "edgetunnel"。</div>
+        <p>在浏览器地址栏打开 <a href="https://github.com/cmliu/edgetunnel" target="_blank">github.com/cmliu/edgetunnel</a>。</p>
+        <p>① 页面加载后，在右上角找到绿色的 <strong>"Fork"</strong> 按钮（旁边有个叉子图标）→ 点击</p>
+        <p>② 在弹出的 Fork 页面中，<strong>Owner</strong> 下拉框选择你自己的 GitHub 账号</p>
+        <p>③ <strong>Repository name</strong>：改一个名字，不要用原来的"edgetunnel"（例如 my-vpn-123）</p>
+        <p>④ 取消勾选 "Copy the main branch only" 下面的选项（保持默认即可）</p>
+        <p>⑤ 点击下方的绿色 <strong>"Create fork"</strong> 按钮</p>
+        <p>⑥ 等待几秒，页面会自动跳转到你 Fork 后的仓库页面</p>
+        <div class="tip info">如果暂时没梯子，可以找人帮你 Fork 后把仓库权限转给你。项目名不要用 "edgetunnel"。</div>
       </div>
 
       <div class="step-item">
         <h3>生成 UUID <span class="badge ok">✅ 无需梯子</span></h3>
-        <p>UUID 是你的节点身份标识。打开 <a href="https://www.uuidgenerator.net/" target="_blank">www.uuidgenerator.net</a> 生成一个，复制保存。</p>
+        <p>UUID 是节点的唯一身份标识。打开 <a href="https://www.uuidgenerator.net/" target="_blank">www.uuidgenerator.net</a>：</p>
+        <p>① 页面加载后，你会看到一个类似 <code>550e8400-e29b-41d4-a716-446655440000</code> 的字符串</p>
+        <p>② 点击下方的 <strong>"Copy to Clipboard"</strong> 按钮复制它</p>
+        <p>③ 打开记事本或备忘录，粘贴保存（后面要用）</p>
       </div>
 
       <div class="step-item">
         <h3>创建 Pages 项目 <span class="badge ok">✅ 无需梯子</span></h3>
-        <p>Cloudflare 后台 → <strong>Workers 和 Pages</strong> → <strong>Pages</strong> → <strong>创建</strong> → <strong>连接到 Git</strong>。</p>
-        <p>授权 GitHub，选择 Fork 的仓库 → 保存并部署（首次会失败，正常）。</p>
+        <p>登录 <a href="https://dash.cloudflare.com/" target="_blank">dash.cloudflare.com</a>，进入 Cloudflare 后台：</p>
+        <p>① 左侧导航栏找到 <strong>"Workers 和 Pages"</strong>（或 "Workers & Pages"）→ 点击</p>
+        <p>② 在右侧页面中，点击顶部的 <strong>"Pages"</strong> 标签页（注意不是 Workers）</p>
+        <p>③ 点击 <strong>"创建"</strong>（Create）按钮 → 在弹出的选项中选 <strong>"连接到 Git"</strong>（Connect to Git）</p>
+        <p>④ 如果之前没连过 GitHub，会要求授权 → 点击 <strong>"Connect GitHub"</strong> → 浏览器弹出 GitHub 授权页面 → 点击 <strong>"Authorize Cloudflare"</strong></p>
+        <p>⑤ 授权完成后，在仓库列表中找到你 Fork 的那个仓库 → 点击 <strong>"开始设置"</strong>（Begin setup）</p>
+        <p>⑥ 项目名称随便填（如 my-vpn），<strong>生产分支</strong> 选 <strong>main</strong></p>
+        <p>⑦ <strong>框架预设</strong> 下拉框选 <strong>"None"</strong>（或者其他选项都行，不影响）</p>
+        <p>⑧ 点击下方的 <strong>"保存并部署"</strong>（Save and Deploy）</p>
+        <p>⑨ 首次部署会失败（出现一个红色 ❌ 提示），这是正常的</p>
       </div>
 
       <div class="step-item">
         <h3>配置环境变量 <span class="badge ok">✅ 无需梯子</span></h3>
-        <p>Pages 项目 → <strong>设置 → 变量和机密 → 添加变量</strong>：</p>
+        <p>部署失败后，回到 Pages 项目页面：</p>
+        <p>① 点击顶部的 <strong>"设置"</strong>（Settings）选项卡</p>
+        <p>② 在左侧子菜单点击 <strong>"变量和机密"</strong>（Environment variables）</p>
+        <p>③ 点击 <strong>"添加变量"</strong>（Add variable）按钮</p>
+        <p>④ 在弹出的对话框中，按以下内容填写：</p>
         <div class="table-wrap">
           <table>
             <thead>
-              <tr><th>变量名</th><th>说明</th><th>是否必填</th><th>示例值</th></tr>
+              <tr><th>变量名</th><th>值</th><th>说明</th></tr>
             </thead>
             <tbody>
-              <tr><td><strong>UUID</strong></td><td>节点标识</td><td>✅ 必填</td><td>你生成的 UUID</td></tr>
-              <tr><td><strong>PROXYIP</strong></td><td>代理转发地址</td><td>推荐</td><td>proxyip.cmliussss.net</td></tr>
-              <tr><td><strong>ADD</strong></td><td>优选 IP 列表</td><td>可选</td><td>[2400:cb00::...]</td></tr>
+              <tr><td><code>UUID</code></td><td>你刚才生成的 UUID 字符串</td><td>节点身份标识，必填</td></tr>
+              <tr><td><code>PROXYIP</code></td><td><code>proxyip.cmliussss.net</code></td><td>代理转发地址，推荐填</td></tr>
+              <tr><td><code>ADD</code></td><td>留空或填优选 IP</td><td>可选，不填也能用</td></tr>
             </tbody>
           </table>
         </div>
-        <p>添加后返回部署页面点击 <strong>重试部署</strong>。</p>
+        <p>⑤ 填完点击 <strong>"保存"</strong>（Save）</p>
+        <p>⑥ 回到 <strong>"部署"</strong>（Deployments）选项卡 → 找到刚才失败的那条记录 → 点击右侧的 <strong>"..."</strong> → <strong>"重试部署"</strong>（Retry deployment）</p>
+        <p>⑦ 等待约 1-2 分钟，部署成功后会出现绿色 ✅ 标记</p>
       </div>
 
       <div class="step-item">
         <h3>获取订阅链接 <span class="badge ok">✅ 无需梯子</span></h3>
-        <p>部署成功后访问：</p>
-        <div class="cmd">https://你的项目名.pages.dev/你的UUID</div>
-        <p>页面返回 VLESS 节点链接和 Clash 订阅地址。</p>
+        <p>部署成功后：</p>
+        <p>① 回到 Pages 项目的 <strong>"部署"</strong> 选项卡</p>
+        <p>② 在成功的部署记录中，找到 <strong>"你的项目名.pages.dev"</strong> 这样的域名链接，点击打开</p>
+        <p>③ 浏览器地址栏中这个网址的末尾加上 <strong>/你的UUID</strong>，例如：</p>
+        <div class="cmd">https://my-vpn.pages.dev/550e8400-e29b-41d4-a716-446655440000</div>
+        <p>④ 回车访问，页面会返回一段文本，里面包含：</p>
+        <p>   - 一个 <strong>VLESS 节点链接</strong>（以 vless:// 开头）</p>
+        <p>   - 一个 <strong>Clash 订阅地址</strong>（以 https:// 开头）</p>
+        <p>⑤ 复制这个 Clash 订阅地址，后面要用</p>
       </div>
 
       <div class="step-item">
         <h3>导入 Clash 使用 <span class="badge need">⚠️ 需要梯子才能测通</span></h3>
-        <p>复制订阅地址 → 打开 Clash Verge Rev → 订阅 → 新建 → 粘贴 URL → 导入 → 启用。</p>
-        <p>导入后节点是否能连通，取决于你的网络环境和 PROXYIP 配置。</p>
-        <div class="tip warn">Cloudflare 禁止使用 Workers/Pages 部署代理，存在封号风险。仅供学习实验。</div>
+        <p>打开你电脑上安装好的 Clash Verge Rev（下载方式见章节 C）：</p>
+        <p>① 左侧导航点击 <strong>"订阅"</strong>（Subscription）标签页</p>
+        <p>② 点击右上角的 <strong>"新建"</strong> 按钮</p>
+        <p>③ 在弹出的框中，<strong>"URL"</strong> 处粘贴刚才复制的 Clash 订阅地址</p>
+        <p>④ 随便填一个名称（如 edgetunnel）→ 点击 <strong>"导入"</strong></p>
+        <p>⑤ 导入后回到订阅页，点击该订阅行右侧的 <strong>"启用"</strong> 按钮</p>
+        <p>⑥ 切换到 <strong>"代理"</strong> 标签页，会看到列表中有节点了，选择一个延迟低的</p>
+        <p>⑦ 确保顶部的模式是 <strong>"Rule"（规则）</strong>，然后打开 <strong>"系统代理"</strong> 开关</p>
+        <div class="tip warn">Cloudflare 禁止使用 Workers/Pages 部署代理，存在封号风险。仅供学习实验，不要用于大流量场景。</div>
       </div>
     </div>
 
