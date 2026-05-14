@@ -8,7 +8,7 @@ import time
 import subprocess
 from pathlib import Path
 
-WATCH_DIR = Path(__file__).parent
+WATCH_DIR = Path(__file__).resolve().parent.parent
 CHECK_INTERVAL = 30  # 秒，检测间隔
 COOLDOWN = 120       # 秒，连续两次自动提交的最小间隔
 PROXY = "http://127.0.0.1:7897"
