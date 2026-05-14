@@ -9,7 +9,22 @@
       "Bash(HTTPS_PROXY=http://127.0.0.1:7897 git commit -m \"添加 Claude Code 小白教程页面（安装+国产模型+CLAUDE.md+Telegram bot）\")",
       "Bash(HTTPS_PROXY=http://127.0.0.1:7897 git add claude-code-tutorial/index.html)",
       "Bash(HTTPS_PROXY=http://127.0.0.1:7897 git commit -m \"替换示例模型为 DeepSeek，配置信息从本地提取\")",
-      "Bash(powershell.exe *)"
+      "Bash(powershell.exe *)",
+      "WebSearch",
+      "Read(//c/Users/HP/AppData/Local/Microsoft/WinGet/Packages//**)",
+      "Read(//c/Users/HP/AppData/Local/Microsoft/WinGet/**)",
+      "Bash(python3 -c \"from PIL import Image; print\\('Pillow OK'\\)\")",
+      "Bash(python -c \"from PIL import Image; print\\('Pillow OK'\\)\")",
+      "Bash(pip install *)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "WebFetch(domain:lobehub.com)",
+      "Bash(curl -sL -o /tmp/claude-logo.svg \"https://raw.githubusercontent.com/lobehub/lobe-icons/master/packages/static-svg/light/anthropic.svg\")",
+      "Read(//tmp/**)",
+      "Bash(curl -sL -o /tmp/claude-logo.svg \"https://upload.wikimedia.org/wikipedia/commons/6/6c/Claude_AI_logo.svg\")",
+      "Bash(curl -sL --max-time 10 -o /tmp/claude-icon.svg \"https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/claude.svg\")",
+      "Bash(cat)",
+      "Bash(python3 /tmp/create_icon.py)",
+      "Bash(/c/Users/HP/AppData/Local/Programs/Python/Python312/python *)"
     ]
   },
   "hooks": {
