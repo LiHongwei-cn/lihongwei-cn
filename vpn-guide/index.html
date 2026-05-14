@@ -431,46 +431,70 @@ td a:hover{text-decoration:underline}
     <div class="step-list">
       <div class="step-item">
         <h3>下载 Clash Meta for Android <span class="badge need">⚠️ 需要梯子</span></h3>
-        <p>打开 <a href="https://github.com/MetaCubeX/ClashMetaForAndroid/releases" target="_blank">github.com/MetaCubeX/ClashMetaForAndroid/releases</a>，下载最新版 APK。</p>
-        <p>芯片选择：<strong>arm64-v8a</strong>（绝大多数手机）/ <strong>universal</strong>（不确定时选这个）。</p>
-        <div class="tip info">如果 GitHub 打不开，可先通过方法一的 WARP 连上后再下载，或找国内网盘搬运版。</div>
+        <p>在手机上用浏览器打开 <a href="https://github.com/MetaCubeX/ClashMetaForAndroid/releases" target="_blank">github.com/MetaCubeX/ClashMetaForAndroid/releases</a></p>
+        <p>① 页面按时间倒序显示所有版本，最上面一条就是最新版（显示 "Latest" 绿色标签）</p>
+        <p>② 点击最新版本名旁边的箭头 <strong>"▼"</strong> 展开 Assets（资源列表）</p>
+        <p>③ 在文件列表中，找到以下文件之一下载：</p>
+        <p>   - <strong>arm64-v8a.apk</strong>（绝大多数 2020 年后的安卓手机，包括华为/小米/OPPO/vivo/三星）</p>
+        <p>   - <strong>universal.apk</strong>（不确定时选这个，兼容性最好但文件稍大）</p>
+        <p>④ 点击文件名，浏览器会自动下载 APK</p>
+        <div class="tip info">如果 GitHub 打不开，可先通过方法一的 WARP 连上后再下载，或找国内网盘搬运版（百度搜索 "Clash Meta 安卓 下载"）。</div>
       </div>
 
       <div class="step-item">
         <h3>安装 APK</h3>
-        <p>将下载的 APK 传到手机 → 点击安装 → 允许"安装未知来源应用"。</p>
+        <p>① 下载完成后，下拉通知栏 → 点击下载完成的 APK 文件</p>
+        <p>② 系统会弹出"安装未知来源应用"的提示 → 点击 <strong>"允许"</strong>（不同手机措辞略有不同）</p>
+        <p>③ 点击 <strong>"安装"</strong> 按钮 → 等待安装完成 → 点击 <strong>"打开"</strong></p>
       </div>
 
       <div class="step-item">
         <h3>导入订阅链接 <span class="badge ok">✅ 无需梯子</span></h3>
-        <p>① 打开 App，点击底部 <strong>"配置"</strong>（Profiles）</p>
-        <p>② 点击右上角 <strong>➕</strong> → 选择 <strong>"从 URL 导入"</strong></p>
-        <p>③ 填写名称（随意），在 URL 处粘贴你的订阅地址</p>
-        <p>④ 保存 → 回到配置页选中该配置</p>
+        <p>打开 Clash Meta for Android App：</p>
+        <p>① 底部导航栏点击 <strong>"配置"</strong>（Profiles，第二个图标，像文件/文档）</p>
+        <p>② 点击右上角的 <strong>"+"</strong>（加号）按钮</p>
+        <p>③ 在弹出的菜单中，选择 <strong>"从 URL 导入"</strong></p>
+        <p>④ 在 <strong>"名称"</strong> 输入框随便填一个名字（如"我的节点"）</p>
+        <p>⑤ 在 <strong>"URL"</strong> 输入框中，粘贴你的 Clash 订阅地址</p>
+        <p>⑥ 点击右上角的 <strong>"保存"</strong> 按钮（✓ 图标）</p>
+        <p>⑦ App 会自动下载订阅内容。下载完成后，回到配置页面，点击该配置行使其被选中（打勾）</p>
       </div>
 
       <div class="step-item">
         <h3>启动代理 <span class="badge ok">✅ 无需梯子</span></h3>
-        <p>回到首页 → 点击 <strong>"已停止"</strong> → 启动。</p>
-        <p>系统会提示"VPN 连接请求"，点击 <strong>确定</strong>。</p>
-        <p>状态变为绿色即表示运行中。</p>
+        <p>底部导航栏切换到最左边的 <strong>"首页"</strong>（Home，房子图标）：</p>
+        <p>① 你会看到页面中间有一个开关按钮，显示 <strong>"已停止"</strong>（红色）</p>
+        <p>② 点击这个开关，它会启动代理服务</p>
+        <p>③ 系统会弹出 "VPN 连接请求" 的提示 → 勾选 <strong>"我信任此应用"</strong>（如果有）→ 点击 <strong>"确定"</strong></p>
+        <p>④ 开关状态变为 <strong>绿色</strong>，显示 "运行中"，表示代理已生效</p>
       </div>
 
       <div class="step-item">
         <h3>选择节点与模式</h3>
-        <p>点击底部 <strong>"代理"</strong>（Proxy）→ 选择一个延迟低的节点。</p>
-        <p>首页模式建议选 <strong>Rule（规则）</strong>：国内直连，国外走代理。</p>
-        <p>如需全部走代理，切换到 <strong>Global（全局）</strong>。</p>
+        <p>底部导航栏点击 <strong>"代理"</strong>（Proxy，第三个图标）：</p>
+        <p>① 你会看到节点列表，每个节点旁边有延迟值（毫秒）</p>
+        <p>② 点击一个延迟较低的节点（一般 &lt;300ms 即可）</p>
+        <p>③ 回到首页，在顶部模式选择下拉框中：</p>
+        <p>   - <strong>Rule（规则）</strong>：国内直连，国外走代理（推荐日常使用）</p>
+        <p>   - <strong>Global（全局）</strong>：全部流量走代理</p>
+        <p>   - <strong>Direct（直连）</strong>：全部不走代理</p>
       </div>
 
       <div class="step-item">
         <h3>进阶设置（推荐）</h3>
-        <p>右上角 → <strong>设置</strong>：</p>
-        <p>① <strong>网络 → DNS 劫持</strong> → 关闭（避免与系统 DNS 冲突）</p>
-        <p>② <strong>Meta 特性 → 嗅探设置</strong> → 不修改</p>
-        <p>③ 开启 <strong>自动更新订阅</strong>（保持节点最新）</p>
+        <p>在首页点击右上角的 <strong>"..."</strong>（三个点） → <strong>"设置"</strong>：</p>
+        <p>① <strong>"网络"</strong> → <strong>"DNS 劫持"</strong> → 关闭开关（避免与系统 DNS 冲突导致部分 App 打不开）</p>
+        <p>② <strong>"Meta 特性"</strong> → <strong>"嗅探设置"</strong> → 保持默认不动</p>
+        <p>③ <strong>"订阅"</strong> → 开启 <strong>"自动更新"</strong> 开关 → 设置间隔为 6 或 12 小时</p>
       </div>
     </div>
+
+    <div class="link-block">
+      <h3>🔗 安卓相关网址</h3>
+      <div class="link-row"><span class="label">Clash Meta 下载</span><span class="url"><a href="https://github.com/MetaCubeX/ClashMetaForAndroid/releases" target="_blank">github.com/MetaCubeX/ClashMetaForAndroid/releases</a> <span class="badge need">⚠️</span></span></div>
+      <div class="link-row"><span class="label">备用教程</span><span class="url"><a href="https://github.com/mowei-ie/router-vpn" target="_blank">github.com/mowei-ie/router-vpn</a> <span class="badge need">⚠️</span></span></div>
+    </div>
+  </div>
 
     <div class="link-block">
       <h3>🔗 安卓相关网址</h3>
