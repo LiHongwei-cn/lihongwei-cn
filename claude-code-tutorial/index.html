@@ -259,10 +259,10 @@ td a:hover{text-decoration:underline}
   "env": {
     "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
     "ANTHROPIC_AUTH_TOKEN": "sk-你的deepseek_api_key",
-    "ANTHROPIC_MODEL": "deepseek-v4-flash",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "deepseek-v4-flash",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "deepseek-v4-flash"
+    "ANTHROPIC_MODEL": "deepseek-v4-pro",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "deepseek-v4-pro",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-pro",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "deepseek-v4-pro"
   },
   "theme": "dark"
 }</div>
@@ -295,7 +295,7 @@ td a:hover{text-decoration:underline}
         <p>打开 CC Switch → 在 <strong>Claude Code</strong> 栏下点右上角 <strong>"+"</strong> → 选 <strong>DeepSeek 或自定义</strong>：</p>
         <p>   - <strong>API Key</strong>：填你的 DeepSeek API Key</p>
         <p>   - <strong>Base URL</strong>：填 <code>https://api.deepseek.com/anthropic</code></p>
-        <p>   - <strong>模型名</strong>：填 <code>deepseek-v4-flash</code></p>
+        <p>   - <strong>模型名</strong>：填 <code>deepseek-v4-pro</code></p>
         <p>   - 其他选项保持默认 → 点击 <strong>"添加"</strong> → 自动切换到此模型</p>
         <p>之后在 Claude Code 中输入 <code>/model</code> 即可切换模型。</p>
       </div>
@@ -536,7 +536,7 @@ SYSTEM_PROMPT = """## 身份
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     response = client.chat.completions.create(
-        model="deepseek-v4-flash",
+        model="deepseek-v4-pro",
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": update.message.text}
