@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>米塔是不是畜生 - 投票</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--yes-from:#ff416c;--yes-to:#ff4b2b;--no-from:#00b4db;--no-to:#0083b0;--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--glass:rgba(255,255,255,0.06);--glass-border:rgba(255,255,255,0.1);--text:#fff;--text-secondary:rgba(255,255,255,0.6);--shadow:0 8px 32px rgba(0,0,0,0.3)}
+html,body{height:100%;overflow-x:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei','Noto Sans SC',sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{position:relative;z-index:1;width:100%;max-width:420px;margin:0 auto}
+.card{background:var(--glass);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--glass-border);border-radius:28px;padding:32px 24px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 30% 20%,rgba(255,255,255,0.03),transparent 60%);pointer-events:none}
+
+/* Avatar */
+.avatar-wrapper{display:flex;justify-content:center;margin-bottom:20px}
+.avatar{width:88px;height:88px;border-radius:50%;border:3px solid rgba(255,255,255,0.2);overflow:hidden;cursor:pointer;position:relative;background:linear-gradient(135deg,var(--yes-from),var(--no-to));transition:all 0.3s ease;flex-shrink:0}
+.avatar:hover{border-color:rgba(255,255,255,0.5);transform:scale(1.05)}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar .placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px;color:rgba(255,255,255,0.8);background:linear-gradient(135deg,var(--yes-from),var(--no-to))}
+.avatar .upload-hint{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);text-align:center;font-size:11px;padding:2px 0;color:rgba(255,255,255,0.7);opacity:0;transition:opacity 0.3s}
+.avatar:hover .upload-hint{opacity:1}
+#avatar-input{display:none}
+
+/* Title */
+.topic{text-align:center;margin-bottom:28px}
+.topic h1{font-size:26px;font-weight:700;background:linear-gradient(135deg,#f6d365,#fda085);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.4}
+.topic .subtitle{color:var(--text-secondary);font-size:13px;margin-top:6px;letter-spacing:2px}
+
+/* Vote Status */
+.vote-status{text-align:center;margin-bottom:20px;min-height:28px}
+.vote-status .badge{display:inline-block;padding:4px 16px;border-radius:20px;font-size:13px;font-weight:600}
+
+/* Vote Buttons */
+.vote-buttons{display:flex;gap:12px;margin-bottom:24px}
+.vote-btn{flex:1;padding:16px 8px;border:none;border-radius:16px;font-size:20px;font-weight:700;color:#fff;cursor:pointer;position:relative;overflow:hidden;transition:all 0.3s cubic-bezier(0.4,0,0.2,1);user-select:none;-webkit-tap-highlight-color:transparent}
+.vote-btn:active{transform:scale(0.95)}
+.vote-btn .btn-label{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:6px}
+.vote-btn .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.3);transform:scale(0);animation:ripple 0.6s ease-out;pointer-events:none}
+@keyframes ripple{to{transform:scale(4);opacity:0}}
+.btn-yes{background:linear-gradient(135deg,var(--yes-from),var(--yes-to));box-shadow:0 4px 20px rgba(255,65,108,0.3)}
+.btn-yes:hover:not(:disabled){box-shadow:0 6px 30px rgba(255,65,108,0.5);transform:translateY(-2px)}
+.btn-no{background:linear-gradient(135deg,var(--no-from),var(--no-to));box-shadow:0 4px 20px rgba(0,180,219,0.3)}
+.btn-no:hover:not(:disabled){box-shadow:0 6px 30px rgba(0,180,219,0.5);transform:translateY(-2px)}
+.vote-btn:disabled{cursor:not-allowed;opacity:0.5;transform:none!important;box-shadow:none!important}
+.vote-btn.selected-yes{box-shadow:0 0 30px rgba(255,65,108,0.6),0 0 60px rgba(255,65,108,0.2);transform:scale(1.02)}
+.vote-btn.selected-no{box-shadow:0 0 30px rgba(0,180,219,0.6),0 0 60px rgba(0,180,219,0.2);transform:scale(1.02)}
+
+/* Message */
+.vote-message{text-align:center;margin-bottom:20px;min-height:24px}
+.vote-message .msg{display:inline-block;font-size:14px;padding:6px 16px;border-radius:12px;animation:fadeInUp 0.4s ease}
+.vote-message .msg.success{background:rgba(82,196,26,0.2);color:#b7eb8f}
+.vote-message .msg.error{background:rgba(255,77,79,0.2);color:#ffa39e}
+.vote-message .msg.info{background:rgba(255,255,255,0.08);color:var(--text-secondary)}
+
+/* Results */
+.results{margin-bottom:20px}
+.result-row{margin-bottom:14px}
+.result-row:last-child{margin-bottom:0}
+.result-label{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px;font-weight:500}
+.result-label .count{color:var(--text-secondary);font-size:13px}
+.progress-track{height:10px;background:rgba(255,255,255,0.08);border-radius:10px;overflow:hidden;position:relative}
+.progress-fill{height:100%;border-radius:10px;width:0%;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);position:relative}
+.progress-fill.yes{background:linear-gradient(90deg,var(--yes-from),var(--yes-to))}
+.progress-fill.no{background:linear-gradient(90deg,var(--no-from),var(--no-to))}
+.progress-fill.leading::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);animation:shimmer 2s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.total-votes{text-align:center;font-size:13px;color:var(--text-secondary);margin-top:8px}
+
+/* Countdown */
+.countdown{text-align:center;padding:12px;background:rgba(255,255,255,0.04);border-radius:14px;border:1px solid rgba(255,255,255,0.06)}
+.countdown .label{font-size:12px;color:var(--text-secondary);margin-bottom:4px}
+.countdown .timer{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.countdown .timer.pulse{animation:pulse 1s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+/* Modal */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1000;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:fadeIn 0.3s ease}
+.modal-overlay.active{display:flex}
+.modal-content{background:linear-gradient(145deg,rgba(30,20,60,0.95),rgba(20,10,40,0.98));border:1px solid rgba(255,255,255,0.15);border-radius:28px;padding:40px 28px 28px;max-width:360px;width:90%;text-align:center;position:relative;animation:modalIn 0.5s cubic-bezier(0.34,1.56,0.64,1);box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+.modal-icon{font-size:64px;margin-bottom:16px;animation:bounceIn 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.2s both}
+.modal-title{font-size:26px;font-weight:800;margin-bottom:8px;line-height:1.3}
+.modal-title.yes-win{background:linear-gradient(135deg,var(--yes-from),var(--yes-to));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.modal-title.no-win{background:linear-gradient(135deg,var(--no-from),var(--no-to));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.modal-title.tie{background:linear-gradient(135deg,#f6d365,#fda085);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.modal-detail{font-size:14px;color:var(--text-secondary);margin-bottom:20px}
+.modal-close{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:10px 28px;border-radius:14px;font-size:15px;cursor:pointer;transition:all 0.3s;font-weight:500}
+.modal-close:hover{background:rgba(255,255,255,0.15)}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes modalIn{from{opacity:0;transform:scale(0.8) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes bounceIn{0%{opacity:0;transform:scale(0.3)}50%{transform:scale(1.1)}70%{transform:scale(0.95)}100%{opacity:1;transform:scale(1)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Confetti canvas */
+#confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1001;pointer-events:none}
+
+/* Loading */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 0;gap:16px}
+.spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,0.1);border-top-color:#f6d365;border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;color:var(--text-secondary)}
+
+/* Error state */
+.error-state{text-align:center;padding:30px 0}
+.error-icon{font-size:48px;margin-bottom:12px}
+.error-text{font-size:15px;color:var(--text-secondary);margin-bottom:16px;line-height:1.6}
+.retry-btn{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:var(--text);padding:10px 24px;border-radius:12px;font-size:14px;cursor:pointer;transition:all 0.3s}
+.retry-btn:hover{background:rgba(255,255,255,0.15)}
+
+/* Footer */
+.footer{text-align:center;margin-top:16px;font-size:12px;color:rgba(255,255,255,0.25)}
+
+/* Responsive */
+@media(max-width:480px){
+  body{padding:12px}
+  .card{padding:24px 16px;border-radius:20px}
+  .topic h1{font-size:22px}
+  .vote-btn{font-size:18px;padding:14px 8px}
+  .avatar{width:76px;height:76px}
+  .avatar .placeholder{font-size:30px}
+  .modal-content{padding:32px 20px 24px}
+  .modal-title{font-size:22px}
+  .modal-icon{font-size:48px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*.progress-fill,.modal-content,.vote-btn{animation-duration:0.01ms!important;transition-duration:0.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div class="container">
+  <div class="card">
+
+    <!-- Avatar -->
+    <div class="avatar-wrapper">
+      <div class="avatar" id="avatar-click" title="点击更换头像">
+        <div class="placeholder" id="avatar-placeholder">🐱</div>
+        <img id="avatar-img" style="display:none" alt="头像">
+        <div class="upload-hint">更换头像</div>
+      </div>
+    </div>
+    <input type="file" id="avatar-input" accept="image/*">
+
+    <!-- Title -->
+    <div class="topic">
+      <h1>米塔是不是畜生</h1>
+      <div class="subtitle">· 全民公投 ·</div>
+    </div>
+
+    <!-- Loader -->
+    <div id="loader" class="loading">
+      <div class="spinner"></div>
+      <div class="loading-text">加载中...</div>
+    </div>
+
+    <!-- Error -->
+    <div id="error-state" class="error-state" style="display:none">
+      <div class="error-icon">⚠️</div>
+      <div class="error-text" id="error-text">连接失败，请检查网络后重试</div>
+      <button class="retry-btn" onclick="location.reload()">重新加载</button>
+    </div>
+
+    <!-- Main Content (hidden initially) -->
+    <div id="main-content" style="display:none">
+
+      <!-- Vote Status -->
+      <div class="vote-status" id="vote-status"></div>
+
+      <!-- Vote Buttons -->
+      <div class="vote-buttons">
+        <button class="vote-btn btn-yes" id="btn-yes" onclick="castVote('yes')">
+          <span class="btn-label">👍 是</span>
+        </button>
+        <button class="vote-btn btn-no" id="btn-no" onclick="castVote('no')">
+          <span class="btn-label">👎 不是</span>
+        </button>
+      </div>
+
+      <!-- Vote Message -->
+      <div class="vote-message" id="vote-message"></div>
+
+      <!-- Results -->
+      <div class="results">
+        <div class="result-row">
+          <div class="result-label">
+            <span style="color:var(--yes-from);font-weight:600">是</span>
+            <span><span id="yes-pct">0</span>% <span class="count">(<span id="yes-count">0</span>票)</span></span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill yes" id="bar-yes"></div>
+          </div>
+        </div>
+        <div class="result-row">
+          <div class="result-label">
+            <span style="color:var(--no-from);font-weight:600">不是</span>
+            <span><span id="no-pct">0</span>% <span class="count">(<span id="no-count">0</span>票)</span></span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill no" id="bar-no"></div>
+          </div>
+        </div>
+        <div class="total-votes">总投票数: <span id="total-votes">0</span></div>
+      </div>
+
+      <!-- Countdown -->
+      <div class="countdown">
+        <div class="label">⏱ 距下次统计</div>
+        <div class="timer" id="countdown-timer">--:--</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer">每日一票 · 公正裁决</div>
+</div>
+
+<!-- Result Modal -->
+<div class="modal-overlay" id="result-modal">
+  <div class="modal-content">
+    <div class="modal-icon" id="result-icon">🎉</div>
+    <div class="modal-title" id="result-title">米塔是畜生！</div>
+    <div class="modal-detail" id="result-detail">0 : 0</div>
+    <button class="modal-close" onclick="closeModal()">知道了</button>
+  </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+// ===== Supabase Config =====
+const SUPABASE_URL = 'https://fxavaqiondzlimpixwlm.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4YXZhcWlvbmR6bGltcGl4d2xtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2NDQ2ODcsImV4cCI6MjA5NDIyMDY4N30.J636Lajn0FVDW5UBOv-DpuxrpMS1USm5WHZxT-VQNxI';
+const _supabase = (typeof supabaseJs !== 'undefined' ? supabaseJs : supabase);
+if (!_supabase || !_supabase.createClient) {
+  throw new Error('Supabase客户端加载失败，请刷新页面重试');
+}
+const sb = _supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ===== State =====
+let userIP = null;
+let hasVotedToday = false;
+let myVote = null;
+let lastResult = null;  // 'yes' | 'no' | 'tie'
+let pollInterval = null;
+let countdownInterval = null;
+let countdownSeconds = 120;
+
+// ===== Background Particles =====
+(function initBg() {
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let animId;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Particle {
+    constructor() {
+      this.reset();
+    }
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 2 + 0.5;
+      this.speedX = (Math.random() - 0.5) * 0.3;
+      this.speedY = -(Math.random() * 0.2 + 0.1);
+      this.opacity = Math.random() * 0.5 + 0.1;
+    }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      if (this.y < -10 || this.x < -10 || this.x > canvas.width + 10) {
+        this.reset();
+        this.y = canvas.height + 10;
+      }
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${this.opacity})`;
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => { p.update(); p.draw(); });
+    animId = requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+// ===== Avatar Upload =====
+(function initAvatar() {
+  const avatarClick = document.getElementById('avatar-click');
+  const input = document.getElementById('avatar-input');
+  const img = document.getElementById('avatar-img');
+  const placeholder = document.getElementById('avatar-placeholder');
+
+  const saved = localStorage.getItem('mita_avatar');
+  if (saved) {
+    placeholder.style.display = 'none';
+    img.style.display = 'block';
+    img.src = saved;
+  }
+
+  avatarClick.addEventListener('click', () => input.click());
+
+  input.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return;
+
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      const dataUrl = ev.target.result;
+      // Resize via canvas
+      const i = new Image();
+      i.onload = function() {
+        const maxSize = 200;
+        let w = i.width, h = i.height;
+        if (w > maxSize || h > maxSize) {
+          const ratio = Math.min(maxSize / w, maxSize / h);
+          w = Math.round(w * ratio);
+          h = Math.round(h * ratio);
+        }
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        const cx = c.getContext('2d');
+        cx.drawImage(i, 0, 0, w, h);
+        const resized = c.toDataURL('image/jpeg', 0.8);
+        try {
+          localStorage.setItem('mita_avatar', resized);
+        } catch(e) {}
+        placeholder.style.display = 'none';
+        img.style.display = 'block';
+        img.src = resized;
+      };
+      i.src = dataUrl;
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+  });
+})();
+
+// ===== Utility: IP Detection =====
+async function detectIP() {
+  const res = await fetch('https://api.ipify.org?format=json');
+  const data = await res.json();
+  return data.ip;
+}
+
+// ===== Utility: Sleep =====
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ===== Supabase: Check if voted today =====
+async function checkVotedToday(ip) {
+  const today = new Date().toISOString().split('T')[0];
+  const { data, error } = await sb
+    .from('votes')
+    .select('vote')
+    .eq('ip_address', ip)
+    .eq('vote_date', today)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (data) {
+    hasVotedToday = true;
+    myVote = data.vote;
+  }
+  return data;
+}
+
+// ===== Supabase: Cast vote =====
+async function castVote(vote) {
+  if (hasVotedToday) return;
+  const btn = vote === 'yes' ? document.getElementById('btn-yes') : document.getElementById('btn-no');
+  const msgEl = document.getElementById('vote-message');
+
+  btn.disabled = true;
+
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const { error } = await sb
+      .from('votes')
+      .insert({ ip_address: userIP, vote: vote, vote_date: today });
+
+    if (error) {
+      // Check if it's a duplicate violation (they somehow already voted)
+      if (error.code === '23505' || (error.message && error.message.includes('duplicate'))) {
+        hasVotedToday = true;
+        myVote = vote;
+        updateVoteStatus();
+        msgEl.innerHTML = '<span class="msg info">你今天已经投过票了</span>';
+        return;
+      }
+      throw error;
+    }
+
+    hasVotedToday = true;
+    myVote = vote;
+    updateVoteStatus();
+    msgEl.innerHTML = `<span class="msg success">投票成功！你选择了「${vote === 'yes' ? '是' : '不是'}」</span>`;
+
+    // Apply selected style
+    if (vote === 'yes') {
+      document.getElementById('btn-yes').classList.add('selected-yes');
+    } else {
+      document.getElementById('btn-no').classList.add('selected-no');
+    }
+
+    await fetchResults();
+
+  } catch (err) {
+    console.error('Vote error:', err);
+    msgEl.innerHTML = `<span class="msg error">投票失败：${err.message || '请稍后重试'}</span>`;
+    btn.disabled = false;
+  }
+}
+
+// ===== Supabase: Fetch results =====
+async function fetchResults() {
+  const { data, error } = await sb
+    .from('votes')
+    .select('vote');
+
+  if (error) throw error;
+
+  const total = data.length;
+  let yes = 0, no = 0;
+  data.forEach(r => {
+    if (r.vote === 'yes') yes++;
+    else if (r.vote === 'no') no++;
+  });
+
+  const yesPct = total > 0 ? Math.round((yes / total) * 100) : 0;
+  const noPct = total > 0 ? Math.round((no / total) * 100) : 0;
+
+  document.getElementById('yes-count').textContent = yes;
+  document.getElementById('no-count').textContent = no;
+  document.getElementById('yes-pct').textContent = yesPct;
+  document.getElementById('no-pct').textContent = noPct;
+  document.getElementById('total-votes').textContent = total;
+
+  const barYes = document.getElementById('bar-yes');
+  const barNo = document.getElementById('bar-no');
+  barYes.style.width = yesPct + '%';
+  barNo.style.width = noPct + '%';
+
+  barYes.classList.toggle('leading', yes > no);
+  barNo.classList.toggle('leading', no > yes);
+
+  return { yes, no, total, yesPct, noPct };
+}
+
+// ===== Check & Announce Winner =====
+async function checkAndAnnounce() {
+  try {
+    const results = await fetchResults();
+    if (results.total === 0) return;
+
+    let winner;
+    if (results.yes > results.no) winner = 'yes';
+    else if (results.no > results.yes) winner = 'no';
+    else winner = 'tie';
+
+    if (winner !== lastResult) {
+      showResultModal(winner, results.yes, results.no);
+      lastResult = winner;
+    } else if (lastResult === null) {
+      // First poll
+      showResultModal(winner, results.yes, results.no);
+      lastResult = winner;
+    }
+
+    resetCountdown();
+  } catch (err) {
+    console.error('Poll error:', err);
+  }
+}
+
+// ===== Result Modal =====
+function showResultModal(winner, yesCount, noCount) {
+  const modal = document.getElementById('result-modal');
+  const icon = document.getElementById('result-icon');
+  const title = document.getElementById('result-title');
+  const detail = document.getElementById('result-detail');
+
+  detail.textContent = `${yesCount} : ${noCount}`;
+
+  if (winner === 'yes') {
+    icon.textContent = '😈';
+    title.textContent = '米塔是畜生！';
+    title.className = 'modal-title yes-win';
+  } else if (winner === 'no') {
+    icon.textContent = '😇';
+    title.textContent = '米塔今天不是畜生！';
+    title.className = 'modal-title no-win';
+  } else {
+    icon.textContent = '⚔️';
+    title.textContent = '势均力敌！';
+    title.className = 'modal-title tie';
+  }
+
+  modal.classList.add('active');
+  startConfetti();
+
+  // Auto dismiss after 5s
+  setTimeout(() => {
+    closeModal();
+  }, 5000);
+}
+
+function closeModal() {
+  document.getElementById('result-modal').classList.remove('active');
+  stopConfetti();
+}
+
+// ===== Confetti =====
+let confettiParticles = [];
+let confettiAnimId = null;
+
+function startConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const colors = ['#ff416c','#ff4b2b','#00b4db','#0083b0','#f6d365','#fda085','#a18cd1','#fbc2eb','#fff'];
+
+  confettiParticles = [];
+  for (let i = 0; i < 120; i++) {
+    confettiParticles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      w: Math.random() * 8 + 4,
+      h: Math.random() * 6 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      speedX: (Math.random() - 0.5) * 2,
+      speedY: Math.random() * 3 + 2,
+      rotation: Math.random() * 360,
+      rotSpeed: (Math.random() - 0.5) * 6,
+      opacity: 1
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let allDone = true;
+
+    confettiParticles.forEach(p => {
+      p.x += p.speedX;
+      p.y += p.speedY;
+      p.rotation += p.rotSpeed;
+      if (p.y > canvas.height + 20) {
+        p.opacity -= 0.02;
+      }
+      if (p.opacity <= 0) return;
+
+      allDone = false;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation * Math.PI / 180);
+      ctx.globalAlpha = Math.max(0, p.opacity);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+
+    if (!allDone) {
+      confettiAnimId = requestAnimationFrame(draw);
+    }
+  }
+
+  if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
+  draw();
+}
+
+function stopConfetti() {
+  if (confettiAnimId) {
+    cancelAnimationFrame(confettiAnimId);
+    confettiAnimId = null;
+  }
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  confettiParticles = [];
+}
+
+// ===== Vote Status =====
+function updateVoteStatus() {
+  const el = document.getElementById('vote-status');
+  if (hasVotedToday) {
+    const label = myVote === 'yes' ? '是' : '不是';
+    el.innerHTML = `<span class="badge" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15)">✅ 今日已投 · 「${label}」</span>`;
+  } else {
+    el.innerHTML = '<span class="badge" style="background:rgba(82,196,26,0.15);color:#b7eb8f;border:1px solid rgba(82,196,26,0.2)">👋 今日未投票</span>';
+  }
+}
+
+// ===== Countdown =====
+function resetCountdown() {
+  countdownSeconds = 120;
+  updateCountdownDisplay();
+}
+
+function updateCountdownDisplay() {
+  const m = Math.floor(countdownSeconds / 60);
+  const s = countdownSeconds % 60;
+  document.getElementById('countdown-timer').textContent =
+    `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+function startCountdown() {
+  if (countdownInterval) clearInterval(countdownInterval);
+  countdownInterval = setInterval(() => {
+    countdownSeconds--;
+    if (countdownSeconds <= 0) {
+      countdownSeconds = 0;
+    }
+    updateCountdownDisplay();
+  }, 1000);
+}
+
+// ===== Init =====
+async function init() {
+  const loader = document.getElementById('loader');
+  const errorEl = document.getElementById('error-state');
+  const errorText = document.getElementById('error-text');
+  const mainContent = document.getElementById('main-content');
+
+  try {
+    // Detect IP
+    userIP = await detectIP();
+
+    // Check if voted today
+    await checkVotedToday(userIP);
+
+    // Load initial results
+    await fetchResults();
+
+    // Update UI
+    loader.style.display = 'none';
+    mainContent.style.display = 'block';
+
+    updateVoteStatus();
+
+    if (hasVotedToday) {
+      document.getElementById('btn-yes').disabled = true;
+      document.getElementById('btn-no').disabled = true;
+      if (myVote === 'yes') {
+        document.getElementById('btn-yes').classList.add('selected-yes');
+      } else {
+        document.getElementById('btn-no').classList.add('selected-no');
+      }
+    }
+
+    // Start countdown
+    startCountdown();
+
+    // First poll after 2 minutes
+    setTimeout(async () => {
+      await checkAndAnnounce();
+      // Then every 2 minutes
+      pollInterval = setInterval(checkAndAnnounce, 120000);
+    }, 120000);
+
+    // Also fetch results periodically (every 10s for real-time count update)
+    setInterval(async () => {
+      try {
+        await fetchResults();
+      } catch(e) {}
+    }, 10000);
+
+  } catch (err) {
+    console.error('Init error:', err);
+    loader.style.display = 'none';
+    errorEl.style.display = 'block';
+    errorText.textContent = '连接失败：' + (err.message || '请检查网络') + '\n\n1. 确保已在 Supabase 中创建 votes 表\n2. 确保网络可访问 Supabase';
+  }
+}
+
+// Modal click outside to close
+document.getElementById('result-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+init();
+</script>
+</body>
+</html>
