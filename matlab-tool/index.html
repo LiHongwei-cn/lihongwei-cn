@@ -222,8 +222,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
       <div class="step-item">
         <h3>② 打开 CarSim 主程序</h3>
-        <p>脚本会自动打开 CarSim 安装目录文件夹。在文件夹中找到 <strong>CarSim 主程序</strong>（蓝色小车图标），双击打开。</p>
-        <div class="tip warn">⚠ 注意：不是 ERD Converter！如果不确定，挑文件夹里 <strong>最大的那个 exe</strong></div>
+        <p>脚本会自动打开 CarSim 安装目录文件夹。找到 <strong>CarSim.exe</strong>（<strong>红色</strong>小车图标），双击打开。</p>
+        <div class="tip warn">⚠ 注意：不是 ERD Converter！如果不确定，挑文件夹里文件名带 CarSim 的 exe</div>
         <div class="tip info">打开后软件顶部有一排大按钮，点击第3个 <strong>[Run Control]</strong>（有播放图标 ▶）</div>
       </div>
 
@@ -232,8 +232,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
         <p>左侧 <strong>Models</strong> 区域 → 下拉框从 Internal 改为 <strong>Simulink</strong> → 浏览选 <code>carsim_cruise_ctrl.slx</code>（已自动复制到该目录）</p>
         <p>点 <strong>I/O Channels</strong> 按钮：</p>
         <table>
-          <tr style="color:var(--accent)"><td style="width:50%">Export（Simulink→CarSim）</td><td>Throttle / Brake / MotorTorque</td></tr>
-          <tr style="color:var(--green)"><td>Import（CarSim→Simulink）</td><td>Vx / Ax / EngineRPM</td></tr>
+          <tr style="color:var(--accent)"><td style="width:50%">Export（Simulink→CarSim）</td><td>Throttle / Brake_MPa / MotorTorque</td></tr>
+          <tr style="color:var(--green)"><td>Import（CarSim→Simulink）</td><td>Vx_kmh / Ax_g / EngineRPM</td></tr>
         </table>
       </div>
 
