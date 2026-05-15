@@ -50,6 +50,7 @@ function csDir = find_carsim()
     candidates = {
         'C:\Program Files\CarSim2019.0', ...
         'C:\CarSim2019.0', ...
+        'C:\CarSim2019.0_Data', ...
         'C:\Program Files (x86)\CarSim2019.0'
     };
     for i = 1:length(candidates)
@@ -59,35 +60,64 @@ function csDir = find_carsim()
             return;
         end
     end
+    % 最后尝试搜索 C 盘
+    fprintf('[..] 正在搜索 CarSim 安装目录...\n');
+    try
+        [status, result] = system('where /r C:\ CarSim*.exe 2>nul');
+        if status == 0 && ~isempty(strtrim(result))
+            lines = strsplit(strtrim(result), '\n');
+            firstExe = strtrim(lines{1});
+            csDir = fileparts(firstExe);
+            fprintf('[OK] 找到: %s\n', csDir);
+        end
+    catch
+    end
 end
 
 function ok = try_launch_carsim(carsimDir)
     ok = false;
-    % 查找可能的 exe 文件名
-    exeNames = {'CarSim.exe', 'CarSim2019.exe', 'CarSim_2019.0.exe'};
-    programsDir = fullfile(carsimDir, 'Programs');
-    for i = 1:length(exeNames)
-        exePath = fullfile(programsDir, exeNames{i});
-        if exist(exePath, 'file')
+    % CarSim 可执行文件名（按常见程度排序）
+    exeNames = {'CarSimGui', 'CarSim', 'CarSimBatch', ...
+                'CarSim2019', 'CarSim_2019.0', 'CarSimEd'};
+    % 搜索子目录
+    searchDirs = {fullfile(carsimDir, 'bin'), ...
+                  fullfile(carsimDir, 'Programs'), ...
+                  fullfile(carsimDir, 'Programs', 'Solvers'), ...
+                  carsimDir};
+
+    for d = 1:length(searchDirs)
+        if ~exist(searchDirs{d}, 'dir'), continue; end
+        % 先搜 exe
+        for i = 1:length(exeNames)
+            exePath = fullfile(searchDirs{d}, [exeNames{i} '.exe']);
+            if exist(exePath, 'file')
+                fprintf('[..] 启动: %s\n', exePath);
+                try
+                    system(['start "" "' exePath '"']);
+                    ok = true;
+                    return;
+                catch e
+                    fprintf('[!] 启动失败: %s\n', e.message);
+                end
+            end
+        end
+        % 再搜该目录下任意 exe
+        listing = dir(fullfile(searchDirs{d}, '*.exe'));
+        for i = 1:length(listing)
+            exePath = fullfile(searchDirs{d}, listing(i).name);
+            fprintf('[..] 尝试启动: %s\n', exePath);
             try
                 system(['start "" "' exePath '"']);
                 ok = true;
                 return;
-            catch
+            catch e
+                fprintf('[!] 启动失败: %s\n', e.message);
             end
         end
     end
-    % 如果 Programs 子目录里找不到，尝试根目录
-    for i = 1:length(exeNames)
-        exePath = fullfile(carsimDir, exeNames{i});
-        if exist(exePath, 'file')
-            try
-                system(['start "" "' exePath '"']);
-                ok = true;
-                return;
-            catch
-            end
-        end
+    if ~ok
+        fprintf('[!] 在 %s 下未找到可执行文件\n', carsimDir);
+        fprintf('    已搜索: bin/ Programs/ Programs/Solvers/ 根目录\n');
     end
 end
 
