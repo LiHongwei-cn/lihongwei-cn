@@ -76,10 +76,13 @@ end
 
 function ok = try_launch_carsim(carsimDir)
     ok = false;
-    % CarSim 可执行文件名（按常见程度排序）
-    exeNames = {'CarSimGui', 'CarSim', 'CarSimBatch', ...
-                'CarSim2019', 'CarSim_2019.0', 'CarSimEd'};
-    % 搜索子目录
+    % 主程序名（按优先级排列）
+    exeNames = {'CarSimGui', 'CarSim', 'CarSim2019', ...
+                'CarSim_2019.0', 'CarSimEd', 'CarSimBatch'};
+    % 排除的工具类 exe（ERDConverter、Uninstaller 等）
+    blacklist = {'ERDConverter', 'ERD', 'Uninstall', 'setup', ...
+                 'Setup', 'Installer', 'License', 'Register'};
+    % 搜索子目录，按优先级
     searchDirs = {fullfile(carsimDir, 'bin'), ...
                   fullfile(carsimDir, 'Programs'), ...
                   fullfile(carsimDir, 'Programs', 'Solvers'), ...
@@ -87,7 +90,8 @@ function ok = try_launch_carsim(carsimDir)
 
     for d = 1:length(searchDirs)
         if ~exist(searchDirs{d}, 'dir'), continue; end
-        % 先搜 exe
+
+        % 第一阶段：匹配已知主程序名
         for i = 1:length(exeNames)
             exePath = fullfile(searchDirs{d}, [exeNames{i} '.exe']);
             if exist(exePath, 'file')
@@ -101,11 +105,29 @@ function ok = try_launch_carsim(carsimDir)
                 end
             end
         end
-        % 再搜该目录下任意 exe
+
+        % 第二阶段：搜索目录下所有 exe，排除工具类，选最大的（主程序通常最大）
         listing = dir(fullfile(searchDirs{d}, '*.exe'));
+        candidates = {};
         for i = 1:length(listing)
-            exePath = fullfile(searchDirs{d}, listing(i).name);
-            fprintf('[..] 尝试启动: %s\n', exePath);
+            [~, name] = fileparts(listing(i).name);
+            skip = false;
+            for b = 1:length(blacklist)
+                if ~isempty(strfind(lower(name), lower(blacklist{b})))
+                    skip = true; break;
+                end
+            end
+            if ~skip
+                candidates{end+1} = listing(i); %#ok<AGROW>
+            end
+        end
+        if ~isempty(candidates)
+            % 按文件大小降序排列（主程序通常最大）
+            sizes = [candidates.bytes];
+            [~, idx] = sort(sizes, 'descend');
+            best = candidates{idx(1)};
+            exePath = fullfile(searchDirs{d}, best.name);
+            fprintf('[..] 启动（自动选择，%.1f MB）: %s\n', best.bytes/1e6, exePath);
             try
                 system(['start "" "' exePath '"']);
                 ok = true;
@@ -116,8 +138,9 @@ function ok = try_launch_carsim(carsimDir)
         end
     end
     if ~ok
-        fprintf('[!] 在 %s 下未找到可执行文件\n', carsimDir);
+        fprintf('[!] 在 %s 下未找到 CarSim 主程序\n', carsimDir);
         fprintf('    已搜索: bin/ Programs/ Programs/Solvers/ 根目录\n');
+        fprintf('    请手动打开 CarSim，然后继续以下步骤\n');
     end
 end
 
