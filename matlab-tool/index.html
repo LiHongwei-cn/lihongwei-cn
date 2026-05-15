@@ -58,7 +58,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 .step-item table td{border-bottom:1px solid rgba(255,255,255,0.04);padding:3px 6px}
 
 .tip{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.12);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--orange);margin-top:10px}
-.tip.info{background:rgba(108,140,255,0.07);border-color:rgba(108,140,255,0.12);color:var(--accent)}
+.tip.info{background:rgba(108,140,255,0.07);border-color:rgba(108,140,255,0.12);color:var(--accent)}.tip.warn{background:rgba(255,180,30,0.07);border-color:rgba(255,180,30,0.20);color:#e8a400}
 
 /* file list */
 .file-list{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
@@ -221,16 +221,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
         <div class="cmd">run_carsim</div>
 
       <div class="step-item">
-        <h3>② 手动：打开 CarSim</h3>
-        <p><strong>方法 A</strong>：双击桌面蓝色小车图标（CarSim 2019.0）</p>
-        <p><strong>方法 B</strong>：开始菜单 → 搜索 CarSim → 点击 CarSim 2019.0</p>
-        <p><strong>方法 C</strong>：直接打开 <code>C:\Program Files\CarSim2019.0\</code> 文件夹，双击 <code>CarSim.exe</code></p>
-        <div class="tip info">打开后软件顶部有一排大按钮：[车辆参数] → [工况设置] → <strong>[Run Control]</strong> → [结果]，点击第3个 Run Control（有播放图标 ▶）</div>
+        <h3>② 打开 CarSim 主程序</h3>
+        <p>脚本会自动打开 CarSim 安装目录文件夹。在文件夹中找到 <strong>CarSim 主程序</strong>（蓝色小车图标），双击打开。</p>
+        <div class="tip warn">⚠ 注意：不是 ERD Converter！如果不确定，挑文件夹里 <strong>最大的那个 exe</strong></div>
+        <div class="tip info">打开后软件顶部有一排大按钮，点击第3个 <strong>[Run Control]</strong>（有播放图标 ▶）</div>
       </div>
 
       <div class="step-item">
         <h3>③ Run Control 页面操作</h3>
-        <p>左侧 <strong>Models</strong> 区域 → 下拉框从 Internal 改为 <strong>Simulink</strong> → 点浏览按钮（...）→ 选 <code>matlab/carsim/carsim_cruise_ctrl.slx</code></p>
+        <p>左侧 <strong>Models</strong> 区域 → 下拉框从 Internal 改为 <strong>Simulink</strong> → 浏览选 <code>carsim_cruise_ctrl.slx</code>（已自动复制到该目录）</p>
         <p>点 <strong>I/O Channels</strong> 按钮：</p>
         <table>
           <tr style="color:var(--accent)"><td style="width:50%">Export（Simulink→CarSim）</td><td>Throttle / Brake / MotorTorque</td></tr>

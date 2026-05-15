@@ -1,6 +1,7 @@
 CarSim 操作：
 ① 双击 matlab.bat（自动 git pull + 启动 MATLAB）
-② MATLAB 输入 run_carsim
-③ 如自动失败：打开 CarSim → 顶部 Run Control → Models 选 Simulink → 浏览选 carsim_cruise_ctrl.slx
-④ I/O Channels: Export=Throttle/Brake/MotorTorque Import=Vx/Ax/EngineRPM
-⑤ Time Step=0.001 Stop Time=30 → 点绿色 Run ▶
+② MATLAB 输入 run_carsim（自动生成模型+复制到 CarSim 目录+打开文件夹）
+③ 在打开的文件夹里找到 CarSim 主程序（蓝色小车图标，不是 ERD Converter）
+④ CarSim 顶部 Run Control → Models 选 Simulink → 浏览选 carsim_cruise_ctrl.slx
+⑤ I/O Channels: Export=Throttle/Brake/MotorTorque Import=Vx/Ax/EngineRPM
+⑥ Time Step=0.001 Stop Time=30 → 点绿色 Run ▶
