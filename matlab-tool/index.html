@@ -21,7 +21,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 .hero h1{font-size:34px;font-weight:800;background:linear-gradient(135deg,#6c8cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
 .hero p{font-size:15px;color:var(--dim);max-width:560px;margin:0 auto}
 
-/* 下载区域 */
+/* Download */
 .download-box{background:linear-gradient(135deg,rgba(108,140,255,0.08),rgba(167,139,250,0.08));border:2px solid rgba(108,140,255,0.25);border-radius:20px;padding:36px 32px;margin:24px 0 40px;text-align:center}
 .download-box .icon{font-size:44px;margin-bottom:10px}
 .download-box h2{font-size:24px;font-weight:800;margin-bottom:6px}
@@ -93,7 +93,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     <p>AI 生成 MATLAB 仿真代码 → Git 版本管理 → 任何电脑上一键运行。<br>车辆动力学 · 电机控制 · 定速巡航 · 能量管理策略</p>
   </div>
 
-  <!-- 下载区域 -->
+  <!-- Download -->
   <div class="download-box" id="download">
     <div class="icon">📦</div>
     <h2>立即下载安装包</h2>
@@ -106,7 +106,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     <div class="file-info">ZIP 压缩包 · 包含 20+ 个文件 · MATLAB R2016b 兼容</div>
   </div>
 
-  <!-- 工作流程 -->
+  <!-- Workflow -->
   <div class="section">
     <h2 class="section-title"><span class="num">⚡</span> 工作流程</h2>
     <div class="feature-grid">
@@ -133,7 +133,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     </div>
   </div>
 
-  <!-- 从零开始 -->
+  <!-- Setup -->
   <div class="section">
     <h2 class="section-title"><span class="num">1</span> 从零开始：在你的电脑上搭环境</h2>
     <p style="font-size:13px;color:var(--dim);margin-bottom:12px">以下步骤适用于刚重装系统、什么软件都没有的新电脑。</p>
@@ -175,7 +175,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     </div>
   </div>
 
-  <!-- 在笔记本上运行 -->
+  <!-- Run on laptop -->
   <div class="section">
     <h2 class="section-title"><span class="num">2</span> 在笔记本（或任何电脑）上运行</h2>
     <div class="step-list">
@@ -213,27 +213,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     </div>
   </div>
 
-  <!-- CarSim 联合仿真 -->
+  <!-- CarSim -->
   <div class="section">
     <h2 class="section-title"><span class="num">3</span> CarSim-Simulink 联合仿真</h2>
 
     <div class="step-list">
       <div class="step-item">
-        <h3>① 一键同步并启动</h3>
-        <p>双击 <code>matlab.bat</code>，自动 git pull + 启动 MATLAB + 自动配好路径。然后输入：</p>
+        <h3>① 一键启动</h3>
+        <p>双击 <code>matlab.bat</code>，自动 git pull + 启动 MATLAB + 自动配好路径。然后在 MATLAB 中输入：</p>
         <div class="cmd">run_carsim</div>
-
-      <div class="step-item">
-        <h3>② 打开 CarSim 主程序</h3>
-        <p>脚本会自动打开 CarSim 安装目录文件夹。找到 <strong>CarSim.exe</strong>（<strong>红色</strong>小车图标），双击打开。</p>
-        <div class="tip warn">⚠ 注意：不是 ERD Converter！如果不确定，挑文件夹里文件名带 CarSim 的 exe</div>
-        <div class="tip info">打开后软件顶部有一排大按钮，点击第3个 <strong>[Run Control]</strong>（有播放图标 ▶）</div>
+        <p>脚本依次完成：搭建 Simulink 模型 → 自动启动 CarSim 2019.0 → 打印信号配置说明</p>
       </div>
 
       <div class="step-item">
-        <h3>③ Run Control 页面操作</h3>
-        <p>左侧 <strong>Models</strong> 区域 → 下拉框从 Internal 改为 <strong>Simulink</strong> → 浏览选 <code>carsim_cruise_ctrl.slx</code>（已自动复制到该目录）</p>
-        <p>点 <strong>I/O Channels</strong> 按钮：</p>
+        <h3>② Run Control 页面操作</h3>
+        <p>CarSim 自动打开后，顶部点击 <strong>[Run Control]</strong>（播放图标 ▶）→ 左侧 Models 区域：</p>
+        <p>下拉框从 Internal 改为 <strong>Simulink</strong> → 浏览选择</p>
+        <div class="cmd">matlab\carsim\carsim_cruise_ctrl.slx</div>
+        <p>点 <strong>I/O Channels</strong> 按钮确认信号：</p>
         <table>
           <tr style="color:var(--accent)"><td style="width:50%">Export（Simulink→CarSim）</td><td>Throttle / Brake_MPa / MotorTorque</td></tr>
           <tr style="color:var(--green)"><td>Import（CarSim→Simulink）</td><td>Vx_kmh / Ax_g / EngineRPM</td></tr>
@@ -241,13 +238,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       </div>
 
       <div class="step-item">
-        <h3>④ 运行</h3>
+        <h3>③ 运行</h3>
         <p>Time Step = <strong>0.001</strong>，Stop Time = <strong>30</strong> → 点绿色 <strong>Run</strong> ▶ → 动画验证：车辆加速到 100 km/h</p>
       </div>
     </div>
   </div>
 
-  <!-- 用 AI 生成新代码 -->
+  <!-- AI generation -->
   <div class="section">
     <h2 class="section-title"><span class="num">4</span> 用 AI 生成新代码</h2>
     <div class="step-list">
@@ -271,7 +268,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     </div>
   </div>
 
-  <!-- 包含的文件 -->
+  <!-- Files -->
   <div class="section">
     <h2 class="section-title"><span class="num">◆</span> 包含的文件</h2>
     <div class="file-list">
@@ -283,7 +280,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <div class="file-row"><span class="file-name">matlab/examples/driving_cycle_analysis.m</span><span class="file-desc">驾驶循环能耗分析</span></div>
       <div class="file-row"><span class="file-name">matlab/examples/energy_management.m</span><span class="file-desc">增程式能量管理策略</span></div>
       <div class="file-row"><span class="file-name">matlab/examples/generate_cruise_model.m</span><span class="file-desc">定速巡航 Simulink 模型生成</span></div>
-      <div class="file-row"><span class="file-name">matlab/carsim/build_carsim_model.m</span><span class="file-desc">CarSim-Simulink 联合仿真模型</span></div>
+      <div class="file-row"><span class="file-name">matlab/carsim/build_carsim_model.m</span><span class="file-desc">CarSim 联仿模型搭建</span></div>
+      <div class="file-row"><span class="file-name">matlab/carsim/run_carsim_cruise.m</span><span class="file-desc">一键运行 CarSim 联合仿真</span></div>
+      <div class="file-row"><span class="file-name">matlab/carsim/carsim_cruise_ctrl.slx</span><span class="file-desc">定速巡航 Simulink 模型</span></div>
       <div class="file-row"><span class="file-name">matlab/carsim/sim_setup.m</span><span class="file-desc">CarSim 联合仿真配置</span></div>
       <div class="file-row"><span class="file-name">matlab/utils/fft_analysis.m</span><span class="file-desc">FFT 频谱分析</span></div>
       <div class="file-row"><span class="file-name">matlab/utils/lowpass_filter.m</span><span class="file-desc">一阶低通滤波</span></div>
@@ -296,7 +295,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     </div>
   </div>
 
-  <!-- 兼容性 -->
+  <!-- Compatibility -->
   <div class="section">
     <h2 class="section-title"><span class="num">◆</span> 兼容性</h2>
     <div class="feature-grid">
