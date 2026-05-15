@@ -12,7 +12,7 @@ GitHub: https://github.com/LiHongwei-ch/lihongwei-ch
 AI 生成 MATLAB 仿真代码，提交到 GitHub 后，
 在任何笔记本上双击 bat 文件即可运行。
 
-支持：车辆动力学、电机控制、能量管理、CarSim 联合仿真
+支持：车辆动力学、电机控制、电池SOC估算、能量管理、驾驶循环分析、CarSim 联合仿真
 
 
 二、第一次使用（笔记本）
@@ -28,40 +28,33 @@ AI 生成 MATLAB 仿真代码，提交到 GitHub 后，
   等下载完成，关掉 Git Bash。
 
 
-步骤 2：启动 MATLAB
+步骤 2：启动 MATLAB（自动配好路径）
 
   打开 Desktop\lihongwei-ch\ 文件夹，双击 matlab.bat
-  MATLAB 会自动打开，工作目录已设到 matlab\。
+  MATLAB 会自动打开 + 自动运行 startup_setup 配置搜索路径。
+  工作目录已设到 matlab\，路径已配好，直接可用。
 
 
-步骤 3：配置路径（仅首次）
+步骤 3：运行仿真
 
   在 MATLAB Command Window (>> 提示符处) 输入：
 
-    startup_setup
-
-  按回车，只需做一次。
-
-
-步骤 4：运行仿真
-
-  输入以下任意命令运行：
-
-    vehicle_dynamics      - 车辆动力学仿真，弹出曲线图
-    motor_control         - PMSM 电机 FOC 控制仿真，弹出波形图
-    generate_cruise_model - 自动生成定速巡航 Simulink 模型并打开
+    vehicle_dynamics          - 车辆纵向动力学仿真
+    motor_control             - PMSM 永磁同步电机 FOC 控制
+    dc_motor_pwm              - 直流电机 PWM 调速
+    ev_dynamics_simple        - 电动汽车完整仿真（能耗 + SOC）
+    battery_soc_ekf           - 电池 SOC 估算（EKF vs 安时积分）
+    driving_cycle_analysis    - 驾驶循环能耗分析
+    energy_management         - 增程式能量管理策略
+    run_carsim                - CarSim-Simulink 联合仿真
+    test_all                  - 批量测试所有脚本
 
 
 三、以后每次使用
 ----------------------------------------
 
-  1. 更新代码（主电脑有新内容时）：
-     Git Bash 输入：
-       cd ~/Desktop/lihongwei-ch && git pull
-
-  2. 启动 MATLAB：双击 matlab.bat
-
-  3. 运行：直接在 Command Window 输入命令，不再需要 cd 和 startup_setup
+  1. 双击 matlab.bat（自动 git pull + 启动 MATLAB + 配路径）
+  2. 直接输入命令运行
 
 
 四、用完还电脑
@@ -87,16 +80,27 @@ AI 生成 MATLAB 仿真代码，提交到 GitHub 后，
   Bot 地址：@lihongwei_ev_bot（需获取访问权限）
 
 
-六、可用仿真脚本
+六、完整文件列表
 ----------------------------------------
 
-  matlab/examples/vehicle_dynamics.m      - 车辆纵向动力学
-  matlab/examples/motor_control.m         - PMSM 电机 FOC 控制
-  matlab/examples/generate_cruise_model.m - 定速巡航 Simulink 模型
-  matlab/carsim/sim_setup.m              - CarSim 联合仿真
-  matlab/utils/fft_analysis.m            - FFT 分析
-  matlab/utils/lowpass_filter.m          - 低通滤波
-  matlab/utils/rms_calculation.m         - RMS 计算
+  matlab/examples/vehicle_dynamics.m         - 车辆纵向动力学
+  matlab/examples/motor_control.m            - PMSM 电机 FOC 控制
+  matlab/examples/dc_motor_pwm.m             - 直流电机 PWM 调速
+  matlab/examples/ev_dynamics_simple.m       - 电动汽车完整仿真
+  matlab/examples/battery_soc_ekf.m          - 电池 SOC 估算（EKF）
+  matlab/examples/driving_cycle_analysis.m   - 驾驶循环分析
+  matlab/examples/energy_management.m        - 能量管理策略
+  matlab/examples/generate_cruise_model.m    - 定速巡航 Simulink 模型
+  matlab/examples/dc_motor_simulink.m        - 直流电机 Simulink 模型
+  matlab/carsim/sim_setup.m                  - CarSim 联合仿真配置
+  matlab/carsim/build_carsim_model.m         - CarSim 联仿模型搭建
+  matlab/carsim/run_carsim_cruise.m          - 一键运行定速巡航
+  matlab/utils/fft_analysis.m                - FFT 频谱分析
+  matlab/utils/lowpass_filter.m              - 一阶低通滤波
+  matlab/utils/rms_calculation.m             - RMS 有效值计算
+  matlab/startup_setup.m                     - 搜索路径配置
+  matlab/test_all.m                          - 批量测试套件
+  matlab.bat                                 - MATLAB 一键启动
 
 
-兼容性：MATLAB R2016b + CarSim 2019.0
+兼容性：MATLAB R2016b + CarSim 2019.0 + Windows 7/10/11

@@ -21,7 +21,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 .hero h1{font-size:34px;font-weight:800;background:linear-gradient(135deg,#6c8cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
 .hero p{font-size:15px;color:var(--dim);max-width:560px;margin:0 auto}
 
-/* 下载区域 — 醒目 */
+/* 下载区域 */
 .download-box{background:linear-gradient(135deg,rgba(108,140,255,0.08),rgba(167,139,250,0.08));border:2px solid rgba(108,140,255,0.25);border-radius:20px;padding:36px 32px;margin:24px 0 40px;text-align:center}
 .download-box .icon{font-size:44px;margin-bottom:10px}
 .download-box h2{font-size:24px;font-weight:800;margin-bottom:6px}
@@ -93,7 +93,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     <p>AI 生成 MATLAB 仿真代码 → Git 版本管理 → 任何电脑上一键运行。<br>车辆动力学 · 电机控制 · 定速巡航 · 能量管理策略</p>
   </div>
 
-  <!-- ===== 下载区域（醒目中文） ===== -->
+  <!-- 下载区域 -->
   <div class="download-box" id="download">
     <div class="icon">📦</div>
     <h2>立即下载安装包</h2>
@@ -103,10 +103,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <a class="btn btn-secondary" href="https://github.com/LiHongwei-ch/lihongwei-ch/tree/main/starter-kit" target="_blank">在 GitHub 浏览源码</a>
       <a class="btn btn-secondary" href="guide.txt">📄 查看操作说明</a>
     </div>
-    <div class="file-info">ZIP 压缩包 · 11 KB · 包含 16 个文件</div>
+    <div class="file-info">ZIP 压缩包 · 包含 20+ 个文件 · MATLAB R2016b 兼容</div>
   </div>
 
-  <!-- ===== 工作流程 ===== -->
+  <!-- 工作流程 -->
   <div class="section">
     <h2 class="section-title"><span class="num">⚡</span> 工作流程</h2>
     <div class="feature-grid">
@@ -133,7 +133,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     </div>
   </div>
 
-  <!-- ===== 从零开始（适用重装系统后的新电脑） ===== -->
+  <!-- 从零开始 -->
   <div class="section">
     <h2 class="section-title"><span class="num">1</span> 从零开始：在你的电脑上搭环境</h2>
     <p style="font-size:13px;color:var(--dim);margin-bottom:12px">以下步骤适用于刚重装系统、什么软件都没有的新电脑。</p>
@@ -175,7 +175,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     </div>
   </div>
 
-  <!-- ===== 在笔记本上运行 ===== -->
+  <!-- 在笔记本上运行 -->
   <div class="section">
     <h2 class="section-title"><span class="num">2</span> 在笔记本（或任何电脑）上运行</h2>
     <div class="step-list">
@@ -191,33 +191,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       </div>
 
       <div class="step-item">
-        <h3>启动 MATLAB</h3>
+        <h3>启动 MATLAB（自动配好路径）</h3>
         <p>打开 <code>Desktop\你的仓库名\</code> 文件夹，<strong>双击 <code>matlab.bat</code></strong></p>
-        <p>脚本会自动 <code>git pull</code> 获取最新代码，然后启动 MATLAB，工作目录自动设到 <code>matlab/</code>。</p>
-        <div class="tip info">每次双击都会先拉取最新代码，不需要手动输 git 命令。如果有新代码推送到 GitHub，双击 bat 后自动同步。</div>
-      </div>
-
-      <div class="step-item">
-        <h3>配置路径（仅首次需要）</h3>
-        <p>在 MATLAB 右下角 Command Window（<code>>></code> 提示符处）输入：</p>
-        <div class="cmd">startup_setup</div>
+        <p>脚本自动 <code>git pull</code> + 启动 MATLAB + <strong>自动运行 <code>startup_setup</code></strong> 配置搜索路径。</p>
+        <div class="tip info">首次启动即自动完成路径配置，无需手动操作。每次双击自动同步最新代码。</div>
       </div>
 
       <div class="step-item">
         <h3>运行仿真</h3>
-        <div class="cmd"><span class="cm">% CarSim 定速巡航联合仿真</span><br>run_carsim<br><br><span class="cm">% 车辆动力学仿真</span><br>vehicle_dynamics<br><br><span class="cm">% PMSM 电机 FOC 控制</span><br>motor_control</div>
+        <p>MATLAB Command Window 直接输入：</p>
+        <div class="cmd"><span class="cm">% 车辆动力学</span><br>vehicle_dynamics
+        <br><span class="cm">% PMSM 电机 FOC 控制</span><br>motor_control
+        <br><span class="cm">% 直流电机 PWM 调速</span><br>dc_motor_pwm
+        <br><span class="cm">% 电动汽车完整仿真（能耗+SOC）</span><br>ev_dynamics_simple
+        <br><span class="cm">% 电池 SOC 估算（EKF vs 安时积分）</span><br>battery_soc_ekf
+        <br><span class="cm">% 驾驶循环能耗分析</span><br>driving_cycle_analysis
+        <br><span class="cm">% 增程式能量管理策略</span><br>energy_management
+        <br><span class="cm">% CarSim 联合仿真</span><br>run_carsim
+        <br><span class="cm">% 批量测试所有脚本</span><br>test_all</div>
       </div>
     </div>
   </div>
 
-  <!-- ===== CarSim 联合仿真 ===== -->
+  <!-- CarSim 联合仿真 -->
   <div class="section">
     <h2 class="section-title"><span class="num">3</span> CarSim-Simulink 联合仿真</h2>
 
     <div class="step-list">
       <div class="step-item">
         <h3>① 一键同步并启动</h3>
-        <p>双击 <code>matlab.bat</code>，自动 git pull + 启动 MATLAB，工作目录自动设为 <code>matlab/</code>。然后输入：</p>
+        <p>双击 <code>matlab.bat</code>，自动 git pull + 启动 MATLAB + 自动配好路径。然后输入：</p>
         <div class="cmd">run_carsim</div>
 
       <div class="step-item">
@@ -244,13 +247,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     </div>
   </div>
 
-  <!-- ===== 用 AI 生成新代码 ===== -->
+  <!-- 用 AI 生成新代码 -->
   <div class="section">
     <h2 class="section-title"><span class="num">4</span> 用 AI 生成新代码</h2>
     <div class="step-list">
       <div class="step-item">
         <h3>描述需求</h3>
-        <p>用自然语言告诉 AI 你想要什么仿真，例如：<em>"写一个电池 SOC 估算的 MATLAB 代码，用安时积分法"</em></p>
+        <p>用自然语言告诉 AI 你想要什么仿真，例如：<em>"写一个混合动力能量管理策略，对比恒温器和功率跟随两种方法"</em></p>
       </div>
       <div class="step-item">
         <h3>保存脚本</h3>
@@ -258,43 +261,49 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       </div>
       <div class="step-item">
         <h3>提交并同步到 GitHub</h3>
-        <div class="cmd">git add .<br>git commit -m "添加电池SOC估算仿真"<br>git push</div>
+        <div class="cmd">git add .<br>git commit -m "feat: 添加混合动力能量管理仿真"<br>git push</div>
       </div>
       <div class="step-item">
         <h3>笔记本上运行</h3>
         <p>在笔记本上打开 Git Bash，<code>git pull</code> 拉取新代码，然后双击 <code>matlab.bat</code> 启动 MATLAB 运行。</p>
-        <div class="tip info">只需新增 .m 文件，不用修改任何配置。<code>startup_setup</code> 会自动添加路径，新文件可以直接运行。</div>
+        <div class="tip info">只需新增 .m 文件，不用修改任何配置。路径已自动配置，新文件可以直接运行。</div>
       </div>
     </div>
   </div>
 
-  <!-- ===== 包含的文件 ===== -->
+  <!-- 包含的文件 -->
   <div class="section">
     <h2 class="section-title"><span class="num">◆</span> 包含的文件</h2>
     <div class="file-list">
       <div class="file-row"><span class="file-name">matlab/examples/vehicle_dynamics.m</span><span class="file-desc">车辆纵向动力学仿真</span></div>
       <div class="file-row"><span class="file-name">matlab/examples/motor_control.m</span><span class="file-desc">PMSM 电机 FOC 控制</span></div>
+      <div class="file-row"><span class="file-name">matlab/examples/dc_motor_pwm.m</span><span class="file-desc">直流电机 PWM 调速</span></div>
+      <div class="file-row"><span class="file-name">matlab/examples/ev_dynamics_simple.m</span><span class="file-desc">电动汽车完整仿真（能耗+SOC）</span></div>
+      <div class="file-row"><span class="file-name">matlab/examples/battery_soc_ekf.m</span><span class="file-desc">电池 SOC 估算（EKF vs 安时积分）</span></div>
+      <div class="file-row"><span class="file-name">matlab/examples/driving_cycle_analysis.m</span><span class="file-desc">驾驶循环能耗分析</span></div>
+      <div class="file-row"><span class="file-name">matlab/examples/energy_management.m</span><span class="file-desc">增程式能量管理策略</span></div>
       <div class="file-row"><span class="file-name">matlab/examples/generate_cruise_model.m</span><span class="file-desc">定速巡航 Simulink 模型生成</span></div>
       <div class="file-row"><span class="file-name">matlab/carsim/build_carsim_model.m</span><span class="file-desc">CarSim-Simulink 联合仿真模型</span></div>
       <div class="file-row"><span class="file-name">matlab/carsim/sim_setup.m</span><span class="file-desc">CarSim 联合仿真配置</span></div>
       <div class="file-row"><span class="file-name">matlab/utils/fft_analysis.m</span><span class="file-desc">FFT 频谱分析</span></div>
       <div class="file-row"><span class="file-name">matlab/utils/lowpass_filter.m</span><span class="file-desc">一阶低通滤波</span></div>
       <div class="file-row"><span class="file-name">matlab/utils/rms_calculation.m</span><span class="file-desc">RMS 计算</span></div>
-      <div class="file-row"><span class="file-name">matlab/startup_setup.m</span><span class="file-desc">首次路径配置</span></div>
-      <div class="file-row"><span class="file-name">matlab.bat</span><span class="file-desc">MATLAB 一键启动脚本</span></div>
+      <div class="file-row"><span class="file-name">matlab/startup_setup.m</span><span class="file-desc">搜索路径配置（自动执行）</span></div>
+      <div class="file-row"><span class="file-name">matlab/test_all.m</span><span class="file-desc">批量测试套件</span></div>
+      <div class="file-row"><span class="file-name">matlab.bat</span><span class="file-desc">MATLAB 一键启动（含自动配置）</span></div>
       <div class="file-row"><span class="file-name">docs/操作说明.md</span><span class="file-desc">使用文档</span></div>
       <div class="file-row"><span class="file-name">README.md / .gitignore</span><span class="file-desc">项目信息 / Git 配置</span></div>
     </div>
   </div>
 
-  <!-- ===== 兼容性 ===== -->
+  <!-- 兼容性 -->
   <div class="section">
     <h2 class="section-title"><span class="num">◆</span> 兼容性</h2>
     <div class="feature-grid">
       <div class="feature-card">
         <div class="f-icon">📐</div>
         <h3>MATLAB</h3>
-        <p>R2016b 及以上版本<br>兼容较新版本</p>
+        <p>R2016b 及以上版本<br>含 Simulink 许可</p>
       </div>
       <div class="feature-card">
         <div class="f-icon">🚗</div>
