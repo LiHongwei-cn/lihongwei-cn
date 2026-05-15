@@ -208,9 +208,52 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     </div>
   </div>
 
+  <!-- ===== CarSim 联合仿真 ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">3</span> CarSim-Simulink 联合仿真</h2>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:12px">将 Simulink 控制器接入 CarSim 2019.0 整车模型，实现真正的高精度联合仿真。</p>
+
+    <div class="step-list">
+      <div class="step-item">
+        <h3>配置环境（仅首次）</h3>
+        <p>在 MATLAB Command Window 输入：</p>
+        <div class="cmd">sim_setup</div>
+        <p>脚本自动检测 CarSim 安装路径，添加 Simulink 接口到 MATLAB 搜索路径。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>生成联合仿真模型</h3>
+        <p>在 MATLAB Command Window 输入：</p>
+        <div class="cmd">build_carsim_model</div>
+        <p>自动生成 <code>carsim_cruise_ctrl.slx</code>，包含速度控制器（PI）和 CarSim I/O 接口。</p>
+        <div class="tip info">模型包含完整的速度闭环：目标车速 → PI 控制器 → 节气门/制动 → CarSim 车辆 → 实际车速反馈</div>
+      </div>
+
+      <div class="step-item">
+        <h3>CarSim 中配置 I/O 通道</h3>
+        <p>打开 CarSim 2019.0 → <strong>Run Control</strong> → Models 下拉选 <strong>Simulink</strong> → 浏览选择刚生成的 <code>carsim_cruise_ctrl.slx</code></p>
+        <p>点击 <strong>I/O Channels</strong>，按脚本打印的映射表配置（共 3 个 Import + 3 个 Export）。</p>
+        <p>Step Size 设为 <strong>0.001 s</strong>，与模型一致。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>运行联合仿真</h3>
+        <p>CarSim 中点击 <strong>Run</strong> → CarSim 自动调用 Simulink 模型 → 车辆动力学由 CarSim 计算，控制器由 Simulink 计算。</p>
+        <p>结果可在 CarSim 中查看动画和曲线，也可在 Simulink Scope 中查看信号。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>自定义控制器</h3>
+        <p>打开 <code>carsim_cruise_ctrl.slx</code>，修改 PI 参数（双击 Kp、Ki 模块）。</p>
+        <p>如需更复杂的控制策略（FOC 电机控制、能量管理），在模型中添加子系统，保持 Import/Outport 端口号不变即可。</p>
+        <div class="tip info">Simulink 模型文件在 <code>matlab/carsim/</code> 目录下，通过 git 自动同步到所有电脑。</div>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== 用 AI 生成新代码 ===== -->
   <div class="section">
-    <h2 class="section-title"><span class="num">3</span> 用 AI 生成新代码</h2>
+    <h2 class="section-title"><span class="num">4</span> 用 AI 生成新代码</h2>
     <div class="step-list">
       <div class="step-item">
         <h3>描述需求</h3>
@@ -239,6 +282,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <div class="file-row"><span class="file-name">matlab/examples/vehicle_dynamics.m</span><span class="file-desc">车辆纵向动力学仿真</span></div>
       <div class="file-row"><span class="file-name">matlab/examples/motor_control.m</span><span class="file-desc">PMSM 电机 FOC 控制</span></div>
       <div class="file-row"><span class="file-name">matlab/examples/generate_cruise_model.m</span><span class="file-desc">定速巡航 Simulink 模型生成</span></div>
+      <div class="file-row"><span class="file-name">matlab/carsim/build_carsim_model.m</span><span class="file-desc">CarSim-Simulink 联合仿真模型</span></div>
       <div class="file-row"><span class="file-name">matlab/carsim/sim_setup.m</span><span class="file-desc">CarSim 联合仿真配置</span></div>
       <div class="file-row"><span class="file-name">matlab/utils/fft_analysis.m</span><span class="file-desc">FFT 频谱分析</span></div>
       <div class="file-row"><span class="file-name">matlab/utils/lowpass_filter.m</span><span class="file-desc">一阶低通滤波</span></div>
