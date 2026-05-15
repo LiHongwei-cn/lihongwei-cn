@@ -23,7 +23,7 @@ echo [2/3] Starting MATLAB R2016b...
 echo       Paths will be auto-configured.
 echo.
 
-start "" "%MATLAB_EXE%" -r "addpath(pwd);startup_setup"
+start "" "%MATLAB_EXE%" -r "addpath('%~dp0matlab');startup_setup"
 
 if exist "%CARSim_EXE%" (
     echo [3/3] Starting CarSim 2019.0...
