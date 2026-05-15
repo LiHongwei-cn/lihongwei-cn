@@ -4,15 +4,13 @@
 
 fprintf('添加 matlab 工具目录到搜索路径...\n');
 
-% 获取当前脚本所在目录
 scriptPath = fileparts(mfilename('fullpath'));
 
-% 添加子目录
+addpath(scriptPath);
 addpath(fullfile(scriptPath, 'examples'));
 addpath(fullfile(scriptPath, 'utils'));
 addpath(fullfile(scriptPath, 'carsim'));
 
-% 保存路径（下次自动生效）
 savepath;
 
-fprintf('完成。\n');
+fprintf('完成。test_all / vehicle_dynamics / motor_control 等均可直接使用。\n');
