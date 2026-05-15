@@ -216,19 +216,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
     <div class="step-list">
       <div class="step-item">
-        <h3>① MATLAB 生成模型</h3>
+        <h3>① MATLAB 一键启动（推荐）</h3>
         <p>首次运行 <code>sim_setup</code>（仅一次）。之后每次输入：</p>
-        <div class="cmd">build_carsim_model</div>
+        <div class="cmd">run_carsim_cruise</div>
+        <p>脚本自动完成：生成模型 → 连接 CarSim → 创建仿真文件 → 运行。如果 CarSim 没装或 COM 不可用，会打印手动步骤。</p>
       </div>
 
       <div class="step-item">
-        <h3>② CarSim 选择模型</h3>
-        <p>CarSim → 顶部标签 <strong>Run Control</strong>（第2个，▶）→ 左侧 Models 下拉选 <strong>Simulink</strong> → 浏览按钮（...）→ 选 <code>carsim_cruise_ctrl.slx</code></p>
+        <h3>② 手动：打开 CarSim</h3>
+        <p><strong>方法 A</strong>：双击桌面蓝色小车图标（CarSim 2019.0）</p>
+        <p><strong>方法 B</strong>：开始菜单 → 搜索 CarSim → 点击 CarSim 2019.0</p>
+        <p><strong>方法 C</strong>：直接打开 <code>C:\Program Files\CarSim2019.0\</code> 文件夹，双击 <code>CarSim.exe</code></p>
+        <div class="tip info">打开后软件顶部有一排大按钮：[车辆参数] → [工况设置] → <strong>[Run Control]</strong> → [结果]，点击第3个 Run Control（有播放图标 ▶）</div>
       </div>
 
       <div class="step-item">
-        <h3>③ 配置 I/O Channels</h3>
-        <p>点 I/O Channels 按钮 → 弹出窗口：</p>
+        <h3>③ Run Control 页面操作</h3>
+        <p>左侧 <strong>Models</strong> 区域 → 下拉框从 Internal 改为 <strong>Simulink</strong> → 点浏览按钮（...）→ 选 <code>matlab/carsim/carsim_cruise_ctrl.slx</code></p>
+        <p>点 <strong>I/O Channels</strong> 按钮：</p>
         <table>
           <tr style="color:var(--accent)"><td style="width:50%">Export（Simulink→CarSim）</td><td>Throttle / Brake / MotorTorque</td></tr>
           <tr style="color:var(--green)"><td>Import（CarSim→Simulink）</td><td>Vx / Ax / EngineRPM</td></tr>
@@ -237,8 +242,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
       <div class="step-item">
         <h3>④ 运行</h3>
-        <p>Time Step = <strong>0.001</strong>，Stop Time = <strong>30</strong> → 点绿色 <strong>Run</strong> ▶</p>
-        <p>动画窗口验证：车辆加速到 100 km/h 并保持。</p>
+        <p>Time Step = <strong>0.001</strong>，Stop Time = <strong>30</strong> → 点绿色 <strong>Run</strong> ▶ → 动画验证：车辆加速到 100 km/h</p>
       </div>
     </div>
   </div>
