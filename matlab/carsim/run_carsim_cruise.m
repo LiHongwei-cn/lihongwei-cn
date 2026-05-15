@@ -6,6 +6,23 @@
 function run_carsim_cruise()
     fprintf('===== CarSim 定速巡航联合仿真 =====\n\n');
 
+    % 确保本目录在路径中（防止调用时找不到 build_carsim_model）
+    myDir = fileparts(mfilename('fullpath'));
+    if isempty(which('build_carsim_model'))
+        addpath(myDir);
+    end
+    % 添加工具目录
+    utilsDir = fullfile(fileparts(myDir), 'utils');
+    if exist(utilsDir, 'dir')
+        addpath(utilsDir);
+    end
+
+    %% 步骤0：检查 Simulink 可用性
+    if ~license('test', 'Simulink')
+        fprintf('[X] Simulink 许可证不可用，无法生成模型\n');
+        return;
+    end
+
     %% 步骤1：找到 CarSim 安装目录
     carsimDir = '';
     candidates = {
