@@ -45,8 +45,18 @@ def send_telegram(text: str):
 
 
 if __name__ == "__main__":
-    msg = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else ""
+    args = sys.argv[1:]
+    carsim = False
+    if "--carsim" in args:
+        carsim = True
+        args.remove("--carsim")
+
+    msg = " ".join(args) if args else ""
+    if carsim:
+        steps_file = Path(__file__).parent / "carsim_steps.txt"
+        if steps_file.exists():
+            msg += "\n\n" + steps_file.read_text(encoding="utf-8")
     if msg:
         send_telegram(msg)
     else:
-        print("用法: python notify.py <消息文本>")
+        print("用法: python notify.py [--carsim] <消息文本>")
