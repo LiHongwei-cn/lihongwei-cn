@@ -7,39 +7,31 @@ function sim_setup()
 
     currentDir = fileparts(mfilename('fullpath'));
 
-    % CarSim 常见安装路径
-    carsimDirs = {
-        'C:\Program Files\CarSim2019.0'
-        'C:\CarSim2019.0'
-        'C:\Program Files (x86)\CarSim2019.0'
-    };
+    csProg = 'C:\Program Files (x86)\CarSim2019.0_Prog';
+    csData = 'C:\Users\Public\Documents\CarSim2019.0_Data';
 
-    found = false;
-    for i = 1:length(carsimDirs)
-        if exist(carsimDirs{i}, 'dir')
-            fprintf('发现 CarSim: %s\n', carsimDirs{i});
-            simDir = fullfile(carsimDirs{i}, 'Simulink');
-            if exist(simDir, 'dir')
-                addpath(simDir);
-                fprintf('已添加 Simulink 接口: %s\n', simDir);
-            end
-            % 添加 DLL 目录
-            dllDir = fullfile(carsimDirs{i}, 'Programs');
-            if exist(dllDir, 'dir')
-                addpath(dllDir);
-            end
-            % 检查 S-Function 文件
-            sfunFiles = dir(fullfile(simDir, 'carsim_sfun*'));
-            if ~isempty(sfunFiles)
-                fprintf('S-Function 已找到: %s\n', sfunFiles(1).name);
-            end
-            found = true;
-        end
+    if ~exist(csProg, 'dir')
+        fprintf('[X] 未找到 CarSim 2019.0 安装目录\n');
+        fprintf('   预期路径: %s\n', csProg);
+        fprintf('   如路径不同请修改本脚本 csProg 变量\n');
+        return;
     end
 
-    if ~found
-        fprintf('未找到 CarSim 安装目录。\n');
-        fprintf('请修改本脚本中的 carsimDirs 添加你的安装路径。\n');
+    fprintf('[OK] CarSim 安装目录: %s\n', csProg);
+    fprintf('[OK] CarSim 数据目录: %s\n', csData);
+
+    % 添加 Programs 目录 (RunMatlab.dll)
+    progDir = fullfile(csProg, 'Programs');
+    if exist(progDir, 'dir')
+        addpath(progDir);
+        fprintf('[OK] 已添加路径: %s\n', progDir);
+    end
+
+    % 添加 Solver 目录 (Simulink S-Function)
+    solverDir = fullfile(csProg, 'Programs', 'solvers', 'Matlab84+');
+    if exist(solverDir, 'dir')
+        addpath(solverDir);
+        fprintf('[OK] 已添加 Solver: %s\n', solverDir);
     end
 
     addpath(currentDir);
