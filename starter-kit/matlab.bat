@@ -21,15 +21,20 @@ if not exist "%MATLAB_EXE%" (
 
 cd matlab
 echo.
-echo [2/2] 启动 MATLAB R2016b（自动配置路径）...
+echo [2/3] 启动 MATLAB R2016b（自动配置路径）...
 start "" "%MATLAB_EXE%" -r "addpath(pwd); startup_setup; disp(' '); disp('路径已配置。可用命令:'); disp('  vehicle_dynamics / motor_control / dc_motor_pwm'); disp('  ev_dynamics_simple / battery_soc_ekf'); disp('  driving_cycle_analysis / energy_management'); disp('  run_carsim'); disp('  test_all'); disp(' ');"
 
 echo.
 echo MATLAB 正在启动...
 echo.
-echo Simulink 已包含在 R2016b 许可中，可直接使用。
-echo CarSim 需单独启动: "%CARSim_EXE%"
-echo.
+
+if exist "%CARSim_EXE%" (
+    echo [3/3] 启动 CarSim 2019.0...
+    start "" "%CARSim_EXE%"
+    echo CarSim 已启动。
+) else (
+    echo [注意] 未找到 CarSim: %CARSim_EXE%
+)
 echo 全部可用命令:
 echo   vehicle_dynamics         车辆纵向动力学
 echo   motor_control            PMSM永磁同步电机FOC控制
