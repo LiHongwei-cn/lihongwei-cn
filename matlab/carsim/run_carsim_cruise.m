@@ -1,152 +1,108 @@
-%% 一键运行 CarSim-Simulink 定速巡航联合仿真
-% MATLAB R2016b + CarSim 2019.0 兼容
-% 用途：运行此脚本 → 自动生成模型 → 启动 CarSim → 运行仿真
-% 如果自动启动失败，会打印详细的手动步骤
+%% 一键运行 CarSim-Simulink 定速巡航
+% MATLAB R2016b + CarSim 2019.0
+% 输入 run_carsim 调用此脚本
 
 function run_carsim_cruise()
     fprintf('===== CarSim 定速巡航联合仿真 =====\n\n');
 
-    % 确保本目录在路径中（防止调用时找不到 build_carsim_model）
     myDir = fileparts(mfilename('fullpath'));
     if isempty(which('build_carsim_model'))
         addpath(myDir);
     end
-    % 添加工具目录
-    utilsDir = fullfile(fileparts(myDir), 'utils');
-    if exist(utilsDir, 'dir')
-        addpath(utilsDir);
-    end
 
-    %% 步骤0：检查 Simulink 可用性
-    if ~license('test', 'Simulink')
-        fprintf('[X] Simulink 许可证不可用，无法生成模型\n');
+    %% 步骤1: 生成 Simulink 模型
+    fprintf('--- 步骤1: 生成 Simulink 模型 ---\n');
+    try
+        build_carsim_model();
+    catch e
+        fprintf('[X] 模型生成异常: %s\n', e.message);
+        fprintf('    请检查:\n');
+        fprintf('    - Simulink 是否已安装 (在 MATLAB 输入 ver 查看)\n');
+        fprintf('    - 是否有 Simulink 许可证\n');
         return;
     end
 
-    %% 步骤1：找到 CarSim 安装目录
-    carsimDir = '';
+    %% 步骤2: 查找 CarSim
+    fprintf('\n--- 步骤2: 查找 CarSim ---\n');
+    carsimDir = find_carsim();
+    if isempty(carsimDir)
+        fprintf('[!] 未找到 CarSim 安装，跳过自动启动\n');
+    end
+
+    %% 步骤3: 尝试启动 CarSim
+    if ~isempty(carsimDir)
+        fprintf('\n--- 步骤3: 尝试启动 CarSim ---\n');
+        started = try_launch_carsim(carsimDir);
+        if started
+            fprintf('[OK] CarSim 已启动。请在 CarSim 中:\n');
+            print_carsim_steps();
+            return;
+        end
+    end
+
+    %% 手动步骤
+    fprintf('\n===== 请按以下步骤手动操作 =====\n');
+    print_carsim_steps();
+end
+
+function csDir = find_carsim()
+    csDir = '';
     candidates = {
-        'C:\Program Files\CarSim2019.0'
-        'C:\CarSim2019.0'
+        'C:\Program Files\CarSim2019.0', ...
+        'C:\CarSim2019.0', ...
         'C:\Program Files (x86)\CarSim2019.0'
     };
     for i = 1:length(candidates)
         if exist(candidates{i}, 'dir')
-            carsimDir = candidates{i};
-            fprintf('[OK] 找到 CarSim: %s\n', carsimDir);
-            break;
-        end
-    end
-    if isempty(carsimDir)
-        fprintf('[X] 未找到 CarSim 安装目录\n');
-        fprintf('    请修改本脚本中的 candidates 列表\n');
-        return;
-    end
-
-    %% 步骤2：生成 Simulink 模型
-    fprintf('[..] 生成 Simulink 模型...\n');
-    build_carsim_model();
-    modelPath = fullfile(fileparts(mfilename('fullpath')), 'carsim_cruise_ctrl.slx');
-
-    %% 步骤3：尝试 COM 自动化
-    cs = [];
-    comNames = {'CarSim.Simulator', 'CarSim.Simulator.1', ...
-                'CarSim.Application', 'MechanicalSimulation.CarSim'};
-    for i = 1:length(comNames)
-        try
-            cs = actxserver(comNames{i});
-            fprintf('[OK] CarSim COM 连接成功 (%s)\n', comNames{i});
-            break;
-        catch
-        end
-    end
-
-    if isempty(cs)
-        %% COM 不可用 → 打印手动步骤
-        fprintf('\n[!] 无法自动启动 CarSim，请按下面步骤手动操作：\n');
-        print_manual_steps(carsimDir, modelPath);
-        return;
-    end
-
-    %% 步骤4：查找示例车辆
-    vehicleFile = find_example_vehicle(carsimDir);
-    if isempty(vehicleFile)
-        fprintf('[!] 未找到示例车辆文件\n');
-    else
-        fprintf('[OK] 车辆: %s\n', vehicleFile);
-    end
-
-    %% 步骤5：创建仿真文件
-    simFile = fullfile(fileparts(mfilename('fullpath')), '_carsim_temp.sim');
-    create_sim_file(simFile, modelPath, vehicleFile);
-
-    %% 步骤6：加载并运行
-    try
-        cs.LoadSimFile(simFile);
-        fprintf('[..] 正在运行仿真...\n');
-        cs.Run();
-        fprintf('[OK] 仿真完成。查看 CarSim 动画和曲线窗口。\n');
-    catch e
-        fprintf('[X] COM 运行失败: %s\n', e.message);
-        fprintf('    回退到手动模式:\n');
-        print_manual_steps(carsimDir, modelPath);
-    end
-end
-
-function vehicleFile = find_example_vehicle(carsimDir)
-    vehicleFile = '';
-    dataDir = fullfile(carsimDir, 'Data');
-    if ~exist(dataDir, 'dir'), return; end
-
-    % 递归搜索常见示例车辆
-    patterns = {'*B-Class*', '*Hatchback*', '*Sedan*', '*SUV*', ...
-                '*Ind_Ind*', '*example*', '*.veh'};
-    for i = 1:length(patterns)
-        results = dir(fullfile(dataDir, '**', patterns{i}));
-        if ~isempty(results)
-            vehicleFile = fullfile(results(1).folder, results(1).name);
+            csDir = candidates{i};
+            fprintf('[OK] CarSim 路径: %s\n', csDir);
             return;
         end
     end
 end
 
-function create_sim_file(path, modelPath, vehicleFile)
-    fid = fopen(path, 'w');
-    fprintf(fid, 'TSTOP = 30\n');
-    fprintf(fid, 'TSTEP = 0.001\n');
-    fprintf(fid, 'MODEL = SIMULINK\n');
-    fprintf(fid, 'SIMFILE = %s\n', strrep(modelPath, '\', '\\'));
-    if ~isempty(vehicleFile)
-        fprintf(fid, 'VEHICLE = %s\n', strrep(vehicleFile, '\', '\\'));
+function ok = try_launch_carsim(carsimDir)
+    ok = false;
+    % 查找可能的 exe 文件名
+    exeNames = {'CarSim.exe', 'CarSim2019.exe', 'CarSim_2019.0.exe'};
+    programsDir = fullfile(carsimDir, 'Programs');
+    for i = 1:length(exeNames)
+        exePath = fullfile(programsDir, exeNames{i});
+        if exist(exePath, 'file')
+            try
+                system(['start "" "' exePath '"']);
+                ok = true;
+                return;
+            catch
+            end
+        end
     end
-    fclose(fid);
+    % 如果 Programs 子目录里找不到，尝试根目录
+    for i = 1:length(exeNames)
+        exePath = fullfile(carsimDir, exeNames{i});
+        if exist(exePath, 'file')
+            try
+                system(['start "" "' exePath '"']);
+                ok = true;
+                return;
+            catch
+            end
+        end
+    end
 end
 
-function print_manual_steps(carsimDir, modelPath)
+function print_carsim_steps()
     fprintf('\n------------------------------------------------\n');
-    fprintf('  手动操作步骤 (CarSim 2019.0)\n');
-    fprintf('------------------------------------------------\n\n');
     fprintf('1. 打开 CarSim 2019.0\n');
-    fprintf('   方法A: 双击桌面 CarSim 图标（蓝色小车图标）\n');
-    fprintf('   方法B: 开始菜单搜索 CarSim → 点击 CarSim 2019.0\n');
-    fprintf('   方法C: 直接双击这个文件夹:\n');
-    fprintf('         %s\n', carsimDir);
-    fprintf('         里面的 CarSim.exe 或 CarSim 快捷方式\n\n');
-    fprintf('2. 软件打开后看顶部\n');
-    fprintf('   菜单栏下方有一排大按钮/标签，按顺序是:\n');
-    fprintf('   [车辆参数] → [工况设置] → [Run Control] → [结果]\n');
-    fprintf('   点击 "Run Control"（中间那个，可能有播放图标 ▶）\n\n');
-    fprintf('   如果看不到这些按钮:\n');
-    fprintf('   - 点菜单栏 View → 勾选 Toolbar\n');
-    fprintf('   - 点菜单栏 View → 勾选 Navigation Panel\n\n');
-    fprintf('3. Run Control 页面左侧找到 Models 区域\n');
-    fprintf('   下拉框从 "Internal" 改为 "Simulink"\n');
-    fprintf('   点旁边的 "..." 浏览按钮，选:\n');
-    fprintf('   %s\n\n', modelPath);
+    fprintf('   方法A: 双击桌面蓝色小车图标\n');
+    fprintf('   方法B: 开始菜单搜索 CarSim\n\n');
+    fprintf('2. 软件顶部一排大按钮，点击 Run Control（第3个，有播放图标）\n\n');
+    fprintf('3. 左侧 Models 区域，下拉框从 Internal 改为 Simulink\n');
+    fprintf('   点浏览按钮(...)选 carsim_cruise_ctrl.slx\n\n');
     fprintf('4. 点 I/O Channels 按钮:\n');
-    fprintf('   Export 栏: Throttle / Brake / MotorTorque\n');
-    fprintf('   Import 栏: Vx / Ax / EngineRPM\n\n');
-    fprintf('5. Time Step = 0.001, Stop Time = 30\n');
-    fprintf('   点绿色 Run 按钮 ▶\n');
+    fprintf('   Export(Simulink->CarSim): Throttle / Brake / MotorTorque\n');
+    fprintf('   Import(CarSim->Simulink): Vx / Ax / EngineRPM\n\n');
+    fprintf('5. Time Step=0.001  Stop Time=30\n');
+    fprintf('   点绿色 Run 按钮\n');
     fprintf('------------------------------------------------\n');
 end
