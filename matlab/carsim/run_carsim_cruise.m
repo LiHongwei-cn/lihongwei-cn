@@ -19,10 +19,17 @@ function run_carsim_cruise()
         return;
     end
 
-    %% Step 2: Open model folder in Explorer
-    fprintf('\n--- Step 2: Open model folder ---\n');
-    fprintf('Model location: %s\n', myDir);
-    system(['explorer "' myDir '"']);
+    %% Step 2: Launch CarSim
+    fprintf('\n--- Step 2: Launch CarSim ---\n');
+    csExe = 'C:\Program Files (x86)\CarSim2019.0_Prog\CarSim.exe';
+    csDir = 'C:\Program Files (x86)\CarSim2019.0_Prog';
+    if exist(csExe, 'file')
+        fprintf('Starting CarSim 2019.0...\n');
+        system(['start "" /D "' csDir '" "' csExe '"']);
+        fprintf('CarSim launched.\n');
+    else
+        fprintf('[!] CarSim.exe not found at: %s\n', csExe);
+    end
 
     %% Step 3: Print instructions
     fprintf('\n===== CarSim Setup Steps =====\n');
@@ -31,17 +38,15 @@ end
 
 function print_carsim_steps(modelDir)
     fprintf('\n');
-    fprintf('1. CarSim should already be open (launched by matlab.bat)\n');
-    fprintf('   If not, double-click CarSim.exe\n\n');
-    fprintf('2. In CarSim, click [Run Control] tab (top, with play icon)\n\n');
-    fprintf('3. Left side Models area:\n');
+    fprintf('1. In CarSim, click [Run Control] tab (top, with play icon)\n\n');
+    fprintf('2. Left side Models area:\n');
     fprintf('   - Dropdown: change Internal to Simulink\n');
     fprintf('   - Click browse (...) and select:\n');
     fprintf('     %s\\carsim_cruise_ctrl.slx\n\n', modelDir);
-    fprintf('4. Click [I/O Channels] button:\n');
+    fprintf('3. Click [I/O Channels] button:\n');
     fprintf('   Export (Simulink->CarSim): Throttle / Brake_MPa / MotorTorque\n');
     fprintf('   Import (CarSim->Simulink): Vx_kmh / Ax_g / EngineRPM\n\n');
-    fprintf('5. Set: Time Step = 0.001  Stop Time = 30\n');
-    fprintf('6. Click green Run button\n');
+    fprintf('4. Set: Time Step = 0.001  Stop Time = 30\n');
+    fprintf('5. Click green Run button\n');
     fprintf('------------------------------------------------\n');
 end
