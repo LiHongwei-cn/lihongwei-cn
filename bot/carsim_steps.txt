@@ -1,6 +1,6 @@
-CarSim 操作（精简）：
-① git pull
-② 双击 matlab.bat，输入 run_carsim（自动配路径+生成模型+启动CarSim）
-③ 如自动失败，手动：打开CarSim → 顶部点 Run Control → Models选Simulink → 浏览选 carsim_cruise_ctrl.slx
+CarSim 操作：
+① 双击 matlab.bat（自动 git pull + 启动 MATLAB）
+② MATLAB 输入 run_carsim
+③ 如自动失败：打开 CarSim → 顶部 Run Control → Models 选 Simulink → 浏览选 carsim_cruise_ctrl.slx
 ④ I/O Channels: Export=Throttle/Brake/MotorTorque Import=Vx/Ax/EngineRPM
-⑤ Time Step=0.001 Stop Time=30 → 点绿色Run ▶
+⑤ Time Step=0.001 Stop Time=30 → 点绿色 Run ▶

@@ -205,7 +205,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
       <div class="step-item">
         <h3>运行仿真</h3>
-        <div class="cmd"><span class="cm">% 车辆动力学仿真，弹出曲线图</span><br>vehicle_dynamics<br><br><span class="cm">% PMSM 电机 FOC 控制，弹出波形图</span><br>motor_control<br><br><span class="cm">% 生成定速巡航 Simulink 模型并打开</span><br>generate_cruise_model</div>
+        <div class="cmd"><span class="cm">% CarSim 定速巡航联合仿真</span><br>run_carsim<br><br><span class="cm">% 车辆动力学仿真</span><br>vehicle_dynamics<br><br><span class="cm">% PMSM 电机 FOC 控制</span><br>motor_control</div>
       </div>
     </div>
   </div>
@@ -216,11 +216,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
     <div class="step-list">
       <div class="step-item">
-        <h3>① MATLAB 一键运行</h3>
-        <p>在 MATLAB 命令行输入（每次都用这个）：</p>
+        <h3>① 一键同步并启动</h3>
+        <p>双击 <code>matlab.bat</code>，自动 git pull + 启动 MATLAB，工作目录自动设为 <code>matlab/</code>。然后输入：</p>
         <div class="cmd">run_carsim</div>
-        <p>自动完成：配路径 → 生成模型 → 连接 CarSim → 运行。COM 不可用时打印手操步骤。</p>
-      </div>
 
       <div class="step-item">
         <h3>② 手动：打开 CarSim</h3>

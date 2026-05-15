@@ -7,5 +7,5 @@ start matlab.exe
 echo MATLAB R2016b 已启动
 echo 工作目录自动设为 matlab/
 echo.
-echo 首次使用请在 Command Window 输入: startup_setup
-echo 然后可直接运行: vehicle_dynamics
+echo 首次使用: startup_setup（配路径）
+echo 可用命令: vehicle_dynamics / motor_control / run_carsim
