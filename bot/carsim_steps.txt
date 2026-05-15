@@ -1,0 +1,6 @@
+CarSim 操作（精简）：
+① git pull 拉取最新代码
+② 双击 matlab.bat，输入 build_carsim_model
+③ CarSim → 顶部标签 Run Control → Models 下拉选 Simulink → 浏览选 carsim_cruise_ctrl.slx
+④ I/O Channels：Export=Throttle/Brake/MotorTorque | Import=Vx/Ax/EngineRPM
+⑤ Time Step=0.001，Stop Time=30 → 点绿色 Run ▶（车辆加速到 100 km/h）

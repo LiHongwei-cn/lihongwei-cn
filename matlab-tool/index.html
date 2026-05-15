@@ -212,84 +212,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
   <!-- ===== CarSim 联合仿真 ===== -->
   <div class="section">
-    <h2 class="section-title"><span class="num">3</span> CarSim-Simulink 联合仿真（详细操作）</h2>
-    <p style="font-size:13px;color:var(--dim);margin-bottom:12px">将 Simulink 控制器接入 CarSim 2019.0 整车模型。以下按顺序操作，每一步都标明了要点击的位置。</p>
+    <h2 class="section-title"><span class="num">3</span> CarSim-Simulink 联合仿真</h2>
 
     <div class="step-list">
       <div class="step-item">
-        <h3>① 首次：配置 MATLAB 环境</h3>
-        <p>打开 MATLAB，在下方 <code>>></code> 提示符处输入：</p>
-        <div class="cmd">sim_setup</div>
-        <p>看到 <strong>"配置完成"</strong> 即可。这一步只做一次。</p>
-      </div>
-
-      <div class="step-item">
-        <h3>② 生成联合仿真模型</h3>
-        <p>继续在 MATLAB 输入：</p>
+        <h3>① MATLAB 生成模型</h3>
+        <p>首次运行 <code>sim_setup</code>（仅一次）。之后每次输入：</p>
         <div class="cmd">build_carsim_model</div>
-        <p>MATLAB 会自动打开一个 Simulink 窗口，里面是搭好的模型框图。记下脚本打印的 <strong>I/O 映射表</strong>（后面要用）。</p>
       </div>
 
       <div class="step-item">
-        <h3>③ 打开 CarSim 2019.0</h3>
-        <p>双击桌面 CarSim 图标，或从开始菜单找到 <strong>CarSim 2019.0</strong> 打开。</p>
-        <p>软件启动后，主界面顶部有一排标签页：<strong>Vehicle</strong> | <strong>Run Control</strong> | <strong>Results</strong> | ...</p>
-        <div class="tip info">CarSim 界面是英文的，下面每一步都会写出对应的英文按钮名称。</div>
+        <h3>② CarSim 选择模型</h3>
+        <p>CarSim → 顶部标签 <strong>Run Control</strong>（第2个，▶）→ 左侧 Models 下拉选 <strong>Simulink</strong> → 浏览按钮（...）→ 选 <code>carsim_cruise_ctrl.slx</code></p>
       </div>
 
       <div class="step-item">
-        <h3>④ 切换到 Run Control 界面</h3>
-        <p>点击顶部标签栏的 <strong>"Run Control"</strong>（第二个标签，图标像播放按钮▶）。</p>
-        <p>界面会切换，中间出现一大块设置区域。</p>
-      </div>
-
-      <div class="step-item">
-        <h3>⑤ 选择 Simulink 模型</h3>
-        <p>在 Run Control 界面左侧找到 <strong>"Models"</strong> 区域。里面有一个下拉选择框，默认显示 "Internal" 或 "Self-contained"。</p>
-        <p>点击下拉框 → 选择 <strong>"Simulink"</strong>。</p>
-        <p>下拉框旁边会出现一个 <strong>浏览按钮（... 或文件夹图标）</strong> → 点击它 → 导航到你的项目目录下的 <code>matlab/carsim/</code> 文件夹 → 选择 <code>carsim_cruise_ctrl.slx</code>。</p>
-        <div class="tip info">文件路径示例：<code>Desktop\你的项目名\matlab\carsim\carsim_cruise_ctrl.slx</code></div>
-      </div>
-
-      <div class="step-item">
-        <h3>⑥ 配置 I/O Channels（关键步骤）</h3>
-        <p>选中 Simulink 模型后，Models 区域会出现 <strong>"I/O Channels"</strong> 按钮 → 点击它。</p>
-        <p>弹出新窗口，左边是 <strong>Simulink → CarSim（Export）</strong>，右边是 <strong>CarSim → Simulink（Import）</strong>。</p>
-        <p>对照 MATLAB 刚才打印的映射表，逐个设置：</p>
-        <p style="margin-top:8px"><strong>Export 栏（Simulink 输出 → CarSim 接收）：</strong></p>
-        <table style="font-size:12px;width:100%;border-collapse:collapse;margin:6px 0">
-          <tr style="color:var(--accent)"><td style="padding:4px 8px">通道1</td><td>选择 Throttle（节气门）</td></tr>
-          <tr style="color:var(--accent)"><td style="padding:4px 8px">通道2</td><td>选择 Brake（制动）</td></tr>
-          <tr style="color:var(--accent)"><td style="padding:4px 8px">通道3</td><td>选择 Motor Torque（电机转矩）</td></tr>
+        <h3>③ 配置 I/O Channels</h3>
+        <p>点 I/O Channels 按钮 → 弹出窗口：</p>
+        <table>
+          <tr style="color:var(--accent)"><td style="width:50%">Export（Simulink→CarSim）</td><td>Throttle / Brake / MotorTorque</td></tr>
+          <tr style="color:var(--green)"><td>Import（CarSim→Simulink）</td><td>Vx / Ax / EngineRPM</td></tr>
         </table>
-        <p style="margin-top:8px"><strong>Import 栏（CarSim 输出 → Simulink 接收）：</strong></p>
-        <table style="font-size:12px;width:100%;border-collapse:collapse;margin:6px 0">
-          <tr style="color:var(--green)"><td style="padding:4px 8px">通道1</td><td>选择 Vx（纵向车速）</td></tr>
-          <tr style="color:var(--green)"><td style="padding:4px 8px">通道2</td><td>选择 Ax（纵向加速度）</td></tr>
-          <tr style="color:var(--green)"><td style="padding:4px 8px">通道3</td><td>选择 Engine RPM（发动机转速）</td></tr>
-        </table>
-        <p>配完点 <strong>OK</strong> 关闭。</p>
       </div>
 
       <div class="step-item">
-        <h3>⑦ 设置仿真步长</h3>
-        <p>回到 Run Control 主界面，找到 <strong>"Time Step"</strong> 或 <strong>"Step Size"</strong> 输入框。</p>
-        <p>把里面的值改为 <strong>0.001</strong>。</p>
-        <p>再找到 <strong>"Stop Time"</strong> 或 <strong>"Simulation Time"</strong> → 改为 <strong>30</strong>（单位：秒）。</p>
-      </div>
-
-      <div class="step-item">
-        <h3>⑧ 运行联合仿真</h3>
-        <p>点击 <strong>Run</strong> 按钮（通常在 Run Control 页面顶部或右侧，绿色，▶ 图标）。</p>
-        <p>CarSim 开始计算 → 自动后台调用 Simulink 控制器 → 计算完成后弹出 <strong>动画窗口</strong> 和 <strong>曲线图窗口</strong>。</p>
-        <p>在动画窗口可以看到车辆行驶过程，验证车速是否加速到 <strong>100 km/h</strong> 并保持。</p>
-      </div>
-
-      <div class="step-item">
-        <h3>⑨ 修改参数重新仿真</h3>
-        <p>想改目标车速：打开 <code>carsim_cruise_ctrl.slx</code> → 双击 <strong>Target_Speed_kmh</strong> 模块 → 修改 Constant Value → 保存 → 回到 CarSim 点 Run 即可。</p>
-        <p>想改 PI 参数：双击 <strong>Kp</strong> 或 <strong>Ki</strong> 模块修改增益值。</p>
-        <div class="tip info">修改 Simulink 模型后记得保存（Ctrl+S），CarSim 再次 Run 时自动使用最新版本。</div>
+        <h3>④ 运行</h3>
+        <p>Time Step = <strong>0.001</strong>，Stop Time = <strong>30</strong> → 点绿色 <strong>Run</strong> ▶</p>
+        <p>动画窗口验证：车辆加速到 100 km/h 并保持。</p>
       </div>
     </div>
   </div>

@@ -155,21 +155,13 @@ function build_carsim_model()
 end
 
 function print_io_mapping()
-    fprintf('\n========== CarSim I/O 通道映射 ==========\n');
-    fprintf('在 CarSim 中按如下顺序配置 I/O Channels:\n\n');
-    fprintf('  CarSim → Simulink (Import):\n');
-    fprintf('    1. Vx         (车速 km/h)\n');
-    fprintf('    2. Ax         (纵向加速度 g)\n');
-    fprintf('    3. EngRPM     (发动机转速 rpm)\n\n');
-    fprintf('  Simulink → CarSim (Export):\n');
-    fprintf('    1. Throttle   (节气门 0-1)\n');
-    fprintf('    2. Brake      (制动压力 MPa)\n');
-    fprintf('    3. MotorTrq   (电机转矩 Nm，EV 模式用)\n\n');
-    fprintf('配置步骤:\n');
-    fprintf('  1. CarSim → Run Control → Models → 选 Simulink\n');
-    fprintf('  2. 浏览选择 carsim_cruise_ctrl.slx\n');
-    fprintf('  3. 点击 I/O Channels 按上表配置映射\n');
-    fprintf('  4. 设置 Step Size 为 %.3f s\n', 0.001);
-    fprintf('  5. 点击 Run\n');
-    fprintf('==========================================\n');
+    fprintf('\n===== CarSim 操作（精简） =====\n');
+    fprintf('1. CarSim -> Run Control(顶部第2个标签)\n');
+    fprintf('2. Models下拉选 Simulink -> 浏览 carsim_cruise_ctrl.slx\n');
+    fprintf('3. I/O Channels 按钮:\n');
+    fprintf('   Export(Simulink->CarSim): Throttle / Brake / MotorTorque\n');
+    fprintf('   Import(CarSim->Simulink): Vx / Ax / EngineRPM\n');
+    fprintf('4. Time Step=0.001  Stop Time=30\n');
+    fprintf('5. 点绿色 Run (车辆加速到 %.0f km/h)\n', 100);
+    fprintf('==============================\n');
 end
