@@ -28,23 +28,11 @@ Ki_i = 2000;
 Kp_s = 0.5;
 Ki_s = 10;
 
-%% 参考输入
-w_ref = zeros(1, n);
-TL    = zeros(1, n);   % 负载转矩
-
-for i = 1:n
-    if t(i) < 0.1
-        w_ref(i) = 0;
-    elseif t(i) < 0.3
-        w_ref(i) = 1000;   % 目标转速 [rpm]
-    else
-        w_ref(i) = 2000;   % 升速
-    end
-
-    if t(i) > 0.4
-        TL(i) = 0.5;       % 0.4s 后加载
-    end
-end
+%% 参考输入（向量化）
+w_ref = 0 * (t < 0.1) ...
+      + 1000 * (t >= 0.1 & t < 0.3) ...
+      + 2000 * (t >= 0.3);
+TL = 0.5 * (t > 0.4);
 
 %% 初始化状态
 id = 0; iq = 0; wm = 0; theta = 0;
