@@ -1,3 +1,4 @@
+import os
 import sys
 import ssl
 from pathlib import Path
@@ -5,7 +6,7 @@ from urllib.request import Request, urlopen
 from urllib.parse import urlencode
 from urllib.error import URLError
 
-TOKEN = "8868453528:AAFFdqlRUG48wo0nMnOm4xsUKhNTCbvpwVk"
+TOKEN = os.environ["TELEGRAM_TOKEN"]
 CHAT_ID_FILE = Path(__file__).parent / "chat_id.txt"
 
 CTX = ssl.create_default_context()

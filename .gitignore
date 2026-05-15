@@ -9,6 +9,9 @@ __pycache__/
 venv/
 .venv/
 
+# Bot 运行时数据（每次运行自动生成）
+bot/chat_id.txt
+
 # 系统
 Thumbs.db
 .DS_Store

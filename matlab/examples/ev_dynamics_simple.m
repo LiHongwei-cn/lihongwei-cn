@@ -31,17 +31,13 @@ T  = 60;         % 总仿真时间 [s]
 t  = 0:dt:T;
 n  = length(t);
 
-%% 目标车速曲线（加速-匀速-减速）
-v_target = zeros(1, n);
-for i = 1:n
-    if t(i) <= 15
-        v_target(i) = (80/3.6) * (t(i)/15);     % 0-80km/h 加速
-    elseif t(i) <= 45
-        v_target(i) = 80/3.6;                     % 匀速 80km/h
-    else
-        v_target(i) = max(0, 80/3.6 * (1 - (t(i)-45)/15)); % 减速到0
-    end
-end
+%% 目标车速曲线（加速-匀速-减速）- 向量化
+V_CRUISE = 80 / 3.6;          % 巡航速度 [m/s]
+T_ACCEL = 15; T_CRUISE = 45;  % 时间节点 [s]
+v_target = V_CRUISE * min(t / T_ACCEL, 1) ...
+         .* (t <= T_CRUISE) ...
+         + V_CRUISE * max(1 - (t - T_CRUISE) / T_ACCEL, 0) ...
+           .* (t > T_CRUISE);
 
 %% 仿真
 v = zeros(1, n);     % 实际车速 [m/s]

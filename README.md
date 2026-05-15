@@ -93,6 +93,10 @@ Claude Code 的完整入门教程。Mac / Windows 双平台，有魔法没魔法
 
 🔗 [查看完整教程](https://lihongwei-ch.github.io/claude-code-tutorial/)
 
+## 项目规范
+
+本仓库使用 [CLAUDE.md](CLAUDE.md) 定义代码规范和 AI 行为准则。所有 MATLAB 代码兼容 R2016b，Python 代码从环境变量读取密钥，Git 提交遵循 conventional commits 格式。
+
 ## 笔记本操作流程
 
 ```bash

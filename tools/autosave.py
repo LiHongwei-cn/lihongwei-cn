@@ -9,9 +9,9 @@ import subprocess
 from pathlib import Path
 
 WATCH_DIR = Path(__file__).resolve().parent.parent
-CHECK_INTERVAL = 30  # 秒，检测间隔
-COOLDOWN = 120       # 秒，连续两次自动提交的最小间隔
-PROXY = "http://127.0.0.1:7897"
+CHECK_INTERVAL = int(os.environ.get("AUTOSAVE_INTERVAL", "30"))
+COOLDOWN = int(os.environ.get("AUTOSAVE_COOLDOWN", "120"))
+PROXY = os.environ.get("HTTPS_PROXY", "")
 
 # 不触发自动保存的关键词（含这些词的文件变更不会被自动提交）
 IGNORE_PATTERNS = [".pyc", "__pycache__", ".git", ".env", "venv"]
@@ -36,7 +36,9 @@ def has_changes() -> bool:
 
 def auto_save():
     timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-    env = {**os.environ, "HTTPS_PROXY": PROXY}
+    env = dict(os.environ)
+    if PROXY:
+        env["HTTPS_PROXY"] = PROXY
 
     subprocess.run(["git", "add", "."], env=env, capture_output=True)
 

@@ -21,23 +21,16 @@ T  = 30;               % 总时长 [s]
 t  = 0:dt:T;           % 时间向量
 n  = length(t);
 
-%% 驱动/制动力输入 (N)
-% 分段：0-10s 加速，10-20s 匀速，20-30s 制动
-F_drive = zeros(1, n);
-F_brake = zeros(1, n);
+%% 驱动/制动力输入 (N) —— 向量化
+% 0-10s 加速，10-20s 匀速，20-30s 制动
+V_CRUISE = 30 / 3.6;                            % 巡航速度 [m/s]
+F_CRUISE = calcResist(V_CRUISE, param);          % 保持匀速所需驱动力 [N]
+F_ACCEL_MAX = 3000;                              % 最大加速力 [N]
+F_BRAKE = 2000;                                  % 制动力 [N]
 
-for i = 1:n
-    if t(i) <= 10
-        % 加速阶段：驱动力逐渐增加到 3000N
-        F_drive(i) = 3000 * (t(i) / 10);
-    elseif t(i) <= 20
-        % 匀速阶段
-        F_drive(i) = calcResist(30/3.6, param); % 保持30km/h匀速所需力
-    else
-        % 制动阶段
-        F_brake(i) = 2000;
-    end
-end
+F_drive = F_ACCEL_MAX * (t / 10) .* (t <= 10) ...
+        + F_CRUISE .* (t > 10 & t <= 20);
+F_brake = F_BRAKE .* (t > 20);
 
 %% 仿真循环（前向欧拉法）
 v = zeros(1, n);       % 速度 [m/s]

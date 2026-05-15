@@ -1,5 +1,6 @@
 import asyncio
 import base64
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -9,9 +10,9 @@ from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTyp
 from openai import OpenAI
 
 # ============ 配置 ============
-TELEGRAM_TOKEN = "8868453528:AAFFdqlRUG48wo0nMnOm4xsUKhNTCbvpwVk"
-DEEPSEEK_API_KEY = "sk-ba9970676c074a5e9a7c87c67639ba8e"
-REPO_PATH = r"C:\Users\HP\Desktop\1"
+TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
+DEEPSEEK_API_KEY = os.environ["DEEPSEEK_API_KEY"]
+REPO_PATH = os.environ.get("REPO_PATH", str(Path(__file__).resolve().parent.parent))
 
 client = OpenAI(
     api_key=DEEPSEEK_API_KEY,

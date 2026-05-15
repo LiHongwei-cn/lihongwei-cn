@@ -26,27 +26,15 @@ Ki = 5.0;
 % PWM 频率
 f_pwm = 10000;   % 10kHz
 
-%% 参考转速
-w_ref = zeros(1, n);
-for i = 1:n
-    if t(i) < 0.3
-        w_ref(i) = 0;
-    elseif t(i) < 0.8
-        w_ref(i) = 100 * pi/30;   % 100 rad/s ≈ 955 rpm
-    elseif t(i) < 1.4
-        w_ref(i) = 200 * pi/30;   % 200 rad/s ≈ 1910 rpm
-    else
-        w_ref(i) = 150 * pi/30;   % 150 rad/s ≈ 1432 rpm
-    end
-end
+%% 参考转速（向量化）
+W0 = 0; W1 = 100; W2 = 200; W3 = 150;           % 参考转速 [rad/s]
+w_ref = W0 * (t < 0.3) ...
+      + W1 * (t >= 0.3 & t < 0.8) ...
+      + W2 * (t >= 0.8 & t < 1.4) ...
+      + W3 * (t >= 1.4);
 
-%% 负载转矩
-TL = zeros(1, n);
-for i = 1:n
-    if t(i) > 1.0 && t(i) < 1.8
-        TL(i) = 1.0;  % 中间段加载 1 Nm
-    end
-end
+%% 负载转矩（向量化）
+TL = 1.0 * (t > 1.0 & t < 1.8);  % 中间段加载 1 Nm
 
 %% 初始化
 w  = 0;          % 转速 [rad/s]
