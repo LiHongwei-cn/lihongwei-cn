@@ -10,9 +10,22 @@ from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTyp
 from openai import OpenAI
 
 # ============ 配置 ============
-TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
-DEEPSEEK_API_KEY = os.environ["DEEPSEEK_API_KEY"]
-REPO_PATH = os.environ.get("REPO_PATH", str(Path(__file__).resolve().parent.parent))
+def _get_env(key: str) -> str:
+    val = os.environ.get(key)
+    if val:
+        return val
+    try:
+        import winreg
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Environment") as reg:
+            val, _ = winreg.QueryValueEx(reg, key)
+        os.environ[key] = val
+        return val
+    except Exception:
+        raise KeyError(f"{key} 未设置，请在系统环境变量中配置")
+
+TELEGRAM_TOKEN = _get_env("TELEGRAM_TOKEN")
+DEEPSEEK_API_KEY = _get_env("DEEPSEEK_API_KEY")
+REPO_PATH = os.environ.get("REPO_PATH") or str(Path(__file__).resolve().parent.parent)
 
 client = OpenAI(
     api_key=DEEPSEEK_API_KEY,
@@ -165,8 +178,25 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(reply)
 
 
-app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
-print("Bot 已启动（Simulink 模式 — 代码类任务默认生成 Simulink 模型）")
-app.run_polling()
+LOG_FILE = Path(__file__).with_suffix(".log")
+
+def _log(msg: str):
+    ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    try:
+        with open(LOG_FILE, "a", encoding="utf-8") as f:
+            f.write(f"[{ts}] {msg}\n")
+    except Exception:
+        pass
+
+if __name__ == "__main__":
+    _log("Bot 启动...")
+    try:
+        app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
+        app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+        app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
+        print("Bot 已启动")
+        _log("Bot 运行中")
+        app.run_polling()
+    except Exception as e:
+        _log(f"致命错误: {e}")
+        raise
