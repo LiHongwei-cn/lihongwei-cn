@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MacBook Air 新机 Claude Code 部署指南 — 从零配置 DeepSeek API + 全局规范 + 洁癖.skill">
+<title>MacBook Claude Code 部署指南 · LiHongwei</title>
+<style>
+:root{--bg1:#0c0a1a;--bg2:#1a1540;--bg3:#0f1a2e;--card:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.07);--text:#e2e2e7;--dim:rgba(255,255,255,0.45);--accent:#7c8cf8;--green:#4ade80;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.1);--cyan:#22d3ee}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(160deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);min-height:100vh;line-height:1.7}
+.container{max-width:800px;margin:0 auto;padding:32px 24px 80px}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color 0.2s}
+.back-link:hover{color:var(--text)}
+
+.hero{text-align:center;padding:40px 0 24px}
+.hero-badge{display:inline-block;background:rgba(34,211,238,0.1);color:var(--cyan);border:1px solid rgba(34,211,238,0.2);padding:4px 14px;border-radius:20px;font-size:12px;margin-bottom:16px;letter-spacing:1px}
+.hero h1{font-size:32px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#7c8cf8,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
+.hero p{font-size:15px;color:var(--dim);max-width:620px;margin:0 auto}
+
+.section{margin-bottom:40px}
+.section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--purple-dim);color:var(--purple);font-size:14px;font-weight:700;flex-shrink:0}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:6px;font-size:11px;font-weight:600;margin-left:6px;vertical-align:middle}
+.badge.ok{background:rgba(74,222,128,0.1);color:var(--green);border:1px solid rgba(74,222,128,0.15)}
+.badge.need{background:rgba(248,113,113,0.1);color:var(--red);border:1px solid rgba(248,113,113,0.15)}
+.badge.caution{background:rgba(251,191,36,0.1);color:var(--orange);border:1px solid rgba(251,191,36,0.15)}
+
+.step-list{display:flex;flex-direction:column;gap:10px}
+.step-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;position:relative;padding-left:60px}
+.step-item::before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:20px;width:26px;height:26px;border-radius:8px;background:var(--purple-dim);color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.step-item h3{font-size:15px;font-weight:600;margin-bottom:6px}
+.step-item p{font-size:13px;color:var(--dim);line-height:1.6}
+.step-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:#a78bfa}
+.step-item .cmd{background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 16px;margin-top:6px;font-family:'SF Mono','Consolas','Courier New',monospace;font-size:13px;color:#b8c7ff;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+.step-item .cmd .c{color:rgba(255,255,255,0.3)}
+.step-item a{color:var(--accent)}
+.step-item strong{color:var(--text)}
+
+.file-map{background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.file-map table{width:100%;border-collapse:collapse;font-size:13px}
+.file-map th{text-align:left;padding:10px 16px;background:rgba(255,255,255,0.03);color:var(--dim);font-weight:500;font-size:12px;border-bottom:1px solid var(--border)}
+.file-map td{padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
+.file-map tr:last-child td{border-bottom:none}
+.file-map .src{color:var(--purple);font-family:'SF Mono','Consolas',monospace;font-size:12px}
+.file-map .dest{color:var(--accent);font-family:'SF Mono','Consolas',monospace;font-size:12px}
+.file-map .why{color:var(--dim);font-size:12px}
+
+.tip{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.12);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--orange);margin-top:10px}
+.tip.info{background:rgba(108,140,255,0.07);border-color:rgba(108,140,255,0.12);color:var(--accent)}
+.tip.green{background:rgba(74,222,128,0.07);border-color:rgba(74,222,128,0.12);color:var(--green)}
+.tip.cyan{background:rgba(34,211,238,0.07);border-color:rgba(34,211,238,0.12);color:var(--cyan)}
+
+.link-block{background:var(--purple-dim);border:1px solid rgba(167,139,250,0.1);border-radius:14px;padding:20px 24px;margin-bottom:12px}
+.link-block h3{font-size:15px;font-weight:600;margin-bottom:10px;color:var(--purple)}
+.link-block .link-row{display:flex;align-items:center;padding:6px 0;font-size:13px;gap:8px}
+.link-block .link-row .label{color:var(--dim);min-width:80px;flex-shrink:0}
+.link-block .link-row .url{color:var(--accent);word-break:break-all}
+.link-block .link-row a{color:var(--accent);text-decoration:none}
+.link-block .link-row a:hover{text-decoration:underline}
+
+.footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:32px}
+.footer a{color:rgba(255,255,255,0.3);text-decoration:none}
+.footer a:hover{color:rgba(255,255,255,0.5)}
+
+@media(max-width:640px){
+  .container{padding:20px 16px 60px}
+  .hero h1{font-size:24px}
+  .step-item{padding:16px 16px 16px 48px}
+  .step-item::before{left:14px;top:16px;width:22px;height:22px;font-size:12px}
+  .file-map{overflow-x:auto}
+  .file-map table{font-size:11px}
+  .file-map td,.file-map th{padding:8px 10px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="../">← 返回主页</a>
+
+  <div class="hero">
+    <div class="hero-badge">macOS · 从零部署</div>
+    <h1>MacBook Air<br>Claude Code 部署指南</h1>
+    <p>从新机到可用：安装 Claude Code → 接入 DeepSeek API → 导入全部全局规范 → 一键启动洁癖.skill。<br>每一步精确到文件路径，照做即可。</p>
+  </div>
+
+  <!-- 概览 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">0</span> 前提条件</h2>
+    <div class="step-list" style="counter-reset:step">
+      <div class="step-item">
+        <h3>你需要有 <span class="badge ok">2 个东西</span></h3>
+        <p>
+          ① <strong>DeepSeek API Key</strong> — 去 <a href="https://platform.deepseek.com/api_keys" target="_blank">platform.deepseek.com/api_keys</a> 创建<br>
+          ② <strong>本仓库的 global-specs/ 文件夹</strong> — 已经躺在 GitHub 上，下一步会 clone
+        </p>
+      </div>
+      <div class="step-item">
+        <h3>最终你会得到什么</h3>
+        <p>
+          一台装了 Claude Code 的 MacBook，自动记住你的偏好（中文回复、自动 push、洁癖审查），新项目自动继承规范，每次任务收尾运行 <code>/neat</code> 存档。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 1: 安装 Claude Code -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">1</span> 安装 Claude Code</h2>
+    <div class="step-list" style="counter-reset:step">
+      <div class="step-item">
+        <h3>通过 Homebrew 安装 <span class="badge ok">推荐</span></h3>
+        <div class="cmd">brew install claude-code</div>
+        <p style="margin-top:6px">如果没有 Homebrew，先去 <a href="https://brew.sh" target="_blank">brew.sh</a> 装。</p>
+      </div>
+      <div class="step-item">
+        <h3>备选：npm 全局安装</h3>
+        <p>适用于不用 Homebrew 的情况：</p>
+        <div class="cmd">npm install -g @anthropic-ai/claude-code</div>
+      </div>
+      <div class="step-item">
+        <h3>验证安装</h3>
+        <div class="cmd">claude --version</div>
+        <p style="margin-top:4px">输出版本号即成功。此时 <code>~/.claude/</code> 目录已自动创建。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: 获取规范文件 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">2</span> 拉取全局规范文件</h2>
+    <div class="step-list" style="counter-reset:step">
+      <div class="step-item">
+        <h3>Clone 仓库</h3>
+        <div class="cmd"><span class="c"># 克隆到桌面（或任意你喜欢的位置）</span>
+cd ~/Desktop
+git clone https://github.com/LiHongwei-ch/lihongwei-ch.git</div>
+      </div>
+      <div class="step-item">
+        <h3>进入 global-specs 目录</h3>
+        <div class="cmd">cd ~/Desktop/lihongwei-ch/global-specs</div>
+        <p style="margin-top:4px">后续所有操作都从这个目录出发。用 <code>ls</code> 看一下，应该看到 CLAUDE.md、settings.json、rules/、skills/、memory/ 等文件。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: API 配置 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">3</span> 配置 DeepSeek API <span class="badge need">需要改 Key</span></h2>
+    <div class="step-list" style="counter-reset:step">
+      <div class="step-item">
+        <h3>编辑 settings.json，填入真实 API Key</h3>
+        <p>用任意文本编辑器打开 <code>settings.json</code>，找到这一行：</p>
+        <div class="cmd">"ANTHROPIC_AUTH_TOKEN": "&lt;你的 DeepSeek API Key&gt;"</div>
+        <p style="margin-top:6px">把 <code>&lt;你的 DeepSeek API Key&gt;</code> 替换为你的真实 Key（以 <code>sk-</code> 开头）。</p>
+        <div class="tip info">整个文件只需改这一个值，其他配置（Base URL、Model）已经写好了。</div>
+      </div>
+      <div class="step-item">
+        <h3>复制到 Claude Code 配置目录</h3>
+        <div class="cmd">cp settings.json ~/.claude/settings.json</div>
+        <p style="margin-top:4px">文件内容概览：</p>
+        <div class="cmd"><span class="c">// ~/.claude/settings.json 最终效果</span>
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
+    "ANTHROPIC_AUTH_TOKEN": "sk-xxxxxxxx",  <span class="c">← 你的真实 Key</span>
+    "ANTHROPIC_MODEL": "deepseek-v4-pro",
+    ...
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "dark"
+}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 4: 部署全局 CLAUDE.md -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">4</span> 部署用户全局指令</h2>
+    <div class="step-list" style="counter-reset:step">
+      <div class="step-item">
+        <h3>复制 CLAUDE.md 到全局位置</h3>
+        <div class="cmd">cp CLAUDE.md ~/.claude/CLAUDE.md</div>
+        <p style="margin-top:6px">这个文件告诉 Claude Code：你是谁、做什么的、行为准则、安全红线。所有项目共享，不需要每个项目复制一份。</p>
+        <div class="tip info"><strong>作用范围：</strong>全局生效。你在任何目录打开 Claude Code，它都会先读这个文件。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 5: 部署规范文件 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">5</span> 部署项目规范模板（6 份）</h2>
+    <div class="step-list" style="counter-reset:step">
+      <div class="step-item">
+        <h3>复制 rules/ 到全局</h3>
+        <div class="cmd">mkdir -p ~/.claude/rules
+cp rules/*.md ~/.claude/rules/</div>
+        <p style="margin-top:6px">6 份规范文件一览：</p>
+        <div class="cmd">~/.claude/rules/
+├── agents.md          <span class="c">← Agent 调度：何时用 planner/code-reviewer/tdd</span>
+├── coding-style.md    <span class="c">← 代码风格：不可变数据、KISS、命名规范</span>
+├── git-workflow.md    <span class="c">← Git 规范：commit message 格式、PR 流程</span>
+├── performance.md     <span class="c">← 模型选择：Haiku/Sonnet/Opus 使用策略</span>
+├── security.md        <span class="c">← 安全红线：密钥管理、commit 前检查清单</span>
+└── testing.md         <span class="c">← 测试要求：80% 覆盖率、TDD 流程</span></div>
+        <div class="tip green">这些文件是项目级 CLAUDE.md 的"上游引用"——不是每个项目都要抄一遍，而是 Claude Code 自动加载。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 6: 安装洁癖.skill -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">6</span> 安装洁癖.skill</h2>
+    <div class="step-list" style="counter-reset:step">
+      <div class="step-item">
+        <h3>复制 skill 文件</h3>
+        <div class="cmd">mkdir -p ~/.claude/skills/neat-freak/references
+cp skills/neat-freak/SKILL.md ~/.claude/skills/neat-freak/
+cp skills/neat-freak/references/*.md ~/.claude/skills/neat-freak/references/</div>
+        <p style="margin-top:6px">安装后文件结构：</p>
+        <div class="cmd">~/.claude/skills/neat-freak/
+├── SKILL.md                    <span class="c">← 主 skill：5 步审查流程</span>
+└── references/
+    ├── sync-matrix.md          <span class="c">← 变更影响矩阵（什么改动→改哪些文件）</span>
+    └── agent-paths.md          <span class="c">← 各 Agent 平台路径速查</span></div>
+      </div>
+      <div class="step-item">
+        <h3>触发方式</h3>
+        <p>在 Claude Code 对话中输入以下任意一个即可触发：</p>
+        <div class="cmd">/neat
+整理一下
+同步一下
+梳理一下
+收尾</div>
+        <p style="margin-top:6px">Skill 会自动盘点所有 .md 文件 → 用变更影响矩阵识别要改什么 → 按 docs/ → CLAUDE.md → memory 的顺序修改 → 自检 → 输出变更摘要。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 7: 权限配置 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">7</span> 部署权限白名单</h2>
+    <div class="step-list" style="counter-reset:step">
+      <div class="step-item">
+        <h3>复制 settings.local.json</h3>
+        <div class="cmd">cp settings.local.json ~/.claude/settings.local.json</div>
+        <p style="margin-top:4px">这个文件预授权了常用命令（git add/commit/push、curl 等），避免每次都要点"允许"。</p>
+        <div class="tip caution"><strong>注意：</strong>这个文件里有些路径是从 Windows 复制过来的（如 <code>C:\Users\HP\...</code>），在 Mac 上不会生效，但不影响使用。后续在 Mac 上操作时，Claude Code 会学习新的权限路径。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 8: 记忆文件 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">8</span> 导入跨会话记忆</h2>
+    <div class="step-list" style="counter-reset:step">
+      <div class="step-item">
+        <h3>记忆文件是什么</h3>
+        <p><code>memory/</code> 目录包含 3 条记忆文件：</p>
+        <div class="cmd">memory/
+├── MEMORY.md                 <span class="c">← 记忆索引</span>
+├── feedback_auto_push.md     <span class="c">← 代码改动后自动 push 到 GitHub</span>
+├── feedback_auto_sync.md     <span class="c">← 任务完成后自动 commit+push</span>
+└── feedback_file_location.md <span class="c">← 项目文件位置约定</span></div>
+      </div>
+      <div class="step-item">
+        <h3>部署方法</h3>
+        <p>记忆文件与项目路径绑定。首次在项目目录启动 Claude Code 后，Claude Code 会自动在 <code>~/.claude/projects/</code> 下创建对应目录：</p>
+        <div class="cmd"><span class="c"># 1. 先进入项目目录，启动一次 Claude Code（让它自动创建 memory 目录结构）</span>
+cd ~/Desktop/lihongwei-ch
+claude
+<span class="c"># 进入对话后输入 /exit 退出即可</span>
+
+<span class="c"># 2. 找到自动生成的 memory 目录</span>
+ls ~/.claude/projects/
+
+<span class="c"># 3. 把记忆文件复制进去</span>
+cp ~/Desktop/lihongwei-ch/global-specs/memory/*.md \
+   ~/.claude/projects/&lt;自动生成的路径&gt;/memory/</div>
+        <div class="tip info">实际上最省事的做法：直接在 Claude Code 里说"记住：代码改动后自动 push 到 GitHub"，它会自动写到正确的 memory 目录。这 3 条记忆只是给你参考用的备份。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 9: 项目初始化 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">9</span> 初始化项目 CLAUDE.md</h2>
+    <div class="step-list" style="counter-reset:step">
+      <div class="step-item">
+        <h3>为每个项目复制模板</h3>
+        <p><code>project-CLAUDE.md</code> 是一个项目级模板（MATLAB/Simulink 规范），适用于新能源汽车仿真项目：</p>
+        <div class="cmd"><span class="c"># 对于 li hongwei-ch 这个仓库（已经是你的主项目）</span>
+cp ~/Desktop/lihongwei-ch/global-specs/project-CLAUDE.md \
+   ~/Desktop/lihongwei-ch/CLAUDE.md
+
+<span class="c"># 对于其他新项目</span>
+cp ~/Desktop/lihongwei-ch/global-specs/project-CLAUDE.md \
+   /你的新项目目录/CLAUDE.md
+<span class="c"># 然后根据项目实际情况修改</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 10: 验证 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">10</span> 验证部署</h2>
+    <div class="step-list" style="counter-reset:step">
+      <div class="step-item">
+        <h3>启动 Claude Code</h3>
+        <div class="cmd">cd ~/Desktop/lihongwei-ch
+claude</div>
+      </div>
+      <div class="step-item">
+        <h3>测试洁癖.skill</h3>
+        <p>在对话中输入：</p>
+        <div class="cmd">/neat</div>
+        <p style="margin-top:4px">如果看到 skill 开始盘点文件、输出审查结果，说明部署成功。</p>
+      </div>
+      <div class="step-item">
+        <h3>测试 API 连接</h3>
+        <p>随便问一个问题（比如"当前目录有哪些文件"），如果能正常回复，说明 DeepSeek API 连接正常。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 文件映射总表 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">📋</span> 文件映射总表</h2>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:14px">一目了然——每个文件从哪来、到哪去、为什么需要它。</p>
+    <div class="file-map">
+      <table>
+        <tr><th>源文件（global-specs/ 内）</th><th>目标位置（macOS）</th><th>作用</th></tr>
+        <tr>
+          <td class="src">settings.json</td>
+          <td class="dest">~/.claude/settings.json</td>
+          <td class="why">DeepSeek API 接入配置</td>
+        </tr>
+        <tr>
+          <td class="src">CLAUDE.md</td>
+          <td class="dest">~/.claude/CLAUDE.md</td>
+          <td class="why">全局用户指令（你是谁、行为准则、红线）</td>
+        </tr>
+        <tr>
+          <td class="src">settings.local.json</td>
+          <td class="dest">~/.claude/settings.local.json</td>
+          <td class="why">命令权限白名单（免确认自动执行）</td>
+        </tr>
+        <tr>
+          <td class="src">rules/*.md</td>
+          <td class="dest">~/.claude/rules/*.md</td>
+          <td class="why">6 份工程规范（Agent 调度、代码风格、Git、性能、安全、测试）</td>
+        </tr>
+        <tr>
+          <td class="src">skills/neat-freak/</td>
+          <td class="dest">~/.claude/skills/neat-freak/</td>
+          <td class="why">洁癖.skill（文档/记忆自动审查同步）</td>
+        </tr>
+        <tr>
+          <td class="src">project-CLAUDE.md</td>
+          <td class="dest">各项目根/CLAUDE.md</td>
+          <td class="why">项目级模板（技术栈、目录结构、规范）</td>
+        </tr>
+        <tr>
+          <td class="src">memory/*.md</td>
+          <td class="dest">~/.claude/projects/&lt;path&gt;/memory/</td>
+          <td class="why">跨会话记忆（自动 push、自动同步偏好）</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 精简版流程 -->
+  <div class="tip cyan" style="margin-bottom:8px">
+    <strong>极速版：</strong>如果你只关心最核心的步骤，打开终端依次执行这 6 行即可（前提：已经 clone 了仓库、编辑了 settings.json 里的 API Key）：
+  </div>
+  <div class="cmd" style="margin-bottom:24px">cp settings.json ~/.claude/settings.json
+cp CLAUDE.md ~/.claude/CLAUDE.md
+cp settings.local.json ~/.claude/settings.local.json
+mkdir -p ~/.claude/rules ~/.claude/skills/neat-freak/references
+cp rules/*.md ~/.claude/rules/ && cp skills/neat-freak/SKILL.md ~/.claude/skills/neat-freak/ && cp skills/neat-freak/references/*.md ~/.claude/skills/neat-freak/references/
+cp project-CLAUDE.md ~/Desktop/lihongwei-ch/CLAUDE.md</div>
+
+  <!-- 日常使用 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">🔄</span> 日常工作流</h2>
+    <div class="step-list" style="counter-reset:step">
+      <div class="step-item">
+        <h3>开始工作</h3>
+        <p>打开终端，进入项目目录，启动 Claude Code，直接描述问题即可。无需每次给上下文——全局 CLAUDE.md 和项目 CLAUDE.md 已经告诉了 Agent 一切。</p>
+      </div>
+      <div class="step-item">
+        <h3>收尾存档 <span class="badge ok">关键步骤</span></h3>
+        <p>每次完成一个功能或修完一个 bug，关闭对话前运行：</p>
+        <div class="cmd">/neat</div>
+        <p style="margin-top:4px">洁癖.skill 会审查项目文档和记忆，确保代码迭代后文档也跟上了。这相当于游戏存档——下次新开对话，Agent 读到的是最新的规范。</p>
+        <div class="tip green">坚持每次收尾跑一遍 /neat，你的 Agent 会越用越聪明。过期的删、重复的合、模糊的改。</div>
+      </div>
+      <div class="step-item">
+        <h3>新项目启动</h3>
+        <p>新项目第一步永远是先写 CLAUDE.md（可以从 project-CLAUDE.md 模板开始），再开始写代码。约束先行。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">❓</span> 常见问题</h2>
+    <div class="step-list" style="counter-reset:step">
+      <div class="step-item">
+        <h3>启动 Claude Code 报 "command not found"</h3>
+        <p>检查安装路径是否在 PATH 中。brew 安装通常自动配置；npm 全局安装的话确认 <code>npm list -g @anthropic-ai/claude-code</code> 能查到。</p>
+      </div>
+      <div class="step-item">
+        <h3>API 连接失败</h3>
+        <p>检查 <code>~/.claude/settings.json</code> 中 <code>ANTHROPIC_AUTH_TOKEN</code> 是否填了正确的 DeepSeek Key、<code>ANTHROPIC_BASE_URL</code> 是否为 <code>https://api.deepseek.com/anthropic</code>。</p>
+      </div>
+      <div class="step-item">
+        <h3>/neat 没反应</h3>
+        <p>确认 <code>~/.claude/skills/neat-freak/SKILL.md</code> 文件存在且内容完整。也可以尝试输入"整理一下"触发。</p>
+      </div>
+      <div class="step-item">
+        <h3>记忆文件不存在 / 没生效</h3>
+        <p>记忆文件与项目路径绑定。首次在项目目录启动 Claude Code 后它会自动创建 memory 目录。也可以在对话中直接说"记住：xxxx"，Claude Code 会自己写。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 相关链接 -->
+  <div class="link-block" style="margin-top:8px">
+    <h3>🔗 相关资源</h3>
+    <div class="link-row"><span class="label">规范仓库</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/tree/main/global-specs" target="_blank">github.com/LiHongwei-ch/lihongwei-ch/tree/main/global-specs</a></span></div>
+    <div class="link-row"><span class="label">洁癖.skill 上游</span><span class="url"><a href="https://github.com/KKKKhazix/khazix-skills" target="_blank">github.com/KKKKhazix/khazix-skills</a></span></div>
+    <div class="link-row"><span class="label">DeepSeek API</span><span class="url"><a href="https://platform.deepseek.com/api_keys" target="_blank">platform.deepseek.com/api_keys</a></span></div>
+    <div class="link-row"><span class="label">Claude Code 文档</span><span class="url"><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank">docs.anthropic.com/claude-code</a></span></div>
+  </div>
+
+  <div class="footer">
+    <a href="https://github.com/LiHongwei-ch/lihongwei-ch/tree/main/mac-setup">页面源码 ↗</a>
+  </div>
+
+</div>
+</body>
+</html>
