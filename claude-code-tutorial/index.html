@@ -404,27 +404,23 @@ td a:hover{text-decoration:underline}
         <h3>下载启动脚本 <span class="badge ok">✅ 无需魔法</span></h3>
         <p>在仓库 <code>tools/claude-desktop.bat</code> 中已准备好启动脚本。你也可以自己创建一个文本文件，重命名为 <code>claude-desktop.bat</code>，写入以下内容：</p>
         <div class="cmd">@echo off
-chcp 65001 >nul
-title Claude Code - AI 编程助手
+:: Work directory - auto-detected (script location parent folder)
+set WORK_DIR=%~dp0..
 
-:: 工作目录（改成你自己的项目目录）
-set WORK_DIR=C:\Users\你的用户名\Desktop\你的项目
-
-:: 强制 CLI 模式，防止自动打开 VS Code
+:: Force CLI mode, prevent auto-open VS Code
 set CLAUDE_CODE_ENTRYPOINT=cli
 
 cd /d "%WORK_DIR%"
 
-:: 检测 Windows Terminal，有则用它打开（支持交互界面）
+:: Prefer Windows Terminal for interactive UI
 where wt.exe >nul 2>&1
 if %errorlevel% equ 0 (
-    wt -d "%WORK_DIR%" cmd /k "set CLAUDE_CODE_ENTRYPOINT=cli && claude --dangerously-skip-permissions --no-chrome"
+    start "" wt.exe -d "%WORK_DIR%" cmd /k "set CLAUDE_CODE_ENTRYPOINT=cli && claude --dangerously-skip-permissions --no-chrome"
     exit /b
 )
 
-:: 无 Windows Terminal 时直接启动
-claude --dangerously-skip-permissions --no-chrome
-pause</div>
+:: Fallback: launch directly in current console
+claude --dangerously-skip-permissions --no-chrome</div>
       </div>
 
       <div class="step-item">
@@ -472,7 +468,8 @@ pause</div>
     <div class="link-block" style="margin-top:8px">
       <h3>🔗 相关文件</h3>
       <div class="link-row"><span class="label">启动脚本</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/claude-desktop.bat" target="_blank">github.com/LiHongwei-ch/lihongwei-ch/tools/claude-desktop.bat</a> <span class="badge need">⚠️</span></span></div>
-      <div class="link-row"><span class="label">创建脚本</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/create-shortcut.ps1" target="_blank">create-shortcut.ps1（自动创建桌面快捷方式的 PowerShell 脚本）</a> <span class="badge need">⚠️</span></span></div>
+      <div class="link-row"><span class="label">创建脚本</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/create-shortcut.ps1" target="_blank">create-shortcut.ps1（一键创建桌面快捷方式）</a> <span class="badge need">⚠️</span></span></div>
+	      <div class="link-row"><span class="label">启动器脚本</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/launcher.ps1" target="_blank">launcher.ps1（快捷方式调用的 PowerShell 启动器）</a> <span class="badge need">⚠️</span></span></div>
       <div class="link-row"><span class="label">图标文件</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/claude-icon.ico" target="_blank">claude-icon.ico（Claude AI 快捷方式图标）</a> <span class="badge ok">✅</span></span></div>
       <div class="link-row"><span class="label">图标生成脚本</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/create-icon.py" target="_blank">create-icon.py（用 Python 重新生成 ICO）</a> <span class="badge ok">✅</span></span></div>
     </div>
