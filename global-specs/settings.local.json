@@ -1,0 +1,37 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git rm *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(curl *)",
+      "Bash(powershell *)",
+      "Bash(cscript *)",
+      "Bash(git commit *)",
+      "Bash(cmd.exe /c \"dir C:\\\\Users\\\\HP\\\\Desktop\\\\*Claude* 2>nul\")",
+      "Bash(powershell.exe *)",
+      "Bash(where claude *)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(rm -f \"/c/Users/HP/Desktop/Claude Code.lnk\")",
+      "Bash(rm -f \"/c/Users/HP/Desktop/1/tools/claude-launcher.vbs\")",
+      "Bash(cmd.exe *)",
+      "WebFetch(domain:lihongwei-ch.github.io)",
+      "Bash(xxd \"/c/Users/HP/Desktop/1/claude-code-tutorial/index.html\")",
+      "Bash(xxd)",
+      "Bash(xxd \"/c/Users/HP/Desktop/1/desktop-launcher/section5-new.html\")",
+      "WebFetch(domain:www.douyin.com)",
+      "WebSearch",
+      "Bash(mkdir -p \"C:/Users/HP/.claude/skills/neat-freak/references\")",
+      "Bash(cp /tmp/khazix-skills/neat-freak/SKILL.md \"C:/Users/HP/.claude/skills/neat-freak/\")",
+      "Bash(cp /tmp/khazix-skills/neat-freak/references/sync-matrix.md \"C:/Users/HP/.claude/skills/neat-freak/references/\")",
+      "Bash(cp /tmp/khazix-skills/neat-freak/references/agent-paths.md \"C:/Users/HP/.claude/skills/neat-freak/references/\")",
+      "Bash(cp \"C:/Users/HP/.claude/CLAUDE.md\" \"C:/Users/HP/Desktop/1/global-specs/CLAUDE.md\")",
+      "Bash(cp \"C:/Users/HP/Desktop/1/.claude/rules/\"*.md \"C:/Users/HP/Desktop/1/global-specs/rules/\")",
+      "Bash(cp \"C:/Users/HP/.claude/skills/neat-freak/SKILL.md\" \"C:/Users/HP/Desktop/1/global-specs/skills/neat-freak/\")",
+      "Bash(cp \"C:/Users/HP/.claude/skills/neat-freak/references/\"*.md \"C:/Users/HP/Desktop/1/global-specs/skills/neat-freak/references/\")",
+      "Bash(cp \"C:/Users/HP/.claude/projects/C--Users-HP/memory/\"*.md \"C:/Users/HP/Desktop/1/global-specs/memory/\")",
+      "Bash(cp \"C:/Users/HP/.claude/settings.local.json\" \"C:/Users/HP/Desktop/1/global-specs/settings.local.json\")"
+    ]
+  }
+}

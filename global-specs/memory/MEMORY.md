@@ -1,0 +1,2 @@
+- [auto-push-to-github](feedback_auto_push.md) — 项目代码改动必须同步推送 GitHub
+- [auto-sync-after-task](feedback_auto_sync.md) — 任务完成后自动 commit+push，含网页内容，不需要用户提醒
