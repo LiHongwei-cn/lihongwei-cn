@@ -4,12 +4,12 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## 项目概览
 
-新能源汽车工程专业 MATLAB 仿真工具包。AI 生成代码 → Git 同步 → 任何电脑一键运行。
+新能源汽车工程专业 MATLAB 仿真工具包。Claude Code 直接生成 Simulink 模型和仿真代码，用户自行操作 CarSim。
 
 ## 技术栈
 
 - **MATLAB/Simulink** R2016b 兼容（车辆动力学、电机控制、FOC、能量管理）
-- **CarSim** 2019.0 联合仿真
+- **CarSim** 2019.0（用户自行联合仿真）
 - **Python** 3.12（Telegram 机器人、自动化脚本）
 - **HTML/CSS**（GitHub Pages 静态页面）
 - **Shell/Batch**（启动脚本、Git 自动化）
@@ -22,7 +22,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 │   ├── examples/          可运行示例脚本
 │   ├── carsim/            CarSim-Simulink 联合仿真
 │   └── utils/             工具函数（FFT、滤波、RMS）
-├── bot/                   Telegram 机器人
+├── bot/                   Telegram 机器人（DeepSeek 直接回复）
 ├── matlab-tool/           安装包发布页面
 ├── starter-kit/           通用模板（开源）
 ├── tools/                 自动化脚本
@@ -30,7 +30,6 @@ This file provides guidance to Claude Code when working with code in this reposi
 ├── vpn-guide/             VPN 教程页面
 ├── win-optimize/          Windows 优化教程
 ├── claude-code-tutorial/  Claude Code 入门教程
-├── tasks/                 机器人任务队列
 ├── index.html             GitHub Pages 主页
 └── CLAUDE.md              项目规范（本文件）
 ```
@@ -46,6 +45,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 - 前向欧拉法写清楚注释，不使用隐式求解器
 - Simulink 模型生成脚本需检查 `bdIsLoaded` 防止重复
 - 数值单位在注释中标注（如 `[Ohm]`, `[rad/s]`, `[rpm]`）
+- CarSim I/O 通道映射：Export（Simulink→CarSim）/ Import（CarSim→Simulink）
 
 ## Python 规范
 
@@ -59,7 +59,6 @@ This file provides guidance to Claude Code when working with code in this reposi
 - commit message: `<type>: <description>`（feat, fix, refactor, docs, chore）
 - 先 diff 再 commit，不提交 `.env`、密钥、`__pycache__`
 - 每次代码修改后自动 push 到 GitHub
-- tasks/ 目录下的任务文件正常提交
 
 ## 代码质量
 
@@ -79,10 +78,10 @@ This file provides guidance to Claude Code when working with code in this reposi
 ## 常用命令
 
 ```bash
-# 启动 Telegram 机器人
+# 启动 Telegram 机器人（直接回复，不走任务队列）
 python bot/tgbot.py
 
-# 发送任务完成通知
+# 发送通知
 python bot/notify.py "任务描述"
 
 # 启动自动保存

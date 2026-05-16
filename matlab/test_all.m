@@ -1,6 +1,5 @@
 %% Batch test all MATLAB scripts
 % R2016b compatible
-% Each example runs in isolated sub-function
 
 scriptDir = fileparts(mfilename('fullpath'));
 addpath(scriptDir);
@@ -41,110 +40,29 @@ end
 
 fprintf('\n========== 测试 examples ==========\n');
 
-[ok, msg] = test_vd();  %#ok
-if ok, fprintf('[PASS] vehicle_dynamics\n'); passed = passed + 1;
-else fprintf('[FAIL] vehicle_dynamics: %s\n', msg); failed = failed + 1; end
+tests = {
+    'vehicle_dynamics',        @vehicle_dynamics;
+    'motor_control',           @motor_control;
+    'dc_motor_pwm',            @dc_motor_pwm;
+    'ev_dynamics_simple',      @ev_dynamics_simple;
+    'battery_soc_ekf',         @battery_soc_ekf;
+    'driving_cycle_analysis',  @driving_cycle_analysis;
+    'energy_management',       @energy_management;
+};
 
-[ok, msg] = test_mc();
-if ok, fprintf('[PASS] motor_control\n'); passed = passed + 1;
-else fprintf('[FAIL] motor_control: %s\n', msg); failed = failed + 1; end
-
-[ok, msg] = test_dc();
-if ok, fprintf('[PASS] dc_motor_pwm\n'); passed = passed + 1;
-else fprintf('[FAIL] dc_motor_pwm: %s\n', msg); failed = failed + 1; end
-
-[ok, msg] = test_ev();
-if ok, fprintf('[PASS] ev_dynamics_simple\n'); passed = passed + 1;
-else fprintf('[FAIL] ev_dynamics_simple: %s\n', msg); failed = failed + 1; end
-
-[ok, msg] = test_soc();
-if ok, fprintf('[PASS] battery_soc_ekf\n'); passed = passed + 1;
-else fprintf('[FAIL] battery_soc_ekf: %s\n', msg); failed = failed + 1; end
-
-[ok, msg] = test_drv_cyc();
-if ok, fprintf('[PASS] driving_cycle_analysis\n'); passed = passed + 1;
-else fprintf('[FAIL] driving_cycle_analysis: %s\n', msg); failed = failed + 1; end
-
-[ok, msg] = test_ems();
-if ok, fprintf('[PASS] energy_management\n'); passed = passed + 1;
-else fprintf('[FAIL] energy_management: %s\n', msg); failed = failed + 1; end
+for i = 1:size(tests, 1)
+    name = tests{i, 1};
+    func = tests{i, 2};
+    try
+        func();
+        fprintf('[PASS] %s\n', name);
+        passed = passed + 1;
+    catch e
+        fprintf('[FAIL] %s: %s\n', name, e.message);
+        failed = failed + 1;
+    end
+    close all;
+end
 
 fprintf('\n========== 结果: %d 通过 / %d 失败 ==========\n', passed, failed);
 exit;
-
-function [ok, msg] = test_vd()
-    ok = false; msg = '';
-    try
-        vehicle_dynamics; %#ok
-        ok = true; msg = '';
-    catch e
-        ok = false; msg = e.message;
-    end
-    close all;
-end
-
-function [ok, msg] = test_mc()
-    ok = false; msg = '';
-    try
-        motor_control; %#ok
-        ok = true; msg = '';
-    catch e
-        ok = false; msg = e.message;
-    end
-    close all;
-end
-
-function [ok, msg] = test_dc()
-    ok = false; msg = '';
-    try
-        dc_motor_pwm; %#ok
-        ok = true; msg = '';
-    catch e
-        ok = false; msg = e.message;
-    end
-    close all;
-end
-
-function [ok, msg] = test_ev()
-    ok = false; msg = '';
-    try
-        ev_dynamics_simple; %#ok
-        ok = true; msg = '';
-    catch e
-        ok = false; msg = e.message;
-    end
-    close all;
-end
-
-function [ok, msg] = test_soc()
-    ok = false; msg = '';
-    try
-        battery_soc_ekf; %#ok
-        ok = true; msg = '';
-    catch e
-        ok = false; msg = e.message;
-    end
-    close all;
-end
-
-function [ok, msg] = test_drv_cyc()
-    ok = false; msg = '';
-    try
-        driving_cycle_analysis; %#ok
-        ok = true; msg = '';
-    catch e
-        ok = false; msg = e.message;
-    end
-    close all;
-end
-
-function [ok, msg] = test_ems()
-    ok = false; msg = '';
-    try
-        energy_management; %#ok
-        ok = true; msg = '';
-    catch e
-        ok = false; msg = e.message;
-    end
-    close all;
-end

@@ -1,6 +1,5 @@
 import os
 import sys
-import ssl
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.parse import urlencode
@@ -22,10 +21,6 @@ def _get_env(key: str) -> str:
 TOKEN = _get_env("TELEGRAM_TOKEN")
 CHAT_ID_FILE = Path(__file__).parent / "chat_id.txt"
 
-CTX = ssl.create_default_context()
-CTX.check_hostname = False
-CTX.verify_mode = ssl.CERT_NONE
-
 
 def send_telegram(text: str):
     if not CHAT_ID_FILE.exists():
@@ -38,7 +33,7 @@ def send_telegram(text: str):
 
     try:
         req = Request(url, data=data)
-        urlopen(req, timeout=10, context=CTX)
+        urlopen(req, timeout=10)
         print("通知已发送")
     except URLError as e:
         print(f"通知发送失败: {e}")
@@ -46,17 +41,8 @@ def send_telegram(text: str):
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    carsim = False
-    if "--carsim" in args:
-        carsim = True
-        args.remove("--carsim")
-
     msg = " ".join(args) if args else ""
-    if carsim:
-        steps_file = Path(__file__).parent / "carsim_steps.txt"
-        if steps_file.exists():
-            msg += "\n\n" + steps_file.read_text(encoding="utf-8")
     if msg:
         send_telegram(msg)
     else:
-        print("用法: python notify.py [--carsim] <消息文本>")
+        print("用法: python notify.py <消息文本>")

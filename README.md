@@ -8,7 +8,7 @@ MATLAB 仿真 · AI 工具开发
 
 # ⬇️ 立即下载安装包
 
-**MATLAB AI 仿真工具包** — AI 生成代码 → Git 同步 → 任何电脑上一键运行。车辆动力学、电机控制、定速巡航仿真。
+**MATLAB AI 仿真工具包** — Claude Code 直接生成 Simulink 模型和仿真代码。车辆动力学、电机控制、定速巡航仿真。
 
 [📦 下载安装包（ZIP）](matlab-tool/matlab-ai-starter.zip) ｜ [📖 查看操作说明](matlab-tool/guide.txt) ｜ [🌐 项目详情页](https://lihongwei-ch.github.io/matlab-tool/)
 
@@ -23,11 +23,11 @@ MATLAB 仿真 · AI 工具开发
 ├── matlab-tool/           项目入口页面 + 安装包下载
 ├── vpn-guide/             免费 VPN 自建指南（零度解说教程）
 ├── starter-kit/           通用安装包源码（开源模板）
-├── bot/                   Telegram 机器人（DeepSeek 驱动）
+├── bot/                   Telegram 机器人（DeepSeek 直接回复）
 ├── tools/                 工具脚本（自动保存、启动脚本等）
 ├── matlab/                MATLAB/Simulink 仿真代码 (R2016b)
 │   ├── examples/          可运行示例脚本
-│   ├── carsim/            CarSim 联合仿真配置
+│   ├── carsim/            CarSim 联合仿真模型
 │   └── utils/             工具函数
 ├── docs/                  论文、实验报告、文档
 ├── win-optimize/           Windows 优化工具教程（WinUtil + WinHance）
@@ -41,12 +41,13 @@ MATLAB 仿真 · AI 工具开发
 
 ## MATLAB 使用
 
-所有代码兼容 **MATLAB R2016b** + CarSim 2019.0。
+所有代码兼容 **MATLAB R2016b**。CarSim 联合仿真由用户自行操作。
 
 启动后运行 `startup_setup.m` 添加路径，然后直接运行：
 - `vehicle_dynamics` — 车辆纵向动力学仿真
 - `motor_control` — PMSM 电机 FOC 控制仿真
 - `generate_cruise_model` — 生成定速巡航 Simulink 模型
+- `build_carsim_model` — 生成 CarSim 联合仿真模型（用户自行在 CarSim 中加载）
 
 ## 通用安装包（Starter Kit）
 
