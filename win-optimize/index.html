@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Windows系统优化教程 — 一行命令瘦身 · 纯净安装盘制作 · 隐私保护 · WinUtil+WinHance全攻略">
-<title>Windows 系统优化教程 · LiHongwei</title>
+<meta name="description" content="Win/Mac 系统优化教程 — Windows一行命令瘦身 · 纯净安装盘制作 · macOS系统维护 · 隐私保护 · WinUtil+WinHance全攻略">
+<title>Win / Mac 系统优化教程 · LiHongwei</title>
 <style>
 :root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#6c8cff;--green:#4ade80;--orange:#fb923c;--red:#f87171;--cyan:#22d3ee;--cyan-dim:rgba(34,211,238,0.12)}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -104,10 +104,10 @@ td a:hover{text-decoration:underline}
   <a class="back-link" href="../">← 返回主页</a>
 
   <div class="hero">
-    <div class="hero-badge">免费 · 开源 · 一款命令搞定</div>
-    <h1>Windows 系统优化教程</h1>
-    <p>一行命令搞定 Windows 优化，从系统瘦身到制作纯净安装盘。<br>隐私保护 · 更新控制 · 故障修复 · 一键启用开发功能</p>
-    <div class="cmd-inline">管理员 PowerShell 输入：<br><strong>irm "https://christitus.com/win" | iex</strong></div>
+    <div class="hero-badge">免费 · 开源 · Win / Mac 双平台</div>
+    <h1>Win / Mac 系统优化教程</h1>
+    <p><strong>Windows：</strong>一行命令搞定系统优化，从瘦身到制作纯净安装盘。<br><strong>macOS：</strong>系统维护 · 磁盘清理 · Homebrew 管理 · 隐私保护</p>
+    <div class="cmd-inline">Windows 用户：管理员 PowerShell 输入：<br><strong>irm "https://christitus.com/win" | iex</strong></div>
   </div>
 
   <!-- 图例 -->
@@ -475,7 +475,68 @@ td a:hover{text-decoration:underline}
     </p>
   </div>
 
-  <!-- ===== 8. 常见问题 ===== -->
+  <!-- ===== 8. macOS 系统优化 ===== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num m-icon">🍎</span> macOS 系统优化</h2>
+    <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
+      虽然 macOS 本身比 Windows 干净许多（没有预装广告、注册表碎片、强制更新弹窗），但用久了也会积累垃圾文件、缓存和冗余数据。以下方法帮你保持 Mac 流畅。
+    </p>
+
+    <div class="step-list">
+      <div class="step-item">
+        <h3>Homebrew 日常维护 <span class="badge ok">✅ 免费</span></h3>
+        <p>如果你用 Homebrew 装过软件（Git、Python 等），定期清理可以释放数 GB 空间：</p>
+        <div class="cmd">brew update           # 更新软件索引<br>brew upgrade          # 升级已安装的包<br>brew cleanup          # 删除旧版本缓存<br>brew autoremove       # 删除无用依赖<br>brew doctor           # 检查 Homebrew 状态</div>
+        <p>运行 <code>brew cleanup -n</code> 可以先预览会删除什么（<code>-n</code> 表示 dry-run，不实际操作）。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>系统自带存储管理 <span class="badge ok">✅ 免费</span></h3>
+        <p>macOS 内置了存储管理工具，比第三方更安全：</p>
+        <p>① <strong>系统设置 → 通用 → 存储</strong>，等待加载完成后查看各类文件占用。</p>
+        <p>② 系统会自动推荐清理项：清空废纸篓、删除旧 Time Machine 快照、优化存储空间等。</p>
+        <p>③ <strong>Xcode 缓存</strong>（如果装了）：<code>~/Library/Developer/Xcode/DerivedData</code> 和 <code>iOS DeviceSupport</code> 文件夹常积累 10-30GB。</p>
+        <div class="cmd">rm -rf ~/Library/Developer/Xcode/DerivedData/*<br>rm -rf ~/Library/Developer/Xcode/iOS\ DeviceSupport/*</div>
+      </div>
+
+      <div class="step-item">
+        <h3>OnyX — macOS 专用系统维护工具 <span class="badge ok">✅ 免费</span></h3>
+        <p><strong>OnyX</strong> 是 Mac 平台上最老牌、最受信任的免费维护工具，由法国开发者 Titanium Software 维护 20+ 年。</p>
+        <p>① 下载：<a href="https://www.titanium-software.fr/en/onyx.html" target="_blank">titanium-software.fr/en/onyx.html</a>（注意选对 macOS 版本，如 Sonoma / Sequoia）</p>
+        <p>② 功能：验证磁盘结构、运行系统维护脚本、清理缓存/日志/临时文件、重建 Spotlight 索引、修复权限</p>
+        <div class="tip warn">首次打开如果提示"无法验证开发者"，去 <strong>系统设置 → 隐私与安全性 → 仍要打开</strong>。这是正常的安全提示，不表示软件有问题。</div>
+      </div>
+
+      <div class="step-item">
+        <h3>AppCleaner — 彻底卸载应用 <span class="badge ok">✅ 免费</span></h3>
+        <p>直接拖到废纸篓只是删了 <code>.app</code>，残留的配置文件、缓存、日志还留在系统里。AppCleaner 可以帮你找到并一起删掉：</p>
+        <p>① 下载：<a href="https://freemacsoft.net/appcleaner/" target="_blank">freemacsoft.net/appcleaner</a></p>
+        <p>② 使用方法：把要卸载的应用图标拖进 AppCleaner 窗口 → 自动列出所有关联文件 → 点"删除"</p>
+        <div class="tip info">装了这个之后，每次你正常拖应用到废纸篓时，AppCleaner 会自动弹出提醒你清理残留文件。</div>
+      </div>
+
+      <div class="step-item">
+        <h3>清除系统缓存（终端命令） <span class="badge caution">⚡ 了解后再用</span></h3>
+        <p>以下终端命令可以手动清理常见的缓存位置，适用于有一定终端使用经验的用户：</p>
+        <div class="cmd"><span class="cm"># 用户缓存（一般安全）</span><br>rm -rf ~/Library/Caches/*<br>
+<span class="cm"># 用户日志</span><br>rm -rf ~/Library/Logs/*<br>
+<span class="cm"># Safari 缓存</span><br>rm -rf ~/Library/Safari/LocalStorage/*<br>
+<span class="cm"># 缩略图缓存</span><br>rm -rf ~/Library/Caches/com.apple.helpd/*<br>
+<span class="cm"># 运行系统维护脚本（安全）</span><br>sudo periodic daily weekly monthly</div>
+        <p><code>sudo periodic daily weekly monthly</code> 运行 macOS 内建的日常/每周/每月维护脚本（清理临时文件、轮转系统日志等），完全安全。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>管理开机启动项 <span class="badge ok">✅ 免费</span></h3>
+        <p>很多软件安装后会自动添加到开机启动，拖慢启动速度：</p>
+        <p>① <strong>系统设置 → 通用 → 登录项与扩展</strong></p>
+        <p>② 在列表中选中不需要启动的项目 → 点下方的"－"按钮移除</p>
+        <p>③ 同时检查"允许在后台运行"的分类，关闭不必要的后台项（如 Adobe 后台更新、Microsoft AutoUpdate 等）。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 9. 常见问题 ===== -->
   <div class="section">
     <h2 class="section-title"><span class="num m-icon">◆</span> 常见问题</h2>
 

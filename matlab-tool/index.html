@@ -90,7 +90,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
   <div class="hero">
     <div class="hero-badge">免费 · 开源 · 通用</div>
     <h1>MATLAB AI 仿真工具包</h1>
-    <p>AI 生成 MATLAB 仿真代码 → Git 版本管理 → 任何电脑上一键运行。<br>车辆动力学 · 电机控制 · 定速巡航 · 能量管理策略</p>
+    <p>AI 生成 MATLAB 仿真代码 → Git 版本管理 → Win / Mac 一键运行。<br>车辆动力学 · 电机控制 · 定速巡航 · 能量管理策略</p>
   </div>
 
   <!-- Download -->
@@ -123,7 +123,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <div class="feature-card">
         <div class="f-icon">📘</div>
         <h3>笔记本运行</h3>
-        <p>任何电脑上 git pull → 双击 matlab.bat → 直接运行仿真</p>
+        <p>任何电脑上 git pull → 启动 MATLAB → 直接运行仿真（Win 双击 .bat / Mac 终端执行 matlab.sh）</p>
       </div>
       <div class="feature-card">
         <div class="f-icon">🔄</div>
@@ -141,8 +141,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     <div class="step-list">
       <div class="step-item">
         <h3>安装 Git</h3>
-        <p>Git 是用来下载代码的工具。打开浏览器访问 <a href="https://git-scm.com/download/win" target="_blank">git-scm.com</a>，下载安装包，一路点"下一步"完成安装。</p>
+        <p><strong>Windows：</strong>打开 <a href="https://git-scm.com/download/win" target="_blank">git-scm.com</a>，下载安装包，一路点"下一步"完成安装。</p>
         <div class="tip info">安装后在桌面空白处右键，菜单里出现 <strong>Git Bash Here</strong> 就说明装好了。</div>
+        <p style="margin-top:10px"><strong>Mac：</strong>打开终端（按 <code>Command + 空格</code> 搜"终端"），输入：</p>
+        <div class="cmd">brew install git</div>
+        <p>如果没装 Homebrew，先装：</p>
+        <div class="cmd">/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</div>
+        <p>装完后输入 <code>git --version</code> 验证。</p>
       </div>
 
       <div class="step-item">
@@ -167,7 +172,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
       <div class="step-item">
         <h3>关联你的远程仓库</h3>
-        <p>在解压后的文件夹里右键 → <strong>Git Bash Here</strong>，把下面命令中的中文替换成你上一步找到的用户名和仓库名，然后执行：</p>
+        <p><strong>Windows：</strong>在解压后的文件夹里右键 → <strong>Git Bash Here</strong>。<br><strong>Mac：</strong>打开终端，<code>cd ~/Desktop/你的文件夹名</code>（<code>cd </code> 后面把文件夹从 Finder 拖进终端即可）。</p>
+        <p>把下面命令中的中文替换成你的用户名和仓库名，然后执行：</p>
         <div class="cmd">git remote set-url origin https://github.com/你的用户名/你的仓库名.git<br>git push -u origin main</div>
         <p>第一条命令把本地项目和你的 GitHub 仓库绑定。<br>第二条命令把代码上传到 GitHub。</p>
         <p><strong>验证是否成功</strong>：刷新你的 GitHub 仓库页面，能看到文件列表就说明成功了。</p>
@@ -181,20 +187,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     <div class="step-list">
       <div class="step-item">
         <h3>安装 MATLAB</h3>
-        <p>如果你用的是公用电脑，MATLAB 可能已经装好了。如果没有，安装 <strong>MATLAB R2016b</strong> 或更新版本即可。</p>
+        <p><strong>Windows：</strong>从学校/机构获取 MATLAB R2016b+ 安装包。<br>
+        <strong>Mac：</strong>在 <a href="https://www.mathworks.com/downloads/" target="_blank">mathworks.com</a> 下载 macOS 版 <code>.dmg</code> 安装包（M1/M2/M3 芯片选 <code>maca64</code>，Intel 选 <code>maci64</code>），安装后 MATLAB 在 <code>/Applications</code> 目录。如果系统提示"无法验证开发者"，去 <strong>系统设置 → 隐私与安全性 → 仍要打开</strong>。</p>
       </div>
 
       <div class="step-item">
         <h3>获取代码</h3>
-        <p>桌面空白处右键 → <strong>Git Bash Here</strong>，输入：</p>
+        <p><strong>Windows：</strong>桌面右键 → <strong>Git Bash Here</strong>。<br><strong>Mac：</strong>打开终端。</p>
         <div class="cmd">cd Desktop<br>git clone https://github.com/你的用户名/你的仓库名.git</div>
       </div>
 
       <div class="step-item">
         <h3>启动 MATLAB（自动配好路径）</h3>
-        <p>打开 <code>Desktop\你的仓库名\</code> 文件夹，<strong>双击 <code>matlab.bat</code></strong></p>
+        <p><strong>Windows：</strong>打开项目文件夹，<strong>双击 <code>matlab.bat</code></strong>。</p>
+        <p style="margin-top:8px"><strong>Mac：</strong>打开终端，cd 到项目文件夹，执行：</p>
+        <div class="cmd">chmod +x matlab.sh<br>./matlab.sh</div>
         <p>脚本自动 <code>git pull</code> + 启动 MATLAB + <strong>自动运行 <code>startup_setup</code></strong> 配置搜索路径。</p>
-        <div class="tip info">首次启动即自动完成路径配置，无需手动操作。每次双击自动同步最新代码。</div>
+        <div class="tip info">首次启动即自动完成路径配置，无需手动操作。每次运行自动同步最新代码。</div>
       </div>
 
       <div class="step-item">
@@ -215,7 +224,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
   <!-- CarSim -->
   <div class="section">
-    <h2 class="section-title"><span class="num">3</span> CarSim-Simulink 联合仿真</h2>
+    <h2 class="section-title"><span class="num">3</span> CarSim-Simulink 联合仿真 <span style="font-size:12px;color:var(--orange);font-weight:400">⚠ 仅 Windows</span></h2>
+      <p style="font-size:13px;color:var(--dim);margin-bottom:12px">CarSim 目前只有 Windows 版，如需在 Mac 上使用，建议安装 Windows 虚拟机（Parallels Desktop / UTM）或双系统。</p>
 
     <div class="step-list">
       <div class="step-item">
@@ -262,7 +272,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       </div>
       <div class="step-item">
         <h3>笔记本上运行</h3>
-        <p>在笔记本上打开 Git Bash，<code>git pull</code> 拉取新代码，然后双击 <code>matlab.bat</code> 启动 MATLAB 运行。</p>
+        <p><strong>Windows：</strong>打开 Git Bash，<code>git pull</code> 拉取新代码，双击 <code>matlab.bat</code>。<br>
+        <strong>Mac：</strong>终端 cd 到项目目录，<code>git pull && ./matlab.sh</code>。</p>
         <div class="tip info">只需新增 .m 文件，不用修改任何配置。路径已自动配置，新文件可以直接运行。</div>
       </div>
     </div>
@@ -289,7 +300,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <div class="file-row"><span class="file-name">matlab/utils/rms_calculation.m</span><span class="file-desc">RMS 计算</span></div>
       <div class="file-row"><span class="file-name">matlab/startup_setup.m</span><span class="file-desc">搜索路径配置（自动执行）</span></div>
       <div class="file-row"><span class="file-name">matlab/test_all.m</span><span class="file-desc">批量测试套件</span></div>
-      <div class="file-row"><span class="file-name">matlab.bat</span><span class="file-desc">MATLAB 一键启动（含自动配置）</span></div>
+      <div class="file-row"><span class="file-name">matlab.bat</span><span class="file-desc">MATLAB 一键启动 Windows 版（含自动配置）</span></div>
+      <div class="file-row"><span class="file-name">matlab.sh</span><span class="file-desc">MATLAB 一键启动 Mac 版（含自动配置）</span></div>
       <div class="file-row"><span class="file-name">docs/操作说明.md</span><span class="file-desc">使用文档</span></div>
       <div class="file-row"><span class="file-name">README.md / .gitignore</span><span class="file-desc">项目信息 / Git 配置</span></div>
     </div>
@@ -312,7 +324,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <div class="feature-card">
         <div class="f-icon">💻</div>
         <h3>操作系统</h3>
-        <p>Windows 7/10/11<br>Git Bash 需预装</p>
+        <p>Windows 7/10/11<br>macOS 11+（Apple Silicon / Intel）<br>Git + 终端 需预装</p>
       </div>
     </div>
   </div>
