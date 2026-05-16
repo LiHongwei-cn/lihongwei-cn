@@ -512,60 +512,33 @@ pause</div>
       <div class="step-item">
         <h3>创建机器人脚本 <span class="badge ok">✅ 无需魔法</span></h3>
         <p>新建一个文件，命名为 <code>tgbot.py</code>，完整代码可在仓库 <code>bot/tgbot.py</code> 中获取。<br>以下为简化版，展示自动识别 + 代码生成推送的核心逻辑：</p>
-        <div class="cmd" style="font-size:11px;max-height:300px;overflow-y:auto">import os, re, subprocess
+        <div class="cmd" style="font-size:11px;max-height:300px;overflow-y:auto">import os
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
 from openai import OpenAI
 
 TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]       # 从环境变量读取，绝不硬编码
 DEEPSEEK_API_KEY = os.environ["DEEPSEEK_API_KEY"]
-REPO_PATH = os.environ.get("REPO_PATH", r"C:\Users\你的用户名\Desktop\1")
 
 client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url="https://api.deepseek.com")
 
-def detect_intent(text):
-    """自动识别：代码 / 论文 / 闲聊"""
-    code_kw = ['matlab', 'simulink', '仿真', '代码', '电机', '电池', 'carsim']
-    doc_kw = ['论文', '报告', '答辩', '实验报告', '文章']
-    if any(k in text.lower() for k in code_kw): return 'code'
-    if any(k in text.lower() for k in doc_kw): return 'doc'
-    return 'chat'
+SYSTEM_PROMPT = """回复原则：极度简洁，代码直给，不废话。默认中文。"""
 
 async def handle_message(update, context):
     text = update.message.text
-    intent = detect_intent(text)
-
-    if intent == 'code':
-        # 生成代码 → 保存 → 推送
-        msg = await update.message.reply_text("...")
-        response = client.chat.completions.create(
-            model="deepseek-v4-pro",
-            messages=[
-                {"role": "system", "content": "只输出可运行MATLAB代码，首行: % FILENAME: xxx.m"},
-                {"role": "user", "content": text}
-            ]
-        )
-        code = response.choices[0].message.content
-        # 提取文件名，保存到 matlab/examples/，git push
-        m = re.search(r'% FILENAME:\s*(\S+\.m)', code)
-        filename = m.group(1) if m else "script.m"
-        Path(REPO_PATH, "matlab/examples", filename).write_text(code, encoding="utf-8")
-        subprocess.run(["git", "add", "-A"], cwd=REPO_PATH)
-        subprocess.run(["git", "commit", "-m", f"bot: {filename}"], cwd=REPO_PATH)
-        subprocess.run(["git", "push"], cwd=REPO_PATH)
-        await msg.edit_text(filename)
-    else:
-        # 正常对话（闲聊、论文等同样处理）
-        response = client.chat.completions.create(
-            model="deepseek-v4-pro",
-            messages=[{"role": "user", "content": text}]
-        )
-        await update.message.reply_text(response.choices[0].message.content)
+    response = client.chat.completions.create(
+        model="deepseek-v4-pro",
+        messages=[
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": text}
+        ]
+    )
+    await update.message.reply_text(response.choices[0].message.content)
 
 app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 app.run_polling()</div>
-        <div class="tip info">完整版见 GitHub 仓库 <code>bot/tgbot.py</code>，包含代码生成+推送、论文报告自动保存、图片分析等功能，全部自动识别意图，无需手动输入命令。</div>
+        <div class="tip info">完整版见 GitHub 仓库 <code>bot/tgbot.py</code>，基于 DeepSeek API 直接回复，支持文字和图片消息，无需手动输入命令。</div>
       </div>
 
       <div class="step-item">
@@ -577,23 +550,22 @@ app.run_polling()</div>
       </div>
 
       <div class="step-item">
-        <h3>自动识别并生成代码 <span class="badge purple">⭐ 核心功能</span></h3>
-        <p>机器人会<strong>自动识别</strong>你的消息意图，无需任何命令前缀：</p>
-        <p><strong>代码类</strong>（提到 MATLAB、仿真、电机、电池等关键词）：</p>
-        <p>→ 自动生成完整代码 → 保存到 <code>matlab/examples/</code> → git push → 只回复文件名</p>
-        <p><strong>论文/报告类</strong>（提到论文、实验报告、答辩等关键词）：</p>
-        <p>→ 自动生成正文 → 保存到 <code>docs/</code> → git push → 只回复文件名</p>
+        <h3>直接对话 <span class="badge purple">⭐ 核心功能</span></h3>
+        <p>机器人基于 DeepSeek API，<strong>直接回复所有消息</strong>：</p>
+        <p><strong>MATLAB/Simulink 代码</strong>：直接回复可运行代码，兼容 R2016b</p>
+        <p><strong>论文/报告</strong>：生成正文和分析内容</p>
+        <p><strong>图片分析</strong>：拍照发作业、实验数据图，直接解读</p>
         <p><strong>普通聊天</strong>：正常对话，简洁回复</p>
-        <div class="tip green">直接发"写一个电池SOC安时积分法代码"，不需要任何命令前缀。拍照发作业要求也支持，同样自动识别。</div>
+        <div class="tip green">直接发"写一个电池SOC安时积分法代码"，机器人直接回复完整代码。无需任何命令前缀。</div>
       </div>
 
       <div class="step-item">
         <h3>笔记本一键运行最新代码 <span class="badge ok">✅ 无需魔法</span></h3>
-        <p>在笔记本上操作：<code>matlab.bat</code> 已升级，启动前会自动 <code>git pull</code>。</p>
+        <p>在笔记本上操作：<code>matlab.bat</code> 启动前会自动 <code>git pull</code>。</p>
         <p>① 安装 Git（首次）→ 克隆仓库到桌面</p>
         <p>② 双击 <code>matlab.bat</code> → 自动拉取最新代码 → 启动 MATLAB</p>
         <p>③ 在 Command Window 直接输入脚本名运行</p>
-        <div class="tip info">完整工作流：手机发 /gen → 代码自动到 GitHub → 笔记本双击 bat → git pull 自动拉取 → 运行。全程不需要手动输入 git 命令。</div>
+        <div class="tip info">代码通过 Claude Code 生成后自动 commit+push 到 GitHub，笔记本端 matlab.bat 启动时自动 git pull 拉取最新代码。</div>
       </div>
 
       <div class="step-item">
