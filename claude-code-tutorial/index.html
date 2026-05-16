@@ -396,83 +396,9 @@ td a:hover{text-decoration:underline}
   <div class="section">
     <h2 class="section-title"><span class="num">5</span> 桌面快捷启动（Windows）</h2>
     <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
-      每次打开终端输命令太麻烦？创建一个桌面快捷方式，双击就能启动 Claude Code，自动进入你的工作目录。
+      双击桌面图标启动 Claude Code，自动进入工作目录。已拆分为独立项目，含一键创建脚本和完整 FAQ。
     </p>
-
-    <div class="step-list">
-      <div class="step-item">
-        <h3>下载启动脚本 <span class="badge ok">✅ 无需魔法</span></h3>
-        <p>在仓库 <code>tools/claude-desktop.bat</code> 中已准备好启动脚本。你也可以自己创建一个文本文件，重命名为 <code>claude-desktop.bat</code>，写入以下内容：</p>
-        <div class="cmd">@echo off
-:: Work directory - auto-detected (script location parent folder)
-set WORK_DIR=%~dp0..
-
-:: Force CLI mode, prevent auto-open VS Code
-set CLAUDE_CODE_ENTRYPOINT=cli
-
-cd /d "%WORK_DIR%"
-
-:: Prefer Windows Terminal for interactive UI
-where wt.exe >nul 2>&1
-if %errorlevel% equ 0 (
-    start "" wt.exe -d "%WORK_DIR%" cmd /k "set CLAUDE_CODE_ENTRYPOINT=cli && claude --dangerously-skip-permissions --no-chrome"
-    exit /b
-)
-
-:: Fallback: launch directly in current console
-claude --dangerously-skip-permissions --no-chrome</div>
-      </div>
-
-      <div class="step-item">
-        <h3>双击启动 <span class="badge ok">✅ 无需魔法</span></h3>
-        <p>找到 <code>claude-desktop.bat</code>，双击运行：</p>
-        <p>① 自动检测 Windows Terminal（Win11 自带），用新标签页打开 Claude Code</p>
-        <p>② 自动 <code>cd</code> 到你的项目目录</p>
-        <p>③ 自动执行 <code>claude --dangerously-skip-permissions --no-chrome</code></p>
-        <p>④ 出现小螃蟹 🦀 图标后即可开始对话</p>
-        <p>⑤ 退出 Claude Code 后窗口自动关闭</p>
-      </div>
-
-      <div class="step-item" style="border-color:rgba(251,191,36,0.2)">
-        <h3>⚠ 常见问题：打不开对话框 / 启动后闪退</h3>
-        <p>双击后弹出一个旧式黑窗口，但看不到 Claude Code 的对话界面（<code>&gt;</code> 输入框）。</p>
-        <p><strong>原因：</strong> Windows 旧版控制台（conhost.exe）不支持 Claude Code 的交互式界面，需要 Windows Terminal。</p>
-        <p><strong>解决方法：</strong> 仓库中的 <code>claude-desktop.bat</code> 已内置修复——双击时会自动检测 <code>wt.exe</code>（Windows Terminal），在新标签页中启动。</p>
-        <p>如果仍然不生效：① 微软商店安装 Windows Terminal（免费）② 运行 <code>create-shortcut.ps1</code> 重新创建桌面快捷方式</p>
-      </div>
-
-      <div class="step-item" style="border-color:rgba(251,191,36,0.2)">
-        <h3>⚠ 常见问题：启动时打开了 VS Code 怎么办</h3>
-        <p>Claude Code 在某些 Windows 系统上检测到 VS Code 后会尝试自动连接，导致 VS Code 窗口弹出。</p>
-        <p><strong>原因：</strong> Claude Code 的 IDE 集成功能自动扫描到已安装的 VS Code。</p>
-        <p><strong>解决方法：</strong> 确保 <code>claude-desktop.bat</code> 中包含 <code>set CLAUDE_CODE_ENTRYPOINT=cli</code> 这一行（仓库中的脚本已内置）。这一行强制终端模式，阻止 IDE 自动连接。</p>
-      </div>
-
-      <div class="step-item">
-        <h3>（可选）加上代理 <span class="badge caution">⚡ 需要代理时用</span></h3>
-        <p>如果你需要代理才能访问网络，编辑 <code>claude-desktop.bat</code>，找到下面这行，去掉前面的 <code>::</code> 注释：</p>
-        <div class="cmd">set HTTPS_PROXY=http://127.0.0.1:7897</div>
-        <p>把端口改成你实际使用的代理端口即可。</p>
-      </div>
-
-      <div class="step-item">
-        <h3>更换为 Claude 图标 <span class="badge purple">🎨 仓库自带</span></h3>
-        <p>仓库 <code>tools/claude-icon.ico</code> 中已包含 Claude AI 图标（紫色星芒 Logo），使用方法：</p>
-        <p>① 下载 <code>tools/claude-icon.ico</code> 到本地</p>
-        <p>② 右键桌面快捷方式 → <strong>"属性"</strong> → <strong>"快捷方式"</strong> 选项卡 → <strong>"更改图标"</strong></p>
-        <p>③ 点击"浏览"找到 <code>claude-icon.ico</code> → 打开 → 确定</p>
-        <p>④ 或者直接运行 <code>create-shortcut.ps1</code>，它会自动使用仓库中的 ICO 文件创建快捷方式</p>
-      </div>
-    </div>
-
-    <div class="link-block" style="margin-top:8px">
-      <h3>🔗 相关文件</h3>
-      <div class="link-row"><span class="label">启动脚本</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/claude-desktop.bat" target="_blank">github.com/LiHongwei-ch/lihongwei-ch/tools/claude-desktop.bat</a> <span class="badge need">⚠️</span></span></div>
-      <div class="link-row"><span class="label">创建脚本</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/create-shortcut.ps1" target="_blank">create-shortcut.ps1（一键创建桌面快捷方式）</a> <span class="badge need">⚠️</span></span></div>
-	      <div class="link-row"><span class="label">启动器脚本</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/launcher.ps1" target="_blank">launcher.ps1（快捷方式调用的 PowerShell 启动器）</a> <span class="badge need">⚠️</span></span></div>
-      <div class="link-row"><span class="label">图标文件</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/claude-icon.ico" target="_blank">claude-icon.ico（Claude AI 快捷方式图标）</a> <span class="badge ok">✅</span></span></div>
-      <div class="link-row"><span class="label">图标生成脚本</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/create-icon.py" target="_blank">create-icon.py（用 Python 重新生成 ICO）</a> <span class="badge ok">✅</span></span></div>
-    </div>
+    <a href="../desktop-launcher/" style="display:inline-flex;align-items:center;gap:6px;background:var(--purple-dim);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:12px 20px;color:var(--purple);text-decoration:none;font-size:14px;font-weight:600;transition:all 0.2s" onmouseover="this.style.background='rgba(167,139,250,0.18)'" onmouseout="this.style.background='var(--purple-dim)'">📂 查看完整教程 → Claude Code 桌面快捷启动</a>
   </div>
 
   <!-- ===== 六、Telegram 机器人搭建 ===== -->

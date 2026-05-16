@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Claude Code 桌面快捷启动 — 双击即可启动 AI 对话框，自动进入工作目录">
+<title>Claude Code 桌面快捷启动 · LiHongwei</title>
+<style>
+:root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#6c8cff;--green:#4ade80;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.12)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);min-height:100vh;line-height:1.7}
+.container{max-width:760px;margin:0 auto;padding:32px 24px 80px}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color 0.2s}
+.back-link:hover{color:var(--text)}
+
+.hero{text-align:center;padding:40px 0 24px}
+.hero-badge{display:inline-block;background:rgba(74,222,128,0.1);color:var(--green);border:1px solid rgba(74,222,128,0.2);padding:4px 14px;border-radius:20px;font-size:12px;margin-bottom:16px;letter-spacing:1px}
+.hero h1{font-size:34px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#6c8cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
+.hero p{font-size:15px;color:var(--dim);max-width:620px;margin:0 auto}
+
+.section{margin-bottom:40px}
+.section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--purple-dim);color:var(--purple);font-size:14px;font-weight:700;flex-shrink:0}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:6px;font-size:11px;font-weight:600;margin-left:6px;vertical-align:middle}
+.badge.ok{background:rgba(74,222,128,0.1);color:var(--green);border:1px solid rgba(74,222,128,0.15)}
+.badge.need{background:rgba(248,113,113,0.1);color:var(--red);border:1px solid rgba(248,113,113,0.15)}
+.badge.caution{background:rgba(251,191,36,0.1);color:var(--orange);border:1px solid rgba(251,191,36,0.15)}
+.badge.purple{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(167,139,250,0.15)}
+
+.step-list{display:flex;flex-direction:column;gap:10px}
+.step-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;position:relative;padding-left:60px}
+.step-item::before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:20px;width:26px;height:26px;border-radius:8px;background:var(--purple-dim);color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.step-item h3{font-size:15px;font-weight:600;margin-bottom:6px}
+.step-item p{font-size:13px;color:var(--dim);line-height:1.6}
+.step-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:#a78bfa}
+.step-item .cmd{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 16px;margin-top:6px;font-family:'Consolas','Courier New',monospace;font-size:13px;color:#b8c7ff;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+.step-item a{color:var(--accent)}
+.step-item strong{color:var(--text)}
+
+.arch-diagram{background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:24px;overflow-x:auto}
+.arch-diagram .flow{display:flex;align-items:center;gap:8px;font-family:'Consolas','Courier New',monospace;font-size:12px;color:var(--dim);flex-wrap:wrap;justify-content:center}
+.arch-diagram .flow span{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:4px 10px;white-space:nowrap}
+.arch-diagram .flow .arrow{background:none;border:none;color:var(--accent);padding:0 2px;font-size:14px}
+
+.link-block{background:var(--purple-dim);border:1px solid rgba(167,139,250,0.1);border-radius:14px;padding:20px 24px;margin-bottom:12px}
+.link-block h3{font-size:15px;font-weight:600;margin-bottom:10px;color:var(--purple)}
+.link-block .link-row{display:flex;align-items:center;padding:6px 0;font-size:13px;gap:8px}
+.link-block .link-row .label{color:var(--dim);min-width:80px;flex-shrink:0}
+.link-block .link-row .url{color:var(--accent);word-break:break-all}
+.link-block .link-row a{color:var(--accent);text-decoration:none}
+.link-block .link-row a:hover{text-decoration:underline}
+
+.tip{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.12);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--orange);margin-top:10px}
+.tip.info{background:rgba(108,140,255,0.07);border-color:rgba(108,140,255,0.12);color:var(--accent)}
+.tip.green{background:rgba(74,222,128,0.07);border-color:rgba(74,222,128,0.12);color:var(--green)}
+
+.footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:32px}
+.footer a{color:rgba(255,255,255,0.3);text-decoration:none}
+.footer a:hover{color:rgba(255,255,255,0.5)}
+
+@media(max-width:640px){
+  .container{padding:20px 16px 60px}
+  .hero h1{font-size:26px}
+  .step-item{padding:16px 16px 16px 48px}
+  .step-item::before{left:14px;top:16px;width:22px;height:22px;font-size:12px}
+  .link-block{padding:16px}
+  .link-block .link-row{flex-wrap:wrap}
+  .link-block .link-row .label{min-width:auto}
+  .arch-diagram .flow{gap:4px;font-size:11px}
+  .arch-diagram .flow span{padding:3px 8px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="../">← 返回主页</a>
+
+  <div class="hero">
+    <div class="hero-badge">一键启动 · Windows</div>
+    <h1>Claude Code 桌面快捷启动</h1>
+    <p>双击桌面图标即可启动 Claude Code 对话框，自动进入工作目录。<br>无需每次打开终端输命令。</p>
+  </div>
+
+  <!-- 工作原理 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">1</span> 工作原理</h2>
+    <div class="arch-diagram">
+      <div class="flow">
+        <span>桌面快捷方式</span>
+        <span class="arrow">→</span>
+        <span>powershell.exe</span>
+        <span class="arrow">→</span>
+        <span>launcher.ps1</span>
+        <span class="arrow">→</span>
+        <span>Windows Terminal</span>
+        <span class="arrow">→</span>
+        <span>Claude Code</span>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--dim);text-align:center">
+      快捷方式指向 <code>powershell.exe</code>，由 PowerShell 调用 <code>launcher.ps1</code> 启动 Windows Terminal，<br>Terminal 自动设置环境变量并运行 Claude Code 进入你的项目目录。
+    </p>
+  </div>
+
+  <!-- 一键创建 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">2</span> 一键创建快捷方式</h2>
+    <div class="step-list" style="counter-reset:step">
+      <div class="step-item">
+        <h3>下载仓库文件 <span class="badge ok">仅需 3 个文件</span></h3>
+        <p>将以下文件下载到你的项目目录 <code>tools/</code> 文件夹中：</p>
+        <p style="margin-top:6px">
+          ① <a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/create-shortcut.ps1" target="_blank">create-shortcut.ps1</a> — 创建快捷方式的脚本<br>
+          ② <a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/launcher.ps1" target="_blank">launcher.ps1</a> — 启动器脚本（快捷方式实际调用的）<br>
+          ③ <a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/claude-icon.ico" target="_blank">claude-icon.ico</a> — 桌面图标
+        </p>
+        <div class="tip info">也可以直接 clone 整个仓库，<code>tools/</code> 目录里所有文件都有。</div>
+      </div>
+
+      <div class="step-item">
+        <h3>修改工作目录（首次使用必须）</h3>
+        <p>用记事本打开 <code>create-shortcut.ps1</code> 或 <code>launcher.ps1</code>，找到 <code>$workDir</code> 这一行，改成你自己的项目路径：</p>
+        <div class="cmd">$workDir = "C:\Users\你的用户名\Desktop\你的项目"</div>
+        <p style="margin-top:6px">两个脚本都要改，共 2 处。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>运行创建脚本 <span class="badge need">需要 PowerShell</span></h3>
+        <p>右键 <code>create-shortcut.ps1</code> → <strong>"使用 PowerShell 运行"</strong>，桌面会立即出现 <code>Claude Code.lnk</code> 快捷方式。</p>
+        <p style="margin-top:4px">如果右键菜单没有 PowerShell 选项，在文件所在目录的地址栏输入 <code>powershell</code> 回车，然后运行：</p>
+        <div class="cmd">.\create-shortcut.ps1</div>
+      </div>
+
+      <div class="step-item">
+        <h3>双击桌面图标启动 <span class="badge ok">完成</span></h3>
+        <p>双击桌面 <code>Claude Code</code> 图标，Windows Terminal 会自动打开并启动 Claude Code，光标出现在输入框后即可开始对话。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 手动备用方案 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">3</span> 备用方案：bat 启动脚本</h2>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:14px">
+      如果你不想创建桌面快捷方式，也可以直接用 <code>.bat</code> 脚本启动。创建一个文本文件，重命名为 <code>claude-desktop.bat</code>，写入以下内容：
+    </p>
+    <div class="cmd" style="margin-bottom:14px">@echo off
+:: Work directory - auto-detected (script location's parent folder)
+set WORK_DIR=%~dp0..
+
+:: Force CLI mode, prevent auto-open VS Code
+set CLAUDE_CODE_ENTRYPOINT=cli
+
+cd /d "%WORK_DIR%"
+
+:: Prefer Windows Terminal for interactive UI
+where wt.exe >nul 2>&1
+if %errorlevel% equ 0 (
+    start "" wt.exe -d "%WORK_DIR%" cmd /k "set CLAUDE_CODE_ENTRYPOINT=cli && claude --dangerously-skip-permissions --no-chrome"
+    exit /b
+)
+
+:: Fallback: launch directly in current console
+claude --dangerously-skip-permissions --no-chrome</div>
+    <p style="font-size:13px;color:var(--dim)"><code>%~dp0..</code> 会自动取脚本所在目录的上级目录作为工作目录。如果把 bat 放在项目根目录的 <code>tools/</code> 里，无需手动修改路径。</p>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">4</span> 常见问题</h2>
+    <div class="step-list" style="counter-reset:step">
+
+      <div class="step-item" style="border-color:rgba(251,191,36,0.2)">
+        <h3>⚠ 双击快捷方式没反应</h3>
+        <p><strong>原因：</strong> PowerShell 执行策略禁止运行脚本，或 <code>launcher.ps1</code> 中的路径配置错误。</p>
+        <p><strong>解决：</strong><br>
+        ① 以管理员身份打开 PowerShell，运行 <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code><br>
+        ② 确认 <code>launcher.ps1</code> 中的 <code>$workDir</code> 指向了正确的目录<br>
+        ③ 重新运行 <code>create-shortcut.ps1</code></p>
+      </div>
+
+      <div class="step-item" style="border-color:rgba(251,191,36,0.2)">
+        <h3>⚠ 双击后弹出黑色旧式窗口，看不到对话界面</h3>
+        <p><strong>原因：</strong> 系统没有 Windows Terminal，Claude Code 的交互界面需要 Windows Terminal 支持。</p>
+        <p><strong>解决：</strong> 打开 Microsoft Store 搜索 "Windows Terminal" 安装（免费），然后重新双击快捷方式。</p>
+      </div>
+
+      <div class="step-item" style="border-color:rgba(251,191,36,0.2)">
+        <h3>⚠ 启动时自动打开了 VS Code</h3>
+        <p><strong>原因：</strong> Claude Code 检测到已安装 VS Code 后尝试 IDE 集成。</p>
+        <p><strong>解决：</strong> 启动命令中已包含 <code>set CLAUDE_CODE_ENTRYPOINT=cli</code>，强制终端模式。如果问题仍然存在，检查你的 Claude Code 全局设置中是否开启了 IDE 集成。</p>
+      </div>
+
+      <div class="step-item" style="border-color:rgba(251,191,36,0.2)">
+        <h3>⚠ 一次打开了两个窗口</h3>
+        <p><strong>原因：</strong> 旧版启动器使用 <code>-w 0 new-tab</code> 尝试连接已有窗口，在部分环境下行为不稳定。</p>
+        <p><strong>解决：</strong> 确认 <code>launcher.ps1</code> 中的 wt.exe 参数为 <code>-w -1 new-tab</code>（强制创建独立新窗口）。仓库中已是最新版本。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>（可选）配置代理</h3>
+        <p>如果网络需要代理才能访问 DeepSeek API，编辑 <code>launcher.ps1</code>，在启动命令前加一行：</p>
+        <div class="cmd">$env:HTTPS_PROXY = "http://127.0.0.1:7897"</div>
+        <p>把端口改成你实际使用的代理端口。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>（可选）更换工作目录</h3>
+        <p>如果项目搬家了，只需编辑 <code>launcher.ps1</code> 中的 <code>$workDir</code> 变量，无需重新创建快捷方式。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 相关文件 -->
+  <div class="link-block" style="margin-top:8px">
+    <h3>🔗 相关文件（GitHub）</h3>
+    <div class="link-row"><span class="label">快捷方式创建</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/create-shortcut.ps1" target="_blank">create-shortcut.ps1</a></span></div>
+    <div class="link-row"><span class="label">启动器</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/launcher.ps1" target="_blank">launcher.ps1</a></span></div>
+    <div class="link-row"><span class="label">bat 备用脚本</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/claude-desktop.bat" target="_blank">claude-desktop.bat</a></span></div>
+    <div class="link-row"><span class="label">图标文件</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/claude-icon.ico" target="_blank">claude-icon.ico</a></span></div>
+    <div class="link-row"><span class="label">图标生成</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/create-icon.py" target="_blank">create-icon.py</a></span></div>
+  </div>
+
+  <div class="footer">
+    <a href="https://github.com/LiHongwei-ch/lihongwei-ch/tree/main/desktop-launcher">页面源码 ↗</a>
+  </div>
+
+</div>
+</body>
+</html>
