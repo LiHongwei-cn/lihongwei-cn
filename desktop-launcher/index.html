@@ -79,7 +79,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
   <a class="back-link" href="../">← 返回主页</a>
 
   <div class="hero">
-    <div class="hero-badge">一键启动 · Windows</div>
+    <div class="hero-badge">一键启动 · Windows / macOS</div>
     <h1>Claude Code 桌面快捷启动</h1>
     <p>双击桌面图标即可启动 Claude Code 对话框，自动进入工作目录。<br>无需每次打开终端输命令。</p>
   </div>
@@ -102,6 +102,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     </div>
     <p style="font-size:13px;color:var(--dim);text-align:center">
       快捷方式指向 <code>powershell.exe</code>，由 PowerShell 调用 <code>launcher.ps1</code> 启动 Windows Terminal，<br>Terminal 自动设置环境变量并运行 Claude Code 进入你的项目目录。
+    </p>
+    <div class="arch-diagram" style="margin-top:16px">
+      <div class="flow">
+        <span>claude-desktop.command</span>
+        <span class="arrow">→</span>
+        <span>Terminal.app</span>
+        <span class="arrow">→</span>
+        <span>bash</span>
+        <span class="arrow">→</span>
+        <span>Claude Code</span>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--dim);text-align:center;margin-top:4px">
+      <span style="color:var(--green)">macOS</span>：双击 <code>.command</code> 文件 → 自动打开终端 → 进入项目目录启动 Claude Code。<br>比 Windows 更简单，无需额外配置终端模拟器。
     </p>
   </div>
 
@@ -141,9 +155,53 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     </div>
   </div>
 
+  <!-- macOS 桌面启动 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">3</span> macOS：一键设置桌面启动</h2>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:14px">
+      macOS 上的流程更简单——不需要创建快捷方式，一个 <code>.command</code> 文件即可双击启动。
+    </p>
+    <div class="step-list" style="counter-reset:step">
+      <div class="step-item">
+        <h3>下载 claude-desktop.command <span class="badge ok">仅需 1 个文件</span></h3>
+        <p>从仓库下载 <code>claude-desktop.command</code> 放到项目目录的 <code>tools/</code> 文件夹中：</p>
+        <p style="margin-top:6px">
+          <a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/claude-desktop.command" target="_blank">claude-desktop.command</a> — macOS 启动器脚本
+        </p>
+        <div class="tip info">也可以直接 clone 整个仓库，<code>tools/</code> 目录里所有文件都有。</div>
+      </div>
+
+      <div class="step-item">
+        <h3>修改工作目录（如果 scripts 不在 tools/ 里）</h3>
+        <p>用文本编辑器打开 <code>claude-desktop.command</code>。脚本默认自动检测——假设 <code>.command</code> 文件在 <code>tools/</code> 里，工作目录就是上级目录。</p>
+        <p style="margin-top:6px">如果脚本放在其他位置，直接修改 <code>WORK_DIR</code> 变量：</p>
+        <div class="cmd">WORK_DIR="/你的项目路径"</div>
+      </div>
+
+      <div class="step-item">
+        <h3>赋予执行权限 <span class="badge need">必须</span></h3>
+        <p>打开终端，运行一次：</p>
+        <div class="cmd">chmod +x ~/Desktop/lihongwei-ch/tools/claude-desktop.command</div>
+        <p style="margin-top:4px">只需要执行一次，之后永久有效。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>放置到桌面或 Dock <span class="badge ok">推荐</span></h3>
+        <p>将 <code>claude-desktop.command</code> 文件拖到桌面（按住 Option 拖动创建副本），或右键 → 制作替身（Alias），把替身放在桌面。</p>
+        <p style="margin-top:4px">也可以拖到 Dock 栏右侧，随时点击启动。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>双击启动 <span class="badge ok">完成</span></h3>
+        <p>双击桌面上的 <code>claude-desktop.command</code>，Terminal 自动打开并启动 Claude Code。</p>
+        <div class="tip caution">首次打开时 macOS 可能会提示"无法验证开发者"，右键文件 → 选「打开」即可。只需操作一次。</div>
+      </div>
+    </div>
+  </div>
+
   <!-- 手动备用方案 -->
   <div class="section">
-    <h2 class="section-title"><span class="num">3</span> 备用方案：bat 启动脚本</h2>
+    <h2 class="section-title"><span class="num">4</span> Windows 备用方案：bat 启动脚本</h2>
     <p style="font-size:13px;color:var(--dim);margin-bottom:14px">
       如果你不想创建桌面快捷方式，也可以直接用 <code>.bat</code> 脚本启动。创建一个文本文件，重命名为 <code>claude-desktop.bat</code>，写入以下内容：
     </p>
@@ -170,7 +228,7 @@ claude --dangerously-skip-permissions --no-chrome</div>
 
   <!-- FAQ -->
   <div class="section">
-    <h2 class="section-title"><span class="num">4</span> 常见问题</h2>
+    <h2 class="section-title"><span class="num">5</span> 常见问题</h2>
     <div class="step-list" style="counter-reset:step">
 
       <div class="step-item" style="border-color:rgba(251,191,36,0.2)">
@@ -211,6 +269,28 @@ claude --dangerously-skip-permissions --no-chrome</div>
         <h3>（可选）更换工作目录</h3>
         <p>如果项目搬家了，只需编辑 <code>launcher.ps1</code> 中的 <code>$workDir</code> 变量，无需重新创建快捷方式。</p>
       </div>
+
+      <div class="step-item" style="border-color:rgba(34,211,238,0.2)">
+        <h3>🍎 macOS：双击 .command 文件提示"无法打开"</h3>
+        <p><strong>原因：</strong> macOS Gatekeeper 默认拦截未签名脚本。</p>
+        <p><strong>解决：</strong> 右键（或按住 Control 点按）<code>.command</code> 文件 → 选择「打开」→ 在弹出的对话框点「打开」。只需操作一次，之后双击即可。</p>
+      </div>
+
+      <div class="step-item" style="border-color:rgba(34,211,238,0.2)">
+        <h3>🍎 macOS：双击 .command 后终端一闪而过</h3>
+        <p><strong>原因：</strong> <code>claude</code> 命令没在 PATH 里。</p>
+        <p><strong>解决：</strong><br>
+        ① 确认已安装 Claude Code：在终端手动输入 <code>claude --version</code> 看能否执行<br>
+        ② 如果 brew 安装的：确认 <code>/opt/homebrew/bin</code> 在 PATH 里<br>
+        ③ 如果 npm 安装的：确认 npm 的全局 bin 目录在 PATH 里</p>
+      </div>
+
+      <div class="step-item" style="border-color:rgba(34,211,238,0.2)">
+        <h3>🍎 macOS：想用 iTerm2 而不是自带终端</h3>
+        <p>编辑 <code>claude-desktop.command</code>，在最前面加上：</p>
+        <div class="cmd">open -a iTerm "$0" && exit</div>
+        <p>这样双击后会先在 iTerm2 里打开当前脚本。</p>
+      </div>
     </div>
   </div>
 
@@ -220,6 +300,7 @@ claude --dangerously-skip-permissions --no-chrome</div>
     <div class="link-row"><span class="label">快捷方式创建</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/create-shortcut.ps1" target="_blank">create-shortcut.ps1</a></span></div>
     <div class="link-row"><span class="label">启动器</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/launcher.ps1" target="_blank">launcher.ps1</a></span></div>
     <div class="link-row"><span class="label">bat 备用脚本</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/claude-desktop.bat" target="_blank">claude-desktop.bat</a></span></div>
+    <div class="link-row"><span class="label">macOS 启动脚本</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/claude-desktop.command" target="_blank">claude-desktop.command</a></span></div>
     <div class="link-row"><span class="label">图标文件</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/claude-icon.ico" target="_blank">claude-icon.ico</a></span></div>
     <div class="link-row"><span class="label">图标生成</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/blob/main/tools/create-icon.py" target="_blank">create-icon.py</a></span></div>
   </div>
