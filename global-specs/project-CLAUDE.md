@@ -6,6 +6,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 - GitHub 仓库：`https://github.com/LiHongwei-ch/lihongwei-ch`
 - 网站地址：`https://lihongwei-ch.github.io/lihongwei-ch/`
+- Telegram Bot：`bot/tgbot.py`（Token/Key 从环境变量读取，启动脚本 `bot/start_bot.sh`）
 
 ## 项目概览
 

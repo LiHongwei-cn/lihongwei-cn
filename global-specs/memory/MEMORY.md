@@ -2,3 +2,4 @@
 - [auto-sync-after-task](feedback_auto_sync.md) — 任务完成后自动 commit+push，含网页内容，不需要用户提醒
 - [github-repo](reference_github_repo.md) — GitHub 仓库地址：github.com/LiHongwei-ch/lihongwei-ch
 - [website-url](reference_website_url.md) — GitHub Pages 网址：lihongwei-ch.github.io/lihongwei-ch
+- [telegram-bot](reference_telegram_bot.md) — Telegram 机器人信息：启动方式、环境变量、依赖
