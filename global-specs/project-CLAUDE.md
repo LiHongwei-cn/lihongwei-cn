@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code when working with code in this repository.
 
+## 关键信息
+
+- GitHub 仓库：`https://github.com/LiHongwei-ch/lihongwei-ch`
+- 网站地址：`https://lihongwei-ch.github.io/lihongwei-ch/`
+
 ## 项目概览
 
 新能源汽车工程专业 MATLAB 仿真工具包。Claude Code 直接生成 Simulink 模型和仿真代码，用户自行操作 CarSim。
