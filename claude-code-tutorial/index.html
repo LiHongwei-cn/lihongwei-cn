@@ -271,9 +271,9 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
       <div class="step-item">
         <h3>Clone 到桌面</h3>
         <p class="os-label mac">🍎 macOS</p>
-        <div class="cmd mac">cd ~/Desktop && git clone https://github.com/LiHongwei-ch/lihongwei-ch.git</div>
+        <div class="cmd mac">cd ~/Desktop && git clone https://github.com/LiHongwei-cn/lihongwei-cn.git</div>
         <p class="os-label win" style="margin-top:10px">🪟 Windows</p>
-        <div class="cmd win">cd %USERPROFILE%\Desktop && git clone https://github.com/LiHongwei-ch/lihongwei-ch.git</div>
+        <div class="cmd win">cd %USERPROFILE%\Desktop && git clone https://github.com/LiHongwei-cn/lihongwei-cn.git</div>
         <p style="margin-top:6px">进入 <code>global-specs/</code> 目录，里面有 CLAUDE.md、settings.json、rules/、skills/、memory/。</p>
       </div>
     </div>
@@ -299,7 +299,7 @@ cp CLAUDE.md ~/.claude/CLAUDE.md
 cp settings.local.json ~/.claude/settings.local.json
 mkdir -p ~/.claude/rules ~/.claude/skills/neat-freak/references
 cp rules/*.md ~/.claude/rules/ && cp skills/neat-freak/*.md ~/.claude/skills/neat-freak/ && cp skills/neat-freak/references/*.md ~/.claude/skills/neat-freak/references/
-cp project-CLAUDE.md ~/Desktop/lihongwei-ch/CLAUDE.md</div>
+cp project-CLAUDE.md ~/Desktop/lihongwei-cn/CLAUDE.md</div>
 
     <h3 style="font-size:15px;font-weight:600;margin:16px 0 10px;color:var(--accent)">4.4 极速版：一键部署（Windows PowerShell）</h3>
     <div class="cmd">copy settings.json $env:USERPROFILE\.claude\settings.json
@@ -307,7 +307,7 @@ copy CLAUDE.md $env:USERPROFILE\.claude\CLAUDE.md
 copy settings.local.json $env:USERPROFILE\.claude\settings.local.json
 mkdir $env:USERPROFILE\.claude\rules; copy rules\*.md $env:USERPROFILE\.claude\rules\
 mkdir $env:USERPROFILE\.claude\skills\neat-freak\references; copy skills\neat-freak\SKILL.md $env:USERPROFILE\.claude\skills\neat-freak\; copy skills\neat-freak\references\*.md $env:USERPROFILE\.claude\skills\neat-freak\references\
-copy project-CLAUDE.md $env:USERPROFILE\Desktop\lihongwei-ch\CLAUDE.md</div>
+copy project-CLAUDE.md $env:USERPROFILE\Desktop\lihongwei-cn\CLAUDE.md</div>
 
     <div class="tip green" style="margin-top:12px">部署后启动 Claude Code，输入 <code>/neat</code> 如果看到 skill 开始审查文件，说明全部部署成功。</div>
   </div>
@@ -410,7 +410,7 @@ copy project-CLAUDE.md $env:USERPROFILE\Desktop\lihongwei-ch\CLAUDE.md</div>
   <div class="link-block" style="margin-top:16px">
     <h3>🔗 相关链接</h3>
     <div class="link-row"><span class="label">DeepSeek 平台</span><a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a> <span class="badge ok">无需魔法</span></div>
-    <div class="link-row"><span class="label">规范仓库</span><a href="https://github.com/LiHongwei-ch/lihongwei-ch/tree/main/global-specs" target="_blank">github.com/LiHongwei-ch/.../global-specs</a></div>
+    <div class="link-row"><span class="label">规范仓库</span><a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs" target="_blank">github.com/LiHongwei-cn/.../global-specs</a></div>
     <div class="link-row"><span class="label">洁癖.skill 上游</span><a href="https://github.com/KKKKhazix/khazix-skills" target="_blank">github.com/KKKKhazix/khazix-skills</a></div>
     <div class="link-row"><span class="label">Python 下载</span><a href="https://www.python.org/downloads/" target="_blank">python.org</a> <span class="badge ok">无需魔法</span></div>
   </div>
@@ -418,11 +418,11 @@ copy project-CLAUDE.md $env:USERPROFILE\Desktop\lihongwei-ch\CLAUDE.md</div>
   <!-- 访问计数 -->
   <div class="page-counter">
     本页被阅读 <span id="page-count">...</span> 次
-    <img src="https://api.counterapi.dev/v1/lihongwei-ch/claude-code-tutorial/up" style="display:none" alt="" onload="fetchCount()">
+    <img src="https://api.counterapi.dev/v1/lihongwei-cn/claude-code-tutorial/up" style="display:none" alt="" onload="fetchCount()">
   </div>
 
   <div class="footer">
-    <a href="https://github.com/LiHongwei-ch/lihongwei-ch" target="_blank">GitHub</a>
+    <a href="https://github.com/LiHongwei-cn/lihongwei-cn" target="_blank">GitHub</a>
     &nbsp;·&nbsp; 教程综合自多位博主实操经验
     &nbsp;·&nbsp; LiHongwei
   </div>
@@ -433,13 +433,13 @@ copy project-CLAUDE.md $env:USERPROFILE\Desktop\lihongwei-ch\CLAUDE.md</div>
 // 页面访问计数
 (async function(){
   try {
-    let r = await fetch('https://api.counterapi.dev/v1/lihongwei-ch/claude-code-tutorial/up');
+    let r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/claude-code-tutorial/up');
     let d = await r.json();
     document.getElementById('page-count').textContent = d.count || '...';
   } catch(e) {
     // 降级：从 stats.json 读取
     try {
-      let r = await fetch('https://raw.githubusercontent.com/LiHongwei-ch/lihongwei-ch/main/stats.json');
+      let r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json');
       let d = await r.json();
       document.getElementById('page-count').textContent = d['claude-code-tutorial'] || '...';
     } catch(e2) {

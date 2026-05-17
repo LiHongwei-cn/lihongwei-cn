@@ -2,8 +2,8 @@
 MATLAB AI 代码生成工具 - 操作说明
 ========================================
 
-GitHub: https://github.com/LiHongwei-ch/lihongwei-ch
-项目页: https://lihongwei-ch.github.io/matlab-tool/
+GitHub: https://github.com/LiHongwei-cn/lihongwei-cn
+项目页: https://lihongwei-cn.github.io/matlab-tool/
 
 
 一、这是什么
@@ -23,14 +23,14 @@ AI 生成 MATLAB 仿真代码，提交到 GitHub 后，
   桌面空白处右键 → Git Bash Here，输入：
 
     cd Desktop
-    git clone https://github.com/LiHongwei-ch/lihongwei-ch.git
+    git clone https://github.com/LiHongwei-cn/lihongwei-cn.git
 
   等下载完成，关掉 Git Bash。
 
 
 步骤 2：启动 MATLAB（自动配好路径）
 
-  打开 Desktop\lihongwei-ch\ 文件夹，双击 matlab.bat
+  打开 Desktop\lihongwei-cn\ 文件夹，双击 matlab.bat
   MATLAB 会自动打开 + 自动运行 startup_setup 配置搜索路径。
   工作目录已设到 matlab\，路径已配好，直接可用。
 
@@ -74,7 +74,7 @@ AI 生成 MATLAB 仿真代码，提交到 GitHub 后，
 ----------------------------------------
 
   1. 删除项目文件：
-     rm -rf ~/Desktop/lihongwei-ch
+     rm -rf ~/Desktop/lihongwei-cn
 
   2. MATLAB 中注销许可证：
      deactivate

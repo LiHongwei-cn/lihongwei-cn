@@ -453,7 +453,7 @@ body {{
   </div>
 
   <div class="footer">
-    <a href="https://github.com/LiHongwei-ch/lihongwei-ch" target="_blank">GitHub</a>
+    <a href="https://github.com/LiHongwei-cn/lihongwei-cn" target="_blank">GitHub</a>
     &nbsp;·&nbsp; 数据来源：GitHub Trending
     &nbsp;·&nbsp; LiHongwei
   </div>
@@ -463,7 +463,7 @@ body {{
 <script>
 (async function(){{
   try {{
-    let r = await fetch('https://api.counterapi.dev/v1/lihongwei-ch/github-trending/up');
+    let r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/github-trending/up');
     let d = await r.json();
     document.getElementById('page-count').textContent = d.count || '...';
   }} catch(e) {{

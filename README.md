@@ -10,7 +10,7 @@ MATLAB 仿真 · AI 工具开发
 
 **MATLAB AI 仿真工具包** — Claude Code 直接生成 Simulink 模型和仿真代码。车辆动力学、电机控制、定速巡航仿真。
 
-[📦 下载安装包（ZIP）](matlab-tool/matlab-ai-starter.zip) ｜ [📖 查看操作说明](matlab-tool/guide.txt) ｜ [🌐 项目详情页](https://lihongwei-ch.github.io/matlab-tool/)
+[📦 下载安装包（ZIP）](matlab-tool/matlab-ai-starter.zip) ｜ [📖 查看操作说明](matlab-tool/guide.txt) ｜ [🌐 项目详情页](https://lihongwei-cn.github.io/matlab-tool/)
 
 *ZIP 压缩包 · 11 KB · 包含 16 个文件 · 免费开源*
 
@@ -58,7 +58,7 @@ MATLAB 仿真 · AI 工具开发
 3. 解压后将远程仓库改为你自己的地址
 4. 在笔记本上 `git clone` 你的仓库 → 双击 `matlab.bat` → 运行
 
-完整操作指南见 [项目页面](https://lihongwei-ch.github.io/matlab-tool/)。
+完整操作指南见 [项目页面](https://lihongwei-cn.github.io/matlab-tool/)。
 
 ## 免费 VPN 自建指南
 
@@ -69,7 +69,7 @@ MATLAB 仿真 · AI 工具开发
 - **方法 B**：Cloudflare Pages + edgetunnel（进阶，配合 Clash 分流使用）
 - **客户端**：Windows / Mac / Android / iOS 全平台详细配置
 
-🔗 [查看完整教程](https://lihongwei-ch.github.io/vpn-guide/)
+🔗 [查看完整教程](https://lihongwei-cn.github.io/vpn-guide/)
 
 ## Windows 系统优化教程
 
@@ -80,7 +80,7 @@ MATLAB 仿真 · AI 工具开发
 
 涵盖系统瘦身、隐私保护、更新控制、WSL/Hyper-V 一键启用、MicroWin 纯净 ISO 制作 + Ventoy 启动盘。
 
-🔗 [查看完整教程](https://lihongwei-ch.github.io/win-optimize/)
+🔗 [查看完整教程](https://lihongwei-cn.github.io/win-optimize/)
 
 ## Claude Code 从零入门教程
 
@@ -92,7 +92,7 @@ Claude Code 的完整入门教程。Mac / Windows 双平台，有魔法没魔法
 - **桌面快捷方式**：macOS 拖入 Dock / Windows .bat 双击启动
 - **Telegram 机器人**：DeepSeek 驱动的 AI 机器人完整搭建
 
-🔗 [查看完整教程](https://lihongwei-ch.github.io/claude-code-tutorial/)
+🔗 [查看完整教程](https://lihongwei-cn.github.io/claude-code-tutorial/)
 
 ## 项目规范
 
@@ -103,10 +103,10 @@ Claude Code 的完整入门教程。Mac / Windows 双平台，有魔法没魔法
 ```bash
 # 1. 首次拉取代码
 cd Desktop
-git clone https://github.com/LiHongwei-ch/lihongwei-ch.git
+git clone https://github.com/LiHongwei-cn/lihongwei-cn.git
 
 # 2. 后续更新
-cd lihongwei-ch
+cd lihongwei-cn
 git pull
 ```
 

@@ -16,7 +16,7 @@
       "Bash(rm -f \"/c/Users/HP/Desktop/Claude Code.lnk\")",
       "Bash(rm -f \"/c/Users/HP/Desktop/1/tools/claude-launcher.vbs\")",
       "Bash(cmd.exe *)",
-      "WebFetch(domain:lihongwei-ch.github.io)",
+      "WebFetch(domain:lihongwei-cn.github.io)",
       "Bash(xxd \"/c/Users/HP/Desktop/1/claude-code-tutorial/index.html\")",
       "Bash(xxd)",
       "Bash(xxd \"/c/Users/HP/Desktop/1/desktop-launcher/section5-new.html\")",

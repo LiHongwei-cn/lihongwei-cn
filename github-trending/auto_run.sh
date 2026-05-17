@@ -14,7 +14,7 @@ if [ -f "$HOME/.bash_profile" ]; then
     source "$HOME/.bash_profile" 2>/dev/null || true
 fi
 
-PROJECT_DIR="$HOME/Desktop/lihongwei-ch"
+PROJECT_DIR="$HOME/Desktop/lihongwei-cn"
 TRENDING_DIR="$PROJECT_DIR/github-trending"
 
 cd "$TRENDING_DIR"

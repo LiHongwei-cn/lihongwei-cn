@@ -2,7 +2,7 @@
 # Finder 启动时 PATH 最小化，需手动扩展
 export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
 export CLAUDE_CODE_ENTRYPOINT=cli
-WORK_DIR="$HOME/Desktop/lihongwei-ch"
+WORK_DIR="$HOME/Desktop/lihongwei-cn"
 
 cd "$WORK_DIR" || exit 1
 
