@@ -3,12 +3,11 @@
 运行: python3 -m pytest test_bot.py -v
 """
 import os
-import sys
 import pytest
 from unittest.mock import AsyncMock, patch, MagicMock
 
-os.environ["TELEGRAM_TOKEN"] = os.environ.get("TELEGRAM_TOKEN", "8868453528:AAEXPhs9m0T1_qjuFRKE9BSwaMZDHaXAsVs")
-os.environ["DEEPSEEK_API_KEY"] = os.environ.get("DEEPSEEK_API_KEY", "sk-8615e647cc02483cadcb15f60757d30d")
+os.environ.setdefault("TELEGRAM_TOKEN", "PLACEHOLDER_TELEGRAM_TOKEN")
+os.environ.setdefault("DEEPSEEK_API_KEY", "PLACEHOLDER_DEEPSEEK_KEY")
 
 from tgbot import start_cmd, handle_message, handle_photo, error_handler, _split_long_msg
 

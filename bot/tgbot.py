@@ -16,6 +16,8 @@ from telegram.ext import (
 )
 from openai import AsyncOpenAI
 
+from config import get_env
+
 load_dotenv(Path(__file__).with_name(".env"))
 
 logging.basicConfig(
@@ -24,25 +26,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger("tgbot")
 
-
-def _get_env(key: str) -> str:
-    val = os.environ.get(key)
-    if val:
-        return val
-    try:
-        import winreg
-        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Environment") as reg:
-            val, _ = winreg.QueryValueEx(reg, key)
-        if val:
-            os.environ[key] = val
-            return val
-    except Exception:
-        pass
-    raise KeyError(f"{key} 未设置，请配置环境变量或在 bot/.env 文件中设置")
-
-
-TELEGRAM_TOKEN = _get_env("TELEGRAM_TOKEN")
-DEEPSEEK_API_KEY = _get_env("DEEPSEEK_API_KEY")
+TELEGRAM_TOKEN = get_env("TELEGRAM_TOKEN")
+DEEPSEEK_API_KEY = get_env("DEEPSEEK_API_KEY")
 
 client = AsyncOpenAI(
     api_key=DEEPSEEK_API_KEY,
