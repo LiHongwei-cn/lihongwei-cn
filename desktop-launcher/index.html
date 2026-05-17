@@ -206,10 +206,25 @@ claude --dangerously-skip-permissions --no-chrome</div>
     <div class="link-row"><span class="label">项目仓库</span><a href="https://github.com/LiHongwei-ch/lihongwei-ch" target="_blank">github.com/LiHongwei-ch/lihongwei-ch</a></div>
   </div>
 
+  <div class="page-counter" style="text-align:center;padding:24px 0 8px;font-size:13px;color:rgba(255,255,255,0.2)">
+    本页被阅读 <span id="page-count">...</span> 次
+  </div>
+
   <div class="footer">
     <a href="https://github.com/LiHongwei-ch/lihongwei-ch/tree/main/desktop-launcher">页面源码 ↗</a>
   </div>
 
 </div>
+<script>
+(async function(){
+  try {
+    let r = await fetch('https://api.counterapi.dev/v1/lihongwei-ch/desktop-launcher/up');
+    let d = await r.json();
+    document.getElementById('page-count').textContent = d.count || '...';
+  } catch(e) {
+    document.getElementById('page-count').textContent = '...';
+  }
+})();
+</script>
 </body>
 </html>

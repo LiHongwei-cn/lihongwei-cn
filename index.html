@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="LiHongwei - 新能源汽车工程 · MATLAB 仿真 · AI 工具开发">
+<meta name="description" content="LiHongwei - 新能源汽车工程 · MATLAB 仿真 · AI 工具开发 · GitHub 热点追踪">
 <title>LiHongwei</title>
 <style>
 :root{
@@ -15,146 +15,87 @@
   --text: #e4e4e7;
   --dim: rgba(255,255,255,0.4);
   --accent: #818cf8;
+  --orange: #fb923c;
+  --green: #4ade80;
+  --purple: #a78bfa;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-html{height:100%}
-
 body{
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   padding: 24px;
 }
-
 body::before{
   content: '';
-  position: fixed;
-  top: -40%;
-  left: -20%;
-  width: 140%;
-  height: 140%;
+  position: fixed; top: -40%; left: -20%; width: 140%; height: 140%;
   background: radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.08) 0%, transparent 60%),
               radial-gradient(ellipse at 80% 80%, rgba(168,85,247,0.05) 0%, transparent 60%);
-  pointer-events: none;
-  z-index: 0;
+  pointer-events: none; z-index: 0;
 }
+.container{width: 100%; max-width: 480px; position: relative; z-index: 1;}
 
-.container{
-  width: 100%;
-  max-width: 420px;
-  position: relative;
-  z-index: 1;
-}
+.header{text-align: center; margin-bottom: 28px;}
+.avatar{width: 72px; height: 72px; border-radius: 50%; display: block; margin: 0 auto 12px; object-fit: cover;}
+.name{font-size: 20px; font-weight: 700; letter-spacing: -0.3px;}
 
-/* header */
-.header{
-  text-align: center;
-  margin-bottom: 32px;
+/* 分类区块 */
+.cat-section{margin-bottom: 24px;}
+.cat-label{
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 600; color: var(--dim);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 10px; padding-left: 2px;
 }
+.cat-label .line{flex:1; height:1px; background:var(--border);}
 
-.avatar{
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  display: block;
-  margin: 0 auto 12px;
-  object-fit: cover;
-}
-
-.name{
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.3px;
-}
-
-/* nav */
-.nav-grid{
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+.nav-grid{display: flex; flex-direction: column; gap: 6px;}
 
 .card{
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px 18px;
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.2s ease;
-  cursor: pointer;
+  display: flex; align-items: center; gap: 14px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 18px;
+  text-decoration: none; color: inherit;
+  transition: all 0.2s ease; cursor: pointer; position: relative;
 }
-
-.card:hover{
-  background: var(--card-hover);
-  border-color: var(--border-hover);
-  transform: translateY(-1px);
-}
+.card:hover{background: var(--card-hover); border-color: var(--border-hover); transform: translateY(-1px);}
 
 .card-icon{
-  width: 42px;
-  height: 42px;
-  border-radius: 11px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 19px;
-  flex-shrink: 0;
+  width: 42px; height: 42px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 19px; flex-shrink: 0;
 }
-
-.card-body{ flex: 1; min-width: 0; }
-
-.card-title{
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 3px;
-  letter-spacing: -0.2px;
-}
-
-.card-desc{
-  font-size: 13px;
-  color: var(--dim);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+.card-body{flex: 1; min-width: 0;}
+.card-title{font-size: 15px; font-weight: 600; margin-bottom: 2px; letter-spacing: -0.2px;}
+.card-desc{font-size: 12px; color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
 
 .card-arrow{
-  color: rgba(255,255,255,0.15);
-  font-size: 15px;
-  flex-shrink: 0;
+  color: rgba(255,255,255,0.12); font-size: 14px; flex-shrink: 0;
   transition: all 0.2s ease;
 }
-.card:hover .card-arrow{
-  color: rgba(255,255,255,0.35);
-  transform: translateX(2px);
+.card:hover .card-arrow{color: rgba(255,255,255,0.3); transform: translateX(2px);}
+
+/* 访问量标记 */
+.card-views{
+  position: absolute; top: 8px; right: 12px;
+  font-size: 10px; color: rgba(255,255,255,0.15);
+  display: flex; align-items: center; gap: 3px;
 }
 
-/* footer */
 .footer{
-  text-align: center;
-  margin-top: 36px;
-  font-size: 13px;
+  text-align: center; margin-top: 32px; font-size: 12px;
+  color: rgba(255,255,255,0.15);
 }
-
-.footer a{
-  color: rgba(255,255,255,0.2);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.footer a:hover{ color: rgba(255,255,255,0.4); }
+.footer a{color: rgba(255,255,255,0.2); text-decoration: none; transition: color 0.2s;}
+.footer a:hover{color: rgba(255,255,255,0.4);}
+.footer .stats-note{font-size: 10px; margin-bottom: 4px;}
 
 @media(max-width: 400px){
-  .card{ padding: 14px 16px; gap: 12px; }
-  .card-icon{ width: 38px; height: 38px; font-size: 17px; }
-  .avatar{ width: 60px; height: 60px; }
+  .card{padding: 12px 14px; gap: 10px;}
+  .card-icon{width: 36px; height: 36px; font-size: 16px;}
+  .avatar{width: 60px; height: 60px;}
 }
 </style>
 </head>
@@ -167,77 +108,139 @@ body::before{
     <div class="name">LiHongwei</div>
   </div>
 
-  <div class="nav-grid">
+  <!-- 工具类 -->
+  <div class="cat-section" data-cat="tools">
+    <div class="cat-label">🛠️ 工具<span class="line"></span></div>
+    <div class="nav-grid">
 
-    <a class="card" href="matlab-tool/">
-      <div class="card-icon" style="background:linear-gradient(135deg,#0e7490,#0369a1)">⚡</div>
-      <div class="card-body">
-        <div class="card-title">MATLAB AI 仿真工具包</div>
-        <div class="card-desc">Win/Mac 一键运行 · AI 生成代码 · 车辆动力学 · 电机控制</div>
-      </div>
-      <span class="card-arrow">→</span>
-    </a>
+      <a class="card" href="matlab-tool/" data-id="matlab-tool">
+        <div class="card-icon" style="background:linear-gradient(135deg,#0e7490,#0369a1)">⚡</div>
+        <div class="card-body">
+          <div class="card-title">MATLAB AI 仿真工具包</div>
+          <div class="card-desc">Win/Mac 一键运行 · AI 生成代码 · 车辆动力学 · 电机控制</div>
+        </div>
+        <span class="card-arrow">→</span>
+        <span class="card-views" data-views="..."></span>
+      </a>
 
-    <a class="card" href="vpn-guide/">
-      <div class="card-icon" style="background:linear-gradient(135deg,#b91c1c,#991b1b)">🔒</div>
-      <div class="card-body">
-        <div class="card-title">免费 VPN 自建指南</div>
-        <div class="card-desc">Cloudflare 零成本搭建 · 全平台客户端 · 无需技术背景</div>
-      </div>
-      <span class="card-arrow">→</span>
-    </a>
+      <a class="card" href="desktop-launcher/" data-id="desktop-launcher">
+        <div class="card-icon" style="background:linear-gradient(135deg,#059669,#047857)">⚡</div>
+        <div class="card-body">
+          <div class="card-title">Claude Code 桌面快捷启动</div>
+          <div class="card-desc">Win / Mac 一键创建桌面快捷方式 · 双击启动 AI 对话框</div>
+        </div>
+        <span class="card-arrow">→</span>
+        <span class="card-views" data-views="..."></span>
+      </a>
 
-    <a class="card" href="win-optimize/">
-      <div class="card-icon" style="background:linear-gradient(135deg,#0e7490,#155e75)">🖥️</div>
-      <div class="card-body">
-        <div class="card-title">Win / Mac 系统优化教程</div>
-        <div class="card-desc">Windows 一行命令瘦身 · macOS 系统维护 · 隐私保护</div>
-      </div>
-      <span class="card-arrow">→</span>
-    </a>
+    </div>
+  </div>
 
-    <a class="card" href="claude-code-tutorial/">
-      <div class="card-icon" style="background:linear-gradient(135deg,#6d28d9,#5b21b6)">🦀</div>
-      <div class="card-body">
-        <div class="card-title">Claude Code 从零入门教程</div>
-        <div class="card-desc">Win/Mac 安装 · 国产模型接入 · Telegram 机器人</div>
-      </div>
-      <span class="card-arrow">→</span>
-    </a>
+  <!-- 教程类 -->
+  <div class="cat-section" data-cat="tutorials">
+    <div class="cat-label">📚 教程<span class="line"></span></div>
+    <div class="nav-grid">
 
-    <a class="card" href="desktop-launcher/">
-      <div class="card-icon" style="background:linear-gradient(135deg,#059669,#047857)">⚡</div>
-      <div class="card-body">
-        <div class="card-title">Claude Code 桌面快捷启动</div>
-        <div class="card-desc">Win / Mac 一键创建桌面快捷方式 · 双击启动 AI 对话框</div>
-      </div>
-      <span class="card-arrow">→</span>
-    </a>
+      <a class="card" href="claude-code-tutorial/" data-id="claude-code-tutorial">
+        <div class="card-icon" style="background:linear-gradient(135deg,#6d28d9,#5b21b6)">🦀</div>
+        <div class="card-body">
+          <div class="card-title">Claude Code 完整指南</div>
+          <div class="card-desc">安装 · 国产模型接入 · 全局规范部署 · Skill · Telegram 机器人</div>
+        </div>
+        <span class="card-arrow">→</span>
+        <span class="card-views" data-views="..."></span>
+      </a>
 
-    <a class="card" href="mac-setup/">
-      <div class="card-icon" style="background:linear-gradient(135deg,#0ea5e9,#0284c7)">🖥️</div>
-      <div class="card-body">
-        <div class="card-title">MacBook 新机部署指南</div>
-        <div class="card-desc">从零配置 Claude Code · 全局规范导入 · 洁癖.skill 安装</div>
-      </div>
-      <span class="card-arrow">→</span>
-    </a>
+      <a class="card" href="vpn-guide/" data-id="vpn-guide">
+        <div class="card-icon" style="background:linear-gradient(135deg,#b91c1c,#991b1b)">🔒</div>
+        <div class="card-body">
+          <div class="card-title">免费 VPN 自建指南</div>
+          <div class="card-desc">Cloudflare 零成本搭建 · 全平台客户端 · 无需技术背景</div>
+        </div>
+        <span class="card-arrow">→</span>
+        <span class="card-views" data-views="..."></span>
+      </a>
 
-    <a class="card" href="github-trending/">
-      <div class="card-icon" style="background:linear-gradient(135deg,#f97316,#dc2626)">🔥</div>
-      <div class="card-body">
-        <div class="card-title">GitHub 每日热点</div>
-        <div class="card-desc">中英文区热门仓库 · 自动翻译 · 每日更新 · 直达链接</div>
-      </div>
-      <span class="card-arrow">→</span>
-    </a>
+    </div>
+  </div>
 
+  <!-- 优化教程类 -->
+  <div class="cat-section" data-cat="optimize">
+    <div class="cat-label">⚡ 系统优化<span class="line"></span></div>
+    <div class="nav-grid">
+
+      <a class="card" href="win-optimize/" data-id="win-optimize">
+        <div class="card-icon" style="background:linear-gradient(135deg,#0e7490,#155e75)">🖥️</div>
+        <div class="card-body">
+          <div class="card-title">Win / Mac 系统优化教程</div>
+          <div class="card-desc">Windows 一行命令瘦身 · macOS 系统维护 · 隐私保护</div>
+        </div>
+        <span class="card-arrow">→</span>
+        <span class="card-views" data-views="..."></span>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- 信息热点类 -->
+  <div class="cat-section" data-cat="trending">
+    <div class="cat-label">🔥 信息热点<span class="line"></span></div>
+    <div class="nav-grid">
+
+      <a class="card" href="github-trending/" data-id="github-trending">
+        <div class="card-icon" style="background:linear-gradient(135deg,#f97316,#dc2626)">🔥</div>
+        <div class="card-body">
+          <div class="card-title">GitHub 每日热点</div>
+          <div class="card-desc">中英文区热门仓库 · 自动翻译 · 每日更新 · 直达链接</div>
+        </div>
+        <span class="card-arrow">→</span>
+        <span class="card-views" data-views="..."></span>
+      </a>
+
+    </div>
   </div>
 
   <div class="footer">
+    <div class="stats-note">📊 项目按访问量排列</div>
     <a href="https://github.com/LiHongwei-ch/lihongwei-ch">GitHub ↗</a>
   </div>
 
 </div>
+
+<script>
+// 加载访问统计并排列卡片
+(async function(){
+  const STATS_URL = 'https://raw.githubusercontent.com/LiHongwei-ch/lihongwei-ch/main/stats.json';
+
+  let stats = {};
+  try {
+    let r = await fetch(STATS_URL + '?t=' + Date.now());
+    stats = await r.json();
+  } catch(e) {
+    // stats 加载失败，使用默认顺序
+  }
+
+  // 更新每张卡片的访问数 + 按访问量排列
+  document.querySelectorAll('.cat-section').forEach(section => {
+    let cards = Array.from(section.querySelectorAll('.card'));
+
+    cards.forEach(card => {
+      let id = card.dataset.id;
+      let count = stats[id];
+      card.querySelector('.card-views').textContent = count ? count + ' 次阅读' : '';
+    });
+
+    // 按访问量从高到低排列
+    cards.sort((a, b) => {
+      let va = stats[a.dataset.id] || 0;
+      let vb = stats[b.dataset.id] || 0;
+      return vb - va;
+    });
+
+    let grid = section.querySelector('.nav-grid');
+    cards.forEach(c => grid.appendChild(c));
+  });
+})();
+</script>
 </body>
 </html>

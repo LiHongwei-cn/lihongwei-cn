@@ -448,6 +448,10 @@ body {{
     </div>
   </div>
 
+  <div class="page-counter" style="text-align:center;padding:24px 0 8px;font-size:13px;color:rgba(255,255,255,0.2)">
+    本页被阅读 <span id="page-count">...</span> 次
+  </div>
+
   <div class="footer">
     <a href="https://github.com/LiHongwei-ch/lihongwei-ch" target="_blank">GitHub</a>
     &nbsp;·&nbsp; 数据来源：GitHub Trending
@@ -456,6 +460,17 @@ body {{
 
 </div>
 
+<script>
+(async function(){{
+  try {{
+    let r = await fetch('https://api.counterapi.dev/v1/lihongwei-ch/github-trending/up');
+    let d = await r.json();
+    document.getElementById('page-count').textContent = d.count || '...';
+  }} catch(e) {{
+    document.getElementById('page-count').textContent = '...';
+  }}
+}})();
+</script>
 </body>
 </html>"""
 

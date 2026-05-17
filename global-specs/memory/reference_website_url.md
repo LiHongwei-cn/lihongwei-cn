@@ -16,9 +16,9 @@ metadata:
 - MATLAB 工具包：`/lihongwei-ch/matlab-tool/`
 - VPN 指南：`/lihongwei-ch/vpn-guide/`
 - 系统优化：`/lihongwei-ch/win-optimize/`
-- Claude Code 教程：`/lihongwei-ch/claude-code-tutorial/`
+- Claude Code 完整指南：`/lihongwei-ch/claude-code-tutorial/`
 - 桌面快捷启动：`/lihongwei-ch/desktop-launcher/`
-- Mac 部署指南：`/lihongwei-ch/mac-setup/`
+- GitHub 每日热点：`/lihongwei-ch/github-trending/`
 - 全局规范：`/lihongwei-ch/global-specs/`（仅 GitHub，非网页）
 
 每次新增项目页面后需更新此列表。
