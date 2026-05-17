@@ -463,14 +463,15 @@ body {{
 <script>
 (async function(){{
   try {{
-    let r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/github-trending/up');
-    let d = await r.json();
-    document.getElementById('page-count').textContent = d.count || '...';
+    let r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json');
+    let s = await r.json();
+    document.getElementById('page-count').textContent = s['github-trending'] || '...';
   }} catch(e) {{
     document.getElementById('page-count').textContent = '...';
   }}
 }})();
 </script>
+<img src="https://api.counterapi.dev/v1/lihongwei-cn/github-trending/up" style="display:none" alt="" />
 </body>
 </html>"""
 
@@ -478,28 +479,37 @@ body {{
 # ── stats sync ────────────────────────────────────────────────────
 
 def sync_stats_json():
-    """从 counterapi.dev 拉取首页访问量，同步到 stats.json"""
+    """从 counterapi.dev 拉取所有页面访问量，同步到 stats.json"""
     import json as json_mod
     stats_file = BASE_DIR.parent / "stats.json"
+
+    PAGES = [
+        "home", "matlab-tool", "desktop-launcher", "claude-code-tutorial",
+        "vpn-guide", "win-optimize", "github-trending",
+    ]
 
     try:
         stats = {}
         if stats_file.exists():
             stats = json_mod.loads(stats_file.read_text(encoding="utf-8"))
 
-        # 读取首页计数器
-        resp = requests.get(
-            "https://api.counterapi.dev/v1/lihongwei-cn/home",
-            timeout=10
+        for page in PAGES:
+            try:
+                resp = requests.get(
+                    f"https://api.counterapi.dev/v1/lihongwei-cn/{page}",
+                    timeout=10
+                )
+                if resp.status_code == 200:
+                    data = resp.json()
+                    stats[page] = data.get("count", 0)
+            except Exception:
+                continue
+
+        stats_file.write_text(
+            json_mod.dumps(stats, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8"
         )
-        if resp.status_code == 200:
-            data = resp.json()
-            stats["home"] = data.get("count", 0)
-            stats_file.write_text(
-                json_mod.dumps(stats, ensure_ascii=False, indent=2) + "\n",
-                encoding="utf-8"
-            )
-            print(f"    stats.json 已同步: home={stats['home']}")
+        print(f"    stats.json 已同步: {len(PAGES)} 个页面")
     except Exception as e:
         print(f"    ⚠ stats.json 同步失败: {e}")
 

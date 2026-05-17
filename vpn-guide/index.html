@@ -680,13 +680,14 @@ td a:hover{text-decoration:underline}
 <script>
 (async function(){
   try {
-    let r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/vpn-guide/up');
-    let d = await r.json();
-    document.getElementById('page-count').textContent = d.count || '...';
+    let r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json');
+    let s = await r.json();
+    document.getElementById('page-count').textContent = s['vpn-guide'] || '...';
   } catch(e) {
     document.getElementById('page-count').textContent = '...';
   }
 })();
 </script>
+<img src="https://api.counterapi.dev/v1/lihongwei-cn/vpn-guide/up" style="display:none" alt="" />
 </body>
 </html>

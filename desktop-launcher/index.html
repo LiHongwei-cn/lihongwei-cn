@@ -218,13 +218,14 @@ claude --dangerously-skip-permissions --no-chrome</div>
 <script>
 (async function(){
   try {
-    let r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/desktop-launcher/up');
-    let d = await r.json();
-    document.getElementById('page-count').textContent = d.count || '...';
+    let r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json');
+    let s = await r.json();
+    document.getElementById('page-count').textContent = s['desktop-launcher'] || '...';
   } catch(e) {
     document.getElementById('page-count').textContent = '...';
   }
 })();
 </script>
+<img src="https://api.counterapi.dev/v1/lihongwei-cn/desktop-launcher/up" style="display:none" alt="" />
 </body>
 </html>
