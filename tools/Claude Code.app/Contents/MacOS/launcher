@@ -1,4 +1,6 @@
 #!/bin/bash
+# Finder 启动时 PATH 最小化，需手动扩展
+export PATH="$HOME/.local/bin:/usr/local/bin:$PATH"
 export CLAUDE_CODE_ENTRYPOINT=cli
 WORK_DIR="$HOME/Desktop/lihongwei-ch"
 
@@ -9,4 +11,4 @@ if ! command -v claude &> /dev/null; then
     exit 1
 fi
 
-osascript -e "tell application \"Terminal\" to do script \"cd '$WORK_DIR' && export CLAUDE_CODE_ENTRYPOINT=cli && claude --dangerously-skip-permissions --no-chrome; exit\""
+osascript -e "tell application \"Terminal\" to do script \"cd '$WORK_DIR' && export CLAUDE_CODE_ENTRYPOINT=cli && exec claude --dangerously-skip-permissions --no-chrome\""
