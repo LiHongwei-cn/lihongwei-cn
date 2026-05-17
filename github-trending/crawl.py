@@ -475,6 +475,35 @@ body {{
 </html>"""
 
 
+# ── stats sync ────────────────────────────────────────────────────
+
+def sync_stats_json():
+    """从 counterapi.dev 拉取首页访问量，同步到 stats.json"""
+    import json as json_mod
+    stats_file = BASE_DIR.parent / "stats.json"
+
+    try:
+        stats = {}
+        if stats_file.exists():
+            stats = json_mod.loads(stats_file.read_text(encoding="utf-8"))
+
+        # 读取首页计数器
+        resp = requests.get(
+            "https://api.counterapi.dev/v1/lihongwei-cn/home",
+            timeout=10
+        )
+        if resp.status_code == 200:
+            data = resp.json()
+            stats["home"] = data.get("count", 0)
+            stats_file.write_text(
+                json_mod.dumps(stats, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8"
+            )
+            print(f"    stats.json 已同步: home={stats['home']}")
+    except Exception as e:
+        print(f"    ⚠ stats.json 同步失败: {e}")
+
+
 # ── main ──────────────────────────────────────────────────────────
 
 def main():
@@ -522,6 +551,10 @@ def main():
     OUTPUT_FILE.write_text(html_content, encoding="utf-8")
     print(f"✅ 报告已保存: {OUTPUT_FILE}")
     print(f"    中文区 {len(zh_repos)} 个 · 英文区 {len(en_repos)} 个")
+
+    # 4. 同步首页访问量到 stats.json
+    print("\n📊 同步访问统计...")
+    sync_stats_json()
 
 
 if __name__ == "__main__":

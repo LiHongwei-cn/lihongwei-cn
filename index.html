@@ -97,7 +97,7 @@ body::before{
 .footer a{color: rgba(255,255,255,0.2); text-decoration: none; transition: color 0.2s;}
 .footer a:hover{color: rgba(255,255,255,0.4);}
 .footer .stats-note{font-size: 10px; margin-bottom: 4px;}
-.page-counter{font-size: 11px; color: rgba(255,255,255,0.2); margin-bottom: 6px;}
+.page-counter{font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 6px;}
 
 /* —— 响应式 —— */
 @media(max-width: 540px){
@@ -227,12 +227,8 @@ body::before{
     stats = await r.json();
   } catch(e) {}
 
-  // 页面总访问量
-  try {
-    let r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/home/up');
-    let d = await r.json();
-    document.getElementById('counter').textContent = '👁 ' + (d.count || 0) + ' 次访问';
-  } catch(e) {}
+  // 页面总访问量（从 stats.json 读取，避免 CORS 拦截）
+  document.getElementById('counter').textContent = '👁 ' + (stats.home || 0) + ' 次访问';
 
   document.querySelectorAll('.cat-section').forEach(section => {
     let cards = Array.from(section.querySelectorAll('.card'));
