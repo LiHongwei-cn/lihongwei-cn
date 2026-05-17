@@ -26,7 +26,7 @@ echo "[$(date '+%Y-%m-%d %H:%M:%S')] 开始每日热点爬取..."
 
 # 提交到 GitHub
 cd "$PROJECT_DIR"
-/usr/bin/git add github-trending/index.html
+/usr/bin/git add github-trending/index.html stats.json
 
 if /usr/bin/git diff --cached --quiet; then
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] 无变化，跳过提交"

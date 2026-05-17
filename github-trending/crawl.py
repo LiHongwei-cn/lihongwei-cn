@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """GitHub Trending 爬虫 — 抓取中英文区热门仓库，生成静态报告页面"""
 
-import os
-import sys
-import re
-import html as html_mod
 from datetime import datetime, timezone, timedelta
+import html as html_mod
+import os
 from pathlib import Path
+import re
+import sys
 
-import requests
 from bs4 import BeautifulSoup
-from openai import OpenAI
 from dotenv import load_dotenv
+from openai import OpenAI
+import requests
 
 load_dotenv()
 
@@ -119,7 +119,7 @@ def has_chinese(text):
     return any("一" <= ch <= "鿿" for ch in text)
 
 
-def translate_batch(descriptions, client):
+def translate_batch(descriptions):
     """批量翻译英文描述为中文，返回翻译后的列表"""
     if not descriptions or not DEEPSEEK_API_KEY:
         return descriptions
@@ -506,7 +506,7 @@ def sync_stats_json():
                 continue
 
         stats_file.write_text(
-            json_mod.dumps(stats, ensure_ascii=False, indent=2) + "\n",
+            json_mod.dumps(stats, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
             encoding="utf-8"
         )
         print(f"    stats.json 已同步: {len(PAGES)} 个页面")
@@ -546,7 +546,7 @@ def main():
     if en_repos and DEEPSEEK_API_KEY:
         print("\n🌐 翻译英文区描述...")
         descs = [r["description"] for r in en_repos]
-        translated = translate_batch(descs, None)  # client 在函数内创建
+        translated = translate_batch(descs)
         for repo, desc_cn in zip(en_repos, translated):
             repo["description_cn"] = desc_cn
         print("    ✓ 翻译完成")

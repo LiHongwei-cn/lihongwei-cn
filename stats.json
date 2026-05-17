@@ -1,9 +1,9 @@
 {
-  "home": 5,
   "claude-code-tutorial": 89,
-  "vpn-guide": 56,
-  "matlab-tool": 142,
-  "win-optimize": 38,
   "desktop-launcher": 24,
-  "github-trending": 15
+  "github-trending": 15,
+  "home": 5,
+  "matlab-tool": 142,
+  "vpn-guide": 56,
+  "win-optimize": 38
 }
