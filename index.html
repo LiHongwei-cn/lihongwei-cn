@@ -23,6 +23,7 @@ body{
   color: var(--text);
   min-height: 100vh;
   padding: 48px 24px;
+  overflow-x: hidden;
 }
 body::before{
   content: '';
@@ -31,17 +32,17 @@ body::before{
               radial-gradient(ellipse at 80% 80%, rgba(168,85,247,0.05) 0%, transparent 60%);
   pointer-events: none; z-index: 0;
 }
-.container{width: 100%; max-width: 1060px; margin: 0 auto; position: relative; z-index: 1;}
+.container{width: 100%; max-width: 1100px; margin: 0 auto; position: relative; z-index: 1;}
 
 .header{text-align: center; margin-bottom: 36px;}
 .avatar{width: 72px; height: 72px; border-radius: 50%; display: block; margin: 0 auto 12px; object-fit: cover;}
 .name{font-size: 20px; font-weight: 700; letter-spacing: -0.3px;}
 .subtitle{font-size: 12px; color: var(--dim); margin-top: 4px;}
 
-/* 四列仪表盘 */
+/* 自适应仪表盘 — 列数随窗口宽度自动调节 */
 .dashboard{
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 18px;
   margin-bottom: 32px;
 }
@@ -99,14 +100,10 @@ body::before{
 .page-counter{font-size: 11px; color: rgba(255,255,255,0.2); margin-bottom: 6px;}
 
 /* —— 响应式 —— */
-@media(max-width: 860px){
-  .dashboard{grid-template-columns: repeat(2, 1fr);}
-}
-@media(max-width: 500px){
+@media(max-width: 540px){
   .dashboard{grid-template-columns: 1fr; gap: 12px;}
   body{padding: 28px 14px;}
   .header{margin-bottom: 24px;}
-  .card{padding: 10px 12px;}
 }
 </style>
 </head>
