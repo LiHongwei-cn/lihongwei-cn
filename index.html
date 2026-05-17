@@ -96,6 +96,7 @@ body::before{
 .footer a{color: rgba(255,255,255,0.2); text-decoration: none; transition: color 0.2s;}
 .footer a:hover{color: rgba(255,255,255,0.4);}
 .footer .stats-note{font-size: 10px; margin-bottom: 4px;}
+.page-counter{font-size: 11px; color: rgba(255,255,255,0.2); margin-bottom: 6px;}
 
 /* —— 响应式 —— */
 @media(max-width: 860px){
@@ -210,8 +211,12 @@ body::before{
 
   <div class="footer">
     <div class="stats-note">📊 项目按访问量排列</div>
+    <div class="page-counter" id="counter">...</div>
     <a href="https://github.com/LiHongwei-cn/lihongwei-cn">GitHub ↗</a>
   </div>
+
+  <!-- 计数器：递增 -->
+  <img src="https://api.counterapi.dev/v1/lihongwei-cn/home/up" style="display:none" alt="" />
 
 </div>
 
@@ -223,6 +228,13 @@ body::before{
   try {
     let r = await fetch(STATS_URL + '?t=' + Date.now());
     stats = await r.json();
+  } catch(e) {}
+
+  // 页面总访问量
+  try {
+    let r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/home/up');
+    let d = await r.json();
+    document.getElementById('counter').textContent = '👁 ' + (d.count || 0) + ' 次访问';
   } catch(e) {}
 
   document.querySelectorAll('.cat-section').forEach(section => {
