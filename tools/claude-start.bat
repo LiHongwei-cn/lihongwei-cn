@@ -1,71 +1,85 @@
 @echo off
 chcp 65001 >nul
-title Claude Code · AI 对话
-setlocal enabledelayedexpansion
+title Claude Code · DeepSeek CCS
 
-:: ═══════════════════════════════════════════════
-:: Claude Code + DeepSeek CCS 一键启动器
-:: 下载后放到 F:\111 双击即可
-:: ═══════════════════════════════════════════════
-
-set "WORK_DIR=%~dp0"
-set "WORK_DIR=%WORK_DIR:~0,-1%"
-cd /d "%WORK_DIR%"
+:: ── 工作目录 ──
+cd /d "%~dp0"
 
 echo.
-echo   Claude Code 启动中...
+echo   Claude Code + DeepSeek CCS 启动器
+echo   =====================================
 
-:: ── 1. 检查 claude 是否安装 ──
+:: ── 1. 检查 claude ──
 where claude >nul 2>&1
 if %errorlevel% neq 0 (
-    echo   [错误] claude 未安装
-    echo   请先运行: npm install -g @anthropic-ai/claude-code
+    echo   [X] claude 命令未找到
+    echo   请先安装: npm install -g @anthropic-ai/claude-code
     pause
     exit /b 1
 )
 
-:: ── 2. 从注册表读取 API Key（兼容 Windows 环境变量） ──
+:: ── 2. 注册表读取 API Key ──
 if not defined ANTHROPIC_API_KEY (
-    for /f "tokens=2*" %%a in ('reg query HKCU\Environment /v ANTHROPIC_API_KEY 2^>nul ^| findstr ANTHROPIC_API_KEY') do (
+    for /f "tokens=2,*" %%a in ('reg query HKCU\Environment /v ANTHROPIC_API_KEY 2^>nul ^| findstr "REG_"') do (
         set "ANTHROPIC_API_KEY=%%b"
     )
 )
-if not defined DEEPSEEK_API_KEY (
-    for /f "tokens=2*" %%a in ('reg query HKCU\Environment /v DEEPSEEK_API_KEY 2^>nul ^| findstr DEEPSEEK_API_KEY') do (
-        set "DEEPSEEK_API_KEY=%%b"
+if not defined ANTHROPIC_API_KEY (
+    if defined DEEPSEEK_API_KEY set "ANTHROPIC_API_KEY=%DEEPSEEK_API_KEY%"
+)
+if not defined ANTHROPIC_API_KEY (
+    for /f "tokens=2,*" %%a in ('reg query HKCU\Environment /v DEEPSEEK_API_KEY 2^>nul ^| findstr "REG_"') do (
+        set "ANTHROPIC_API_KEY=%%b"
     )
 )
 
-:: ── 3. 自动设置 ANTHROPIC_BASE_URL ──
+:: ── 3. API 地址 ──
 if not defined ANTHROPIC_BASE_URL (
-    :: 默认指向 CCS 本地代理
     set "ANTHROPIC_BASE_URL=http://127.0.0.1:3000"
 )
 
-:: ── 4. 检查 CCS 是否在运行 ──
-curl -s -o nul "http://127.0.0.1:3000/v1/models" 2>&1
-if %errorlevel% neq 0 (
-    echo   CCS 未运行，尝试启动...
-    :: 常见 CCS 启动路径
-    if exist "%WORK_DIR%\ccs\server.js" (
-        start "CCS" cmd /c "cd /d %WORK_DIR%\ccs && node server.js"
-        timeout /t 3 /nobreak >nul
-    ) else if exist "%WORK_DIR%\ccs\index.js" (
-        start "CCS" cmd /c "cd /d %WORK_DIR%\ccs && node index.js"
-        timeout /t 3 /nobreak >nul
+echo   API 端点: %ANTHROPIC_BASE_URL%
+
+:: ── 4. 尝试探测并启动 CCS ──
+curl -s -o nul --connect-timeout 2 "%ANTHROPIC_BASE_URL%" 2>&1
+if errorlevel 1 (
+    echo   [!] CCS 代理无响应，尝试启动...
+    if exist "ccs\server.js" (
+        start "CCS" /min cmd /c "cd /d %~dp0ccs && node server.js"
+        echo   [OK] 已启动 ccs\server.js
+    ) else if exist "ccs\index.js" (
+        start "CCS" /min cmd /c "cd /d %~dp0ccs && node index.js"
+        echo   [OK] 已启动 ccs\index.js
+    ) else if exist "ccs\app.js" (
+        start "CCS" /min cmd /c "cd /d %~dp0ccs && node app.js"
+        echo   [OK] 已启动 ccs\app.js
+    ) else (
+        echo   [!] 未找到 ccs\ 目录下的入口文件
+        echo   请确认 CCS 已安装到 %~dp0ccs\
     )
+    echo   等待 4 秒...
+    timeout /t 4 /nobreak >nul
 )
 
-:: ── 5. 设置入口点 ──
-set "CLAUDE_CODE_ENTRYPOINT=cli"
+:: ── 5. 检查 API key ──
+if not defined ANTHROPIC_API_KEY (
+    echo   [!] ANTHROPIC_API_KEY 未设置
+    echo   在终端执行: setx ANTHROPIC_API_KEY "sk-你的deepseek-key"
+    echo   或编辑本文件，在下面一行填入密钥:
+    echo   set "ANTHROPIC_API_KEY=sk-xxx"
+    echo.
+)
 
-:: ── 6. 在 Windows Terminal 中启动 ──
+:: ── 6. 启动 ──
+set "CLAUDE_CODE_ENTRYPOINT=cli"
+echo   正在启动 Claude Code...
+echo.
+
 where wt.exe >nul 2>&1
 if %errorlevel% equ 0 (
-    start "" wt.exe -d "%WORK_DIR%" cmd /k "set CLAUDE_CODE_ENTRYPOINT=cli && set ANTHROPIC_BASE_URL=%ANTHROPIC_BASE_URL% && set ANTHROPIC_API_KEY=%ANTHROPIC_API_KEY% && claude --dangerously-skip-permissions --no-chrome"
+    start "" wt.exe -d "%~dp0." cmd /k "claude --dangerously-skip-permissions --no-chrome"
     exit /b
 )
 
-:: ── 7. 回退：普通终端启动 ──
 claude --dangerously-skip-permissions --no-chrome
 pause

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CCS 一键启动器 — Claude Code 接入 DeepSeek，Windows .bat 双击即用">
+<title>CCS 一键启动器 · LiHongwei</title>
+<style>
+:root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#6c8cff;--green:#4ade80;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.12)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);min-height:100vh;line-height:1.7}
+.container{max-width:760px;margin:0 auto;padding:32px 24px 80px}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color 0.2s}
+.back-link:hover{color:var(--text)}
+
+.hero{text-align:center;padding:40px 0 24px}
+.hero-badge{display:inline-block;background:rgba(167,139,250,0.1);color:var(--purple);border:1px solid rgba(167,139,250,0.2);padding:4px 14px;border-radius:20px;font-size:12px;margin-bottom:16px;letter-spacing:1px}
+.hero h1{font-size:34px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#6c8cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
+.hero p{font-size:15px;color:var(--dim);max-width:620px;margin:0 auto}
+
+.section{margin-bottom:40px}
+.section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--purple-dim);color:var(--purple);font-size:14px;font-weight:700;flex-shrink:0}
+
+.dl-box{background:var(--purple-dim);border:1px solid rgba(167,139,250,0.2);border-radius:16px;padding:28px 32px;text-align:center;margin-bottom:24px}
+.dl-box h3{font-size:16px;font-weight:700;color:var(--purple);margin-bottom:8px}
+.dl-box p{font-size:13px;color:var(--dim);margin-bottom:16px}
+.dl-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c3aed,#6c8cff);color:#fff;text-decoration:none;padding:12px 28px;border-radius:12px;font-size:15px;font-weight:600;transition:transform 0.15s,box-shadow 0.15s}
+.dl-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(124,58,237,0.3)}
+.dl-btn .icon{font-size:20px}
+
+.step-list{display:flex;flex-direction:column;gap:10px;counter-reset:step}
+.step-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;position:relative;padding-left:60px}
+.step-item::before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:20px;width:26px;height:26px;border-radius:8px;background:var(--purple-dim);color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.step-item h3{font-size:15px;font-weight:600;margin-bottom:6px}
+.step-item p{font-size:13px;color:var(--dim);line-height:1.6}
+.step-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:#a78bfa}
+.step-item .cmd{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 16px;margin-top:6px;font-family:'Consolas','Courier New',monospace;font-size:13px;color:#b8c7ff;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+
+.arch-row{display:flex;align-items:center;gap:10px;font-family:'Consolas','Courier New',monospace;font-size:12px;color:var(--dim);flex-wrap:wrap;justify-content:center;margin-bottom:20px}
+.arch-row span{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:4px 10px;white-space:nowrap}
+.arch-row .arrow{background:none;border:none;color:var(--accent);padding:0 2px;font-size:14px}
+
+.tip{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.12);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--orange);margin-top:10px}
+.tip.info{background:rgba(108,140,255,0.07);border-color:rgba(108,140,255,0.12);color:var(--accent)}
+.tip.green{background:rgba(74,222,128,0.07);border-color:rgba(74,222,128,0.12);color:var(--green)}
+.tip.red{background:rgba(248,113,113,0.07);border-color:rgba(248,113,113,0.12);color:var(--red)}
+
+.faq-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 24px;margin-bottom:8px}
+.faq-item h4{font-size:14px;font-weight:600;color:var(--orange);margin-bottom:6px}
+.faq-item p{font-size:13px;color:var(--dim);line-height:1.6}
+.faq-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:#a78bfa}
+
+.footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:32px}
+.footer a{color:rgba(255,255,255,0.3);text-decoration:none}
+.footer a:hover{color:rgba(255,255,255,0.5)}
+
+@media(max-width:640px){
+  .container{padding:20px 16px 60px}
+  .hero h1{font-size:26px}
+  .step-item{padding:16px 16px 16px 48px}
+  .step-item::before{left:14px;top:16px;width:22px;height:22px;font-size:12px}
+  .dl-box{padding:20px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="../">← 返回主页</a>
+
+  <div class="hero">
+    <div class="hero-badge">Windows · 一键启动</div>
+    <h1>CCS 一键启动器</h1>
+    <p>Claude Code 接入 DeepSeek，双击 .bat 即开即用。<br>自动检测 CCS 代理、自动读取密钥、自动启动。</p>
+  </div>
+
+  <!-- 下载 -->
+  <div class="section">
+    <div class="dl-box">
+      <h3>⬇ 下载启动器</h3>
+      <p>右键另存为，放到 F:\111 文件夹，双击即可</p>
+      <a class="dl-btn" href="https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/tools/claude-start.bat" download>
+        <span class="icon">📥</span> 下载 claude-start.bat
+      </a>
+    </div>
+  </div>
+
+  <!-- 架构说明 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">1</span> 工作原理</h2>
+    <div class="arch-row">
+      <span>claude-start.bat</span>
+      <span class="arrow">→</span>
+      <span>检测 claude 命令</span>
+      <span class="arrow">→</span>
+      <span>读取注册表密钥</span>
+      <span class="arrow">→</span>
+      <span>启动 CCS 代理</span>
+      <span class="arrow">→</span>
+      <span>打开 Claude Code</span>
+    </div>
+    <p style="font-size:13px;color:var(--dim);text-align:center">
+      脚本自动完成 4 步检查：claude 已安装 → API Key 已配置 → CCS 代理在运行 → 启动对话。<br>
+      任一步失败都有明确的中文提示，不需要猜哪里出了问题。
+    </p>
+  </div>
+
+  <!-- 前置条件 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">2</span> 前置条件</h2>
+    <div class="step-list">
+      <div class="step-item">
+        <h3>安装 Claude Code</h3>
+        <p>需要 Node.js 18+，然后在终端运行：</p>
+        <div class="cmd">npm install -g @anthropic-ai/claude-code</div>
+      </div>
+      <div class="step-item">
+        <h3>安装 CCS 代理</h3>
+        <p>将 CCS 项目放到 <code>F:\111\ccs\</code> 目录下，确保有 <code>server.js</code>、<code>index.js</code> 或 <code>app.js</code> 入口文件。</p>
+        <div class="tip info">CCS（Claude Code Server）是一个本地代理，将 Claude Code 的 Anthropic API 请求转发到 DeepSeek API。没有 CCS，Claude Code 无法使用 DeepSeek 模型。</div>
+      </div>
+      <div class="step-item">
+        <h3>配置 API Key</h3>
+        <p>在终端执行（只需一次）：</p>
+        <div class="cmd">setx ANTHROPIC_API_KEY "sk-你的deepseek密钥"</div>
+        <p style="margin-top:4px">或设置 <code>DEEPSEEK_API_KEY</code>，脚本会自动读取。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 使用 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">3</span> 使用方式</h2>
+    <div class="step-list">
+      <div class="step-item">
+        <h3>下载并放到 F:\111</h3>
+        <p>点击上方下载按钮，将 <code>claude-start.bat</code> 保存到 <code>F:\111\</code>。</p>
+      </div>
+      <div class="step-item">
+        <h3>创建桌面快捷方式（可选）</h3>
+        <p>右键 <code>claude-start.bat</code> → 发送到 → 桌面快捷方式。以后在桌面双击就行。</p>
+      </div>
+      <div class="step-item">
+        <h3>双击启动</h3>
+        <p>双击 bat 文件，脚本自动完成所有检查并在 Windows Terminal 中打开对话界面。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 自定配置 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">4</span> 自定义配置</h2>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:14px">
+      右键编辑 <code>claude-start.bat</code>，修改以下变量：
+    </p>
+    <div class="cmd" style="margin-bottom:8px">:: 修改 CCS 代理端口（如果不是 3000）
+set "ANTHROPIC_BASE_URL=http://127.0.0.1:3000"
+
+:: 直接写入密钥（不依赖注册表）
+set "ANTHROPIC_API_KEY=sk-xxx"</div>
+    <div class="tip green">改了端口或密钥后保存文件，重新双击即可生效。</div>
+  </div>
+
+  <!-- 常见问题 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">5</span> 常见问题</h2>
+
+    <div class="faq-item">
+      <h4>双击后窗口一闪而过</h4>
+      <p>这是脚本检测到错误后退出了。在 bat 所在目录打开终端，手动输入 <code>claude-start.bat</code> 回车，就能看到完整错误信息。</p>
+    </div>
+
+    <div class="faq-item">
+      <h4>提示 claude 命令未找到</h4>
+      <p>运行 <code>npm install -g @anthropic-ai/claude-code</code>。如果装完还是找不到，需要把 npm 全局 bin 目录加到 PATH：</p>
+      <div class="cmd">setx PATH "%PATH%;%APPDATA%\npm"</div>
+    </div>
+
+    <div class="faq-item">
+      <h4>CCS 代理无响应</h4>
+      <p>确认 CCS 已安装到 <code>F:\111\ccs\</code>。在终端手动启动测试：</p>
+      <div class="cmd">cd F:\111\ccs
+node server.js</div>
+      <p style="margin-top:4px">如果手动能启动但脚本不能，检查端口号是否一致。</p>
+    </div>
+
+    <div class="faq-item">
+      <h4>连不上 DeepSeek API</h4>
+      <p>CCS 代理启动了但转发出错。检查 <code>ANTHROPIC_API_KEY</code> 是否正确，以及是否需要代理访问外网。</p>
+      <div class="cmd">:: 如果需代理，在 bat 中加：
+set HTTPS_PROXY=http://127.0.0.1:7897</div>
+    </div>
+
+    <div class="faq-item">
+      <h4>打开的是黑窗口不是 Windows Terminal</h4>
+      <p>在 Microsoft Store 搜索"Windows Terminal"安装（免费），再双击 bat 即可在新终端中打开。</p>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:24px 0 8px;font-size:13px;color:rgba(255,255,255,0.2)">
+    本页被阅读 <span id="page-count">...</span> 次
+  </div>
+
+  <div class="footer">
+    <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/ccs-launcher">页面源码 ↗</a>
+  </div>
+
+</div>
+<script>
+(async function(){
+  try {
+    let r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json');
+    let s = await r.json();
+    document.getElementById('page-count').textContent = s['ccs-launcher'] || '...';
+  } catch(e) {}
+})();
+</script>
+<img src="https://api.counterapi.dev/v1/lihongwei-cn/ccs-launcher/up" style="display:none" alt="" />
+</body>
+</html>
