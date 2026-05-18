@@ -13,8 +13,8 @@
 
 ## 关键信息
 
-- GitHub 仓库：`https://github.com/LiHongwei-ch/lihongwei-ch`（所有代码和网页源码）
-- 网站地址：`https://lihongwei-ch.github.io/lihongwei-ch/`（GitHub Pages 项目站点）
+- GitHub 仓库：`https://github.com/LiHongwei-cn/lihongwei-cn`（所有代码和网页源码）
+- 网站地址：`https://lihongwei-cn.github.io/lihongwei-cn/`（GitHub Pages 项目站点）
 - Telegram Bot：代码在 `bot/tgbot.py`，Token 和 API Key 从环境变量读取
 
 ## 思维原则

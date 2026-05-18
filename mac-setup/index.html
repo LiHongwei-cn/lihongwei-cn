@@ -137,11 +137,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
         <h3>Clone 仓库</h3>
         <div class="cmd"><span class="c"># 克隆到桌面（或任意你喜欢的位置）</span>
 cd ~/Desktop
-git clone https://github.com/LiHongwei-ch/lihongwei-ch.git</div>
+git clone https://github.com/LiHongwei-cn/lihongwei-cn.git</div>
       </div>
       <div class="step-item">
         <h3>进入 global-specs 目录</h3>
-        <div class="cmd">cd ~/Desktop/lihongwei-ch/global-specs</div>
+        <div class="cmd">cd ~/Desktop/lihongwei-cn/global-specs</div>
         <p style="margin-top:4px">后续所有操作都从这个目录出发。用 <code>ls</code> 看一下，应该看到 CLAUDE.md、settings.json、rules/、skills/、memory/ 等文件。</p>
       </div>
     </div>
@@ -270,7 +270,7 @@ cp skills/neat-freak/references/*.md ~/.claude/skills/neat-freak/references/</di
         <h3>部署方法</h3>
         <p>记忆文件与项目路径绑定。首次在项目目录启动 Claude Code 后，Claude Code 会自动在 <code>~/.claude/projects/</code> 下创建对应目录：</p>
         <div class="cmd"><span class="c"># 1. 先进入项目目录，启动一次 Claude Code（让它自动创建 memory 目录结构）</span>
-cd ~/Desktop/lihongwei-ch
+cd ~/Desktop/lihongwei-cn
 claude
 <span class="c"># 进入对话后输入 /exit 退出即可</span>
 
@@ -278,7 +278,7 @@ claude
 ls ~/.claude/projects/
 
 <span class="c"># 3. 把记忆文件复制进去</span>
-cp ~/Desktop/lihongwei-ch/global-specs/memory/*.md \
+cp ~/Desktop/lihongwei-cn/global-specs/memory/*.md \
    ~/.claude/projects/&lt;自动生成的路径&gt;/memory/</div>
         <div class="tip info">实际上最省事的做法：直接在 Claude Code 里说"记住：代码改动后自动 push 到 GitHub"，它会自动写到正确的 memory 目录。这 3 条记忆只是给你参考用的备份。</div>
       </div>
@@ -293,11 +293,11 @@ cp ~/Desktop/lihongwei-ch/global-specs/memory/*.md \
         <h3>为每个项目复制模板</h3>
         <p><code>project-CLAUDE.md</code> 是一个项目级模板（MATLAB/Simulink 规范），适用于新能源汽车仿真项目：</p>
         <div class="cmd"><span class="c"># 对于 li hongwei-ch 这个仓库（已经是你的主项目）</span>
-cp ~/Desktop/lihongwei-ch/global-specs/project-CLAUDE.md \
-   ~/Desktop/lihongwei-ch/CLAUDE.md
+cp ~/Desktop/lihongwei-cn/global-specs/project-CLAUDE.md \
+   ~/Desktop/lihongwei-cn/CLAUDE.md
 
 <span class="c"># 对于其他新项目</span>
-cp ~/Desktop/lihongwei-ch/global-specs/project-CLAUDE.md \
+cp ~/Desktop/lihongwei-cn/global-specs/project-CLAUDE.md \
    /你的新项目目录/CLAUDE.md
 <span class="c"># 然后根据项目实际情况修改</span></div>
       </div>
@@ -310,7 +310,7 @@ cp ~/Desktop/lihongwei-ch/global-specs/project-CLAUDE.md \
     <div class="step-list" style="counter-reset:step">
       <div class="step-item">
         <h3>启动 Claude Code</h3>
-        <div class="cmd">cd ~/Desktop/lihongwei-ch
+        <div class="cmd">cd ~/Desktop/lihongwei-cn
 claude</div>
       </div>
       <div class="step-item">
@@ -381,7 +381,7 @@ cp CLAUDE.md ~/.claude/CLAUDE.md
 cp settings.local.json ~/.claude/settings.local.json
 mkdir -p ~/.claude/rules ~/.claude/skills/neat-freak/references
 cp rules/*.md ~/.claude/rules/ && cp skills/neat-freak/SKILL.md ~/.claude/skills/neat-freak/ && cp skills/neat-freak/references/*.md ~/.claude/skills/neat-freak/references/
-cp project-CLAUDE.md ~/Desktop/lihongwei-ch/CLAUDE.md</div>
+cp project-CLAUDE.md ~/Desktop/lihongwei-cn/CLAUDE.md</div>
 
   <!-- 日常使用 -->
   <div class="section">
@@ -431,14 +431,14 @@ cp project-CLAUDE.md ~/Desktop/lihongwei-ch/CLAUDE.md</div>
   <!-- 相关链接 -->
   <div class="link-block" style="margin-top:8px">
     <h3>🔗 相关资源</h3>
-    <div class="link-row"><span class="label">规范仓库</span><span class="url"><a href="https://github.com/LiHongwei-ch/lihongwei-ch/tree/main/global-specs" target="_blank">github.com/LiHongwei-ch/lihongwei-ch/tree/main/global-specs</a></span></div>
+    <div class="link-row"><span class="label">规范仓库</span><span class="url"><a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs" target="_blank">github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs</a></span></div>
     <div class="link-row"><span class="label">洁癖.skill 上游</span><span class="url"><a href="https://github.com/KKKKhazix/khazix-skills" target="_blank">github.com/KKKKhazix/khazix-skills</a></span></div>
     <div class="link-row"><span class="label">DeepSeek API</span><span class="url"><a href="https://platform.deepseek.com/api_keys" target="_blank">platform.deepseek.com/api_keys</a></span></div>
     <div class="link-row"><span class="label">Claude Code 文档</span><span class="url"><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank">docs.anthropic.com/claude-code</a></span></div>
   </div>
 
   <div class="footer">
-    <a href="https://github.com/LiHongwei-ch/lihongwei-ch/tree/main/mac-setup">页面源码 ↗</a>
+    <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/mac-setup">页面源码 ↗</a>
   </div>
 
 </div>

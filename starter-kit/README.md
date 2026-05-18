@@ -79,4 +79,4 @@ git push -u origin main
 
 ---
 
-项目基于 [LiHongwei/matlab-ai-tool](https://github.com/LiHongwei-ch/lihongwei-ch) 模板生成。
+项目基于 [LiHongwei/matlab-ai-tool](https://github.com/LiHongwei-cn/lihongwei-cn) 模板生成。
