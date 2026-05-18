@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 READING_ANALYSIS_TEMPLATE = """请分析以下血压读数：
 
 **本次读数**

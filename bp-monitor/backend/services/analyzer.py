@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import logging
+import sqlite3
 
 from backend.prompts.system_prompt import SYSTEM_PROMPT, MEDICAL_DISCLAIMER
 from backend.prompts.reading_analysis import build_reading_prompt

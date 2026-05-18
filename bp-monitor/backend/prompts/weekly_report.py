@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 WEEKLY_REPORT_TEMPLATE = """请根据以下一周血压数据生成综合健康周报：
 
 **基本信息**
