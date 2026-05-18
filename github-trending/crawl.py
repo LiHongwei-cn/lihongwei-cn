@@ -485,7 +485,7 @@ def sync_stats_json():
 
     PAGES = [
         "home", "matlab-tool", "desktop-launcher", "claude-code-tutorial",
-        "vpn-guide", "win-optimize", "github-trending",
+        "vpn-guide", "win-optimize", "github-trending", "ccs-launcher", "global-specs",
     ]
 
     try:
@@ -496,7 +496,7 @@ def sync_stats_json():
         for page in PAGES:
             try:
                 resp = requests.get(
-                    f"https://api.counterapi.dev/v1/lihongwei-cn/{page}",
+                    f"https://api.counterapi.dev/v1/lihongwei-cn/{page}/",
                     timeout=10
                 )
                 if resp.status_code == 200:
