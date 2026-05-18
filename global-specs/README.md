@@ -1,104 +1,93 @@
-# Claude Code 全局规范 — MacBook Air 迁移包
+# Claude Code 全局规范 — 一键部署包
 
-## 适用环境
+适用于 Claude Code CLI 的全局规范、Rules 和 Skills 的部署包。新电脑部署只需运行一条命令。
 
-- Claude Code CLI + DeepSeek V4 Pro API
-- 平台：macOS / Windows / Linux 通用
+## 包含内容
 
-## 文件说明
+| 目录/文件 | 说明 | 目标位置 |
+|-----------|------|----------|
+| `CLAUDE.md` | 全局用户指令（代码洁癖、安装洁癖、蒙多学习引擎） | `~/.claude/CLAUDE.md` |
+| `settings.json` | DeepSeek API 接入配置（含占位 Key，需修改） | `~/.claude/settings.json` |
+| `settings.local.json` | 权限白名单 | `~/.claude/settings.local.json` |
+| `project-CLAUDE.md` | 项目级 CLAUDE.md 通用模板 | 各项目根目录 `CLAUDE.md` |
+| `rules/*.md` | 6 大规范（代码风格、Git、测试、性能、Agent、安全） | `~/.claude/rules/` |
+| `skills/neat-freak/` | 知识库洁癖审查 Skill | `~/.claude/skills/neat-freak/` |
+| `skills/code-tidy/` | 代码洁癖整理 Skill | `~/.claude/skills/code-tidy/` |
+| `skills/蒙多/` | 跨界学习引擎 Skill | `~/.claude/skills/蒙多/` |
 
-| 文件 | 用途 | 目标位置 |
-|------|------|----------|
-| `CLAUDE.md` | 用户全局指令（个人信息、行为准则、红线） | `~/.claude/CLAUDE.md` |
-| `settings.json` | API 配置（DeepSeek 接入） | `~/.claude/settings.json` |
-| `project-CLAUDE.md` | 项目级 CLAUDE.md 模板 | 各项目根目录 `CLAUDE.md` |
-| `rules/agents.md` | Agent 调度规范 | `~/.claude/rules/agents.md` |
-| `rules/coding-style.md` | 代码风格规范 | `~/.claude/rules/coding-style.md` |
-| `rules/git-workflow.md` | Git 工作流 | `~/.claude/rules/git-workflow.md` |
-| `rules/performance.md` | 性能优化策略 | `~/.claude/rules/performance.md` |
-| `rules/security.md` | 安全规范 | `~/.claude/rules/security.md` |
-| `rules/testing.md` | 测试要求 | `~/.claude/rules/testing.md` |
-| `skills/neat-freak/` | 洁癖.skill — 文档/记忆自动审查 | `~/.claude/skills/neat-freak/` |
-| `settings.local.json` | 权限白名单（自动 git push 等） | `~/.claude/settings.local.json` |
-| `memory/` | 跨会话记忆文件（自动同步、自动 push） | `~/.claude/projects/<path>/memory/` |
+## 一键部署
 
-## MacBook 部署步骤
+### macOS / Linux
+
+```bash
+./install.sh
+```
+
+### Windows
+
+双击 `install.bat`
+
+## 手动部署
 
 ### 1. 安装 Claude Code
 
 ```bash
-# macOS 通过 Homebrew
+# macOS (Homebrew)
 brew install claude-code
 
-# 或通过 npm（通用）
+# 通用 (npm)
 npm install -g @anthropic-ai/claude-code
 ```
 
-### 2. 配置 DeepSeek API
+### 2. 配置 API
 
-编辑 `~/.claude/settings.json`，将 `settings.json` 的内容复制进去，**并将 `<你的 DeepSeek API Key>` 替换为真实 Key**。
+编辑 `~/.claude/settings.json`，将 `<你的 DeepSeek API Key>` 替换为真实 Key。
 
-```bash
-mkdir -p ~/.claude
-cp settings.json ~/.claude/settings.json
-# 然后编辑 ~/.claude/settings.json，填入 API Key
-```
-
-### 3. 部署全局 CLAUDE.md
+### 3. 部署文件
 
 ```bash
+# 全局指令
 cp CLAUDE.md ~/.claude/CLAUDE.md
-```
 
-### 4. 部署规范文件
-
-```bash
+# 规范文件
 mkdir -p ~/.claude/rules
 cp rules/*.md ~/.claude/rules/
-```
 
-### 5. 安装洁癖.skill
+# Skills
+mkdir -p ~/.claude/skills
+cp -r skills/neat-freak ~/.claude/skills/
+cp -r skills/code-tidy ~/.claude/skills/
+cp -r skills/蒙多 ~/.claude/skills/
 
-```bash
-mkdir -p ~/.claude/skills/neat-freak/references
-cp skills/neat-freak/SKILL.md ~/.claude/skills/neat-freak/
-cp skills/neat-freak/references/*.md ~/.claude/skills/neat-freak/references/
-```
-
-### 6. 初始化项目
-
-在每个项目根目录复制 `project-CLAUDE.md` 为 `CLAUDE.md`，并根据项目实际情况修改。
-
-```bash
-cp project-CLAUDE.md /你的项目目录/CLAUDE.md
-```
-
-### 7. 部署权限配置
-
-```bash
+# 配置
+cp settings.json ~/.claude/settings.json
 cp settings.local.json ~/.claude/settings.local.json
 ```
 
-### 8. 导入跨会话记忆
-
-记忆文件包含自动 push、自动同步等偏好。部署后 Claude Code 会自动识别。
+### 4. 初始化项目
 
 ```bash
-# 记忆文件需要在对应项目路径下才能生效
-# 首次启动 Claude Code 后，将 memory/*.md 复制到自动生成的 memory 目录
+cp project-CLAUDE.md 你的项目目录/CLAUDE.md
+# 然后根据实际情况修改 CLAUDE.md
 ```
 
-### 9. 验证
+### 5. 验证
 
 ```bash
-cd /你的项目目录
 claude
-/neat    # 测试洁癖.skill
+/neat    # 测试洁癖 skill
 ```
 
-## 日常使用
+## Skills 说明
 
-- 每次任务收尾运行 `/neat` 进行一次洁癖审查
-- 新项目先写 CLAUDE.md，再开始写代码
-- 代码改动后自动 commit + push
-- `/neat` 本质是存档机制——关闭对话前运行，下次新会话无缝衔接
+| Skill | 触发方式 |
+|-------|----------|
+| `/neat` | 收尾整理、文档同步、记忆审查 |
+| `/code-tidy` | 代码洁癖整理、死代码清理 |
+| `/蒙多` | 遇到瓶颈时跨界学习 |
+
+## 自定义
+
+- **添加新 Skill**：在 `~/.claude/skills/<name>/` 下创建 `SKILL.md`
+- **修改规范**：编辑 `~/.claude/rules/` 下的对应文件
+- **项目级覆盖**：在项目 `CLAUDE.md` 中写项目特定规范

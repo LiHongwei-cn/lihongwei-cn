@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Claude Code 全局规范一键部署包 · 代码洁癖 · 安装洁癖 · 蒙多学习引擎 · Skills">
+<title>全局规范部署包 · LiHongwei</title>
+<style>
+:root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#6c8cff;--green:#4ade80;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.12)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);min-height:100vh;line-height:1.7}
+.container{max-width:760px;margin:0 auto;padding:32px 24px 80px}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color 0.2s}
+.back-link:hover{color:var(--text)}
+
+.hero{text-align:center;padding:40px 0 24px}
+.hero-badge{display:inline-block;background:rgba(167,139,250,0.1);color:var(--purple);border:1px solid rgba(167,139,250,0.2);padding:4px 14px;border-radius:20px;font-size:12px;margin-bottom:16px;letter-spacing:1px}
+.hero h1{font-size:34px;font-weight:800;background:linear-gradient(135deg,#a78bfa,#6c8cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
+.hero p{font-size:15px;color:var(--dim);max-width:620px;margin:0 auto}
+
+.dl-box{background:var(--purple-dim);border:1px solid rgba(167,139,250,0.2);border-radius:16px;padding:28px 32px;text-align:center;margin-bottom:24px}
+.dl-box h3{font-size:16px;font-weight:700;color:var(--purple);margin-bottom:8px}
+.dl-box p{font-size:13px;color:var(--dim);margin-bottom:16px}
+.dl-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.dl-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c3aed,#6c8cff);color:#fff;text-decoration:none;padding:12px 28px;border-radius:12px;font-size:14px;font-weight:600;transition:transform 0.15s,box-shadow 0.15s}
+.dl-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(124,58,237,0.3)}
+.dl-btn.clone{background:linear-gradient(135deg,#059669,#047857)}
+.dl-btn.clone:hover{box-shadow:0 8px 24px rgba(5,150,105,0.3)}
+
+.section{margin-bottom:40px}
+.section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--purple-dim);color:var(--purple);font-size:14px;font-weight:700;flex-shrink:0}
+
+.step-list{display:flex;flex-direction:column;gap:10px;counter-reset:step}
+.step-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;position:relative;padding-left:60px}
+.step-item::before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:20px;width:26px;height:26px;border-radius:8px;background:var(--purple-dim);color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.step-item h3{font-size:15px;font-weight:600;margin-bottom:6px}
+.step-item p{font-size:13px;color:var(--dim);line-height:1.6}
+.step-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:#a78bfa}
+.step-item .cmd{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 16px;margin-top:6px;font-family:'Consolas','Courier New',monospace;font-size:13px;color:#b8c7ff;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+
+.pkg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.pkg-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px}
+.pkg-card h4{font-size:14px;font-weight:600;margin-bottom:4px}
+.pkg-card p{font-size:11px;color:var(--dim)}
+
+.tip{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.12);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--orange);margin-top:10px}
+.tip.info{background:rgba(108,140,255,0.07);border-color:rgba(108,140,255,0.12);color:var(--accent)}
+.tip.green{background:rgba(74,222,128,0.07);border-color:rgba(74,222,128,0.12);color:var(--green)}
+
+.platform-tabs{display:flex;gap:4px;margin-bottom:16px}
+.platform-tab{padding:8px 20px;border-radius:8px 8px 0 0;border:1px solid var(--border);background:var(--card);color:var(--dim);cursor:pointer;font-size:13px;font-weight:600;transition:all 0.15s}
+.platform-tab.active{background:var(--purple-dim);color:var(--purple);border-color:rgba(167,139,250,0.2)}
+
+.footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:32px}
+.footer a{color:rgba(255,255,255,0.3);text-decoration:none}
+.footer a:hover{color:rgba(255,255,255,0.5)}
+
+@media(max-width:640px){
+  .container{padding:20px 16px 60px}
+  .hero h1{font-size:26px}
+  .pkg-grid{grid-template-columns:1fr}
+  .step-item{padding:16px 16px 16px 48px}
+  .step-item::before{left:14px;top:16px;width:22px;height:22px;font-size:12px}
+  .dl-row{flex-direction:column;align-items:center}
+  .dl-box{padding:20px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="../">← 返回主页</a>
+
+  <div class="hero">
+    <div class="hero-badge">macOS / Windows / Linux</div>
+    <h1>全局规范部署包</h1>
+    <p>Claude Code 全套配置一键部署 — 全局指令、6 大规范、3 个 Skill、API 配置。<br>新电脑只需一条命令。</p>
+  </div>
+
+  <!-- 下载 -->
+  <div class="section">
+    <div class="dl-box">
+      <h3>⬇ 获取部署包</h3>
+      <p>任选一种方式</p>
+      <div class="dl-row">
+        <a class="dl-btn" href="https://github.com/LiHongwei-cn/lihongwei-cn/archive/refs/heads/main.zip">
+          📦 下载 ZIP
+        </a>
+        <a class="dl-btn clone" href="https://github.com/LiHongwei-cn/lihongwei-cn">
+          🧬 Clone 仓库
+        </a>
+      </div>
+      <p style="margin-top:12px;font-size:11px;color:rgba(255,255,255,0.25)">
+        部署包位于仓库的 <code>global-specs/</code> 目录
+      </p>
+    </div>
+  </div>
+
+  <!-- 包含内容 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">1</span> 包含内容</h2>
+    <div class="pkg-grid">
+      <div class="pkg-card">
+        <h4>📋 全局 CLAUDE.md</h4>
+        <p>代码洁癖 · 安装洁癖 · 蒙多学习引擎 — 三大红线规范</p>
+      </div>
+      <div class="pkg-card">
+        <h4>📐 6 大规范</h4>
+        <p>代码风格 · Git 工作流 · 测试 · 性能 · Agent 调度 · 安全</p>
+      </div>
+      <div class="pkg-card">
+        <h4>🧹 3 个 Skills</h4>
+        <p>neat-freak (知识审查) · code-tidy (代码整理) · 蒙多 (跨界学习)</p>
+      </div>
+      <div class="pkg-card">
+        <h4>⚙️ API 配置模板</h4>
+        <p>DeepSeek API 接入 · 权限白名单 · 开箱即用</p>
+      </div>
+      <div class="pkg-card">
+        <h4>📦 安装脚本</h4>
+        <p>install.sh (macOS/Linux) · install.bat (Windows)</p>
+      </div>
+      <div class="pkg-card">
+        <h4>📄 项目模板</h4>
+        <p>通用 CLAUDE.md 模板，复制到新项目即可</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 安装 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">2</span> 安装</h2>
+
+    <p style="font-size:13px;color:var(--dim);margin-bottom:16px">
+      进入 <code>global-specs/</code> 目录后：
+    </p>
+
+    <div style="margin-bottom:16px">
+      <h3 style="font-size:14px;font-weight:700;color:var(--green);margin-bottom:8px">macOS / Linux</h3>
+      <div class="step-item" style="border-color:rgba(74,222,128,0.15);margin-bottom:12px">
+        <h3>运行安装脚本</h3>
+        <div class="cmd">chmod +x install.sh
+./install.sh</div>
+      </div>
+    </div>
+
+    <div>
+      <h3 style="font-size:14px;font-weight:700;color:var(--orange);margin-bottom:8px">Windows</h3>
+      <div class="step-item" style="border-color:rgba(251,146,60,0.15)">
+        <h3>双击 install.bat</h3>
+        <p>或在终端中运行 <code>install.bat</code></p>
+      </div>
+    </div>
+
+    <div class="tip info" style="margin-top:16px">
+      安装脚本不会覆盖已有的 <code>settings.json</code> 和 <code>settings.local.json</code>，保护现有配置。
+    </div>
+  </div>
+
+  <!-- 配置 API -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">3</span> 配置 API Key</h2>
+    <div class="step-item">
+      <h3>编辑 settings.json</h3>
+      <p>安装完成后，编辑 <code>~/.claude/settings.json</code>，将占位 Key 替换为真实 API Key：</p>
+      <div class="cmd">{
+  "env": {
+    "ANTHROPIC_AUTH_TOKEN": "sk-你的真实Key",
+    ...
+  }
+}</div>
+      <p style="margin-top:8px">或通过环境变量设置：</p>
+      <div class="cmd">export ANTHROPIC_AUTH_TOKEN="sk-xxx"    # macOS/Linux
+setx ANTHROPIC_AUTH_TOKEN "sk-xxx"   # Windows</div>
+    </div>
+  </div>
+
+  <!-- 验证 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">4</span> 验证安装</h2>
+    <div class="step-item">
+      <h3>启动 Claude Code 并测试 Skill</h3>
+      <div class="cmd">claude
+/neat</div>
+      <p style="margin-top:8px">如果 skill 开始盘点文件，说明部署成功。</p>
+    </div>
+  </div>
+
+  <!-- Skills 说明 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">5</span> Skills 用法</h2>
+
+    <div class="step-item" style="margin-bottom:10px">
+      <h3>/neat — 知识库洁癖审查</h3>
+      <p>收尾阶段运行，审查 CLAUDE.md、docs/、memory，确保知识库与代码同步。</p>
+    </div>
+    <div class="step-item" style="margin-bottom:10px">
+      <h3>/code-tidy — 代码洁癖整理</h3>
+      <p>清除死代码、冗余注释、未用导入；统一排序与结构。</p>
+    </div>
+    <div class="step-item" style="margin-bottom:10px">
+      <h3>/蒙多 — 跨界学习引擎</h3>
+      <p>遇到瓶颈时向其他 AI 和社区学习，吸收解决方案后沉淀为知识。</p>
+    </div>
+
+    <div class="tip green">
+      Skills 的详细触发条件和执行流程见各自 <code>SKILL.md</code> 文件。
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:24px 0 8px;font-size:13px;color:rgba(255,255,255,0.2)">
+    本页被阅读 <span id="page-count">...</span> 次
+  </div>
+
+  <div class="footer">
+    <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs">页面源码 ↗</a>
+  </div>
+
+</div>
+<script>
+(async function(){
+  try {
+    let r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json');
+    let s = await r.json();
+    document.getElementById('page-count').textContent = s['global-specs'] || '...';
+  } catch(e) {}
+})();
+</script>
+<img src="https://api.counterapi.dev/v1/lihongwei-cn/global-specs/up" style="display:none" alt="" />
+</body>
+</html>

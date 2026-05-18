@@ -1,10 +1,11 @@
 {
+  "ccs-launcher": 0,
   "claude-code-tutorial": 89,
   "desktop-launcher": 24,
   "github-trending": 15,
+  "global-specs": 0,
   "home": 5,
   "matlab-tool": 142,
   "vpn-guide": 56,
-  "ccs-launcher": 0,
   "win-optimize": 38
 }
