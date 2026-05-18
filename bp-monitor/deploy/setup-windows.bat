@@ -18,7 +18,7 @@ if %errorlevel% neq 0 (
 
 :: 安装依赖
 echo [1/3] 安装 Python 依赖...
-pip install -r requirements.txt -q
+pip install -r backend\requirements.txt -q
 if %errorlevel% neq 0 (
     echo [错误] 依赖安装失败
     pause
@@ -26,9 +26,9 @@ if %errorlevel% neq 0 (
 )
 
 :: 检查 .env
-if not exist ".env" (
+if not exist "backend\.env" (
     echo [2/3] 创建 .env 配置文件...
-    copy .env.example .env >nul
+    copy backend\.env.example backend\.env >nul
     echo.
     echo !!! 请编辑 backend\.env 填入真实的 Key !!!
     echo      DEEPSEEK_API_KEY=sk-你的密钥
@@ -36,7 +36,7 @@ if not exist ".env" (
     echo      WECHAT_SECRET=你的小程序密钥
     echo      CRON_SECRET_TOKEN=自己编一个随机字符串
     echo.
-    start notepad .env
+    start notepad backend\.env
     echo 填写完成后按任意键继续...
     pause >nul
 ) else (
