@@ -9,6 +9,9 @@ function run_carsim_cruise()
     if isempty(which('build_carsim_model'))
         addpath(myDir);
     end
+    if isempty(which('find_carsim'))
+        addpath(fullfile(myDir, '..', 'utils'));
+    end
 
     %% Step 1: Build Simulink model
     fprintf('--- Step 1: Build Simulink model ---\n');
@@ -36,33 +39,6 @@ function run_carsim_cruise()
     %% Step 3: Print instructions
     fprintf('\n===== CarSim Setup Steps =====\n');
     print_carsim_steps(myDir);
-end
-
-function [csExe, csDir] = find_carsim()
-    csExe = '';
-    csDir = '';
-    searchRoots = {
-        'C:\Program Files (x86)';
-        'C:\Program Files';
-    };
-
-    for r = 1:length(searchRoots)
-        if ~exist(searchRoots{r}, 'dir')
-            continue;
-        end
-        d = dir(fullfile(searchRoots{r}, 'CarSim*'));
-        for i = 1:length(d)
-            if ~d(i).isdir
-                continue;
-            end
-            candidate = fullfile(searchRoots{r}, d(i).name, 'CarSim.exe');
-            if exist(candidate, 'file')
-                csExe = candidate;
-                csDir = fullfile(searchRoots{r}, d(i).name);
-                % Keep looping — alphabetically last = newest version
-            end
-        end
-    end
 end
 
 function print_carsim_steps(modelDir)
