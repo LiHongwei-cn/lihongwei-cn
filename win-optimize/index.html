@@ -533,6 +533,28 @@ td a:hover{text-decoration:underline}
         <p>② 在列表中选中不需要启动的项目 → 点下方的"－"按钮移除</p>
         <p>③ 同时检查"允许在后台运行"的分类，关闭不必要的后台项（如 Adobe 后台更新、Microsoft AutoUpdate 等）。</p>
       </div>
+
+      <div class="step-item">
+        <h3>SSD 健康与 TRIM 检查 <span class="badge ok">✅ 免费</span></h3>
+        <p>Mac 全部使用 SSD，定期检查健康状态可以预防数据丢失：</p>
+        <div class="cmd"><span class="cm"># 查看 SSD SMART 状态</span><br>diskutil info disk0 | grep SMART<br><br><span class="cm"># 确认 TRIM 已启用（Apple SSD 默认开启）</span><br>system_profiler SPSerialATADataType | grep TRIM</div>
+        <p>如果 TRIM 显示 <code>Yes</code> 说明正常。第三方 SSD 可能需要手动开启：<code>sudo trimforce enable</code>（操作前先备份）。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>清理 Time Machine 本地快照 <span class="badge ok">✅ 免费</span></h3>
+        <p>macOS 会在本地保存 Time Machine 快照，可能占用数十 GB 空间（尤其是在大文件操作后）：</p>
+        <div class="cmd"><span class="cm"># 查看本地快照</span><br>tmutil listlocalsnapshots /<br><br><span class="cm"># 删除所有本地快照（需要管理员密码）</span><br>sudo tmutil deletelocalsnapshots /</div>
+        <p>这些快照不影响外置备份盘上的 Time Machine 备份。删除后如果硬盘空间足够，系统会自动重建新的快照。</p>
+      </div>
+
+      <div class="step-item">
+        <h3>Apple Diagnostics 硬件诊断 <span class="badge ok">✅ 免费</span></h3>
+        <p>怀疑硬件有问题时，Mac 自带硬件诊断工具（不需要任何软件）：</p>
+        <p>① <strong>Apple Silicon Mac</strong>：关机 → 按住电源键直到出现"选项"界面 → 按 <strong>Command + D</strong></p>
+        <p>② <strong>Intel Mac</strong>：关机 → 开机时按住 <strong>D</strong> 键 → 选择语言后自动开始诊断</p>
+        <p>诊断完成后会显示参考代码（如 <code>ADP000</code> = 无问题），可去 <a href="https://support.apple.com/zh-cn" target="_blank">Apple 支持</a> 查询具体含义。</p>
+      </div>
     </div>
   </div>
 
@@ -565,6 +587,14 @@ td a:hover{text-decoration:underline}
         <p style="font-weight:600;margin-bottom:4px">Q：WinHance 和 WinUtil 哪个更好？</p>
         <p style="font-size:13px;color:var(--dim)">各有所长。WinUtil 功能更全（能做安装盘、装软件），WinHance 界面更友好、个性化选项更多。建议先试 WinUtil，如果觉得命令行麻烦再试 WinHance。两个都不冲突，可以同时用。</p>
       </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
+        <p style="font-weight:600;margin-bottom:4px">🍎 Q：Mac 用久了变慢怎么办？</p>
+        <p style="font-size:13px;color:var(--dim)">三步走：① 用 OnyX 跑一遍系统维护脚本（Maintenance → Run Tasks）；② 检查存储空间，删除 Xcode 缓存和 Time Machine 本地快照；③ 用 AppCleaner 删掉不用的旧软件。通常这就能恢复流畅。如果仍不行，可能需要重置 SMC / NVRAM。</p>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
+        <p style="font-weight:600;margin-bottom:4px">🍎 Q：OnyX 安全吗？</p>
+        <p style="font-size:13px;color:var(--dim)">OnyX 是 macOS 平台最老牌的系统维护工具，开源且由法国开发者维护 20+ 年。它本质上只是把 macOS 内置的维护脚本和命令包装成了图形界面。建议从 <a href="https://www.titanium-software.fr/en/onyx.html" target="_blank">官网</a> 下载，避免第三方修改版。</p>
+      </div>
     </div>
   </div>
 
@@ -586,6 +616,8 @@ td a:hover{text-decoration:underline}
           <tr><td>Rufus（备用启动盘工具）</td><td><a href="https://rufus.ie" target="_blank">rufus.ie</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
           <tr><td>Chris Titus YouTube</td><td><a href="https://www.youtube.com/@ChrisTitusTech" target="_blank">youtube.com/@ChrisTitusTech</a></td><td><span class="badge need">⚠️ 需要</span></td></tr>
           <tr><td>零度解说 YouTube</td><td><a href="https://www.youtube.com/@freedidi/videos" target="_blank">youtube.com/@freedidi/videos</a></td><td><span class="badge need">⚠️ 需要</span></td></tr>
+          <tr><td>OnyX (macOS)</td><td><a href="https://www.titanium-software.fr/en/onyx.html" target="_blank">titanium-software.fr/en/onyx.html</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
+          <tr><td>AppCleaner (macOS)</td><td><a href="https://freemacsoft.net/appcleaner/" target="_blank">freemacsoft.net/appcleaner</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -594,11 +626,27 @@ td a:hover{text-decoration:underline}
     </div>
   </div>
 
+  <div class="page-counter" style="text-align:center;padding:24px 0 8px;font-size:13px;color:rgba(255,255,255,0.2)">
+    本页被阅读 <span id="page-count">...</span> 次
+  </div>
+
   <div class="footer">
     <a href="https://github.com/LiHongwei-cn/lihongwei-cn" target="_blank">GitHub</a>
     &nbsp;·&nbsp; 教程整理自公开网络资源
     &nbsp;·&nbsp; LiHongwei
   </div>
 </div>
+<script>
+(async function(){
+  try {
+    let r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json');
+    let s = await r.json();
+    document.getElementById('page-count').textContent = s['win-optimize'] || '...';
+  } catch(e) {
+    document.getElementById('page-count').textContent = '...';
+  }
+})();
+</script>
+<img src="https://api.counterapi.dev/v1/lihongwei-cn/win-optimize/up" style="display:none" alt="" />
 </body>
 </html>

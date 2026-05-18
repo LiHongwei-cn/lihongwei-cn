@@ -3,15 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Claude Code从零入门教程 — Win/Mac安装 · 国产DeepSeek模型接入 · Telegram机器人 · CLAUDE.md配置 · 零基础友好">
-<title>Claude Code 从零入门教程 · LiHongwei</title>
+<meta name="description" content="Claude Code 完整指南 — Win/Mac安装 · DeepSeek接入 · 全局规范部署 · Skill安装 · Telegram机器人 · 零基础友好">
+<title>Claude Code 完整指南 · LiHongwei</title>
 <style>
 :root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#6c8cff;--green:#4ade80;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.12)}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);min-height:100vh;line-height:1.7}
 .container{max-width:900px;margin:0 auto;padding:32px 24px 80px}
-.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color 0.2s}
+
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color .2s}
 .back-link:hover{color:var(--text)}
 
 .hero{text-align:center;padding:40px 0 24px}
@@ -24,13 +25,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 .section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
 .section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--purple-dim);color:var(--purple);font-size:14px;font-weight:700;flex-shrink:0}
 .section-title .p-icon{background:rgba(108,140,255,0.12);color:var(--accent)}
+.section-desc{font-size:14px;color:var(--dim);margin-bottom:14px}
 
 .badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:6px;font-size:11px;font-weight:600;margin-left:6px;vertical-align:middle}
 .badge.ok{background:rgba(74,222,128,0.1);color:var(--green);border:1px solid rgba(74,222,128,0.15)}
 .badge.need{background:rgba(248,113,113,0.1);color:var(--red);border:1px solid rgba(248,113,113,0.15)}
-.badge.caution{background:rgba(251,191,36,0.1);color:var(--orange);border:1px solid rgba(251,191,36,0.15)}
 .badge.purple{background:var(--purple-dim);color:var(--purple);border:1px solid rgba(167,139,250,0.15)}
 .badge.cyan{background:rgba(34,211,238,0.12);color:#22d3ee;border:1px solid rgba(34,211,238,0.15)}
+.badge.win{background:rgba(108,140,255,0.1);color:var(--accent);border:1px solid rgba(108,140,255,0.2)}
 
 .step-list{counter-reset:step;display:flex;flex-direction:column;gap:10px}
 .step-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;position:relative;padding-left:60px}
@@ -39,9 +41,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 .step-item p{font-size:13px;color:var(--dim);line-height:1.6}
 .step-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:#a78bfa}
 .step-item .cmd{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 16px;margin-top:6px;font-family:'Consolas','Courier New',monospace;font-size:13px;color:#b8c7ff;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+.step-item .cmd .c{color:rgba(255,255,255,0.3)}
+.step-item .cmd.mac{border-left:2px solid var(--green)}
+.step-item .cmd.win{border-left:2px solid var(--accent);margin-top:4px}
+.step-item .os-label{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;margin-bottom:2px}
+.step-item .os-label.mac{color:var(--green)} .step-item .os-label.win{color:var(--accent)}
 .step-item a{color:var(--accent)}
 .step-item strong{color:var(--text)}
-.step-item .cm{color:var(--dim);font-style:italic}
 .step-item ul{margin:4px 0;padding-left:18px;font-size:13px;color:var(--dim)}
 .step-item li{margin-bottom:2px}
 
@@ -55,28 +61,41 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{padding:10px 16px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.04)}
 th{color:var(--dim);font-weight:600;background:rgba(255,255,255,0.02)}
-td{color:var(--text)}
-tr:last-child td{border-bottom:none}
-td a{color:var(--accent);text-decoration:none}
-td a:hover{text-decoration:underline}
+td{color:var(--text)} tr:last-child td{border-bottom:none}
+td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underline}
+
+.file-map{background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.file-map table{width:100%;border-collapse:collapse;font-size:13px}
+.file-map th{text-align:left;padding:10px 16px;background:rgba(255,255,255,0.03);color:var(--dim);font-weight:500;font-size:12px;border-bottom:1px solid var(--border)}
+.file-map td{padding:10px 16px;border-bottom:1px solid rgba(255,255,255,0.04);vertical-align:top}
+.file-map tr:last-child td{border-bottom:none}
+.file-map .src{color:var(--purple);font-family:'SF Mono','Consolas',monospace;font-size:12px}
+.file-map .dest{color:var(--accent);font-family:'SF Mono','Consolas',monospace;font-size:12px}
+.file-map .why{color:var(--dim);font-size:12px}
 
 .link-block{background:var(--purple-dim);border:1px solid rgba(167,139,250,0.1);border-radius:14px;padding:20px 24px;margin-bottom:12px}
 .link-block h3{font-size:15px;font-weight:600;margin-bottom:10px;color:var(--purple)}
 .link-block .link-row{display:flex;align-items:center;padding:6px 0;font-size:13px;gap:8px}
 .link-block .link-row .label{color:var(--dim);min-width:80px;flex-shrink:0}
-.link-block .link-row .url{color:var(--accent);word-break:break-all}
 .link-block .link-row a{color:var(--accent);text-decoration:none}
 .link-block .link-row a:hover{text-decoration:underline}
 
 .tip{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.12);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--orange);margin-top:10px}
 .tip.info{background:rgba(108,140,255,0.07);border-color:rgba(108,140,255,0.12);color:var(--accent)}
-.tip.warn{background:rgba(248,113,113,0.07);border-color:rgba(248,113,113,0.12);color:var(--red)}
 .tip.green{background:rgba(74,222,128,0.07);border-color:rgba(74,222,128,0.12);color:var(--green)}
-.tip.purple{background:var(--purple-dim);border-color:rgba(167,139,250,0.12);color:var(--purple)}
+.tip.cyan{background:rgba(34,211,238,0.07);border-color:rgba(34,211,238,0.12);color:var(--cyan)}
 
 .os-tabs{display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;border:1px solid var(--border)}
-.os-tab{flex:1;text-align:center;padding:12px 16px;font-size:14px;font-weight:600;cursor:default;background:var(--card);color:var(--dim)}
+.os-tab{flex:1;text-align:center;padding:12px 16px;font-size:14px;font-weight:600;background:var(--card);color:var(--dim)}
 .os-tab.active{background:var(--purple-dim);color:var(--purple)}
+
+/* 目录导航 */
+.toc{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px}
+.toc a{font-size:12px;color:var(--dim);text-decoration:none;padding:4px 12px;border-radius:8px;border:1px solid var(--border);transition:all .2s}
+.toc a:hover{color:var(--text);border-color:rgba(255,255,255,0.15)}
+
+.page-counter{text-align:center;padding:24px 0 0;font-size:13px;color:rgba(255,255,255,0.2)}
+.page-counter span{color:var(--dim)}
 
 .footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:32px}
 .footer a{color:rgba(255,255,255,0.3);text-decoration:none}
@@ -87,9 +106,8 @@ td a:hover{text-decoration:underline}
   .hero h1{font-size:26px}
   .step-item{padding:16px 16px 16px 48px}
   .step-item::before{left:14px;top:16px;width:22px;height:22px;font-size:12px}
-  .link-block{padding:16px}
-  .link-block .link-row{flex-wrap:wrap}
-  .link-block .link-row .label{min-width:auto}
+  .file-map{overflow-x:auto}
+  .file-map table{font-size:11px}
 }
 </style>
 </head>
@@ -99,163 +117,101 @@ td a:hover{text-decoration:underline}
   <a class="back-link" href="../">← 返回主页</a>
 
   <div class="hero">
-    <div class="hero-badge">小白教程 · 2026</div>
-    <h1>Claude Code 从零入门教程</h1>
-    <p>目前最强大的终端 AI Agent 框架，搭配国产模型也能用。<br>Windows / Mac 双平台，有魔法没魔法都有对应方案。</p>
-    <div class="disclaimer">⚡ Claude Code 是 Agent 框架，开源免费。接入 DeepSeek 等国产模型后无需 Claude 账号，无需魔法。</div>
+    <div class="hero-badge">从零到精通 · 2026</div>
+    <h1>Claude Code 完整指南</h1>
+    <p>安装 · 接入国产模型 · 全局规范部署 · Skill 配置 · 权限白名单 · Telegram 机器人<br>Windows / macOS 双平台，有魔法没魔法都有方案</p>
+    <div class="disclaimer">⚡ Claude Code 是开源 Agent 框架。接入 DeepSeek 后无需 Claude 账号、无需魔法、不封号。</div>
   </div>
 
-  <!-- 图例 -->
-  <div style="display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;font-size:13px">
-    <span><span class="badge ok" style="font-size:12px">✅ 无需魔法</span> 国内网络可用</span>
-    <span><span class="badge need" style="font-size:12px">⚠️ 需要魔法</span> 需自备网络环境</span>
-    <span><span class="badge purple" style="font-size:12px">⭐ 推荐</span> 推荐方案</span>
+  <!-- 目录 -->
+  <div class="toc">
+    <a href="#what">是什么</a>
+    <a href="#install">安装</a>
+    <a href="#model">接模型</a>
+    <a href="#launch">启动</a>
+    <a href="#deploy">规范部署</a>
+    <a href="#desktop">桌面快捷</a>
+    <a href="#bot">Telegram机器人</a>
+    <a href="#workflow">工作流</a>
+    <a href="#commands">命令速查</a>
+    <a href="#faq">常见问题</a>
   </div>
 
-  <!-- ===== 一、Claude Code 是什么 ===== -->
-  <div class="section">
+  <!-- 0. 是什么 -->
+  <div class="section" id="what">
     <h2 class="section-title"><span class="num">0</span> Claude Code 是什么</h2>
-    <p style="font-size:14px;color:var(--dim);margin-bottom:12px">
-      Claude Code 是 Anthropic 公司推出的<strong>终端版 AI Agent 框架</strong>。它不像 ChatGPT 那样在网页上聊天，而是在你的终端（命令行）里工作，可以直接读/写你电脑上的文件、执行命令、管理项目。
-    </p>
+    <p class="section-desc">Claude Code 是 Anthropic 的<strong>终端版 AI Agent 框架</strong>。不是网页聊天——它在终端里直接读/写文件、执行命令、管理项目，是真正能帮你干活的 AI。</p>
     <div class="feature-grid">
-      <div class="feature-card">
-        <div class="f-icon">🤖</div>
-        <h3>Agent 框架</h3>
-        <p>不是网页聊天，是在终端里帮你写代码、改文件、执行命令的智能助手</p>
-      </div>
-      <div class="feature-card">
-        <div class="f-icon">🔌</div>
-        <h3>模型自由</h3>
-        <p>可以接入 Claude / DeepSeek / GLM / MiniMax 等任意模型，不用被绑定</p>
-      </div>
-      <div class="feature-card">
-        <div class="f-icon">🛡️</div>
-        <h3>国内可用</h3>
-        <p>框架本身不封号，搭配国产模型不需要魔法、不需要外国手机号</p>
-      </div>
-      <div class="feature-card">
-        <div class="f-icon">📁</div>
-        <h3>本地运行</h3>
-        <p>代码在你自己电脑上执行，不经过第三方服务器，安全可控</p>
-      </div>
+      <div class="feature-card"><div class="f-icon">🤖</div><h3>Agent 框架</h3><p>终端里帮你写代码、改文件、执行命令的智能助手</p></div>
+      <div class="feature-card"><div class="f-icon">🔌</div><h3>模型自由</h3><p>可接入 Claude / DeepSeek / GLM 等任意模型</p></div>
+      <div class="feature-card"><div class="f-icon">🛡️</div><h3>国内可用</h3><p>搭配国产模型不需要魔法、不需要外国手机号</p></div>
+      <div class="feature-card"><div class="f-icon">📁</div><h3>本地运行</h3><p>代码在你电脑执行，不经过第三方服务器</p></div>
     </div>
-    <div class="tip info">
-      <strong>核心概念：</strong>Agent 框架 = 身体，模型 = 脑子。Claude Code 是身体，你可以给它装上国产模型的脑子（如 DeepSeek），效果依然很好。这也是它不会被封号的原因。
-    </div>
+    <div class="tip info"><strong>核心概念：</strong>Agent 框架 = 身体，模型 = 脑子。Claude Code 是身体，你可以装国产模型的脑子（如 DeepSeek），效果依然很好。</div>
   </div>
 
-  <!-- ===== 一、安装 Claude Code ===== -->
-  <div class="section">
+  <!-- 1. 安装 -->
+  <div class="section" id="install">
     <h2 class="section-title"><span class="num">1</span> 安装 Claude Code</h2>
 
-    <!-- Mac -->
-    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;margin-top:4px;color:var(--purple)">▎Mac 安装</h3>
-
-    <div class="os-tabs">
-      <span class="os-tab active">有魔法 ✅</span>
-      <span class="os-tab">无魔法（Homebrew）⭐</span>
-    </div>
-
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;color:var(--purple)">▎macOS 安装</h3>
     <div class="step-list" style="counter-reset:step 0">
       <div class="step-item">
-        <h3>打开终端 <span class="badge ok">✅ 无需魔法</span></h3>
-        <p>在 Mac 上，按 <strong>Command + 空格</strong> 搜索「终端」（Terminal），打开终端 App。</p>
-        <p>你会看到一个黑底白字（或白底黑字）的窗口，末尾有 <code>$</code> 符号在闪烁，这就是命令行。</p>
+        <h3>打开终端 <span class="badge ok">无需魔法</span></h3>
+        <p>按 <strong>Command + 空格</strong> 搜索「终端」，打开终端 App。窗口末尾有 <code>$</code> 符号在闪烁。</p>
       </div>
-
       <div class="step-item">
-        <h3><span class="badge ok">✅ 有魔法</span> 用官方命令安装</h3>
-        <p>在终端中粘贴以下命令，按下回车：</p>
-        <div class="cmd">curl -fsSL https://claude.ai/install.sh | bash</div>
-        <p>① 脚本会自动下载并安装 Claude Code，等待几秒到几十秒</p>
-        <p>② 看到 <strong>"Claude Code installed successfully"</strong> 就装好了</p>
-        <p>③ 如果提示 <strong>"请将 ~/.local/bin 加入 PATH"</strong>，按终端给出的 <code>echo 'export PATH=...'</code> 那行命令复制执行即可</p>
-        <p>④ 输入 <code>claude --version</code> 检查，有版本号输出表示成功</p>
-      </div>
-
-      <div class="step-item">
-        <h3><span class="badge purple">⭐ 推荐</span> <span class="badge ok">✅ 无魔法</span> 用 Homebrew 安装</h3>
-        <p>如果没魔法，先安装 Homebrew（Mac 的包管理器）：</p>
-        <p>步骤 A — 安装 Homebrew：</p>
+        <h3><span class="badge purple">推荐</span> 用 Homebrew 安装 <span class="badge ok">无需魔法</span></h3>
+        <p>如果没装过 Homebrew，先执行：</p>
         <div class="cmd">/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</div>
-        <p>① 粘贴后回车，会提示按 <strong>Return/回车</strong> 继续 → 按回车</p>
-        <p>② 等待几分钟（取决于网速），看到 <strong>"Installation successful"</strong> 完成</p>
-        <p>步骤 B — 把 Homebrew 加入 PATH：</p>
-        <p>安装完成后，终端里会显示几行 <code>echo</code> 命令，复制那几行粘贴到终端执行。完成后输入 <code>brew --version</code> 验证。</p>
-        <p>步骤 C — 安装 Claude Code：</p>
-        <div class="cmd">brew install --cask claude-code@latest</div>
-        <p>安装速度略慢，等待完成即可。完成后终端输入 <code>claude</code> 看到小螃蟹 🦀 图标即成功。</p>
-        <div class="tip info">注意如果复制命令到终端报错，可能是因为公众号编辑器修改了格式，把命令手动敲一遍或用 Claude 修正后再粘贴。</div>
+        <p style="margin-top:6px">安装完成后，安装 Claude Code：</p>
+        <div class="cmd">brew install claude-code</div>
+      </div>
+      <div class="step-item">
+        <h3>备选：官方脚本安装 <span class="badge need">需要魔法</span></h3>
+        <div class="cmd">curl -fsSL https://claude.ai/install.sh | bash</div>
+        <p>看到 "Claude Code installed successfully" 即成功。</p>
       </div>
     </div>
 
-    <!-- Windows -->
-    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;margin-top:28px;color:var(--accent)">▎Windows 安装</h3>
-
-    <div class="os-tabs">
-      <span class="os-tab active">有魔法 ✅</span>
-      <span class="os-tab">无魔法（WinGet）⭐</span>
-    </div>
-
+    <h3 style="font-size:16px;font-weight:700;margin:28px 0 12px;color:var(--accent)">▎Windows 安装</h3>
     <div class="step-list" style="counter-reset:step 0">
       <div class="step-item">
-        <h3>先安装 Git <span class="badge ok">✅ 无需魔法</span></h3>
-        <p>Claude Code 在 Windows 上依赖 Git Bash 来执行命令，所以必须先把 Git 装上。</p>
-        <p>① 在任务栏搜索 <strong>"终端"</strong>（Terminal）或按 <strong>Win + R</strong> 输入 <code>wt</code> 打开 Windows 终端</p>
-        <p>② 粘贴以下命令回车,安装时"不开魔法"速度更快：</p>
+        <h3>先装 Git <span class="badge ok">无需魔法</span></h3>
+        <p>Claude Code 在 Windows 依赖 Git Bash。按 <strong>Win + R</strong> 输入 <code>wt</code> 打开终端：</p>
         <div class="cmd">winget install Git.Git</div>
-        <p>③ 等待安装完成，显示 "已成功安装" 即可。</p>
-        <div class="tip info">已经装过 Git 的可以跳过这步。在终端输入 <code>git --version</code> 有版本号就说明有了。</div>
       </div>
-
       <div class="step-item">
-        <h3><span class="badge ok">✅ 有魔法</span> 用官方命令安装</h3>
-        <p>确保 Git 装好后，在终端粘贴以下命令回车：</p>
-        <div class="cmd">irm https://claude.ai/install.ps1 | iex</div>
-        <p>等待安装完成，输入 <code>claude --version</code> 验证。</p>
-      </div>
-
-      <div class="step-item">
-        <h3><span class="badge purple">⭐ 推荐</span> <span class="badge ok">✅ 无魔法</span> 用 WinGet 安装</h3>
-        <p>如果没魔法，直接用 Windows 自带的包管理器 WinGet：</p>
+        <h3><span class="badge purple">推荐</span> 用 WinGet 安装 <span class="badge ok">无需魔法</span></h3>
         <div class="cmd">winget install Anthropic.ClaudeCode</div>
-        <p>安装成功后，终端输入 <code>claude</code> 能看到小螃蟹 🦀 图标表示成功。</p>
-        <p>此时框架装好了，但还没接模型脑子，下一步就来配置模型。</p>
+      </div>
+      <div class="step-item">
+        <h3>备选：官方脚本安装 <span class="badge need">需要魔法</span></h3>
+        <div class="cmd">irm https://claude.ai/install.ps1 | iex</div>
       </div>
     </div>
+    <div class="tip green" style="margin-top:12px">安装后终端输入 <code>claude --version</code> 验证，输出版本号即成功。</div>
   </div>
 
-  <!-- ===== 二、接模型 ===== -->
-  <div class="section">
-    <h2 class="section-title"><span class="num">2</span> 接入 DeepSeek 模型（国产，免费额度）</h2>
-    <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
-      Claude Code 装好之后只是一个空壳，还需要接上模型才能用。如果<strong>有 Claude 账号</strong>，直接用 <code>claude</code> 命令登录即可（本文不展开）。<br>
-      这里教大家<strong>接 DeepSeek</strong>（国产模型），不需要 Claude 账号、不需要魔法、不需要外国手机号。<strong>以下两种方法二选一。</strong>
-    </p>
-
+  <!-- 2. 接模型 -->
+  <div class="section" id="model">
+    <h2 class="section-title"><span class="num">2</span> 接入 DeepSeek 模型（国产，有免费额度）</h2>
+    <p class="section-desc">Claude Code 装好只是空壳，需要接模型。有 Claude 账号可以直接 <code>claude</code> 登录。这里教接 <strong>DeepSeek</strong>（国产），不需要 Claude 账号、不需要魔法。</p>
     <div class="tip info" style="margin-bottom:16px">
-      <strong>为什么选 DeepSeek？</strong>国产模型中性价比最高，有免费额度，API 国内可以直接访问。模型效果稳定，对 Claude Code 兼容性好。<br>
-      需要先做一件事：去 <a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a> 注册账号 → 控制台 → API Keys → 创建新 Key → 复制保存。
+      <strong>准备工作：</strong>去 <a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a> 注册 → API Keys → 创建 Key → 复制保存（以 <code>sk-</code> 开头）。
     </div>
 
-    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;margin-top:4px;color:var(--purple)">▎方法一（推荐⭐）：直接配置环境变量</h3>
-    <p style="font-size:13px;color:var(--dim);margin-bottom:10px">
-      不需要装任何额外工具，直接修改 Claude Code 的配置文件即可。这是最简单、最稳定的方式。
-    </p>
-
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;color:var(--purple)">▎方法一（推荐⭐）：直接配置 settings.json</h3>
     <div class="step-list" style="counter-reset:step 0">
       <div class="step-item">
-        <h3>找到配置文件位置 <span class="badge ok">✅ 无需魔法</span></h3>
-        <p>在电脑上找到 <strong>Claude Code 的配置文件</strong>：</p>
-        <p><strong>Mac</strong>：打开终端 → <code>open ~/.claude/settings.json</code></p>
-        <p><strong>Windows</strong>：在文件管理器地址栏输入 <code>%USERPROFILE%\.claude\settings.json</code> 回车</p>
-        <p>如果这个文件还不存在，创建一个新文件命名为 <code>settings.json</code> 放到 <code>.claude</code> 文件夹里。</p>
+        <h3>找到配置文件 <span class="badge ok">无需魔法</span></h3>
+        <p><strong>macOS</strong>：终端输入 <code>open ~/.claude/settings.json</code></p>
+        <p><strong>Windows</strong>：文件管理器地址栏输入 <code>%USERPROFILE%\.claude\settings.json</code></p>
+        <p>如果文件不存在，在该目录下新建 <code>settings.json</code>。</p>
       </div>
-
       <div class="step-item">
-        <h3>写入 DeepSeek 配置 <span class="badge ok">✅ 无需魔法</span></h3>
-        <p>用记事本/文本编辑打开 <code>settings.json</code>，粘贴以下内容：</p>
+        <h3>写入配置</h3>
+        <p>用文本编辑器打开，粘贴以下内容（替换 Key）：</p>
         <div class="cmd">{
   "env": {
     "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
@@ -267,320 +223,202 @@ td a:hover{text-decoration:underline}
   },
   "theme": "dark"
 }</div>
-        <p>记得把 <code>sk-你的deepseek_api_key</code> 替换成你在 DeepSeek 平台创建的真正 API Key。</p>
-        <div class="tip green">这六行环境变量的意思是：把 Claude Code 内部调用的所有模型（Haiku/Sonnet/Opus）都指向 DeepSeek 的接口。这样无论 Claude Code 请求哪个模型，实际走的都是 DeepSeek。</div>
-      </div>
-
-      <div class="step-item">
-        <h3>验证配置 <span class="badge ok">✅ 无需魔法</span></h3>
-        <p>保存文件后，在终端输入 <code>claude</code> 启动 Claude Code。</p>
-        <p>如果能正常进入对话界面（看到小螃蟹 🦀 和 <code>&gt;</code> 输入框），说明 DeepSeek 接入成功。</p>
-        <p>如果提示 API Key 错误，回 DeepSeek 平台检查你的 Key 是否正确、账户是否有余额/免费额度。</p>
+        <div class="tip green">这六行把 Claude Code 内部所有模型都指向 DeepSeek，不管 Agent 请求哪个模型，实际走的都是 DeepSeek。</div>
       </div>
     </div>
 
-    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;margin-top:28px;color:var(--accent)">▎方法二（备选）：CC Switch 图形化工具</h3>
-    <p style="font-size:13px;color:var(--dim);margin-bottom:10px">
-      如果不想手动编辑配置文件，也可以用 CC Switch 这个图形化工具来管理模型切换（<a href="https://github.com/farion1231/cc-switch/releases" target="_blank">GitHub 下载</a>，需魔法）。
-    </p>
+    <h3 style="font-size:16px;font-weight:700;margin:24px 0 12px;color:var(--accent)">▎方法二（备选）：CC Switch 图形化工具</h3>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:10px">不想手动编辑配置文件的话，可以用 CC Switch 图形化管理模型（<a href="https://github.com/farion1231/cc-switch/releases" target="_blank">下载</a>，需魔法）。</p>
     <div class="step-list" style="counter-reset:step 0">
       <div class="step-item">
         <h3>安装 CC Switch</h3>
-        <p><strong>Mac</strong>：终端依次执行：</p>
-        <div class="cmd">brew tap farion1231/ccswitch</div>
-        <div class="cmd" style="margin-top:4px">brew install --cask cc-switch</div>
-        <p><strong>Windows</strong>：下载安装包双击运行，一路 Next 完成安装。</p>
+        <p><strong>macOS：</strong></p>
+        <div class="cmd">brew tap farion1231/ccswitch && brew install --cask cc-switch</div>
+        <p style="margin-top:6px"><strong>Windows：</strong>下载安装包双击运行。</p>
       </div>
       <div class="step-item">
         <h3>配置 DeepSeek</h3>
-        <p>打开 CC Switch → 在 <strong>Claude Code</strong> 栏下点右上角 <strong>"+"</strong> → 选 <strong>DeepSeek 或自定义</strong>：</p>
-        <p>   - <strong>API Key</strong>：填你的 DeepSeek API Key</p>
-        <p>   - <strong>Base URL</strong>：填 <code>https://api.deepseek.com/anthropic</code></p>
-        <p>   - <strong>模型名</strong>：填 <code>deepseek-v4-pro</code></p>
-        <p>   - 其他选项保持默认 → 点击 <strong>"添加"</strong> → 自动切换到此模型</p>
-        <p>之后在 Claude Code 中输入 <code>/model</code> 即可切换模型。</p>
+        <p>打开 CC Switch → Claude Code 栏点 "+" → 选 DeepSeek 或自定义 → 填入 API Key / Base URL / 模型名 → 添加。之后在 Claude Code 中输入 <code>/model</code> 即可切换。</p>
       </div>
     </div>
   </div>
 
-  <!-- ===== 三、启动 Claude Code ===== -->
-  <div class="section">
+  <!-- 3. 启动 -->
+  <div class="section" id="launch">
     <h2 class="section-title"><span class="num">3</span> 启动 Claude Code</h2>
-
     <div class="step-list">
       <div class="step-item">
-        <h3>首次启动 <span class="badge ok">✅ 无需魔法</span></h3>
-        <p>回到终端，输入 <code>claude</code> 回车。</p>
-        <p>首次启动会经过几个设置步骤：</p>
-        <p>① <strong>选择颜色主题</strong>：出现暗色/亮色两个选项，用键盘上下键选择，回车确认。以后可在 Claude Code 里输入 <code>/theme</code> 修改。</p>
-        <p>② <strong>安全提示</strong>：显示两行注意事项——Claude 会犯错，代码要过眼再放行；只在你信任的目录中使用。直接回车继续。</p>
-        <p>③ <strong>终端设置</strong>：问是否启用 Claude Code 推荐终端设置（快捷键换行 + 视觉提示）。选"是"（推荐）。</p>
-        <p>④ <strong>信任目录</strong>：问是否信任当前目录。选"是"。</p>
+        <h3>首次启动 <span class="badge ok">无需魔法</span></h3>
+        <p>终端输入 <code>claude</code> 回车，按提示完成初始设置（选择主题、确认安全提示、启用推荐终端设置、信任目录）。</p>
       </div>
-
       <div class="step-item">
-        <h3>确认进入对话界面 <span class="badge ok">✅ 无需魔法</span></h3>
-        <p>以上设置完成后，终端中出现小螃蟹 🦀 图标和一个输入框（<code>&gt;</code> 提示符），</p>
-        <p>这意味着你已经成功启动了搭载 DeepSeek 的 Claude Code，可以开始对话了！</p>
-        <p>后续要切换模型：在 CC Switch 中配置好其他模型 → 在 Claude Code 中输入 <code>/model</code> 即可切换。</p>
-      </div>
-
-      <div class="step-item">
-        <h3><span class="badge purple">⭐ 推荐</span> 建议的启动方式</h3>
-        <p>以后每次使用，建议先 <code>cd</code> 到你想要工作的文件夹，再启动 Claude Code：</p>
-        <p>① 打开终端，输入：</p>
-        <div class="cmd">cd 你的文件夹路径</div>
-        <p>Mac 技巧：输入 <code>cd </code>（注意后面有空格），然后把文件夹从 Finder 拖进终端窗口，路径会自动填入。</p>
-        <p>② 然后在当前目录下启动：</p>
-        <div class="cmd">claude --dangerously-skip-permissions</div>
-        <p>这个 <code>--dangerously-skip-permissions</code> 参数会跳过每次操作前的确认提示，省去反复点 allow 的麻烦。</p>
-        <div class="tip info">为什么要 cd 到文件夹再启动？Claude Code 默认只读取当前目录下的文件，这样上下文更专注、更聪明，也避免污染其他项目。</div>
+        <h3><span class="badge purple">推荐</span> 日常启动方式</h3>
+        <p>先 cd 到工作目录再启动，让 Claude Code 只关注当前项目：</p>
+        <div class="cmd">cd 你的项目路径 && claude --dangerously-skip-permissions</div>
+        <p><code>--dangerously-skip-permissions</code> 跳过每次操作的确认提示，省去反复点 Allow 的麻烦。</p>
+        <div class="tip info">Mac 技巧：输入 <code>cd </code>（注意空格）后把文件夹从 Finder 拖进终端，路径自动填入。</div>
       </div>
     </div>
   </div>
 
-  <!-- ===== 四、CLAUDE.md 规范 ===== -->
-  <div class="section">
-    <h2 class="section-title"><span class="num">4</span> 设置 CLAUDE.md（使用规范）</h2>
-    <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
-      这是用好 Claude Code 最重要的一步。CLAUDE.md 是一份约束文件，告诉 Claude Code 你是谁、想要怎么合作、有什么规则。<br>
-      它分为<strong>两层</strong>：全局级（所有项目通用）和项目级（单个项目专用）。
-    </p>
+  <!-- 4. 部署全局规范（整合 mac-setup 内容） -->
+  <div class="section" id="deploy">
+    <h2 class="section-title"><span class="num">4</span> 部署全局规范（一键配置所有偏好）</h2>
+    <p class="section-desc">这是用好 Claude Code 最关键的一步。CLAUDE.md + settings.json + rules + skills 一次性部署，让 Claude Code 从此自动记住你的偏好。</p>
 
-    <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--purple)">全局 CLAUDE.md（所有项目通用）</h3>
-    <p style="font-size:13px;color:var(--dim);margin-bottom:8px">
-      放在 <code>~/.claude/CLAUDE.md</code>，只要打开 Claude Code 就会自动加载。文件<strong>不要超过 80 行</strong>，最多最多不超过 200 行。
-    </p>
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--purple)">4.1 拉取规范仓库</h3>
+    <div class="step-list" style="counter-reset:step 0">
+      <div class="step-item">
+        <h3>Clone 到桌面</h3>
+        <p class="os-label mac">🍎 macOS</p>
+        <div class="cmd mac">cd ~/Desktop && git clone https://github.com/LiHongwei-cn/lihongwei-cn.git</div>
+        <p class="os-label win" style="margin-top:10px">🪟 Windows</p>
+        <div class="cmd win">cd %USERPROFILE%\Desktop && git clone https://github.com/LiHongwei-cn/lihongwei-cn.git</div>
+        <p style="margin-top:6px">进入 <code>global-specs/</code> 目录，里面有 CLAUDE.md、settings.json、rules/、skills/、memory/。</p>
+      </div>
+    </div>
 
-    <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:20px;margin-bottom:16px;font-family:'Consolas','Courier New',monospace;font-size:12px;color:#b8c7ff;overflow-x:auto;white-space:pre-wrap;line-height:1.8">
-<span style="color:var(--dim)">## 关于我</span>
-我的名字 / 身份 / 职业背景，非程序员的话一定要写出来
-我用 Claude Code 做 [具体用途 1] 和 [具体用途 2]
+    <h3 style="font-size:15px;font-weight:600;margin:20px 0 10px;color:var(--accent)">4.2 配置文件映射（一张表说清楚）</h3>
+    <div class="file-map">
+      <table>
+        <tr><th>源文件 (global-specs/)</th><th>macOS 目标</th><th>Windows 目标</th><th>作用</th></tr>
+        <tr><td class="src">settings.json</td><td class="dest">~/.claude/settings.json</td><td class="dest">%USERPROFILE%\.claude\settings.json</td><td class="why">DeepSeek API 接入（需替换 Key）</td></tr>
+        <tr><td class="src">CLAUDE.md</td><td class="dest">~/.claude/CLAUDE.md</td><td class="dest">%USERPROFILE%\.claude\CLAUDE.md</td><td class="why">全局用户指令（你是谁、行为准则）</td></tr>
+        <tr><td class="src">settings.local.json</td><td class="dest">~/.claude/settings.local.json</td><td class="dest">%USERPROFILE%\.claude\settings.local.json</td><td class="why">命令权限白名单（不用反复点允许）</td></tr>
+        <tr><td class="src">rules/*.md</td><td class="dest">~/.claude/rules/</td><td class="dest">%USERPROFILE%\.claude\rules\</td><td class="why">6 份工程规范（代码/安全/测试等）</td></tr>
+        <tr><td class="src">skills/neat-freak/</td><td class="dest">~/.claude/skills/neat-freak/</td><td class="dest">%USERPROFILE%\.claude\skills\neat-freak\</td><td class="why">洁癖.skill（自动文档审查）</td></tr>
+        <tr><td class="src">memory/*.md</td><td class="dest">~/.claude/projects/.../memory/</td><td class="dest">%USERPROFILE%\.claude\projects\...\memory\</td><td class="why">跨会话记忆（自动记住偏好）</td></tr>
+        <tr><td class="src">project-CLAUDE.md</td><td class="dest">项目目录/CLAUDE.md</td><td class="dest">项目目录\CLAUDE.md</td><td class="why">项目级规范模板</td></tr>
+      </table>
+    </div>
 
-<span style="color:var(--dim)">## 思维原则</span>
-所有决策从问题本质出发，不因「惯例如此」照搬。
-不要夸我的想法好、不要问「这是个好问题吗」、直接给结论。
-给我真实判断，方案有问题直接指出。发现更好的做法直接说。
+    <h3 style="font-size:15px;font-weight:600;margin:20px 0 10px;color:var(--green)">4.3 极速版：一键部署（macOS）</h3>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:8px">已 clone 仓库并编辑好 settings.json 的 API Key 后，终端进入 global-specs/ 目录，复制粘贴以下全部：</p>
+    <div class="cmd" style="margin-bottom:8px">cp settings.json ~/.claude/settings.json
+cp CLAUDE.md ~/.claude/CLAUDE.md
+cp settings.local.json ~/.claude/settings.local.json
+mkdir -p ~/.claude/rules ~/.claude/skills/neat-freak/references
+cp rules/*.md ~/.claude/rules/ && cp skills/neat-freak/*.md ~/.claude/skills/neat-freak/ && cp skills/neat-freak/references/*.md ~/.claude/skills/neat-freak/references/
+cp project-CLAUDE.md ~/Desktop/lihongwei-cn/CLAUDE.md</div>
 
-<span style="color:var(--dim)">## 约束先行</span>
-新项目先写 CLAUDE.md，新目录先定结构约定。
-已有规范的项目严格遵守其 CLAUDE.md 中的约定。
+    <h3 style="font-size:15px;font-weight:600;margin:16px 0 10px;color:var(--accent)">4.4 极速版：一键部署（Windows PowerShell）</h3>
+    <div class="cmd">copy settings.json $env:USERPROFILE\.claude\settings.json
+copy CLAUDE.md $env:USERPROFILE\.claude\CLAUDE.md
+copy settings.local.json $env:USERPROFILE\.claude\settings.local.json
+mkdir $env:USERPROFILE\.claude\rules; copy rules\*.md $env:USERPROFILE\.claude\rules\
+mkdir $env:USERPROFILE\.claude\skills\neat-freak\references; copy skills\neat-freak\SKILL.md $env:USERPROFILE\.claude\skills\neat-freak\; copy skills\neat-freak\references\*.md $env:USERPROFILE\.claude\skills\neat-freak\references\
+copy project-CLAUDE.md $env:USERPROFILE\Desktop\lihongwei-cn\CLAUDE.md</div>
 
-<span style="color:var(--dim)">## 沟通方式</span>
-- 默认中文，代码、命令、变量名用英文
-- 结论先行，再给理由
-- 遇到模糊需求，先给最合理方案，再问要不要调整
-
-<span style="color:var(--dim)">## 自主边界（红线，必须先问我）</span>
-- 删除文件、目录或 git 历史
-- 修改 .env、密钥、token
-- git push、git rebase、git reset --hard
-- 安装全局依赖或修改系统配置
-
-<span style="color:var(--dim)">## 工程纪律</span>
-- 改完主动验证，不要只改不验
-- 不要注释掉报错来绕过，找根本原因
-- 密钥、token 不进代码、不进 commit</div>
-
-    <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--accent)">项目级 CLAUDE.md</h3>
-    <p style="font-size:13px;color:var(--dim);margin-bottom:8px">
-      放在每个项目的根目录下（<code>项目目录/CLAUDE.md</code>），只在该项目中生效。
-    </p>
-    <p style="font-size:13px;color:var(--dim);margin-bottom:8px">
-      这个文件不需要你自己写，先 <code>cd</code> 到项目目录启动 Claude Code，然后直接跟它聊你的项目需求、你关心的规范，让它帮你生成一份 CLAUDE.md 即可。
-    </p>
-    <div class="tip green">举个例子：如果你有一个 <code>code/my</code> 文件夹用来放各种实验小项目，在里面放一个项目级 CLAUDE.md，告诉它"如果是一个新需求，自动创建子文件夹存放"，以后你只管提需求，文件管理都交给它。</div>
+    <div class="tip green" style="margin-top:12px">部署后启动 Claude Code，输入 <code>/neat</code> 如果看到 skill 开始审查文件，说明全部部署成功。</div>
   </div>
 
-  <!-- ===== 五、桌面快捷启动 ===== -->
-  <div class="section">
-    <h2 class="section-title"><span class="num">5</span> 桌面快捷启动（Windows / macOS）</h2>
-    <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
-      双击桌面图标启动 Claude Code，自动进入工作目录。支持 Windows 和 macOS，含一键创建脚本和完整 FAQ。
-    </p>
-    <a href="../desktop-launcher/" style="display:inline-flex;align-items:center;gap:6px;background:var(--purple-dim);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:12px 20px;color:var(--purple);text-decoration:none;font-size:14px;font-weight:600;transition:all 0.2s" onmouseover="this.style.background='rgba(167,139,250,0.18)'" onmouseout="this.style.background='var(--purple-dim)'">📂 查看完整教程 → Claude Code 桌面快捷启动（Win / Mac）</a>
+  <!-- 5. 桌面快捷 -->
+  <div class="section" id="desktop">
+    <h2 class="section-title"><span class="num">5</span> 桌面快捷启动</h2>
+    <p class="section-desc">双击桌面图标启动 Claude Code，自动进入工作目录。</p>
+    <a href="../desktop-launcher/" style="display:inline-flex;align-items:center;gap:6px;background:var(--purple-dim);border:1px solid rgba(167,139,250,0.2);border-radius:10px;padding:12px 20px;color:var(--purple);text-decoration:none;font-size:14px;font-weight:600;transition:all .2s" onmouseover="this.style.background='rgba(167,139,250,0.18)'" onmouseout="this.style.background='var(--purple-dim)'">📂 查看完整教程 → 桌面快捷启动（Win / Mac）</a>
   </div>
 
-  <!-- ===== 六、Telegram 机器人搭建 ===== -->
-  <div class="section">
+  <!-- 6. Telegram 机器人 -->
+  <div class="section" id="bot">
     <h2 class="section-title"><span class="num">6</span> 搭建 Telegram AI 机器人</h2>
-    <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
-      把 AI 接入 Telegram，直接发要求给机器人，<strong>自动识别意图</strong>：代码生成 → 推送到 GitHub，论文报告 → 保存到 docs。笔记本上双击 matlab.bat 即可运行最新代码。
-    </p>
-
-    <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--purple)">准备工作</h3>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:16px;font-size:13px;color:var(--dim)">
-      <p>你需要提前准备好以下三项：</p>
-      <p>① <strong>一台电脑</strong>（能长期运行，或使用云服务器）</p>
-      <p>② <strong>DeepSeek API Key</strong>：去 platform.deepseek.com 注册 → 创建 API Key</p>
-      <p>③ <strong>Telegram Bot Token</strong>：Telegram 中搜索 <strong>@BotFather</strong> → 发送 <code>/newbot</code> → 按提示取名 → 获得一串 token（格式如 <code>123456:ABC-DEF...</code>）</p>
-    </div>
+    <p class="section-desc">把 AI 接入 Telegram，发消息给机器人自动回复。代码生成 → 推送到 GitHub，论文报告 → 保存到 docs。</p>
 
     <div class="step-list">
       <div class="step-item">
-        <h3>安装 Python <span class="badge ok">✅ 无需魔法</span></h3>
-        <p>此机器人是 Python 写的，需要 Python 3.8 以上版本。</p>
-        <p><strong>Windows</strong>：打开 <a href="https://www.python.org/downloads/" target="_blank">python.org</a> 下载安装包 → 安装时<strong>务必勾选"Add Python to PATH"</strong> → 完成安装。</p>
-        <p><strong>Mac</strong>：终端输入 <code>python3 --version</code>，如果没装则去 python.org 下载。</p>
-        <p>安装后在终端输入 <code>python --version</code> 或 <code>python3 --version</code> 验证。</p>
+        <h3>准备工作</h3>
+        <p>① <strong>DeepSeek API Key</strong> — <a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a> 注册创建</p>
+        <p>② <strong>Telegram Bot Token</strong> — Telegram 搜索 <strong>@BotFather</strong> → 发送 <code>/newbot</code> → 按提示取名 → 获得 Token</p>
+        <p>③ <strong>Python 3.8+</strong> — 终端输入 <code>python3 --version</code> 检查</p>
       </div>
-
       <div class="step-item">
-        <h3>安装依赖库 <span class="badge ok">✅ 无需魔法</span></h3>
-        <p>终端执行以下命令，安装机器人所需的 Python 包：</p>
-        <div class="cmd">pip install python-telegram-bot openai</div>
-        <p>如果提示 <code>pip</code> 不存在，试试 <code>pip3 install python-telegram-bot openai</code></p>
+        <h3>安装依赖 + 运行</h3>
+        <div class="cmd">pip install python-telegram-bot openai python-dotenv</div>
+        <p style="margin-top:8px">完整代码见仓库 <code>bot/tgbot.py</code>，基于 DeepSeek API 直接回复。设置环境变量 <code>TELEGRAM_TOKEN</code> 和 <code>DEEPSEEK_API_KEY</code> 后运行：</p>
+        <div class="cmd">python bot/tgbot.py</div>
       </div>
-
       <div class="step-item">
-        <h3>创建机器人脚本 <span class="badge ok">✅ 无需魔法</span></h3>
-        <p>新建一个文件，命名为 <code>tgbot.py</code>，完整代码可在仓库 <code>bot/tgbot.py</code> 中获取。<br>以下为简化版，展示自动识别 + 代码生成推送的核心逻辑：</p>
-        <div class="cmd" style="font-size:11px;max-height:300px;overflow-y:auto">import os
-from telegram import Update
-from telegram.ext import ApplicationBuilder, MessageHandler, filters, ContextTypes
-from openai import OpenAI
-
-TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]       # 从环境变量读取，绝不硬编码
-DEEPSEEK_API_KEY = os.environ["DEEPSEEK_API_KEY"]
-
-client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url="https://api.deepseek.com")
-
-SYSTEM_PROMPT = """回复原则：极度简洁，代码直给，不废话。默认中文。"""
-
-async def handle_message(update, context):
-    text = update.message.text
-    response = client.chat.completions.create(
-        model="deepseek-v4-pro",
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": text}
-        ]
-    )
-    await update.message.reply_text(response.choices[0].message.content)
-
-app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-app.run_polling()</div>
-        <div class="tip info">完整版见 GitHub 仓库 <code>bot/tgbot.py</code>，基于 DeepSeek API 直接回复，支持文字和图片消息，无需手动输入命令。</div>
+        <h3>保持长期运行</h3>
+        <p>① <strong>云服务器</strong>（最稳定）：腾讯云/阿里云最低配，24 小时在线</p>
+        <p>② <strong>macOS：</strong><code>nohup python3 tgbot.py &</code></p>
+        <p>③ <strong>Windows：</strong>任务计划程序设置开机自启</p>
       </div>
-
-      <div class="step-item">
-        <h3>运行机器人 <span class="badge ok">✅ 无需魔法</span></h3>
-        <p>在终端中 <code>cd</code> 到 <code>tgbot.py</code> 所在的目录，执行：</p>
-        <div class="cmd">python tgbot.py</div>
-        <p>看到 <strong>"Bot 已启动，等待消息..."</strong> 即表示运行成功。</p>
-        <p>此时去 Telegram 找到你的机器人（搜索你之前 @BotFather 给它取的名字），发一条消息测试。</p>
-      </div>
-
-      <div class="step-item">
-        <h3>直接对话 <span class="badge purple">⭐ 核心功能</span></h3>
-        <p>机器人基于 DeepSeek API，<strong>直接回复所有消息</strong>：</p>
-        <p><strong>MATLAB/Simulink 代码</strong>：直接回复可运行代码，兼容 R2016b</p>
-        <p><strong>论文/报告</strong>：生成正文和分析内容</p>
-        <p><strong>图片分析</strong>：拍照发作业、实验数据图，直接解读</p>
-        <p><strong>普通聊天</strong>：正常对话，简洁回复</p>
-        <div class="tip green">直接发"写一个电池SOC安时积分法代码"，机器人直接回复完整代码。无需任何命令前缀。</div>
-      </div>
-
-      <div class="step-item">
-        <h3>笔记本一键运行最新代码 <span class="badge ok">✅ 无需魔法</span></h3>
-        <p>在笔记本上操作：<code>matlab.bat</code> 启动前会自动 <code>git pull</code>。</p>
-        <p>① 安装 Git（首次）→ 克隆仓库到桌面</p>
-        <p>② 双击 <code>matlab.bat</code> → 自动拉取最新代码 → 启动 MATLAB</p>
-        <p>③ 在 Command Window 直接输入脚本名运行</p>
-        <div class="tip info">代码通过 Claude Code 生成后自动 commit+push 到 GitHub，笔记本端 matlab.bat 启动时自动 git pull 拉取最新代码。</div>
-      </div>
-
-      <div class="step-item">
-        <h3>保持机器人长期运行 <span class="badge caution">⚡ 进阶操作</span></h3>
-        <p>以上方式关掉终端后机器人就停止了。想让机器人 24 小时在线：</p>
-        <p>① <strong>云服务器方案</strong>：买一台便宜的云服务器（腾讯云/阿里云最低配即可），把 <code>tgbot.py</code> 上传上去运行。</p>
-        <p>② <strong>自家电脑方案</strong>（Windows）：使用 <a href="https://learn.microsoft.com/zh-cn/windows/win32/taskschd/task-scheduler-start-page" target="_blank">任务计划程序</a> 设置开机自启 Python 脚本。</p>
-        <p>③ <strong>自家电脑方案</strong>（Mac）：使用 <code>nohup</code> 命令：<code>nohup python3 tgbot.py &</code></p>
-        <div class="tip info">云服务器方案最稳定。腾讯云/阿里云最低配一个月约 10-30 元。注意云服务器上也需要安装 Python 和依赖包。</div>
-      </div>
-    </div>
-
-    <div class="link-block" style="margin-top:16px">
-      <h3>🔗 Telegram 机器人相关网址</h3>
-      <div class="link-row"><span class="label">BotFather</span><span class="url">Telegram 搜索 <strong>@BotFather</strong> <span class="badge need">⚠️ 需魔法</span></span></div>
-      <div class="link-row"><span class="label">DeepSeek</span><span class="url"><a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a> <span class="badge ok">✅ 无需</span></span></div>
-      <div class="link-row"><span class="label">Python 下载</span><span class="url"><a href="https://www.python.org/downloads/" target="_blank">python.org</a> <span class="badge ok">✅ 无需</span></span></div>
     </div>
   </div>
 
-  <!-- ===== 七、常用命令速查 ===== -->
-  <div class="section">
+  <!-- 7. 日常工作流 -->
+  <div class="section" id="workflow">
+    <h2 class="section-title"><span class="num">7</span> 日常工作流</h2>
+    <div class="step-list">
+      <div class="step-item">
+        <h3>开始工作</h3>
+        <p>进入项目目录 → 启动 Claude Code → 直接描述问题。全局规范和项目 CLAUDE.md 已告诉 Agent 一切。</p>
+      </div>
+      <div class="step-item">
+        <h3>收尾存档 <span class="badge purple">关键</span></h3>
+        <div class="cmd">/neat</div>
+        <p>洁癖.skill 审查文档和记忆，确保代码迭代后文档也同步了。</p>
+      </div>
+      <div class="step-item">
+        <h3>新项目启动</h3>
+        <p>新项目第一步永远先写 CLAUDE.md，约束先行，再写代码。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. 命令速查 -->
+  <div class="section" id="commands">
     <h2 class="section-title"><span class="num p-icon">◆</span> 常用命令速查</h2>
     <div class="table-wrap">
       <table>
-        <thead>
-          <tr><th>命令</th><th>作用</th></tr>
-        </thead>
-        <tbody>
-          <tr><td><code>claude</code></td><td>在当前目录启动 Claude Code</td></tr>
-          <tr><td><code>claude --dangerously-skip-permissions</code></td><td>跳过操作确认提示（推荐）</td></tr>
-          <tr><td><code>claude --version</code></td><td>查看 Claude Code 版本</td></tr>
-          <tr><td><code>/model</code></td><td>在对话中切换模型</td></tr>
-          <tr><td><code>/theme</code></td><td>切换颜色主题</td></tr>
-          <tr><td><code>/help</code></td><td>查看所有可用命令</td></tr>
-          <tr><td><code>cd 文件夹路径 &amp;&amp; claude</code></td><td>进入文件夹并启动（推荐用法）</td></tr>
-        </tbody>
+        <tr><th>命令</th><th>作用</th></tr>
+        <tr><td><code>claude</code></td><td>在当前目录启动 Claude Code</td></tr>
+        <tr><td><code>claude --dangerously-skip-permissions</code></td><td>跳过操作确认提示（推荐）</td></tr>
+        <tr><td><code>claude --version</code></td><td>查看版本</td></tr>
+        <tr><td><code>/model</code></td><td>切换模型</td></tr>
+        <tr><td><code>/theme</code></td><td>切换颜色主题</td></tr>
+        <tr><td><code>/neat</code></td><td>洁癖.skill — 文档审查同步</td></tr>
+        <tr><td><code>cd 路径 && claude</code></td><td>进入文件夹并启动（推荐）</td></tr>
       </table>
     </div>
   </div>
 
-  <!-- ===== 常见问题 ===== -->
-  <div class="section">
+  <!-- 9. FAQ -->
+  <div class="section" id="faq">
     <h2 class="section-title"><span class="num p-icon">◆</span> 常见问题</h2>
     <div style="display:flex;flex-direction:column;gap:10px">
       <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
-        <p style="font-weight:600;margin-bottom:4px">Q：Claude Code 需要 Claude 账号吗？</p>
-        <p style="font-size:13px;color:var(--dim)">不需要。Claude Code 是开源 Agent 框架，你可以给它接任何模型。本教程教的就是接 DeepSeek（国产模型），不需要 Claude 账号、不需要魔法。</p>
-      </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
-        <p style="font-weight:600;margin-bottom:4px">Q：会被封号吗？需要外国手机号吗？</p>
-        <p style="font-size:13px;color:var(--dim)">搭配国产模型使用时，不会封号，不需要外国手机号，不需要 Visa 卡。Claude Code 框架本身没有任何限制。</p>
+        <p style="font-weight:600;margin-bottom:4px">Q：需要 Claude 账号吗？会被封吗？</p>
+        <p style="font-size:13px;color:var(--dim)">不需要。搭配 DeepSeek 等国产模型，不需要 Claude 账号、不需要魔法、不需要外国手机号、不封号。</p>
       </div>
       <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
         <p style="font-weight:600;margin-bottom:4px">Q：装好了但 <code>claude</code> 命令找不到？</p>
-        <p style="font-size:13px;color:var(--dim)">说明 Claude Code 没加到 PATH 环境变量。Mac 按安装完成后的提示执行 <code>echo 'export PATH="$HOME/.local/bin:$PATH"' &gt;&gt; ~/.zshrc</code> 然后重启终端。Windows 重启终端即可。</p>
+        <p style="font-size:13px;color:var(--dim)">macOS：<code>echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc</code> 然后重启终端。Windows：重启终端即可。</p>
       </div>
       <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
-        <p style="font-weight:600;margin-bottom:4px">Q：CC Switch 是什么？必须装吗？</p>
-        <p style="font-size:13px;color:var(--dim)">CC Switch 是一个图形化工具，让你能方便地切换 Claude Code 后面接的模型。不是必须的——本教程的"方法一"直接改配置文件，完全不需要装任何额外软件。</p>
-      </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
-        <p style="font-weight:600;margin-bottom:4px">Q：Telegram 机器人必须用自己的电脑跑吗？</p>
-        <p style="font-size:13px;color:var(--dim)">不一定。你可以用云服务器跑，这样关掉自己电脑机器人也在线。也可以用自己的电脑测试，需要长期运行再迁移到服务器。</p>
+        <p style="font-weight:600;margin-bottom:4px">Q：API 连接失败？</p>
+        <p style="font-size:13px;color:var(--dim)">检查 settings.json 中 ANTHROPIC_AUTH_TOKEN 是否为有效 Key、ANTHROPIC_BASE_URL 是否为正确的 DeepSeek 地址。</p>
       </div>
       <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
         <p style="font-weight:600;margin-bottom:4px">Q：DeepSeek API Key 怎么获取？要钱吗？</p>
-        <p style="font-size:13px;color:var(--dim)">去 platform.deepseek.com 注册 → 控制台 → API Keys → 创建新 Key。DeepSeek 有免费额度，一般轻度使用足够了。</p>
+        <p style="font-size:13px;color:var(--dim)">去 platform.deepseek.com 注册 → API Keys → 创建 Key。新用户有免费额度，轻度使用足够。</p>
       </div>
     </div>
   </div>
 
-  <!-- ===== 网址汇总 ===== -->
-  <div class="section">
-    <h2 class="section-title"><span class="num p-icon">◆</span> 所有网址汇总</h2>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr><th>用途</th><th>网址</th><th>需魔法</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Claude Code 官方安装</td><td><a href="https://claude.ai/install.sh" target="_blank">claude.ai/install.sh</a></td><td><span class="badge need">⚠️</span></td></tr>
-          <tr><td>Claude Code GitHub</td><td><a href="https://github.com/anthropics/claude-code" target="_blank">github.com/anthropics/claude-code</a></td><td><span class="badge need">⚠️</span></td></tr>
-          <tr><td>CC Switch GitHub</td><td><a href="https://github.com/farion1231/cc-switch" target="_blank">github.com/farion1231/cc-switch</a></td><td><span class="badge need">⚠️</span></td></tr>
-          <tr><td>Homebrew 官网</td><td><a href="https://brew.sh" target="_blank">brew.sh</a></td><td><span class="badge need">⚠️</span></td></tr>
-          <tr><td>Git 下载</td><td><a href="https://git-scm.com/download/win" target="_blank">git-scm.com</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
-          <tr><td>Python 下载</td><td><a href="https://www.python.org/downloads/" target="_blank">python.org</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
-          <tr><td>DeepSeek 平台</td><td><a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
-          <tr><td>智谱 GLM 平台</td><td><a href="https://bigmodel.cn" target="_blank">bigmodel.cn</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
-        </tbody>
-      </table>
-    </div>
+  <!-- 相关链接 -->
+  <div class="link-block" style="margin-top:16px">
+    <h3>🔗 相关链接</h3>
+    <div class="link-row"><span class="label">DeepSeek 平台</span><a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a> <span class="badge ok">无需魔法</span></div>
+    <div class="link-row"><span class="label">规范仓库</span><a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs" target="_blank">github.com/LiHongwei-cn/.../global-specs</a></div>
+    <div class="link-row"><span class="label">洁癖.skill 上游</span><a href="https://github.com/KKKKhazix/khazix-skills" target="_blank">github.com/KKKKhazix/khazix-skills</a></div>
+    <div class="link-row"><span class="label">Python 下载</span><a href="https://www.python.org/downloads/" target="_blank">python.org</a> <span class="badge ok">无需魔法</span></div>
+  </div>
+
+  <!-- 访问计数 -->
+  <div class="page-counter">
+    本页被阅读 <span id="page-count">...</span> 次
+    <img src="https://api.counterapi.dev/v1/lihongwei-cn/claude-code-tutorial/up" style="display:none" alt="" onload="fetchCount()">
   </div>
 
   <div class="footer">
@@ -588,6 +426,27 @@ app.run_polling()</div>
     &nbsp;·&nbsp; 教程综合自多位博主实操经验
     &nbsp;·&nbsp; LiHongwei
   </div>
+
 </div>
+
+<script>
+// 页面访问计数
+(async function(){
+  try {
+    let r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json');
+    let s = await r.json();
+    document.getElementById('page-count').textContent = s['claude-code-tutorial'] || '...';
+  } catch(e) {
+    // 降级：从 stats.json 读取
+    try {
+      let r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json');
+      let s = await r.json();
+      document.getElementById('page-count').textContent = d['claude-code-tutorial'] || '...';
+    } catch(e2) {
+      document.getElementById('page-count').textContent = '...';
+    }
+  }
+})();
+</script>
 </body>
 </html>

@@ -5,20 +5,9 @@ from urllib.request import Request, urlopen
 from urllib.parse import urlencode
 from urllib.error import URLError
 
-def _get_env(key: str) -> str:
-    val = os.environ.get(key)
-    if val:
-        return val
-    try:
-        import winreg
-        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Environment") as reg:
-            val, _ = winreg.QueryValueEx(reg, key)
-        os.environ[key] = val
-        return val
-    except Exception:
-        raise KeyError(f"{key} 未设置")
+from config import get_env
 
-TOKEN = _get_env("TELEGRAM_TOKEN")
+TOKEN = get_env("TELEGRAM_TOKEN")
 CHAT_ID_FILE = Path(__file__).parent / "chat_id.txt"
 
 

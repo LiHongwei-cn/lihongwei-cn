@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="GitHub 每日热门仓库报告 · 中文区 & 英文区 · 自动更新">
+<title>GitHub 每日热点 · LiHongwei</title>
+<style>
+:root {
+  --bg1: #0f0c29;
+  --bg2: #302b63;
+  --bg3: #24243e;
+  --card: rgba(255,255,255,0.05);
+  --card-hover: rgba(255,255,255,0.08);
+  --border: rgba(255,255,255,0.08);
+  --text: #e8e8e8;
+  --dim: rgba(255,255,255,0.45);
+  --accent: #6c8cff;
+  --orange: #fb923c;
+  --red: #f87171;
+  --green: #4ade80;
+  --purple: #a78bfa;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3));
+  color: var(--text);
+  line-height: 1.7;
+  min-height: 100vh;
+}
+.container { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; }
+
+/* 返回链接 */
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--dim); font-size: 14px; text-decoration: none;
+  margin-bottom: 24px; transition: color .2s;
+}
+.back-link:hover { color: var(--accent); }
+
+/* Hero */
+.hero { text-align: center; margin-bottom: 48px; }
+.hero-badge {
+  display: inline-block; padding: 4px 16px;
+  border-radius: 20px; font-size: 13px; color: var(--accent);
+  background: rgba(108,140,255,0.1); border: 1px solid rgba(108,140,255,0.2);
+  margin-bottom: 16px;
+}
+.hero h1 {
+  font-size: 40px; font-weight: 800; letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #a78bfa, #6c8cff, #4ade80);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 8px;
+}
+.hero .subtitle { color: var(--dim); font-size: 16px; }
+.hero .update-time { color: rgba(255,255,255,0.25); font-size: 13px; margin-top: 6px; }
+
+/* 导航标签 */
+.nav-tabs {
+  display: flex; gap: 10px; justify-content: center; margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+.nav-tab {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 24px; border-radius: 12px;
+  font-size: 15px; font-weight: 600; text-decoration: none;
+  border: 1px solid var(--border); color: var(--text);
+  background: var(--card); transition: all .2s;
+}
+.nav-tab:hover { background: var(--card-hover); border-color: rgba(255,255,255,0.15); }
+.nav-tab.zh { border-color: rgba(251,146,60,0.3); }
+.nav-tab.zh:hover { background: rgba(251,146,60,0.1); }
+.nav-tab.en { border-color: rgba(108,140,255,0.3); }
+.nav-tab.en:hover { background: rgba(108,140,255,0.1); }
+.nav-tab .count { font-size: 12px; color: var(--dim); font-weight: 400; }
+
+/* 区块标题 */
+.section-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--border);
+}
+.section-header .icon { font-size: 24px; }
+.section-header h2 { font-size: 22px; font-weight: 700; }
+.section-header .count { font-size: 14px; color: var(--dim); }
+.section-divider { height: 40px; }
+
+/* 仓库卡片网格 */
+.repo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 12px; margin-bottom: 16px;
+}
+.repo-card {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 20px 24px; border-radius: 14px;
+  background: var(--card); border: 1px solid var(--border);
+  text-decoration: none; color: var(--text);
+  transition: all .2s;
+}
+.repo-card:hover {
+  background: var(--card-hover); border-color: rgba(255,255,255,0.15);
+  transform: translateY(-1px);
+}
+.repo-header { font-size: 16px; }
+.repo-owner { color: var(--dim); font-weight: 400; }
+.repo-name { color: var(--accent); font-weight: 700; }
+.repo-desc {
+  font-size: 14px; color: var(--dim); line-height: 1.6;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.repo-meta {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  margin-top: 4px;
+}
+.lang-badge {
+  font-size: 12px; padding: 2px 10px; border-radius: 10px;
+  background: rgba(255,255,255,0.06); color: var(--accent);
+}
+.stat { font-size: 12px; color: rgba(255,255,255,0.35); }
+.stat.today { color: var(--orange); }
+
+.empty-msg {
+  text-align: center; padding: 48px 24px; color: var(--dim);
+  font-size: 15px;
+}
+
+/* Footer */
+.footer {
+  text-align: center; padding: 32px 0 0; font-size: 12px;
+  color: rgba(255,255,255,0.2); border-top: 1px solid rgba(255,255,255,0.04);
+  margin-top: 48px;
+}
+.footer a { color: rgba(255,255,255,0.3); text-decoration: none; }
+.footer a:hover { color: var(--accent); }
+
+/* 响应式 */
+@media (max-width: 640px) {
+  .container { padding: 20px 16px 60px; }
+  .hero h1 { font-size: 28px; }
+  .repo-grid { grid-template-columns: 1fr; }
+  .nav-tab { padding: 8px 16px; font-size: 14px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <a class="back-link" href="../">← 返回主页</a>
+
+  <div class="hero">
+    <div class="hero-badge">每日更新 · 自动爬取</div>
+    <h1>GitHub 每日热点</h1>
+    <p class="subtitle">中文区 &amp; 英文区热门开源仓库一览</p>
+    <p class="update-time">🕐 更新时间：2026-05-18 02:25（北京时间）</p>
+  </div>
+
+  <div class="nav-tabs">
+    <a class="nav-tab zh" href="#zh-section">
+      🔥 中文区热门 <span class="count">(18)</span>
+    </a>
+    <a class="nav-tab en" href="#en-section">
+      🌍 英文区热门 <span class="count">(18)</span>
+    </a>
+  </div>
+
+  <!-- 中文区 -->
+  <div id="zh-section">
+    <div class="section-header">
+      <span class="icon">🔥</span>
+      <h2>中文区热门</h2>
+      <span class="count">共 18 个仓库</span>
+    </div>
+    
+    <div class="repo-grid">
+      
+    <a class="repo-card" href="https://github.com/gaotianliuyun/gao" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">gaotianliuyun /</span>
+        <span class="repo-name">gao</span>
+      </div>
+      <p class="repo-desc">FongMi影视和tvbox配置文件，如果喜欢，请Fork自用。使用前请仔细阅读仓库说明，一旦使用将被视为你已了解。</p>
+      <div class="repo-meta">
+        <span class="lang-badge">JavaScript</span>
+        <span class="stat">⭐ 7,399</span><span class="stat today">📈 24 today</span><span class="stat">🍴 2,581</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/xiaojieonly/Ehviewer_CN_SXJ" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">xiaojieonly /</span>
+        <span class="repo-name">Ehviewer_CN_SXJ</span>
+      </div>
+      <p class="repo-desc">ehviewer，用爱发电，快乐前行</p>
+      <div class="repo-meta">
+        <span class="lang-badge">C</span>
+        <span class="stat">⭐ 24,049</span><span class="stat today">📈 17 today</span><span class="stat">🍴 630</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/MaaAssistantArknights/MaaAssistantArknights" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">MaaAssistantArknights /</span>
+        <span class="repo-name">MaaAssistantArknights</span>
+      </div>
+      <p class="repo-desc">《明日方舟》小助手，全日常一键长草！| A one-click tool for the daily tasks of Arknights, supporting all clients.</p>
+      <div class="repo-meta">
+        <span class="lang-badge">C++</span>
+        <span class="stat">⭐ 20,993</span><span class="stat today">📈 43 today</span><span class="stat">🍴 2,615</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/OI-wiki/OI-wiki" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">OI-wiki /</span>
+        <span class="repo-name">OI-wiki</span>
+      </div>
+      <p class="repo-desc">🌟 Wiki of OI / ICPC for everyone. （某大型游戏线上攻略，内含炫酷算术魔法）</p>
+      <div class="repo-meta">
+        <span class="lang-badge">TypeScript</span>
+        <span class="stat">⭐ 26,015</span><span class="stat today">📈 9 today</span><span class="stat">🍴 4,645</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/JoeanAmier/TikTokDownloader" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">JoeanAmier /</span>
+        <span class="repo-name">TikTokDownloader</span>
+      </div>
+      <p class="repo-desc">TikTok 发布/喜欢/合辑/直播/视频/图集/音乐；抖音发布/喜欢/收藏/收藏夹/视频/图集/实况/直播/音乐/合集/评论/账号/搜索/热榜数据采集工具/下载工具</p>
+      <div class="repo-meta">
+        <span class="lang-badge">Python</span>
+        <span class="stat">⭐ 14,438</span><span class="stat today">📈 11 today</span><span class="stat">🍴 2,491</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/halo-dev/halo" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">halo-dev /</span>
+        <span class="repo-name">halo</span>
+      </div>
+      <p class="repo-desc">Halo 是一款强大易用的开源建站工具，从个人博客、知识库，到企业官网、在线商城，Halo 都能助您轻松实现，一站式满足您的多样化建站需求。</p>
+      <div class="repo-meta">
+        <span class="lang-badge">Java</span>
+        <span class="stat">⭐ 38,639</span><span class="stat today">📈 14 today</span><span class="stat">🍴 10,261</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/521xueweihan/HelloGitHub" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">521xueweihan /</span>
+        <span class="repo-name">HelloGitHub</span>
+      </div>
+      <p class="repo-desc">分享 GitHub 上有趣、入门级的开源项目。Share interesting, entry-level open source projects on GitHub.</p>
+      <div class="repo-meta">
+        <span class="lang-badge">Python</span>
+        <span class="stat">⭐ 157,352</span><span class="stat today">📈 196 today</span><span class="stat">🍴 11,997</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/XIU2/CloudflareSpeedTest" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">XIU2 /</span>
+        <span class="repo-name">CloudflareSpeedTest</span>
+      </div>
+      <p class="repo-desc">🌩「自选优选 IP」测试 Cloudflare CDN 延迟和速度，获取最快 IP ！当然也支持其他 CDN / 多个解析 IP 的网站 ~</p>
+      <div class="repo-meta">
+        <span class="lang-badge">Go</span>
+        <span class="stat">⭐ 26,675</span><span class="stat today">📈 25 today</span><span class="stat">🍴 5,119</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/wanglin2/mind-map" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">wanglin2 /</span>
+        <span class="repo-name">mind-map</span>
+      </div>
+      <p class="repo-desc">SimpleMindMap（思绪思维导图）：一个强大的思维导图。A powerful mind map.</p>
+      <div class="repo-meta">
+        <span class="lang-badge">JavaScript</span>
+        <span class="stat">⭐ 12,191</span><span class="stat today">📈 7 today</span><span class="stat">🍴 1,638</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/Anduin2017/HowToCook" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">Anduin2017 /</span>
+        <span class="repo-name">HowToCook</span>
+      </div>
+      <p class="repo-desc">程序员在家做饭方法指南。Programmer's guide about how to cook at home (Simplified Chinese only).</p>
+      <div class="repo-meta">
+        
+        <span class="stat">⭐ 100,136</span><span class="stat today">📈 45 today</span><span class="stat">🍴 10,965</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/maotoumao/MusicFree" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">maotoumao /</span>
+        <span class="repo-name">MusicFree</span>
+      </div>
+      <p class="repo-desc">插件化、定制化、无广告的免费音乐播放器</p>
+      <div class="repo-meta">
+        <span class="lang-badge">TypeScript</span>
+        <span class="stat">⭐ 24,767</span><span class="stat today">📈 16 today</span><span class="stat">🍴 1,742</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/xfangfang/wiliwili" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">xfangfang /</span>
+        <span class="repo-name">wiliwili</span>
+      </div>
+      <p class="repo-desc">第三方B站客户端，目前可以运行在PC全平台、PSVita、PS4 、Xbox 和 Nintendo Switch上</p>
+      <div class="repo-meta">
+        <span class="lang-badge">C++</span>
+        <span class="stat">⭐ 5,142</span><span class="stat">🍴 233</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/HIllya51/LunaTranslator" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">HIllya51 /</span>
+        <span class="repo-name">LunaTranslator</span>
+      </div>
+      <p class="repo-desc">视觉小说翻译器 / Visual Novel Translator</p>
+      <div class="repo-meta">
+        <span class="lang-badge">C++</span>
+        <span class="stat">⭐ 11,517</span><span class="stat today">📈 9 today</span><span class="stat">🍴 1,079</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/AstrBotDevs/AstrBot" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">AstrBotDevs /</span>
+        <span class="repo-name">AstrBot</span>
+      </div>
+      <p class="repo-desc">AI Agent Assistant &amp; development framework that integrates lots of IM platforms, LLMs, plugins and AI feature, and can be your openclaw alternative. ✨</p>
+      <div class="repo-meta">
+        <span class="lang-badge">Python</span>
+        <span class="stat">⭐ 32,452</span><span class="stat today">📈 83 today</span><span class="stat">🍴 2,228</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/nilaoda/N_m3u8DL-RE" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">nilaoda /</span>
+        <span class="repo-name">N_m3u8DL-RE</span>
+      </div>
+      <p class="repo-desc">Cross-Platform, modern and powerful stream downloader for MPD/M3U8/ISM. English/简体中文/繁體中文.</p>
+      <div class="repo-meta">
+        <span class="lang-badge">C#</span>
+        <span class="stat">⭐ 7,959</span><span class="stat today">📈 11 today</span><span class="stat">🍴 808</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/coolsnowwolf/lede" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">coolsnowwolf /</span>
+        <span class="repo-name">lede</span>
+      </div>
+      <p class="repo-desc">Lean's LEDE source</p>
+      <div class="repo-meta">
+        <span class="lang-badge">C</span>
+        <span class="stat">⭐ 31,447</span><span class="stat today">📈 2 today</span><span class="stat">🍴 19,343</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/mootdx/mootdx" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">mootdx /</span>
+        <span class="repo-name">mootdx</span>
+      </div>
+      <p class="repo-desc">通达信数据读取的一个简便使用封装</p>
+      <div class="repo-meta">
+        <span class="lang-badge">Python</span>
+        <span class="stat">⭐ 1,746</span><span class="stat today">📈 10 today</span><span class="stat">🍴 515</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/zizifn/edgetunnel" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">zizifn /</span>
+        <span class="repo-name">edgetunnel</span>
+      </div>
+      <p class="repo-desc">Running V2ray inside edge/serverless runtime</p>
+      <div class="repo-meta">
+        <span class="lang-badge">JavaScript</span>
+        <span class="stat">⭐ 8,527</span><span class="stat today">📈 5 today</span><span class="stat">🍴 45,056</span>
+      </div>
+    </a>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- 英文区（已翻译） -->
+  <div id="en-section">
+    <div class="section-header">
+      <span class="icon">🌍</span>
+      <h2>英文区热门</h2>
+      <span class="count">共 18 个仓库（描述已翻译为中文）</span>
+    </div>
+    
+    <div class="repo-grid">
+      
+    <a class="repo-card" href="https://github.com/tinyhumansai/openhuman" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">tinyhumansai /</span>
+        <span class="repo-name">openhuman</span>
+      </div>
+      <p class="repo-desc">你的个人 AI 超级智能。私密、简单且极其强大。</p>
+      <div class="repo-meta">
+        <span class="lang-badge">Rust</span>
+        <span class="stat">⭐ 12,609</span><span class="stat today">📈 1,694 today</span><span class="stat">🍴 1,083</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/HKUDS/CLI-Anything" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">HKUDS /</span>
+        <span class="repo-name">CLI-Anything</span>
+      </div>
+      <p class="repo-desc">“CLI-Anything：让所有软件成为智能体原生”—— CLI-Hub: https://clianything.cc/</p>
+      <div class="repo-meta">
+        <span class="lang-badge">Python</span>
+        <span class="stat">⭐ 35,447</span><span class="stat today">📈 306 today</span><span class="stat">🍴 3,471</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/calcom/cal.diy" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">calcom /</span>
+        <span class="repo-name">cal.diy</span>
+      </div>
+      <p class="repo-desc">面向所有人的调度基础设施。</p>
+      <div class="repo-meta">
+        <span class="lang-badge">TypeScript</span>
+        <span class="stat">⭐ 43,145</span><span class="stat today">📈 425 today</span><span class="stat">🍴 13,379</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/oven-sh/bun" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">oven-sh /</span>
+        <span class="repo-name">bun</span>
+      </div>
+      <p class="repo-desc">极速 JavaScript 运行时、打包器、测试运行器和包管理器——合而为一</p>
+      <div class="repo-meta">
+        <span class="lang-badge">Rust</span>
+        <span class="stat">⭐ 91,657</span><span class="stat today">📈 908 today</span><span class="stat">🍴 4,572</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/Anil-matcha/Open-Generative-AI" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">Anil-matcha /</span>
+        <span class="repo-name">Open-Generative-AI</span>
+      </div>
+      <p class="repo-desc">AI 视频平台的开源替代方案——免费 AI 图像与视频生成工作室，支持 200+ 模型（Flux、Midjourney、Kling、Sora、Veo）。无内容过滤。可自托管，MIT 许可。</p>
+      <div class="repo-meta">
+        <span class="lang-badge">JavaScript</span>
+        <span class="stat">⭐ 14,933</span><span class="stat today">📈 704 today</span><span class="stat">🍴 2,571</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/BigBodyCobain/Shadowbroker" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">BigBodyCobain /</span>
+        <span class="repo-name">Shadowbroker</span>
+      </div>
+      <p class="repo-desc">面向全球舞台的开源情报。在统一界面中追踪一切——从富豪的公务/私人飞机、间谍卫星到地震事件。接入 AI 智能体解析数据，发现此前未见的关联。知识向所有人开放，但此前鲜在公开领域聚合，直至现在。</p>
+      <div class="repo-meta">
+        <span class="lang-badge">Python</span>
+        <span class="stat">⭐ 6,927</span><span class="stat today">📈 405 today</span><span class="stat">🍴 1,091</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/tech-leads-club/agent-skills" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">tech-leads-club /</span>
+        <span class="repo-name">agent-skills</span>
+      </div>
+      <p class="repo-desc">面向专业 AI 编程智能体的安全、经过验证的技能注册表。以绝对信心扩展 Antigravity、Claude Code、Cursor、Copilot 等。</p>
+      <div class="repo-meta">
+        <span class="lang-badge">TypeScript</span>
+        <span class="stat">⭐ 3,395</span><span class="stat today">📈 923 today</span><span class="stat">🍴 312</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/NirDiamant/agents-towards-production" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">NirDiamant /</span>
+        <span class="repo-name">agents-towards-production</span>
+      </div>
+      <p class="repo-desc">构建生产级 GenAI 智能体的端到端、代码优先教程。从原型到企业部署。</p>
+      <div class="repo-meta">
+        <span class="lang-badge">Jupyter Notebook</span>
+        <span class="stat">⭐ 19,827</span><span class="stat today">📈 225 today</span><span class="stat">🍴 2,639</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/dograh-hq/dograh" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">dograh-hq /</span>
+        <span class="repo-name">dograh</span>
+      </div>
+      <p class="repo-desc">开源语音智能体平台</p>
+      <div class="repo-meta">
+        <span class="lang-badge">Python</span>
+        <span class="stat">⭐ 1,520</span><span class="stat today">📈 236 today</span><span class="stat">🍴 346</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/K-Dense-AI/scientific-agent-skills" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">K-Dense-AI /</span>
+        <span class="repo-name">scientific-agent-skills</span>
+      </div>
+      <p class="repo-desc">一套即用型智能体技能，适用于研究、科学、工程、分析、金融和写作。</p>
+      <div class="repo-meta">
+        <span class="lang-badge">Python</span>
+        <span class="stat">⭐ 23,706</span><span class="stat today">📈 764 today</span><span class="stat">🍴 2,530</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/Light-Heart-Labs/DreamServer" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">Light-Heart-Labs /</span>
+        <span class="repo-name">DreamServer</span>
+      </div>
+      <p class="repo-desc">面向所有人的本地 AI，无处不在——LLM 推理、聊天界面、语音、智能体、工作流、RAG 和图像生成。无需云端，无需订阅。</p>
+      <div class="repo-meta">
+        <span class="lang-badge">Python</span>
+        <span class="stat">⭐ 1,047</span><span class="stat today">📈 89 today</span><span class="stat">🍴 198</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/KeygraphHQ/shannon" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">KeygraphHQ /</span>
+        <span class="repo-name">shannon</span>
+      </div>
+      <p class="repo-desc">Shannon Lite 是一款自主、白盒 AI 渗透测试工具，用于 Web 应用和 API。它分析你的源代码，识别攻击向量，并执行真实漏洞利用，在进入生产环境前证明漏洞。</p>
+      <div class="repo-meta">
+        <span class="lang-badge">TypeScript</span>
+        <span class="stat">⭐ 42,597</span><span class="stat today">📈 213 today</span><span class="stat">🍴 4,865</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/TryGhost/Ghost" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">TryGhost /</span>
+        <span class="repo-name">Ghost</span>
+      </div>
+      <p class="repo-desc">面向现代出版、会员、订阅和新闻通讯的独立技术。</p>
+      <div class="repo-meta">
+        <span class="lang-badge">JavaScript</span>
+        <span class="stat">⭐ 53,184</span><span class="stat today">📈 209 today</span><span class="stat">🍴 11,603</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/medusajs/medusa" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">medusajs /</span>
+        <span class="repo-name">medusa</span>
+      </div>
+      <p class="repo-desc">世界上最灵活的商业平台。</p>
+      <div class="repo-meta">
+        <span class="lang-badge">TypeScript</span>
+        <span class="stat">⭐ 33,363</span><span class="stat today">📈 200 today</span><span class="stat">🍴 4,457</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/knadh/listmonk" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">knadh /</span>
+        <span class="repo-name">listmonk</span>
+      </div>
+      <p class="repo-desc">高性能、可自托管的新闻通讯和邮件列表管理器，配备现代化仪表板。单二进制应用。</p>
+      <div class="repo-meta">
+        <span class="lang-badge">Go</span>
+        <span class="stat">⭐ 20,472</span><span class="stat today">📈 222 today</span><span class="stat">🍴 2,136</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/plausible/analytics" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">plausible /</span>
+        <span class="repo-name">analytics</span>
+      </div>
+      <p class="repo-desc">开源、隐私优先的网站分析工具。轻量级、无 Cookie 的 Google Analytics 替代品。可自托管或云端部署。</p>
+      <div class="repo-meta">
+        <span class="lang-badge">Elixir</span>
+        <span class="stat">⭐ 25,262</span><span class="stat today">📈 128 today</span><span class="stat">🍴 1,448</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/colbymchenry/codegraph" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">colbymchenry /</span>
+        <span class="repo-name">codegraph</span>
+      </div>
+      <p class="repo-desc">为 Claude Code 准备的预索引代码知识图谱——更少 token，更少工具调用，100% 本地</p>
+      <div class="repo-meta">
+        <span class="lang-badge">TypeScript</span>
+        <span class="stat">⭐ 3,159</span><span class="stat today">📈 860 today</span><span class="stat">🍴 251</span>
+      </div>
+    </a>
+
+    <a class="repo-card" href="https://github.com/microsoft/ai-agents-for-beginners" target="_blank" rel="noopener">
+      <div class="repo-header">
+        <span class="repo-owner">microsoft /</span>
+        <span class="repo-name">ai-agents-for-beginners</span>
+      </div>
+      <p class="repo-desc">开始构建 AI 智能体的 12 节课</p>
+      <div class="repo-meta">
+        <span class="lang-badge">Jupyter Notebook</span>
+        <span class="stat">⭐ 62,353</span><span class="stat today">📈 180 today</span><span class="stat">🍴 21,007</span>
+      </div>
+    </a>
+    </div>
+  </div>
+
+  <div class="page-counter" style="text-align:center;padding:24px 0 8px;font-size:13px;color:rgba(255,255,255,0.2)">
+    本页被阅读 <span id="page-count">...</span> 次
+  </div>
+
+  <div class="footer">
+    <a href="https://github.com/LiHongwei-cn/lihongwei-cn" target="_blank">GitHub</a>
+    &nbsp;·&nbsp; 数据来源：GitHub Trending
+    &nbsp;·&nbsp; LiHongwei
+  </div>
+
+</div>
+
+<script>
+(async function(){
+  try {
+    let r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json');
+    let s = await r.json();
+    document.getElementById('page-count').textContent = s['github-trending'] || '...';
+  } catch(e) {
+    document.getElementById('page-count').textContent = '...';
+  }
+})();
+</script>
+<img src="https://api.counterapi.dev/v1/lihongwei-cn/github-trending/up" style="display:none" alt="" />
+</body>
+</html>

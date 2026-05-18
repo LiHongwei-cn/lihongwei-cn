@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.lihongwei.daily-trending</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/huangpeng/Desktop/lihongwei-cn/github-trending/auto_run.sh</string>
+    </array>
+
+    <!-- 每天北京时间 8:00 (UTC 0:00) -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>0</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <!-- 日志输出 -->
+    <key>StandardOutPath</key>
+    <string>/Users/huangpeng/Desktop/lihongwei-cn/github-trending/cron.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/Users/huangpeng/Desktop/lihongwei-cn/github-trending/cron_error.log</string>
+
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>

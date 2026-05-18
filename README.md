@@ -24,7 +24,7 @@ MATLAB 仿真 · AI 工具开发
 ├── vpn-guide/             免费 VPN 自建指南（零度解说教程）
 ├── starter-kit/           通用安装包源码（开源模板）
 ├── bot/                   Telegram 机器人（DeepSeek 直接回复）
-├── tools/                 工具脚本（自动保存、启动脚本等）
+├── tools/                 工具脚本（Claude Code.app 启动器、自动保存）
 ├── matlab/                MATLAB/Simulink 仿真代码 (R2016b)
 │   ├── examples/          可运行示例脚本
 │   ├── carsim/            CarSim 联合仿真模型
@@ -89,7 +89,7 @@ Claude Code 的完整入门教程。Mac / Windows 双平台，有魔法没魔法
 - **安装 Claude Code**：Mac（官方命令 / Homebrew）+ Windows（官方命令 / WinGet）
 - **接入国产模型**：DeepSeek API 直连，不需要 Claude 账号、不需要魔法
 - **CLAUDE.md 规范**：全局 + 项目级约束体系配置
-- **桌面快捷方式**：Windows 双击启动脚本
+- **桌面快捷方式**：macOS 拖入 Dock / Windows .bat 双击启动
 - **Telegram 机器人**：DeepSeek 驱动的 AI 机器人完整搭建
 
 🔗 [查看完整教程](https://lihongwei-cn.github.io/claude-code-tutorial/)

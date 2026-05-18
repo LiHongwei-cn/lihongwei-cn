@@ -1,22 +1,12 @@
 #!/bin/bash
-# Claude Code Desktop Launcher for macOS
-# Double-click to launch Claude Code in Terminal
-# Or run: chmod +x claude-desktop.command && open claude-desktop.command
-
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-WORK_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+cd "$PROJECT_DIR" || exit 1
 
-export CLAUDE_CODE_ENTRYPOINT=cli
-
-cd "$WORK_DIR" || exit 1
-
-# Check if claude is available
-if ! command -v claude &> /dev/null; then
-    echo "ERROR: 'claude' command not found."
-    echo "Install Claude Code first: brew install claude-code"
-    echo "Or: npm install -g @anthropic-ai/claude-code"
-    read -p "Press Enter to close..."
+if ! command -v claude &>/dev/null; then
+    osascript -e 'display dialog "claude 命令未找到，请先安装：npm install -g @anthropic-ai/claude-code" buttons {"OK"} default button "OK" with icon stop'
     exit 1
 fi
 
+export CLAUDE_CODE_ENTRYPOINT=cli
 claude --dangerously-skip-permissions --no-chrome
