@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: bp-monitor
+    rootDir: bp-monitor
+    runtime: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DEEPSEEK_API_KEY
+        sync: false
+      - key: WECHAT_APPID
+        sync: false
+      - key: WECHAT_SECRET
+        sync: false
+      - key: CRON_SECRET_TOKEN
+        sync: false
