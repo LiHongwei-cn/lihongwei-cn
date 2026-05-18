@@ -1,0 +1,101 @@
+.container {
+  padding-bottom: 40rpx;
+}
+
+.week-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24rpx;
+  background: #fff;
+  border-bottom: 1rpx solid #eee;
+  gap: 24rpx;
+}
+
+.week-arrow {
+  font-size: 32rpx;
+  color: var(--primary);
+  padding: 12rpx;
+}
+
+.week-label {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.generate-wrap {
+  padding: 48rpx 24rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-bottom: 20rpx;
+  display: block;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16rpx;
+}
+
+.overview-item {
+  text-align: center;
+  padding: 24rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+}
+
+.overview-value {
+  font-size: 36rpx;
+  font-weight: 700;
+  display: block;
+}
+
+.overview-label {
+  font-size: 24rpx;
+  color: #888;
+  margin-top: 6rpx;
+  display: block;
+}
+
+.stats-row {
+  display: flex;
+  gap: 16rpx;
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+}
+
+.stat-value {
+  font-size: 36rpx;
+  font-weight: 700;
+  display: block;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #888;
+  margin-top: 6rpx;
+  display: block;
+}
+
+.info-row {
+  padding: 12rpx 0;
+  font-size: 30rpx;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.info-row:last-child { border-bottom: none; }
+
+.analysis-text {
+  font-size: 30rpx;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}

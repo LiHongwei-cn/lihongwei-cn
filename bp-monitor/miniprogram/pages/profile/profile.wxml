@@ -1,0 +1,73 @@
+<view class="container">
+  <!-- 用户信息卡片 -->
+  <view class="card">
+    <view class="user-header">
+      <image class="avatar" src="{{userInfo.avatar_url || '/assets/default-avatar.png'}}" mode="aspectFill" />
+      <view class="user-name">{{userInfo.nickname || '微信用户'}}</view>
+    </view>
+  </view>
+
+  <!-- 健康档案 -->
+  <view class="card">
+    <text class="section-title">健康档案</text>
+
+    <view class="form-group">
+      <text class="form-label">年龄</text>
+      <input class="form-input" type="number" placeholder="请输入年龄" value="{{age}}" bindinput="onAgeInput" />
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">性别</text>
+      <picker mode="selector" range="{{genderOptions}}" bindchange="onGenderChange">
+        <view class="picker-display">{{genderOptions[genderIndex] || '请选择'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">高血压确诊年份</text>
+      <picker mode="selector" range="{{yearOptions}}" bindchange="onYearChange">
+        <view class="picker-display">{{diagnosisYear || '请选择'}}</view>
+      </picker>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">目标血压 (mmHg)</text>
+      <view class="target-row">
+        <input class="form-input target-input" type="number" placeholder="140" value="{{targetSystolic}}" bindinput="onTargetSysInput" />
+        <text class="target-sep">/</text>
+        <input class="form-input target-input" type="number" placeholder="90" value="{{targetDiastolic}}" bindinput="onTargetDiaInput" />
+      </view>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">用药清单</text>
+      <view class="med-list">
+        <view class="med-item" wx:for="{{medications}}" wx:key="index">
+          <text>{{item.name}} {{item.dose}}（{{item.time}}）</text>
+          <text class="med-del" bindtap="delMed" data-index="{{index}}">删除</text>
+        </view>
+      </view>
+      <button class="btn-secondary" bindtap="addMed">添加用药</button>
+    </view>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="save-wrap">
+    <button class="btn-primary" bindtap="saveProfile">保存</button>
+  </view>
+
+  <!-- 免责声明 -->
+  <view class="card disclaimer-card">
+    <text class="section-title">免责声明</text>
+    <view class="disclaimer-text">
+      <text>本小程序提供的所有血压分析、趋势评估、用药提醒和健康建议均由人工智能生成，仅供参考。\n\n本小程序不构成医疗诊断、治疗建议或处方。任何关于用药、治疗方案的决定请务必咨询执业医师。\n\n如果您感到不适，请立即就医。如果您的血压达到紧急水平（收缩压≥180mmHg且伴有头痛、胸闷等症状），请立即拨打120。\n\n您的健康数据仅存储在您自己的服务器上，不会被分享给任何第三方。</text>
+    </view>
+  </view>
+
+  <!-- 退出登录 -->
+  <view class="logout-wrap">
+    <button class="btn-logout" bindtap="logout">退出登录</button>
+  </view>
+
+  <disclaimer></disclaimer>
+</view>

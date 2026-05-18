@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "历史记录",
+  "usingComponents": {
+    "bp-card": "/components/bp-card/bp-card",
+    "disclaimer": "/components/disclaimer/disclaimer"
+  }
+}

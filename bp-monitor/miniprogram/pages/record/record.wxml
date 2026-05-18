@@ -1,0 +1,103 @@
+<view class="container">
+  <view class="card">
+    <text class="section-title">请输入血压读数</text>
+
+    <!-- 收缩压 -->
+    <view class="form-group">
+      <text class="form-label">收缩压（高压）</text>
+      <input
+        class="form-input bp-input {{systolicError ? 'form-input-error' : ''}}"
+        type="number"
+        placeholder="例如 120"
+        value="{{systolic}}"
+        bindinput="onSystolicInput"
+        bindblur="validateSystolic"
+      />
+      <text class="form-error-text" wx:if="{{systolicError}}">{{systolicError}}</text>
+    </view>
+
+    <!-- 舒张压 -->
+    <view class="form-group">
+      <text class="form-label">舒张压（低压）</text>
+      <input
+        class="form-input bp-input {{diastolicError ? 'form-input-error' : ''}}"
+        type="number"
+        placeholder="例如 80"
+        value="{{diastolic}}"
+        bindinput="onDiastolicInput"
+        bindblur="validateDiastolic"
+      />
+      <text class="form-error-text" wx:if="{{diastolicError}}">{{diastolicError}}</text>
+    </view>
+
+    <!-- 心率（选填） -->
+    <view class="form-group">
+      <text class="form-label">心率 <text class="optional">（选填）</text></text>
+      <input
+        class="form-input bp-input {{heartRateError ? 'form-input-error' : ''}}"
+        type="number"
+        placeholder="例如 72"
+        value="{{heartRate}}"
+        bindinput="onHeartRateInput"
+        bindblur="validateHeartRate"
+      />
+      <text class="form-error-text" wx:if="{{heartRateError}}">{{heartRateError}}</text>
+    </view>
+
+    <!-- 测量时段 -->
+    <view class="form-group">
+      <text class="form-label">测量时段</text>
+      <view class="period-selector">
+        <view
+          class="period-btn {{timePeriod === 'morning' ? 'period-active' : ''}}"
+          bindtap="selectPeriod"
+          data-period="morning"
+        >早晨</view>
+        <view
+          class="period-btn {{timePeriod === 'afternoon' ? 'period-active' : ''}}"
+          bindtap="selectPeriod"
+          data-period="afternoon"
+        >下午</view>
+        <view
+          class="period-btn {{timePeriod === 'evening' ? 'period-active' : ''}}"
+          bindtap="selectPeriod"
+          data-period="evening"
+        >晚上</view>
+        <view
+          class="period-btn {{timePeriod === 'night' ? 'period-active' : ''}}"
+          bindtap="selectPeriod"
+          data-period="night"
+        >夜间</view>
+      </view>
+    </view>
+
+    <!-- 备注 -->
+    <view class="form-group">
+      <text class="form-label">备注 <text class="optional">（选填）</text></text>
+      <input
+        class="form-input"
+        placeholder="如：服药后、运动后..."
+        value="{{notes}}"
+        bindinput="onNotesInput"
+        maxlength="200"
+      />
+    </view>
+  </view>
+
+  <!-- 提交按钮 -->
+  <view class="submit-wrap">
+    <button
+      class="btn-primary"
+      bindtap="submit"
+      disabled="{{submitting}}"
+    >{{submitting ? '正在分析...' : '保存并查看分析'}}</button>
+  </view>
+
+  <!-- AI 分析结果 -->
+  <view class="card" wx:if="{{analysisResult}}">
+    <text class="section-title">分析结果</text>
+    <view class="analysis-content">{{analysisResult}}</view>
+  </view>
+
+  <disclaimer></disclaimer>
+</view>

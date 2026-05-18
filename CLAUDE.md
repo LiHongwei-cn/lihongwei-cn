@@ -27,14 +27,15 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## 项目概览
 
-新能源汽车工程专业 MATLAB 仿真工具包。Claude Code 直接生成 Simulink 模型和仿真代码，用户自行操作 CarSim。
+新能源汽车工程 MATLAB 仿真工具包 + 家庭血压监测微信小程序。Claude Code 直接生成 Simulink 模型和仿真代码。
 
 ## 技术栈
 
 - **MATLAB/Simulink** R2016b 兼容（车辆动力学、电机控制、FOC、能量管理）
 - **CarSim** 2019.0（用户自行联合仿真）
-- **Python** 3.12（Telegram 机器人、自动化脚本）
+- **Python** 3.12 + FastAPI（Telegram 机器人、血压监测后端、自动化脚本）
 - **HTML/CSS**（GitHub Pages 静态页面）
+- **微信小程序**（WXML/WXSS/JS，bp-monitor 前端）
 - **Shell/Batch**（启动脚本、Git 自动化）
 
 ## 目录架构
@@ -48,6 +49,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 ├── bot/                   Telegram 机器人（DeepSeek 直接回复）
 ├── matlab-tool/           安装包发布页面
 ├── starter-kit/           通用模板（开源）
+├── bp-monitor/            家庭血压监测小程序（FastAPI + SQLite + DeepSeek）
 ├── tools/                 自动化脚本
 ├── docs/                  论文、实验报告
 ├── vpn-guide/             VPN 教程页面

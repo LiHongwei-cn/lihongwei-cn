@@ -1,0 +1,15 @@
+{
+  "description": "家庭血压监测助手",
+  "packOptions": { "ignore": [] },
+  "setting": {
+    "urlCheck": true,
+    "es6": true,
+    "postcss": true,
+    "minified": true,
+    "newFeature": true
+  },
+  "compileType": "miniprogram",
+  "appid": "wx-your-appid",
+  "projectname": "bp-monitor",
+  "condition": {}
+}

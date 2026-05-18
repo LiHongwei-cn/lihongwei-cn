@@ -1,0 +1,57 @@
+<view class="container">
+  <!-- 问候语 -->
+  <view class="greeting card">
+    <text class="greeting-text">{{greeting}}</text>
+    <text class="date-text">{{todayDate}}</text>
+  </view>
+
+  <!-- 今日读数摘要 -->
+  <view class="card" wx:if="{{latestReading}}">
+    <text class="section-title">最近一次测量</text>
+    <bp-card
+      systolic="{{latestReading.systolic}}"
+      diastolic="{{latestReading.diastolic}}"
+      heartRate="{{latestReading.heart_rate}}"
+      measuredAt="{{latestReading.measured_at}}"
+      timePeriod="{{latestReading.time_period}}"
+      bpLevel="{{latestReading.bp_level}}"
+      notes="{{latestReading.notes}}"
+    />
+  </view>
+
+  <view class="card empty-state" wx:else>
+    <text>今天还没有记录血压</text>
+    <text>点击下方按钮开始记录</text>
+  </view>
+
+  <!-- 记录按钮 -->
+  <view class="record-btn-wrap">
+    <button class="btn-primary" bindtap="goRecord">记录血压</button>
+  </view>
+
+  <!-- 本周统计 -->
+  <view class="card" wx:if="{{stats.reading_count}}">
+    <text class="section-title">本周统计</text>
+    <view class="stats-row">
+      <view class="stat-item">
+        <text class="stat-value">{{stats.avg_systolic}}/{{stats.avg_diastolic}}</text>
+        <text class="stat-label">平均血压</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{stats.reading_count}}次</text>
+        <text class="stat-label">{{stats.days_with_readings}}天记录</text>
+      </view>
+    </view>
+    <view class="trend-indicator trend-{{stats.trend_direction}}" wx:if="{{stats.trend_direction === 'improving'}}">
+      <text>趋势向好 ↓ 收缩压较前段下降</text>
+    </view>
+    <view class="trend-indicator trend-worsening" wx:elif="{{stats.trend_direction === 'worsening'}}">
+      <text>注意 ↑ 收缩压较前段升高</text>
+    </view>
+    <view class="trend-indicator trend-stable" wx:elif="{{stats.trend_direction === 'stable'}}">
+      <text>血压稳定，继续保持</text>
+    </view>
+  </view>
+
+  <disclaimer></disclaimer>
+</view>
