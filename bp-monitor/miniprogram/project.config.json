@@ -1,15 +1,39 @@
 {
   "description": "家庭血压监测助手",
-  "packOptions": { "ignore": [] },
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
   "setting": {
     "urlCheck": false,
     "es6": true,
     "postcss": true,
     "minified": true,
-    "newFeature": true
+    "newFeature": true,
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "enhance": false,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
   },
   "compileType": "miniprogram",
-  "appid": "wx-your-appid",
+  "appid": "wx241f0c5210a2c1bf",
   "projectname": "bp-monitor",
-  "condition": {}
+  "condition": {},
+  "simulatorPluginLibVersion": {},
+  "editorSetting": {}
 }
