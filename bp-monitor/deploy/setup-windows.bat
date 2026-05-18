@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-cd /d "%~dp0..\backend"
+cd /d "%~dp0.."
 
 echo ========================================
 echo   家庭健康记录助手 — Windows 部署
