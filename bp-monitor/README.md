@@ -37,13 +37,23 @@ pip install -r requirements.txt
 
 ### 3. 启动后端
 
-```bash
-# 开发模式
-uvicorn main:app --reload --port 8080
+**macOS / Linux：**
 
-# 或使用部署脚本
+```bash
 bash deploy/start.sh
 ```
+
+**Windows：**
+
+```bash
+# 首次部署（安装依赖 + 配置 .env + 启动）
+deploy\setup-windows.bat
+
+# 日常启动
+deploy\start.bat
+```
+
+> Windows 详细部署说明见 [`deploy/README-windows.md`](deploy/README-windows.md)。
 
 ### 4. 配置 Nginx HTTPS 反向代理
 
