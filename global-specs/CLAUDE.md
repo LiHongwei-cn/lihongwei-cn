@@ -1,5 +1,23 @@
 # Claude Code 全局规范
 
+## Skill 自动调用（红线）
+
+所有已安装 Skill 必须自动识别、自动调用，绝不让用户手动输入 `/skill-name`。
+
+触发映射：
+- **论文/实验报告/学术写作** → `nature-writing` + `nature-polishing`
+- **画图/做图/Figure/配图** → `nature-figure`
+- **引用/参考文献/CNS引用** → `nature-citation`
+- **数据声明/FAIR/数据仓库** → `nature-data`
+- **审稿回复/Reviewer** → `nature-response`
+- **PPT/组会/答辩** → `nature-paper2ppt`
+- **论文翻译/文献精读** → `nature-reader`
+- **查文献/搜索论文** → `nature-academic-search`
+- **卡住/报错/没思路** → `蒙多`
+- **写完代码** → `code-tidy`
+- **阶段结束/收尾** → `neat-freak`
+- **新增项目页面** → `homepage-layout`
+
 ## 代码洁癖（红线）
 
 写代码如整理房间——所有东西必须在正确的位置，按顺序排列，不留冗余。

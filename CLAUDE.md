@@ -2,6 +2,23 @@
 
 This file provides guidance to Claude Code when working with code in this repository.
 
+## Skill 自动调用（红线）
+
+所有已安装 Skill 自动识别匹配，绝不手动输入 `/skill-name`：
+
+- **论文/实验报告/学术写作** → 自动调用 `nature-writing` + `nature-polishing`
+- **画图/做图/Figure/配图** → 自动调用 `nature-figure`
+- **引用/参考文献/CNS引用** → 自动调用 `nature-citation`
+- **数据声明/FAIR/数据仓库** → 自动调用 `nature-data`
+- **审稿回复/Reviewer** → 自动调用 `nature-response`
+- **PPT/组会/答辩/幻灯片** → 自动调用 `nature-paper2ppt`
+- **论文翻译/文献精读** → 自动调用 `nature-reader`
+- **查文献/搜索论文** → 自动调用 `nature-academic-search`
+- **卡住/报错/没思路** → 自动调用 `蒙多`
+- **写完代码** → 自动调用 `code-tidy`
+- **阶段结束/收尾** → 自动调用 `neat-freak`
+- **新增项目页面** → 自动调用 `homepage-layout`
+
 ## 关键信息
 
 - GitHub 仓库：`https://github.com/LiHongwei-cn/lihongwei-cn`
