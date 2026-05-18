@@ -2,7 +2,8 @@
 """GitHub Trending 爬虫 — 抓取中英文区热门仓库，生成静态报告页面"""
 
 from datetime import datetime, timezone, timedelta
-import html as html_mod
+import html
+import json
 import os
 from pathlib import Path
 import re
@@ -175,7 +176,7 @@ def translate_batch(descriptions):
                 descriptions[idx] = tl
             else:
                 break  # 行数不匹配，保守处理
-    except Exception as e:
+    except (ValueError, IndexError, KeyError) as e:
         print(f"    ⚠ 翻译失败: {e}")
 
     return descriptions
@@ -184,7 +185,7 @@ def translate_batch(descriptions):
 # ── HTML 生成 ─────────────────────────────────────────────────────
 
 def _escape(text):
-    return html_mod.escape(text or "", quote=False)
+    return html.escape(text or "", quote=False)
 
 
 def _build_repo_card(repo, accent_color):
@@ -480,7 +481,6 @@ body {{
 
 def sync_stats_json():
     """从 counterapi.dev 拉取所有页面访问量，同步到 stats.json"""
-    import json as json_mod
     stats_file = BASE_DIR.parent / "stats.json"
 
     PAGES = [
@@ -491,7 +491,7 @@ def sync_stats_json():
     try:
         stats = {}
         if stats_file.exists():
-            stats = json_mod.loads(stats_file.read_text(encoding="utf-8"))
+            stats = json.loads(stats_file.read_text(encoding="utf-8"))
 
         for page in PAGES:
             try:
@@ -506,7 +506,7 @@ def sync_stats_json():
                 continue
 
         stats_file.write_text(
-            json_mod.dumps(stats, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+            json.dumps(stats, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
             encoding="utf-8"
         )
         print(f"    stats.json 已同步: {len(PAGES)} 个页面")

@@ -60,7 +60,26 @@ SYSTEM_PROMPT = """## 身份
 ## 语言
 - 默认中文，代码、变量名用英文"""
 
+DEEPSEEK_MODEL = "deepseek-v4-pro"
 TELEGRAM_MSG_LIMIT = 4096
+
+
+async def _call_deepseek(messages: list[dict]) -> str:
+    try:
+        response = await client.chat.completions.create(
+            model=DEEPSEEK_MODEL,
+            messages=messages,
+        )
+        return response.choices[0].message.content or ""
+    except Exception as e:
+        logger.error(f"DeepSeek API 错误: {e}")
+        return "请求出错了，稍等片刻再试。"
+
+
+async def _reply_with_typing(update: Update, context, chat_id: int, reply: str):
+    await context.bot.send_chat_action(chat_id=chat_id, action="typing")
+    for chunk in _split_long_msg(reply):
+        await update.message.reply_text(chunk)
 
 
 def _split_long_msg(text: str) -> list[str]:
@@ -86,32 +105,19 @@ async def start_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_msg = update.message.text
-    logger.info(f"收到消息 chat_id={update.effective_chat.id}: {user_msg[:80]}")
+    chat_id = update.effective_chat.id
+    logger.info(f"收到消息 chat_id={chat_id}: {user_msg[:80]}")
 
-    await context.bot.send_chat_action(
-        chat_id=update.effective_chat.id, action="typing"
-    )
-
-    try:
-        response = await client.chat.completions.create(
-            model="deepseek-v4-pro",
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_msg},
-            ],
-        )
-        reply = response.choices[0].message.content or ""
-    except Exception as e:
-        logger.error(f"DeepSeek API 错误: {e}")
-        reply = "请求出错了，稍等片刻再试。"
-
-    for chunk in _split_long_msg(reply):
-        await update.message.reply_text(chunk)
+    reply = await _call_deepseek([
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": user_msg},
+    ])
+    await _reply_with_typing(update, context, chat_id, reply)
 
 
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     caption = update.message.caption or ""
-
+    chat_id = update.effective_chat.id
     photo = update.message.photo[-1]
     file = await context.bot.get_file(photo.file_id)
     photo_bytes = await file.download_as_bytearray()
@@ -126,25 +132,11 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if caption:
         user_content.insert(0, {"type": "text", "text": caption})
 
-    await context.bot.send_chat_action(
-        chat_id=update.effective_chat.id, action="typing"
-    )
-
-    try:
-        response = await client.chat.completions.create(
-            model="deepseek-v4-pro",
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": user_content},
-            ],
-        )
-        reply = response.choices[0].message.content or ""
-    except Exception as e:
-        logger.error(f"DeepSeek 图片处理错误: {e}")
-        reply = "图片处理出错了，稍等片刻再试。"
-
-    for chunk in _split_long_msg(reply):
-        await update.message.reply_text(chunk)
+    reply = await _call_deepseek([
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": user_content},
+    ])
+    await _reply_with_typing(update, context, chat_id, reply)
 
 
 async def unknown_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):

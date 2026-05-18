@@ -2,20 +2,16 @@
 # GitHub Trending 自动运行脚本（供 launchd 定时任务调用）
 # 此脚本会加载用户的 shell 环境变量，然后运行爬虫并提交到 GitHub
 
-set -e
+set -euo pipefail
 
-# 加载 shell 环境变量（包括 DEEPSEEK_API_KEY）
-if [ -f "$HOME/.zshrc" ]; then
-    source "$HOME/.zshrc" 2>/dev/null || true
-elif [ -f "$HOME/.bashrc" ]; then
-    source "$HOME/.bashrc" 2>/dev/null || true
-fi
-if [ -f "$HOME/.bash_profile" ]; then
-    source "$HOME/.bash_profile" 2>/dev/null || true
-fi
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+TRENDING_DIR="$SCRIPT_DIR"
 
-PROJECT_DIR="$HOME/Desktop/lihongwei-cn"
-TRENDING_DIR="$PROJECT_DIR/github-trending"
+# 环境变量由 launchd plist 的 EnvironmentVariables 注入，或从 shell RC 文件加载
+if [ -z "${DEEPSEEK_API_KEY:-}" ]; then
+    echo "WARNING: DEEPSEEK_API_KEY 未设置，翻译功能将不可用"
+fi
 
 cd "$TRENDING_DIR"
 

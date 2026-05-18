@@ -3,8 +3,9 @@
 运行: python3 -m pytest test_bot.py -v
 """
 import os
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-from unittest.mock import AsyncMock, patch, MagicMock
 
 os.environ.setdefault("TELEGRAM_TOKEN", "PLACEHOLDER_TELEGRAM_TOKEN")
 os.environ.setdefault("DEEPSEEK_API_KEY", "PLACEHOLDER_DEEPSEEK_KEY")
@@ -79,9 +80,10 @@ async def test_start_command():
 # ─── 文字消息 ───
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_handle_message_success():
-    """真实调用 DeepSeek API"""
+    """真实调用 DeepSeek API — 跳过: pytest -m 'not integration'"""
     update = make_mock_update("什么是FOC控制？一句话回答")
     ctx = make_mock_context()
 

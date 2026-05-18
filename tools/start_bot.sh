@@ -21,6 +21,7 @@ fi
 python3 tools/autosave.py &
 python3 bot/tgbot.py &
 
-echo "Bot 已在后台启动。"
+echo "自动保存和 Bot 已在后台启动。"
 echo "查看进程: ps aux | grep tgbot"
-read -p "按 Enter 关闭..."
+echo "按 Ctrl+C 停止所有服务"
+wait

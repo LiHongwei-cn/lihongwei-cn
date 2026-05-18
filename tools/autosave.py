@@ -20,7 +20,8 @@ os.chdir(WATCH_DIR)
 
 
 def should_ignore(path: str) -> bool:
-    return any(p in path for p in IGNORE_PATTERNS)
+    parts = path.replace("\\", "/").split("/")
+    return any(p in parts for p in IGNORE_PATTERNS)
 
 
 def has_changes() -> bool:
@@ -40,7 +41,7 @@ def auto_save():
     if PROXY:
         env["HTTPS_PROXY"] = PROXY
 
-    subprocess.run(["git", "add", "."], env=env, capture_output=True)
+    subprocess.run(["git", "add", "-u", "."], env=env, capture_output=True)
 
     result = subprocess.run(
         ["git", "diff", "--cached", "--quiet"],
@@ -49,10 +50,13 @@ def auto_save():
     if result.returncode == 0:
         return  # 没有实际变更
 
-    subprocess.run(
+    commit = subprocess.run(
         ["git", "commit", "-m", f"autosave {timestamp}"],
         env=env, capture_output=True
     )
+    if commit.returncode != 0:
+        print(f"[{timestamp}] ✗ commit 失败: {commit.stderr.strip()}")
+        return
 
     push = subprocess.run(
         ["git", "push"], env=env, capture_output=True, text=True

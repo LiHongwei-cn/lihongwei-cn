@@ -13,6 +13,6 @@ def get_env(key: str) -> str:
         if val:
             os.environ[key] = val
             return val
-    except Exception:
+    except (OSError, ImportError):
         pass
     raise KeyError(f"{key} 未设置，请配置环境变量或在 bot/.env 文件中设置")

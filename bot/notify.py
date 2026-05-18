@@ -16,6 +16,9 @@ def send_telegram(text: str):
         return
 
     chat_id = CHAT_ID_FILE.read_text().strip()
+    if not chat_id:
+        print("chat_id 为空，跳过通知")
+        return
     data = urlencode({"chat_id": chat_id, "text": text}).encode()
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
 

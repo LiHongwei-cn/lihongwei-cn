@@ -437,14 +437,7 @@ copy project-CLAUDE.md $env:USERPROFILE\Desktop\lihongwei-cn\CLAUDE.md</div>
     let s = await r.json();
     document.getElementById('page-count').textContent = s['claude-code-tutorial'] || '...';
   } catch(e) {
-    // 降级：从 stats.json 读取
-    try {
-      let r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json');
-      let s = await r.json();
-      document.getElementById('page-count').textContent = d['claude-code-tutorial'] || '...';
-    } catch(e2) {
-      document.getElementById('page-count').textContent = '...';
-    }
+    document.getElementById('page-count').textContent = '...';
   }
 })();
 </script>
