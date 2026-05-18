@@ -19,5 +19,4 @@ if [ -z "$CRON_SECRET_TOKEN" ]; then
 fi
 
 echo "[启动] 血压监测助手 API 服务..."
-cd backend
-exec uvicorn main:app --host 0.0.0.0 --port 8080 --workers 2
+exec uvicorn backend.main:app --host 0.0.0.0 --port 8080 --workers 2
