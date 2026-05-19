@@ -14,3 +14,5 @@ services:
         sync: false
       - key: CRON_SECRET_TOKEN
         sync: false
+      - key: DEV_MODE
+        value: "false"
