@@ -12,18 +12,12 @@ DEV_OPENID = "dev_preview_user"
 
 @router.post("/login", response_model=TokenResponse)
 async def login(body: LoginRequest, conn=Depends(get_db)):
-    is_mock = DEV_MODE and (
-        "mock" in body.code.lower()
-        or "the code is" in body.code.lower()
-        or body.code.startswith("0x")
-        or body.code == "dev_preview_fallback"
-    )
-    if is_mock:
+    if DEV_MODE:
         openid = DEV_OPENID
     else:
         try:
             wx_data = await code2session(body.code)
-        except RuntimeError as e:
+        except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
         openid = wx_data["openid"]
 
