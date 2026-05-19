@@ -37,7 +37,7 @@ async def login(body: LoginRequest, conn=Depends(get_db)):
         ).fetchone()
     else:
         token = generate_token()
-        default_nickname = "开发预览用户" if is_mock else None
+        default_nickname = "开发预览用户" if DEV_MODE else None
         conn.execute(
             "INSERT INTO users (openid, session_token, nickname) VALUES (?, ?, ?)",
             (openid, token, default_nickname),
