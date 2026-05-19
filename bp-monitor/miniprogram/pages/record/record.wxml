@@ -1,0 +1,61 @@
+<view class="container">
+  <view class="card">
+    <text class="section-title">记录血压</text>
+
+    <view class="form-group">
+      <text class="form-label">收缩压 (mmHg)</text>
+      <input class="form-input {{systolicError ? 'form-input-error' : ''}}"
+        type="digit" placeholder="例如 120" value="{{systolic}}"
+        bindinput="onSystolicInput" bindblur="validateSys" />
+      <text class="form-error-text" wx:if="{{systolicError}}">{{systolicError}}</text>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">舒张压 (mmHg)</text>
+      <input class="form-input {{diastolicError ? 'form-input-error' : ''}}"
+        type="digit" placeholder="例如 80" value="{{diastolic}}"
+        bindinput="onDiastolicInput" bindblur="validateDia" />
+      <text class="form-error-text" wx:if="{{diastolicError}}">{{diastolicError}}</text>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">心率 (bpm，选填)</text>
+      <input class="form-input {{heartRateError ? 'form-input-error' : ''}}"
+        type="digit" placeholder="例如 72" value="{{heartRate}}"
+        bindinput="onHeartRateInput" bindblur="validateHR" />
+      <text class="form-error-text" wx:if="{{heartRateError}}">{{heartRateError}}</text>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">测量时段</text>
+      <view class="period-selector">
+        <view class="period-option {{timePeriod === 'morning' ? 'active' : ''}}"
+          data-period="morning" bindtap="selectPeriod">早晨</view>
+        <view class="period-option {{timePeriod === 'afternoon' ? 'active' : ''}}"
+          data-period="afternoon" bindtap="selectPeriod">下午</view>
+        <view class="period-option {{timePeriod === 'evening' ? 'active' : ''}}"
+          data-period="evening" bindtap="selectPeriod">晚上</view>
+        <view class="period-option {{timePeriod === 'night' ? 'active' : ''}}"
+          data-period="night" bindtap="selectPeriod">夜间</view>
+      </view>
+    </view>
+
+    <view class="form-group">
+      <text class="form-label">备注（选填）</text>
+      <textarea class="form-textarea" placeholder="服药情况、身体感受等..."
+        value="{{notes}}" bindinput="onNotesInput" maxlength="200" />
+    </view>
+
+    <button class="btn-primary" bindtap="submit"
+      disabled="{{submitting}}" loading="{{submitting}}">
+      {{submitting ? '提交中...' : '保存记录'}}
+    </button>
+  </view>
+
+  <view class="card" wx:if="{{analysis}}">
+    <text class="section-title">AI 分析结果</text>
+    <view class="analysis-content">{{analysis}}</view>
+  </view>
+
+  <disclaimer></disclaimer>
+</view>
