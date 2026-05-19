@@ -43,7 +43,7 @@
       <text class="nav-label">周报分析</text>
     </view>
     <view class="nav-item" bindtap="goProfile">
-      <text class="nav-icon">👤</text>
+      <text class="nav-icon nav-icon-profile"></text>
       <text class="nav-label">健康档案</text>
     </view>
   </view>
