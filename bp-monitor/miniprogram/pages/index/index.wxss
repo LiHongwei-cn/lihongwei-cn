@@ -69,3 +69,31 @@
 .trend-improving { background: #e6f4ea; color: #2c7a4f; }
 .trend-worsening { background: #fce8e6; color: #d93025; }
 .trend-stable { background: #e8f0fe; color: #1a73e8; }
+
+/* 快捷入口 */
+.nav-grid {
+  display: flex;
+  padding: 0 24rpx;
+  margin-bottom: 8rpx;
+  gap: 16rpx;
+}
+
+.nav-item {
+  flex: 1;
+  text-align: center;
+  padding: 28rpx 16rpx;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+}
+
+.nav-icon {
+  display: block;
+  font-size: 48rpx;
+  margin-bottom: 10rpx;
+}
+
+.nav-label {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
