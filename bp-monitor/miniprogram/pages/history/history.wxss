@@ -1,0 +1,49 @@
+.filter-bar {
+  display: flex;
+  margin: 20rpx 24rpx;
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 8rpx;
+}
+
+.filter-tab {
+  flex: 1;
+  height: 64rpx;
+  line-height: 64rpx;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  border-radius: 12rpx;
+}
+
+.filter-tab.active {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.readings-list {
+  padding: 0 24rpx;
+}
+
+.load-more {
+  text-align: center;
+  padding: 20rpx 0 40rpx;
+}
+
+.btn-load-more {
+  background: #fff;
+  border: 2rpx solid var(--border);
+  border-radius: var(--radius);
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 30rpx;
+  color: var(--text-secondary);
+}
+
+.list-end {
+  text-align: center;
+  padding: 40rpx 0;
+  font-size: 26rpx;
+  color: var(--text-light);
+}
