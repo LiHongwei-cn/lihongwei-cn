@@ -19,7 +19,7 @@
   <view class="loading-text" wx:if="{{loading}}"><text>加载中...</text></view>
 
   <!-- 读数列表 -->
-  <view wx:if="{{readings.length > 0}}">
+  <view wx:if="{{readings.length > 0}}" wx:else>
     <view wx:for="{{readings}}" wx:key="id">
       <bp-card
         systolic="{{item.systolic}}"
