@@ -3,22 +3,25 @@ App({
     token: '',
     userInfo: null,
 
-    // 开发模式：直连本地后端（需在微信开发者工具 → 详情 → 本地设置 → 勾选"不校验合法域名"）
+    // 运行环境（onLaunch 自动检测）
+    isDevtools: false,
+
+    // 开发者工具直连本地后端
     devApiBase: 'http://localhost:8080/api',
 
-    // 生产隧道地址（由 tunnel_daemon.py 自动更新）
-    tunnelApiBase: 'https://e551720ee9393b.lhr.life/api',
-
-    // true = 开发模式连本地，false = 通过隧道连生产
-    useDevServer: true,
+    // 真机走隧道（由 tunnel_daemon.py 自动更新域名）
+    tunnelApiBase: 'https://42aacead3b236f.lhr.life/api',
 
     get apiBase() {
-      return this.useDevServer ? this.devApiBase : this.tunnelApiBase;
+      return this.isDevtools ? this.devApiBase : this.tunnelApiBase;
     }
   },
 
   onLaunch() {
-    const token = wx.getStorageSync('token');
+    var sys = wx.getSystemInfoSync();
+    this.globalData.isDevtools = sys.platform === 'devtools';
+
+    var token = wx.getStorageSync('token');
     if (token) {
       this.globalData.token = token;
       this.checkLogin();
@@ -30,16 +33,15 @@ App({
     wx.request({
       url: this.globalData.apiBase + '/auth/check',
       header: { Authorization: 'Bearer ' + this.globalData.token },
-      success: (res) => {
+      success: function (res) {
         if (res.data && res.data.valid) {
-          this.globalData.userInfo = res.data.user;
+          getApp().globalData.userInfo = res.data.user;
         } else {
-          this.clearLogin();
+          getApp().clearLogin();
         }
       },
-      fail: () => {
-        // token 校验失败不立即清除，可能是网络问题
-        // 下次 onShow 会重新尝试
+      fail: function () {
+        // 网络波动，不清除登录态，下次 onShow 重试
       }
     });
   },
