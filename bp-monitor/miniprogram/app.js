@@ -6,14 +6,14 @@ App({
     // 运行环境（onLaunch 自动检测）
     isDevtools: false,
 
-    // 开发者工具直连本地后端
+    // 开发工具直连本地后端
     devApiBase: 'http://localhost:8080/api',
 
-    // 真机走隧道（由 tunnel_daemon.py 自动更新域名）
-    tunnelApiBase: 'https://c2e21fd225c610.lhr.life/api',
+    // 正式环境 — Render 云部署（稳定 HTTPS，可加入微信白名单）
+    prodApiBase: 'https://bp-monitor.onrender.com/api',
 
     get apiBase() {
-      return this.isDevtools ? this.devApiBase : this.tunnelApiBase;
+      return this.isDevtools ? this.devApiBase : this.prodApiBase;
     }
   },
 
@@ -30,14 +30,15 @@ App({
 
   checkLogin() {
     if (!this.globalData.token) return;
+    var app = this;
     wx.request({
       url: this.globalData.apiBase + '/auth/check',
       header: { Authorization: 'Bearer ' + this.globalData.token },
       success: function (res) {
         if (res.data && res.data.valid) {
-          getApp().globalData.userInfo = res.data.user;
+          app.globalData.userInfo = res.data.user;
         } else {
-          getApp().clearLogin();
+          app.clearLogin();
         }
       },
       fail: function () {
