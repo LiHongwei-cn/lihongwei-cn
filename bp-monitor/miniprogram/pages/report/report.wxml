@@ -1,23 +1,23 @@
 <view class="container">
   <!-- 周选择 -->
   <view class="week-selector">
-    <view class="week-arrow" bindtap="prevWeek">◀</view>
+    <view class="week-arrow" bindtap="prevWeek">&#9664;</view>
     <view class="week-label">{{weekStart}} ~ {{weekEnd}}</view>
-    <view class="week-arrow" bindtap="nextWeek">▶</view>
+    <view class="week-arrow" bindtap="nextWeek">&#9654;</view>
   </view>
 
   <!-- 加载中 -->
   <view class="loading-text" wx:if="{{loading}}">加载中...</view>
 
   <!-- 生成按钮 -->
-  <view class="generate-wrap" wx:if="{{!report}}">
+  <view class="generate-wrap" wx:elif="{{!report}}">
     <button class="btn-primary" bindtap="generateReport" loading="{{generating}}">
       {{generating ? '正在生成报告...' : '生成本周报告'}}
     </button>
   </view>
 
   <!-- 报告内容 -->
-  <view wx:if="{{report}}">
+  <view wx:else>
     <!-- 概览卡片 -->
     <view class="card">
       <text class="section-title">本周概览</text>
