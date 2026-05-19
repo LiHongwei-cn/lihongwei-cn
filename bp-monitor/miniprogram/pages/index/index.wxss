@@ -101,13 +101,8 @@
 }
 
 .nav-icon-history { background: #5b8def; }
-.nav-icon-history::after { content: '史'; }
-
 .nav-icon-report { background: #34a853; }
-.nav-icon-report::after { content: '报'; }
-
 .nav-icon-profile { background: #ea820a; }
-.nav-icon-profile::after { content: '我'; }
 
 .nav-label {
   font-size: 26rpx;
