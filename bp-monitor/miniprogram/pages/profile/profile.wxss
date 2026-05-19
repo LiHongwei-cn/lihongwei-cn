@@ -1,0 +1,127 @@
+.profile-header {
+  text-align: center;
+  padding: 48rpx 32rpx;
+}
+
+.avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: var(--primary);
+  margin: 0 auto 16rpx;
+  overflow: hidden;
+}
+
+.avatar image {
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-letter {
+  display: block;
+  line-height: 120rpx;
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+}
+
+.nickname {
+  font-size: 36rpx;
+  font-weight: 600;
+}
+
+.picker-view {
+  height: 88rpx;
+  line-height: 88rpx;
+  padding: 0 24rpx;
+  border: 2rpx solid var(--border);
+  border-radius: var(--radius);
+  font-size: 30rpx;
+  color: var(--text);
+}
+
+.target-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.target-input {
+  flex: 1;
+}
+
+.target-sep {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.med-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.med-header .section-title { margin-bottom: 0; }
+
+.add-med {
+  font-size: 28rpx;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.med-empty {
+  text-align: center;
+  color: var(--text-light);
+  padding: 32rpx;
+  font-size: 28rpx;
+}
+
+.med-item {
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.med-item:last-child { border-bottom: none; }
+
+.med-row {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.med-name { flex: 3; }
+.med-dose { flex: 2; }
+
+.med-row2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.med-time { font-size: 26rpx; }
+
+.del-med {
+  font-size: 26rpx;
+  color: var(--danger);
+}
+
+.action-area {
+  margin: 24rpx;
+}
+
+.btn-logout {
+  display: block;
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: #fff;
+  color: var(--text-secondary);
+  font-size: 32rpx;
+  border: 2rpx solid var(--border);
+  border-radius: var(--radius);
+  margin-top: 20rpx;
+  text-align: center;
+}
