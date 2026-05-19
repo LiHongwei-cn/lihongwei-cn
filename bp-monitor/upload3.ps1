@@ -1,107 +1,63 @@
-# Use UI Automation to find and click the Upload button in WeChat IDE
+# Simplified approach: try multiple keyboard shortcuts for upload
 Add-Type -AssemblyName System.Windows.Forms
-Add-Type -AssemblyName UIAutomationClient
-Add-Type -AssemblyName UIAutomationTypes
 
-$automation = [System.Windows.Automation.AutomationElement]
-$desktop = $automation::RootElement
+# Wait for things to settle
+Start-Sleep -Seconds 2
 
-# Find the WeChat IDE window
-$condition = New-Object System.Windows.Automation.PropertyCondition(
-    [System.Windows.Automation.AutomationElement]::NameProperty,
-    "bp-monitor"
-)
-$ideWindow = $desktop::FindFirst([System.Windows.Automation.TreeScope]::Children, $condition)
-
-if ($ideWindow -eq $null) {
-    # Try finding WeChat IDE main window
-    $condition2 = New-Object System.Windows.Automation.PropertyCondition(
-        [System.Windows.Automation.AutomationElement]::NameProperty,
-        "微信开发者工具"
-    )
-    $ideWindow = $desktop::FindFirst([System.Windows.Automation.TreeScope]::Children, $condition2)
-}
-
-if ($ideWindow -eq $null) {
-    Write-Host "Could not find IDE window"
+# Activate the IDE window - use Alt+TAB simulation or process activation
+$procs = Get-Process -Name "wechatdevtools" | Where-Object { $_.MainWindowTitle -like "*bp-monitor*" }
+if ($procs.Count -eq 0) {
+    Write-Host "IDE window not found"
     exit 1
 }
 
-Write-Host "Found IDE window: $($ideWindow.Current.Name)"
+$proc = $procs[0]
+Write-Host "Found IDE: $($proc.MainWindowTitle)"
 
-# Focus the window
-$ideWindow.SetFocus()
+# Try approach: click in the middle of the IDE window, then navigate via keyboard
+# First, set focus to IDE window by using its process
+$proc.Refresh()
 Start-Sleep -Milliseconds 500
 
-# Search for "Upload" button - check all toolbar buttons
-# In WeChat IDE, the upload button might be labeled "上传" or have a tooltip
-$buttonCondition = New-Object System.Windows.Automation.PropertyCondition(
-    [System.Windows.Automation.AutomationElement]::ControlTypeProperty,
-    [System.Windows.Automation.ControlType]::Button
-)
+# Method 1: Try Alt+Shift+U (common WeChat IDE upload shortcut)
+Write-Host "Method 1: Alt+Shift+U"
+[System.Windows.Forms.SendKeys]::SendWait('%+U')
+Start-Sleep -Seconds 2
+# Check if dialog opened by trying to type
+[System.Windows.Forms.SendKeys]::SendWait('{ESC}')
+Start-Sleep -Milliseconds 300
 
-$allButtons = $ideWindow.FindAll([System.Windows.Automation.TreeScope]::Descendants, $buttonCondition)
+# Method 2: Alt then P then U (Project menu -> Upload)
+Write-Host "Method 2: Alt, P, U"
+[System.Windows.Forms.SendKeys]::SendWait('%')
+Start-Sleep -Milliseconds 300
+[System.Windows.Forms.SendKeys]::SendWait('P')
+Start-Sleep -Milliseconds 500
+[System.Windows.Forms.SendKeys]::SendWait('U')
+Start-Sleep -Seconds 2
+# Try to fill version
+[System.Windows.Forms.SendKeys]::SendWait('1.0.2')
+Start-Sleep -Milliseconds 300
+[System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
+Start-Sleep -Seconds 2
 
-Write-Host "Found $($allButtons.Count) buttons"
-$uploadBtn = $null
-
-foreach ($btn in $allButtons) {
-    $name = $btn.Current.Name
-    $autoId = $btn.Current.AutomationId
-    $helpText = $btn.Current.HelpText
-
-    if ($name -or $autoId) {
-        Write-Host "  Button: name='$name' autoId='$autoId' helpText='$helpText'"
-    }
-
-    # Look for upload button
-    if ($name -like "*上传*" -or $name -like "*upload*" -or $name -like "*Upload*" -or
-        $autoId -like "*upload*" -or $helpText -like "*上传*" -or $helpText -like "*upload*") {
-        $uploadBtn = $btn
-        Write-Host "  >>> FOUND UPLOAD BUTTON: $name"
-        break
-    }
-}
-
-if ($uploadBtn -eq $null) {
-    # Try invoking via shortcut: Ctrl+Shift+U didn't work, try the toolbar
-    # In some versions, the upload button is a ToolBar button without automation name
-    # Let's try keyboard navigation: Alt then navigate
-    Write-Host "Upload button not found via automation. Trying keyboard method..."
-
-    # Try Alt+P for Project menu, then U for Upload
-    [System.Windows.Forms.SendKeys]::SendWait('%PU')
-    Start-Sleep -Seconds 3
-
-    # Try if dialog appeared
-    [System.Windows.Forms.SendKeys]::SendWait('1.0.2')
-    Start-Sleep -Milliseconds 200
-    [System.Windows.Forms.SendKeys]::SendWait('{TAB}')
-    Start-Sleep -Milliseconds 200
-    [System.Windows.Forms.SendKeys]::SendWait('loading states, pull-refresh, medication edit, quick nav')
-    Start-Sleep -Milliseconds 200
-    [System.Windows.Forms.SendKeys]::SendWait('{TAB}')
-    Start-Sleep -Milliseconds 200
-    [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
-    Write-Host "Sent keyboard sequence: Alt+P, U, version, desc, Enter"
-} else {
-    # Click the upload button
-    $invokePattern = $uploadBtn.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern)
-    if ($invokePattern) {
-        $invokePattern.Invoke()
-        Write-Host "Clicked Upload button!"
-        Start-Sleep -Seconds 2
-
-        # Now the upload dialog should be open
-        [System.Windows.Forms.SendKeys]::SendWait('1.0.2')
-        Start-Sleep -Milliseconds 200
-        [System.Windows.Forms.SendKeys]::SendWait('{TAB}')
-        Start-Sleep -Milliseconds 200
-        [System.Windows.Forms.SendKeys]::SendWait('optimized: loading states, pull-refresh, medication edit, quick nav')
-        Start-Sleep -Milliseconds 300
-        [System.Windows.Forms.SendKeys]::SendWait('{TAB}')
-        Start-Sleep -Milliseconds 200
-        [System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
-        Write-Host "Filled upload dialog and submitted"
-    }
-}
+# Method 3: Alt then T then U (Tools menu -> Upload)
+Write-Host "Method 3: Alt, T, U"
+[System.Windows.Forms.SendKeys]::SendWait('{ESC}')
+Start-Sleep -Milliseconds 300
+[System.Windows.Forms.SendKeys]::SendWait('%')
+Start-Sleep -Milliseconds 300
+[System.Windows.Forms.SendKeys]::SendWait('T')
+Start-Sleep -Milliseconds 500
+[System.Windows.Forms.SendKeys]::SendWait('U')
+Start-Sleep -Seconds 2
+[System.Windows.Forms.SendKeys]::SendWait('1.0.2')
+Start-Sleep -Milliseconds 300
+[System.Windows.Forms.SendKeys]::SendWait('{TAB}')
+Start-Sleep -Milliseconds 200
+[System.Windows.Forms.SendKeys]::SendWait('optimized: loading, pull-refresh, med-edit, quick-nav')
+Start-Sleep -Milliseconds 300
+[System.Windows.Forms.SendKeys]::SendWait('{TAB}')
+Start-Sleep -Milliseconds 200
+[System.Windows.Forms.SendKeys]::SendWait('{ENTER}')
+Write-Host "Done - check IDE for upload dialog"
