@@ -7,7 +7,7 @@ App({
     devApiBase: 'http://localhost:8080/api',
 
     // 生产隧道地址（由 tunnel_daemon.py 自动更新）
-    tunnelApiBase: 'https://0c07147136f93f.lhr.life/api',
+    tunnelApiBase: 'https://59e4ce2f58dcde.lhr.life/api',
 
     // true = 开发模式连本地，false = 通过隧道连生产
     useDevServer: true,

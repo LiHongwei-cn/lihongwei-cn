@@ -8,7 +8,8 @@ Page({
     todayDate: '',
     latestReading: null,
     stats: {},
-    loading: true
+    loading: true,
+    loginError: ''
   },
 
   onShow() {
@@ -40,12 +41,20 @@ Page({
   },
 
   doLogin() {
+    this.setData({ loading: true, loginError: '' });
     auth.login().then(() => {
       this.setGreeting();
       this.loadData();
-    }).catch(() => {
-      wx.showToast({ title: '登录失败，请重试', icon: 'none' });
+    }).catch((err) => {
+      this.setData({
+        loading: false,
+        loginError: err.message || '登录失败，请重试'
+      });
     });
+  },
+
+  retryLogin() {
+    this.doLogin();
   },
 
   loadData() {
@@ -59,7 +68,7 @@ Page({
         stats: statsRes
       });
     }).catch(() => {
-      wx.showToast({ title: '加载失败', icon: 'none' });
+      wx.showToast({ title: '加载数据失败', icon: 'none' });
     }).finally(() => {
       this.setData({ loading: false });
     });
