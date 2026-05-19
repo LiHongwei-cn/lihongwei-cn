@@ -46,11 +46,11 @@
       <text class="section-title">早晚均值对比</text>
       <view class="stats-row">
         <view class="stat-item">
-          <text class="stat-value">{{report.morning_avg_sys || '--'}}</text>
+          <text class="stat-value">{{report.morning_avg_sys != null ? report.morning_avg_sys : '--'}}</text>
           <text class="stat-label">早晨收缩压</text>
         </view>
         <view class="stat-item">
-          <text class="stat-value">{{report.evening_avg_sys || '--'}}</text>
+          <text class="stat-value">{{report.evening_avg_sys != null ? report.evening_avg_sys : '--'}}</text>
           <text class="stat-label">晚上收缩压</text>
         </view>
       </view>
