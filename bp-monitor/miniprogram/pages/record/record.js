@@ -64,14 +64,20 @@ Page({
   submit() {
     const sys = parseInt(this.data.systolic);
     const dia = parseInt(this.data.diastolic);
+    const hr = parseInt(this.data.heartRate);
 
-    if (isNaN(sys) || isNaN(dia)) {
-      wx.showToast({ title: '请输入收缩压和舒张压', icon: 'none' });
+    // 先触发失焦校验
+    this.validateSystolic();
+    this.validateDiastolic();
+    if (!isNaN(hr)) this.validateHeartRate();
+
+    if (this.data.systolicError || this.data.diastolicError || this.data.heartRateError) {
+      wx.showToast({ title: '请修正输入错误', icon: 'none' });
       return;
     }
 
-    if (sys < 60 || sys > 300 || dia < 30 || dia > 200) {
-      wx.showToast({ title: '血压值超出合理范围，请检查', icon: 'none' });
+    if (isNaN(sys) || isNaN(dia)) {
+      wx.showToast({ title: '请输入收缩压和舒张压', icon: 'none' });
       return;
     }
 
