@@ -35,15 +35,15 @@
   <!-- 快捷入口 -->
   <view class="nav-grid">
     <view class="nav-item" bindtap="goHistory">
-      <text class="nav-icon nav-icon-history"></text>
+      <view class="nav-icon nav-icon-history">史</view>
       <text class="nav-label">历史记录</text>
     </view>
     <view class="nav-item" bindtap="goReport">
-      <text class="nav-icon nav-icon-report"></text>
+      <view class="nav-icon nav-icon-report">报</view>
       <text class="nav-label">周报分析</text>
     </view>
     <view class="nav-item" bindtap="goProfile">
-      <text class="nav-icon nav-icon-profile"></text>
+      <view class="nav-icon nav-icon-profile">我</view>
       <text class="nav-label">健康档案</text>
     </view>
   </view>
