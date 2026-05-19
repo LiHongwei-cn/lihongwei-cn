@@ -35,4 +35,4 @@ function checkDisclaimerAccepted() {
   return user && user.disclaimer_accepted === 1;
 }
 
-module.exports = { login, checkDisclaimerAccepted };
+module.exports = { login };
