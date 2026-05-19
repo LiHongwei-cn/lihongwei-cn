@@ -3,6 +3,7 @@ import subprocess
 import time
 import re
 import sys
+import urllib.request
 from pathlib import Path
 
 APP_JS = Path(__file__).parent / "miniprogram" / "app.js"
@@ -26,8 +27,8 @@ def update_app_js(url: str) -> None:
         print(f"[daemon] app.js updated → {url}")
 
 
-def run_tunnel() -> str:
-    """Start tunnel, return URL when ready."""
+def start_tunnel():
+    """Start tunnel, return (process, url). Blocks until URL is ready."""
     proc = subprocess.Popen(
         TUNNEL_CMD,
         stdout=subprocess.PIPE,
@@ -46,24 +47,57 @@ def run_tunnel() -> str:
     return proc, url
 
 
+def check_health(url: str) -> bool:
+    try:
+        req = urllib.request.Request(url + "/api/health", method="GET")
+        with urllib.request.urlopen(req, timeout=5) as resp:
+            return resp.status == 200
+    except Exception:
+        return False
+
+
+def kill_proc(proc) -> None:
+    try:
+        proc.terminate()
+        proc.wait(timeout=5)
+    except Exception:
+        try:
+            proc.kill()
+        except Exception:
+            pass
+
+
 def main() -> None:
     print("[daemon] starting tunnel watchdog...")
     proc, url = None, None
+    fail_count = 0
 
     while True:
         if proc is None or proc.poll() is not None:
             if proc:
-                print("[daemon] tunnel died, restarting...")
-            else:
-                print("[daemon] starting tunnel...")
-            proc, url = run_tunnel()
+                print("[daemon] ssh process exited, restarting...")
+            proc, url = start_tunnel()
             if url:
                 update_app_js(url)
+                fail_count = 0
             else:
-                print("[daemon] failed to get tunnel URL, retrying in 10s...")
-                time.sleep(10)
+                fail_count += 1
+                wait = min(fail_count * 5, 30)
+                print(f"[daemon] failed to get tunnel URL, retry in {wait}s...")
+                time.sleep(wait)
                 continue
 
+        # Active health check
+        if url and not check_health(url):
+            fail_count += 1
+            print(f"[daemon] health check failed ({fail_count}), restarting tunnel...")
+            kill_proc(proc)
+            proc = None
+            url = None
+            time.sleep(3)
+            continue
+
+        fail_count = 0
         time.sleep(15)
 
 
