@@ -67,5 +67,14 @@ Page({
 
   goRecord() {
     wx.navigateTo({ url: '/pages/record/record' });
+  },
+  goHistory() {
+    wx.navigateTo({ url: '/pages/history/history' });
+  },
+  goReport() {
+    wx.navigateTo({ url: '/pages/report/report' });
+  },
+  goProfile() {
+    wx.navigateTo({ url: '/pages/profile/profile' });
   }
 });
