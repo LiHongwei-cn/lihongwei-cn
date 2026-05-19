@@ -32,6 +32,22 @@
     <button class="btn-primary" bindtap="goRecord">记录血压</button>
   </view>
 
+  <!-- 快捷入口 -->
+  <view class="nav-grid">
+    <view class="nav-item" bindtap="goHistory">
+      <text class="nav-icon">📋</text>
+      <text class="nav-label">历史记录</text>
+    </view>
+    <view class="nav-item" bindtap="goReport">
+      <text class="nav-icon">📊</text>
+      <text class="nav-label">周报分析</text>
+    </view>
+    <view class="nav-item" bindtap="goProfile">
+      <text class="nav-icon">👤</text>
+      <text class="nav-label">健康档案</text>
+    </view>
+  </view>
+
   <!-- 本周统计 -->
   <view class="card" wx:if="{{!loading && stats.reading_count}}">
     <text class="section-title">本周统计</text>
