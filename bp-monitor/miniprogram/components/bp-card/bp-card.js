@@ -1,4 +1,10 @@
 Component({
+  data: {
+    levelClass: 'normal',
+    periodLabel: '',
+    displayTime: ''
+  },
+
   properties: {
     systolic: { type: Number, value: 0 },
     diastolic: { type: Number, value: 0 },
