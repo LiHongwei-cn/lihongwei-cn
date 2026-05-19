@@ -1,0 +1,76 @@
+<view class="container">
+  <view class="week-nav card">
+    <view class="week-arrow" bindtap="prevWeek">‹ 上一周</view>
+    <view class="week-label">{{weekStart}} ~ {{weekEnd}}</view>
+    <view class="week-arrow {{weekOffset >= 0 ? 'disabled' : ''}}" bindtap="nextWeek">下一周 ›</view>
+  </view>
+
+  <view class="loading-text" wx:if="{{loading}}">加载中...</view>
+
+  <view wx:elif="{{report}}">
+    <view class="card">
+      <text class="section-title">概览</text>
+      <view class="overview-grid">
+        <view class="overview-item">
+          <text class="overview-value">{{report.avg_systolic}}/{{report.avg_diastolic}}</text>
+          <text class="overview-label">平均血压</text>
+        </view>
+        <view class="overview-item">
+          <text class="overview-value">{{report.reading_count}}次</text>
+          <text class="overview-label">测量次数</text>
+        </view>
+        <view class="overview-item">
+          <text class="overview-value">{{report.compliance_rate}}%</text>
+          <text class="overview-label">依从性</text>
+        </view>
+        <view class="overview-item">
+          <text class="overview-value">{{report.time_in_range}}%</text>
+          <text class="overview-label">达标率</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{report.morning_avg_sys || report.evening_avg_sys}}">
+      <text class="section-title">早晚对比</text>
+      <view class="compare-row">
+        <view class="compare-item">
+          <text class="compare-value">{{report.morning_avg_sys || '--'}}</text>
+          <text class="compare-label">晨峰收缩压</text>
+        </view>
+        <view class="compare-item">
+          <text class="compare-value">{{report.evening_avg_sys || '--'}}</text>
+          <text class="compare-label">晚间收缩压</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="card">
+      <text class="section-title">波动</text>
+      <view class="volatility-row">
+        <text>标准差：收缩压 {{report.std_systolic}} / 舒张压 {{report.std_diastolic}}</text>
+        <text class="volatility-detail">最高 {{report.max_systolic}}/{{report.max_diastolic}} 最低 {{report.min_systolic}}/{{report.min_diastolic}}</text>
+      </view>
+    </view>
+
+    <view class="card" wx:if="{{report.trend_summary}}">
+      <text class="section-title">AI 趋势分析</text>
+      <view class="analysis-content">{{report.trend_summary}}</view>
+    </view>
+
+    <view class="card" wx:if="{{report.recommendations}}">
+      <text class="section-title">建议</text>
+      <view class="analysis-content">{{report.recommendations}}</view>
+    </view>
+  </view>
+
+  <view class="card empty-state" wx:elif="{{!loading}}">
+    <text>本周暂无报告</text>
+    <text>需要至少记录几天血压数据</text>
+    <button class="btn-secondary" style="margin-top: 24rpx;"
+      bindtap="generate" loading="{{generating}}" disabled="{{generating}}">
+      {{generating ? '生成中...' : '生成周报'}}
+    </button>
+  </view>
+
+  <disclaimer></disclaimer>
+</view>
