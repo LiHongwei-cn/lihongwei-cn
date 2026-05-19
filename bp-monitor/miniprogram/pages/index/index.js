@@ -56,7 +56,9 @@ Page({
         latestReading: items.length > 0 ? items[0] : null,
         stats: statsRes
       });
-    }).catch(() => {});
+    }).catch(() => {
+      wx.showToast({ title: '加载失败', icon: 'none' });
+    });
   },
 
   goRecord() {
