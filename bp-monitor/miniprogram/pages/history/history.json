@@ -5,5 +5,9 @@
   "usingComponents": {
     "bp-card": "/components/bp-card/bp-card",
     "disclaimer": "/components/disclaimer/disclaimer"
+  },
+  "componentPlaceholder": {
+    "bp-card": "view",
+    "disclaimer": "view"
   }
 }
