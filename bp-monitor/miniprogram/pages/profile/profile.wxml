@@ -5,7 +5,8 @@
   <!-- 用户信息卡片 -->
   <view class="card">
     <view class="user-header">
-      <image class="avatar" src="{{userInfo.avatar_url || '/assets/default-avatar.png'}}" mode="aspectFill" />
+      <image wx:if="{{userInfo.avatar_url}}" class="avatar" src="{{userInfo.avatar_url}}" mode="aspectFill" />
+      <view wx:else class="avatar avatar-placeholder">{{userInfo.nickname ? userInfo.nickname[0] : 'U'}}</view>
       <view class="user-name">{{userInfo.nickname || '微信用户'}}</view>
     </view>
   </view>
