@@ -2,7 +2,7 @@ App({
   globalData: {
     token: '',
     userInfo: null,
-    apiBase: 'https://0f5345fa11205d.lhr.life/api'
+    apiBase: 'https://0d0116d944ab04.lhr.life/api'
   },
 
   onLaunch() {
