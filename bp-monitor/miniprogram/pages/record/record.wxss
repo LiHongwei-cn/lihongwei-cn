@@ -1,0 +1,41 @@
+.period-selector {
+  display: flex;
+  gap: 16rpx;
+}
+
+.period-option {
+  flex: 1;
+  height: 72rpx;
+  line-height: 72rpx;
+  text-align: center;
+  border-radius: var(--radius);
+  border: 2rpx solid var(--border);
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  background: #fff;
+}
+
+.period-option.active {
+  border-color: var(--primary);
+  background: #e6f4ea;
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 120rpx;
+  padding: 16rpx 24rpx;
+  font-size: 30rpx;
+  border: 2rpx solid var(--border);
+  border-radius: var(--radius);
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.analysis-content {
+  font-size: 28rpx;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  color: var(--text);
+}
