@@ -17,7 +17,8 @@ Page({
     weekStart: '',
     weekEnd: '',
     report: null,
-    generating: false
+    generating: false,
+    loading: true
   },
 
   onShow() {
