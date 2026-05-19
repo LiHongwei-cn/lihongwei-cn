@@ -33,7 +33,7 @@
   </view>
 
   <!-- 本周统计 -->
-  <view class="card" wx:if="{{stats.reading_count}}">
+  <view class="card" wx:if="{{!loading && stats.reading_count}}">
     <text class="section-title">本周统计</text>
     <view class="stats-row">
       <view class="stat-item">
