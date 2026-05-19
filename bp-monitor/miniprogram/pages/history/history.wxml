@@ -16,10 +16,10 @@
   </view>
 
   <!-- 加载中 -->
-  <view class="loading-text" wx:if="{{loading}}"><text>加载中...</text></view>
+  <view class="loading-text" wx:if="{{loading}}">加载中...</view>
 
   <!-- 读数列表 -->
-  <view wx:if="{{readings.length > 0}}" wx:else>
+  <block wx:if="{{readings.length > 0}}">
     <view wx:for="{{readings}}" wx:key="id">
       <bp-card
         systolic="{{item.systolic}}"
@@ -35,15 +35,14 @@
         data-id="{{item.id}}"
       />
     </view>
-  </view>
+    <view class="load-more" wx:if="{{hasMore}}">
+      <button class="btn-secondary" bindtap="loadMore">加载更多</button>
+    </view>
+  </block>
 
-  <view class="empty-state" wx:else>
+  <view class="empty-state" wx:elif="{{!loading}}">
     <text>暂无记录</text>
     <text>快去记录您的第一次血压吧</text>
-  </view>
-
-  <view class="load-more" wx:if="{{hasMore}}">
-    <button class="btn-secondary" bindtap="loadMore">加载更多</button>
   </view>
 
   <disclaimer></disclaimer>
