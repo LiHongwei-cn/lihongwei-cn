@@ -6,10 +6,16 @@ Page({
     readings: [],
     page: 1,
     hasMore: false,
-    expandedId: null
+    expandedId: null,
+    loading: false
   },
 
   onShow() { this.loadReadings(); },
+
+  onPullDownRefresh() {
+    this.setData({ page: 1, readings: [] });
+    this.loadReadings().finally(() => wx.stopPullDownRefresh());
+  },
 
   setFilter(e) {
     const days = parseInt(e.currentTarget.dataset.days);
