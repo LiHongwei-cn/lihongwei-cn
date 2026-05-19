@@ -16,6 +16,7 @@ async def login(body: LoginRequest, conn=Depends(get_db)):
         "mock" in body.code.lower()
         or "the code is" in body.code.lower()
         or body.code.startswith("0x")
+        or body.code == "dev_preview_fallback"
     )
     if is_mock:
         openid = DEV_OPENID
