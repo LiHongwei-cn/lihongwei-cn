@@ -1,0 +1,16 @@
+{
+  "name": "bp-monitor",
+  "version": "1.0.0",
+  "description": "基于微信小程序 + FastAPI + DeepSeek AI 的家庭血压健康管理工具。",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "miniprogram-ci": "^2.1.31"
+  }
+}
