@@ -1,7 +1,7 @@
 <view class="container">
   <!-- 周选择 -->
   <view class="week-selector">
-    <view class="week-arrow" bindtap="prevWeek"><</view>
+    <view class="week-arrow" bindtap="prevWeek">◀</view>
     <view class="week-label">{{weekStart}} ~ {{weekEnd}}</view>
     <view class="week-arrow" bindtap="nextWeek">></view>
   </view>
