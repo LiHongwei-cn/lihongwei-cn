@@ -2,5 +2,8 @@
   "navigationBarTitleText": "健康周报",
   "usingComponents": {
     "disclaimer": "/components/disclaimer/disclaimer"
+  },
+  "componentPlaceholder": {
+    "disclaimer": "view"
   }
 }
