@@ -89,9 +89,25 @@
 
 .nav-icon {
   display: block;
-  font-size: 48rpx;
-  margin-bottom: 10rpx;
+  width: 72rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: 50%;
+  margin: 0 auto 10rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
 }
+
+.nav-icon-history { background: #5b8def; }
+.nav-icon-history::after { content: '史'; }
+
+.nav-icon-report { background: #34a853; }
+.nav-icon-report::after { content: '报'; }
+
+.nav-icon-profile { background: #ea820a; }
+.nav-icon-profile::after { content: '我'; }
 
 .nav-label {
   font-size: 26rpx;
