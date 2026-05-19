@@ -4,6 +4,7 @@ page {
   --warning: #e37400;
   --text: #1a1a1a;
   --text-secondary: #666666;
+  --text-light: #999999;
   --bg: #f5f5f5;
   --card-bg: #ffffff;
   --border: #e0e0e0;
@@ -16,16 +17,18 @@ page {
   line-height: 1.6;
 }
 
-/* ── 通用卡片 ── */
+.container {
+  padding-bottom: 40rpx;
+}
+
 .card {
   background: var(--card-bg);
   border-radius: var(--radius);
   padding: 32rpx;
   margin: 24rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
 }
 
-/* ── 大号按钮 ── */
 .btn-primary {
   display: block;
   width: 100%;
@@ -60,12 +63,15 @@ page {
   text-align: center;
 }
 
-/* ── 大号数字显示 ── */
 .bp-number {
   font-size: 72rpx;
   font-weight: 700;
   line-height: 1;
-  letter-spacing: 4rpx;
+}
+
+.bp-label {
+  font-size: 24rpx;
+  color: var(--text-secondary);
 }
 
 .bp-unit {
@@ -74,17 +80,10 @@ page {
   font-weight: 400;
 }
 
-.bp-label {
-  font-size: 28rpx;
-  color: var(--text-secondary);
-}
-
-/* ── 颜色状态 ── */
 .bp-normal { color: var(--primary); }
 .bp-elevated { color: var(--warning); }
 .bp-high { color: var(--danger); }
 
-/* ── 标签/徽章 ── */
 .badge {
   display: inline-block;
   padding: 4rpx 16rpx;
@@ -97,23 +96,30 @@ page {
 .badge-elevated { background: #fef7e0; color: var(--warning); }
 .badge-high { background: #fce8e6; color: var(--danger); }
 
-/* ── 表单输入 ── */
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 20rpx;
+  display: block;
+}
+
 .form-group {
-  margin-bottom: 32rpx;
+  margin-bottom: 28rpx;
 }
 
 .form-label {
   display: block;
-  font-size: 30rpx;
+  font-size: 28rpx;
   font-weight: 500;
-  margin-bottom: 12rpx;
+  margin-bottom: 10rpx;
 }
 
 .form-input {
   width: 100%;
-  height: 96rpx;
+  height: 88rpx;
   padding: 0 24rpx;
-  font-size: 40rpx;
+  font-size: 36rpx;
   border: 2rpx solid var(--border);
   border-radius: var(--radius);
   background: var(--card-bg);
@@ -127,18 +133,16 @@ page {
 .form-error-text {
   font-size: 24rpx;
   color: var(--danger);
-  margin-top: 8rpx;
+  margin-top: 6rpx;
 }
 
-/* ── 加载 ── */
 .loading-text {
   text-align: center;
   color: var(--text-secondary);
-  padding: 48rpx;
+  padding: 60rpx;
   font-size: 30rpx;
 }
 
-/* ── 空状态 ── */
 .empty-state {
   text-align: center;
   padding: 80rpx 48rpx;
@@ -148,15 +152,14 @@ page {
   display: block;
   color: var(--text-secondary);
   font-size: 30rpx;
-  margin-bottom: 16rpx;
+  margin-bottom: 12rpx;
 }
 
-/* ── 免责声明 ── */
 .disclaimer-bar {
   text-align: center;
   padding: 16rpx 24rpx;
   font-size: 22rpx;
-  color: #999;
+  color: var(--text-light);
   background: #fafafa;
   border-top: 1rpx solid var(--border);
 }
