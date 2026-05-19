@@ -6,6 +6,9 @@
     <view class="week-arrow" bindtap="nextWeek">▶</view>
   </view>
 
+  <!-- 加载中 -->
+  <view class="loading-text" wx:if="{{loading}}">加载中...</view>
+
   <!-- 生成按钮 -->
   <view class="generate-wrap" wx:if="{{!report}}">
     <button class="btn-primary" bindtap="generateReport" loading="{{generating}}">
