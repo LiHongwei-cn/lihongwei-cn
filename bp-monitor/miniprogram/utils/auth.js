@@ -30,9 +30,4 @@ function doAuth(code, resolve, reject) {
     .catch(reject);
 }
 
-function checkDisclaimerAccepted() {
-  const user = app.globalData.userInfo;
-  return user && user.disclaimer_accepted === 1;
-}
-
 module.exports = { login };
