@@ -10,7 +10,7 @@ App({
     devApiBase: 'http://localhost:8080/api',
 
     // 正式环境 — Render 云部署（稳定 HTTPS，可加入微信白名单）
-    prodApiBase: 'https://bp-monitor.onrender.com/api',
+    prodApiBase: 'https://bp-monitor-api.onrender.com/api',
 
     get apiBase() {
       return this.isDevtools ? this.devApiBase : this.prodApiBase;
