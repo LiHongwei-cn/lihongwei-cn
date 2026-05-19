@@ -61,8 +61,25 @@ Page({
   },
 
   addMed() {
-    const meds = [...this.data.medications];
+    const meds = this.data.medications.map(m => ({ ...m }));
     meds.push({ name: '', dose: '', time: 'morning' });
+    this.setData({ medications: meds });
+  },
+
+  onMedInput(e) {
+    const { index, field } = e.currentTarget.dataset;
+    const meds = this.data.medications.map((m, i) =>
+      i === index ? { ...m, [field]: e.detail.value } : { ...m }
+    );
+    this.setData({ medications: meds });
+  },
+
+  onMedTimeChange(e) {
+    const idx = e.currentTarget.dataset.index;
+    const time = this.data.timeOptions[parseInt(e.detail.value)];
+    const meds = this.data.medications.map((m, i) =>
+      i === idx ? { ...m, time } : { ...m }
+    );
     this.setData({ medications: meds });
   },
 
