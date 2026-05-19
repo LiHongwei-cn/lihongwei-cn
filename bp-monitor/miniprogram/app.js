@@ -2,7 +2,19 @@ App({
   globalData: {
     token: '',
     userInfo: null,
-    apiBase: 'https://272d6e6d782dae.lhr.life/api'
+
+    // 开发模式：直连本地后端（需在微信开发者工具 → 详情 → 本地设置 → 勾选"不校验合法域名"）
+    devApiBase: 'http://localhost:8080/api',
+
+    // 生产隧道地址（由 tunnel_daemon.py 自动更新）
+    tunnelApiBase: 'https://0c07147136f93f.lhr.life/api',
+
+    // true = 开发模式连本地，false = 通过隧道连生产
+    useDevServer: true,
+
+    get apiBase() {
+      return this.useDevServer ? this.devApiBase : this.tunnelApiBase;
+    }
   },
 
   onLaunch() {
@@ -25,7 +37,10 @@ App({
           this.clearLogin();
         }
       },
-      fail: () => this.clearLogin()
+      fail: () => {
+        // token 校验失败不立即清除，可能是网络问题
+        // 下次 onShow 会重新尝试
+      }
     });
   },
 
