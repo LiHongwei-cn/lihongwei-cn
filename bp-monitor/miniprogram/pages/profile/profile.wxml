@@ -46,7 +46,7 @@
     <view class="form-group">
       <text class="form-label">用药清单</text>
       <view class="med-list">
-        <view class="med-item" wx:for="{{medications}}" wx:key="index">
+        <view class="med-item" wx:for="{{medications}}" wx:key="*this">
           <view class="med-row">
             <input class="med-input" placeholder="药品名" value="{{item.name}}" bindinput="onMedInput" data-index="{{index}}" data-field="name" />
             <input class="med-input med-dose" placeholder="剂量" value="{{item.dose}}" bindinput="onMedInput" data-index="{{index}}" data-field="dose" />
