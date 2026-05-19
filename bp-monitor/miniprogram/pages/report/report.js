@@ -39,11 +39,16 @@ Page({
   },
 
   loadReport() {
+    this.setData({ loading: true });
     api.get('/reports').then((reports) => {
       const ws = this.data.weekStart;
       const match = (reports || []).find(r => r.week_start === ws);
       this.setData({ report: match || null });
-    }).catch(() => {});
+    }).catch(() => {
+      wx.showToast({ title: '加载失败', icon: 'none' });
+    }).finally(() => {
+      this.setData({ loading: false });
+    });
   },
 
   prevWeek() {
