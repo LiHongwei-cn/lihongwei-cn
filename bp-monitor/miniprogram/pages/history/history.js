@@ -24,19 +24,24 @@ Page({
   },
 
   loadReadings() {
+    this.setData({ loading: true });
     const { filterDays, page } = this.data;
     const endDate = new Date().toISOString().split('T')[0];
     const start = new Date();
     start.setDate(start.getDate() - filterDays);
     const startDate = start.toISOString().split('T')[0];
 
-    api.get('/readings', { page, limit: 20, start_date: startDate, end_date: endDate })
+    return api.get('/readings', { page, limit: 20, start_date: startDate, end_date: endDate })
       .then((data) => {
         this.setData({
           readings: page === 1 ? data.items : [...this.data.readings, ...data.items],
           hasMore: data.has_more
         });
-      }).catch(() => {});
+      }).catch(() => {
+        wx.showToast({ title: '加载失败', icon: 'none' });
+      }).finally(() => {
+        this.setData({ loading: false });
+      });
   },
 
   loadMore() {
