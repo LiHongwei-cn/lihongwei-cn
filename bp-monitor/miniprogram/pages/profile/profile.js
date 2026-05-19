@@ -101,7 +101,9 @@ Page({
       medications: JSON.stringify(this.data.medications)
     }).then(() => {
       wx.showToast({ title: '保存成功', icon: 'success' });
-    }).catch(() => {});
+    }).catch(() => {
+      wx.showToast({ title: '保存失败，请重试', icon: 'none' });
+    });
   },
 
   logout() {
