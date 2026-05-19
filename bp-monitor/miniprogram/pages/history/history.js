@@ -45,6 +45,7 @@ Page({
   },
 
   loadMore() {
+    if (this.data.loading || !this.data.hasMore) return;
     const next = this.data.page + 1;
     this.setData({ page: next });
     this.loadReadings();
