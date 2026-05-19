@@ -7,7 +7,8 @@ Page({
     greeting: '',
     todayDate: '',
     latestReading: null,
-    stats: {}
+    stats: {},
+    loading: true
   },
 
   onShow() {
