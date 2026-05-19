@@ -61,7 +61,7 @@
         <text class="stat-label">{{stats.days_with_readings}}天记录</text>
       </view>
     </view>
-    <view class="trend-indicator trend-{{stats.trend_direction}}" wx:if="{{stats.trend_direction === 'improving'}}">
+    <view class="trend-indicator trend-improving" wx:if="{{stats.trend_direction === 'improving'}}">
       <text>趋势向好 ↓ 收缩压较前段下降</text>
     </view>
     <view class="trend-indicator trend-worsening" wx:elif="{{stats.trend_direction === 'worsening'}}">
@@ -69,6 +69,9 @@
     </view>
     <view class="trend-indicator trend-stable" wx:elif="{{stats.trend_direction === 'stable'}}">
       <text>血压稳定，继续保持</text>
+    </view>
+    <view class="trend-indicator trend-insufficient" wx:else>
+      <text>数据不足，继续记录以获取趋势分析</text>
     </view>
   </view>
 
