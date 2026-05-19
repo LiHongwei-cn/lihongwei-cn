@@ -2,5 +2,8 @@
   "navigationBarTitleText": "记录血压",
   "usingComponents": {
     "disclaimer": "/components/disclaimer/disclaimer"
+  },
+  "componentPlaceholder": {
+    "disclaimer": "view"
   }
 }
