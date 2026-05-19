@@ -114,6 +114,7 @@ Page({
       });
     }).catch(() => {
       this.setData({ submitting: false });
+      wx.showToast({ title: '保存失败，请重试', icon: 'none' });
     });
   }
 });
