@@ -11,7 +11,10 @@ Page({
     yearOptions: [],
     targetSystolic: 140,
     targetDiastolic: 90,
-    medications: []
+    medications: [],
+    timeOptions: ['morning', 'afternoon', 'evening', 'night'],
+    timeLabels: { morning: '早晨', afternoon: '下午', evening: '晚上', night: '夜间' },
+    loading: true
   },
 
   onShow() {
@@ -19,6 +22,7 @@ Page({
   },
 
   loadProfile() {
+    this.setData({ loading: true });
     api.get('/users/me').then((user) => {
       app.globalData.userInfo = user;
       let meds = [];
@@ -40,7 +44,11 @@ Page({
         targetDiastolic: user.target_diastolic || 90,
         medications: meds
       });
-    }).catch(() => {});
+    }).catch(() => {
+      wx.showToast({ title: '加载失败', icon: 'none' });
+    }).finally(() => {
+      this.setData({ loading: false });
+    });
   },
 
   onAgeInput(e) { this.setData({ age: e.detail.value }); },
