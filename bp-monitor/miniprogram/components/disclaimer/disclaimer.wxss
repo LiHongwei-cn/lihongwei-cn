@@ -1,0 +1,8 @@
+.disclaimer-bar {
+  text-align: center;
+  padding: 16rpx 24rpx;
+  font-size: 22rpx;
+  color: #999;
+  background: #fafafa;
+  border-top: 1rpx solid #e0e0e0;
+}
