@@ -28,9 +28,12 @@ function request(url, options = {}) {
           reject(new Error(msg));
         }
       },
-      fail: () => {
-        wx.showToast({ title: '网络连接失败，请检查网络', icon: 'none', duration: 3000 });
-        reject(new Error('网络连接失败'));
+      fail: (err) => {
+        const msg = err.errMsg && err.errMsg.includes('timeout')
+          ? '请求超时，请重试'
+          : '网络连接失败，请检查网络';
+        wx.showToast({ title: msg, icon: 'none', duration: 3000 });
+        reject(new Error(msg));
       }
     });
   });
