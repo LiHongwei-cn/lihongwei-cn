@@ -1,0 +1,34 @@
+<view class="bp-card">
+  <view class="bp-card-header">
+    <view class="bp-time">
+      <text>{{displayTime}}</text>
+      <text class="bp-period" wx:if="{{periodLabel}}">{{periodLabel}}</text>
+    </view>
+    <view class="badge badge-{{levelClass}}">{{bpLevel || '未分类'}}</view>
+  </view>
+
+  <view class="bp-card-values">
+    <view class="bp-value-item">
+      <text class="bp-number {{levelClass}}">{{systolic}}</text>
+      <text class="bp-label">收缩压</text>
+    </view>
+    <view class="bp-divider"></view>
+    <view class="bp-value-item">
+      <text class="bp-number {{levelClass}}">{{diastolic}}</text>
+      <text class="bp-label">舒张压</text>
+    </view>
+    <view class="bp-divider" wx:if="{{heartRate}}"></view>
+    <view class="bp-value-item" wx:if="{{heartRate}}">
+      <text class="bp-number bp-normal">{{heartRate}}</text>
+      <text class="bp-label">心率</text>
+    </view>
+  </view>
+
+  <view class="bp-card-notes" wx:if="{{notes}}">
+    <text>备注：{{notes}}</text>
+  </view>
+
+  <view class="bp-card-analysis" wx:if="{{showAnalysis && aiAnalysis}}">
+    <text>{{aiAnalysis}}</text>
+  </view>
+</view>
