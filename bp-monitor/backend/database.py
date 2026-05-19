@@ -119,7 +119,7 @@ async def get_current_user(
 
     token = credentials.credentials
 
-    conn = sqlite3.connect(str(DB_PATH))
+    conn = sqlite3.connect(str(DB_PATH), check_same_thread=False)
     conn.row_factory = sqlite3.Row
     try:
         user = conn.execute(
