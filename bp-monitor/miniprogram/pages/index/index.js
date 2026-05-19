@@ -48,6 +48,7 @@ Page({
   },
 
   loadData() {
+    this.setData({ loading: true });
     Promise.all([
       api.get('/readings', { page: 1, limit: 1 }),
       api.get('/readings/stats', { days: 7 })
@@ -59,6 +60,8 @@ Page({
       });
     }).catch(() => {
       wx.showToast({ title: '加载失败', icon: 'none' });
+    }).finally(() => {
+      this.setData({ loading: false });
     });
   },
 
