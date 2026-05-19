@@ -69,6 +69,7 @@
 .trend-improving { background: #e6f4ea; color: #2c7a4f; }
 .trend-worsening { background: #fce8e6; color: #d93025; }
 .trend-stable { background: #e8f0fe; color: #1a73e8; }
+.trend-insufficient { background: #f0f0f0; color: #888; }
 
 /* 快捷入口 */
 .nav-grid {
