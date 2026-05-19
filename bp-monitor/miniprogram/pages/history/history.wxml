@@ -1,0 +1,43 @@
+<view class="container">
+  <view class="filter-bar">
+    <view class="filter-tab {{filterDays === 7 ? 'active' : ''}}"
+      data-days="7" bindtap="setFilter">近7天</view>
+    <view class="filter-tab {{filterDays === 30 ? 'active' : ''}}"
+      data-days="30" bindtap="setFilter">近30天</view>
+    <view class="filter-tab {{filterDays === 90 ? 'active' : ''}}"
+      data-days="90" bindtap="setFilter">近90天</view>
+  </view>
+
+  <view class="loading-text" wx:if="{{loading && readings.length === 0}}">加载中...</view>
+
+  <view class="readings-list" wx:elif="{{readings.length > 0}}">
+    <view wx:for="{{readings}}" wx:key="id"
+      data-id="{{item.id}}" bindtap="toggleAnalysis">
+      <bp-card
+        systolic="{{item.systolic}}"
+        diastolic="{{item.diastolic}}"
+        heartRate="{{item.heart_rate}}"
+        measuredAt="{{item.measured_at}}"
+        timePeriod="{{item.time_period}}"
+        bpLevel="{{item.bp_level}}"
+        notes="{{item.notes}}"
+        aiAnalysis="{{item.ai_analysis}}"
+        showAnalysis="{{expandedId === item.id}}"
+      />
+    </view>
+
+    <view class="load-more" wx:if="{{hasMore}}">
+      <button class="btn-load-more" bindtap="loadMore"
+        disabled="{{loading}}">{{loading ? '加载中...' : '加载更多'}}</button>
+    </view>
+
+    <view class="list-end" wx:else>已显示全部记录</view>
+  </view>
+
+  <view class="empty-state" wx:else>
+    <text>暂无记录</text>
+    <text>去记录第一条血压数据吧</text>
+  </view>
+
+  <disclaimer></disclaimer>
+</view>
