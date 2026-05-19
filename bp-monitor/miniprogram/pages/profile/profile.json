@@ -2,5 +2,8 @@
   "navigationBarTitleText": "个人中心",
   "usingComponents": {
     "disclaimer": "/components/disclaimer/disclaimer"
+  },
+  "componentPlaceholder": {
+    "disclaimer": "view"
   }
 }
