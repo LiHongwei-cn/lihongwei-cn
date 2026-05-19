@@ -1,4 +1,7 @@
 <view class="container">
+  <!-- 加载中 -->
+  <view class="loading-text" wx:if="{{loading}}">加载中...</view>
+
   <!-- 用户信息卡片 -->
   <view class="card">
     <view class="user-header">
