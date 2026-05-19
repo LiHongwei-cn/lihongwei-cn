@@ -35,7 +35,7 @@
   <!-- 快捷入口 -->
   <view class="nav-grid">
     <view class="nav-item" bindtap="goHistory">
-      <text class="nav-icon">📋</text>
+      <text class="nav-icon nav-icon-history"></text>
       <text class="nav-label">历史记录</text>
     </view>
     <view class="nav-item" bindtap="goReport">
