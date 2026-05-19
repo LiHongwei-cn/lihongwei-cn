@@ -1,0 +1,88 @@
+<view class="container">
+  <view class="loading-text" wx:if="{{loading}}">加载中...</view>
+
+  <view wx:else>
+    <!-- 头像区域 -->
+    <view class="card profile-header">
+      <view class="avatar">
+        <image wx:if="{{userInfo.avatar_url}}" src="{{userInfo.avatar_url}}" mode="aspectFill" />
+        <text wx:else class="avatar-letter">{{userInfo.nickname ? userInfo.nickname[0] : '?'}}</text>
+      </view>
+      <text class="nickname">{{userInfo.nickname || '微信用户'}}</text>
+    </view>
+
+    <!-- 健康档案 -->
+    <view class="card">
+      <text class="section-title">健康档案</text>
+
+      <view class="form-group">
+        <text class="form-label">年龄</text>
+        <input class="form-input" type="number" placeholder="请输入年龄"
+          value="{{age}}" bindinput="onAgeInput" />
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">性别</text>
+        <picker mode="selector" range="{{genderOptions}}" value="{{genderIndex}}"
+          bindchange="onGenderChange">
+          <view class="picker-view">{{genderOptions[genderIndex]}}</view>
+        </picker>
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">高血压确诊年份</text>
+        <picker mode="selector" range="{{yearOptions}}" bindchange="onYearChange">
+          <view class="picker-view">{{diagnosisYear || '未选择'}}</view>
+        </picker>
+      </view>
+
+      <view class="form-group">
+        <text class="form-label">目标血压 (mmHg)</text>
+        <view class="target-row">
+          <input class="form-input target-input" type="number"
+            value="{{targetSystolic}}" bindinput="onTargetSysInput" />
+          <text class="target-sep">/</text>
+          <input class="form-input target-input" type="number"
+            value="{{targetDiastolic}}" bindinput="onTargetDiaInput" />
+        </view>
+      </view>
+    </view>
+
+    <!-- 用药管理 -->
+    <view class="card">
+      <view class="med-header">
+        <text class="section-title">用药管理</text>
+        <text class="add-med" bindtap="addMed">+ 添加</text>
+      </view>
+
+      <view wx:if="{{medications.length === 0}}" class="med-empty">暂无记录</view>
+
+      <view wx:for="{{medications}}" wx:key="index" class="med-item">
+        <view class="med-row">
+          <input class="form-input med-name" placeholder="药品名"
+            value="{{item.name}}" data-index="{{index}}" data-field="name"
+            bindinput="onMedInput" />
+          <input class="form-input med-dose" placeholder="剂量"
+            value="{{item.dose}}" data-index="{{index}}" data-field="dose"
+            bindinput="onMedInput" />
+        </view>
+        <view class="med-row2">
+          <picker mode="selector" range="{{timeOptions}}"
+            value="{{item.time === 'morning' ? 0 : item.time === 'afternoon' ? 1 : item.time === 'evening' ? 2 : 3}}"
+            data-index="{{index}}" bindchange="onMedTimeChange">
+            <view class="picker-view med-time">{{timeLabels[item.time] || '早晨'}}</view>
+          </picker>
+          <text class="del-med" data-index="{{index}}" bindtap="delMed">删除</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-area">
+      <button class="btn-primary" bindtap="saveProfile">保存设置</button>
+      <button class="btn-logout" bindtap="logout">退出登录</button>
+    </view>
+
+    <disclaimer></disclaimer>
+  </view>
+</view>
