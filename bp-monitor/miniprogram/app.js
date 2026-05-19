@@ -10,7 +10,7 @@ App({
     devApiBase: 'http://localhost:8080/api',
 
     // 真机走隧道（由 tunnel_daemon.py 自动更新域名）
-    tunnelApiBase: 'https://5691ad22615527.lhr.life/api',
+    tunnelApiBase: 'https://57b249346ee90d.lhr.life/api',
 
     get apiBase() {
       return this.isDevtools ? this.devApiBase : this.tunnelApiBase;
