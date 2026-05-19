@@ -73,6 +73,7 @@ Page({
         wx.showToast({ title: '报告已生成', icon: 'success' });
       }).catch(() => {
         this.setData({ generating: false });
+        wx.showToast({ title: '生成失败，请重试', icon: 'none' });
       });
   }
 });
