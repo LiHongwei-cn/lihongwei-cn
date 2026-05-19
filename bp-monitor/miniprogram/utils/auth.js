@@ -1,36 +1,34 @@
-const app = getApp();
-const api = require('./api.js');
+var app = getApp();
+var api = require('./api.js');
 
 function login() {
-  return new Promise((resolve, reject) => {
+  return new Promise(function (resolve, reject) {
     wx.login({
-      success: (res) => {
-        const code = (res.code && res.code.length > 0) ? res.code : null;
+      success: function (res) {
+        var code = (res.code && res.code.length > 0) ? res.code : '';
         if (code) {
-          doAuth(code, resolve, reject);
+          api.post('/auth/login', { code: code })
+            .then(function (data) {
+              app.globalData.token = data.token;
+              app.globalData.userInfo = data.user;
+              wx.setStorageSync('token', data.token);
+              resolve(data.user);
+            })
+            .catch(function (err) {
+              var hint = app.globalData.isDevtools
+                ? '请确认后端已启动（localhost:8080）'
+                : '请确认隧道服务正常运行';
+              reject(new Error(hint + ' — ' + err.message));
+            });
         } else {
-          // wx.login 返回了空 code（开发工具未登录微信账号时出现）
-          reject(new Error('微信登录未就绪，请在开发者工具中登录微信账号，或确认后端 DEV_MODE=true'));
+          reject(new Error('微信登录未就绪，请在微信中重新打开小程序'));
         }
       },
-      fail: (err) => {
-        reject(new Error('wx.login 调用失败: ' + (err.errMsg || '未知错误')));
+      fail: function (err) {
+        reject(new Error('登录失败: ' + (err.errMsg || '请重试')));
       }
     });
   });
 }
 
-function doAuth(code, resolve, reject) {
-  api.post('/auth/login', { code })
-    .then((data) => {
-      app.globalData.token = data.token;
-      app.globalData.userInfo = data.user;
-      wx.setStorageSync('token', data.token);
-      resolve(data.user);
-    })
-    .catch((err) => {
-      reject(new Error('登录请求失败，请确认后端服务已启动（' + err.message + '）'));
-    });
-}
-
-module.exports = { login };
+module.exports = { login: login };
