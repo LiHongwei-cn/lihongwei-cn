@@ -22,4 +22,6 @@ WECHAT_SECRET = get_env("WECHAT_SECRET")
 
 CRON_SECRET_TOKEN = get_env("CRON_SECRET_TOKEN")
 
+DEV_MODE = os.environ.get("DEV_MODE", "").lower() in ("1", "true", "yes")
+
 DB_PATH = Path(__file__).parent / "bp_monitor.db"
