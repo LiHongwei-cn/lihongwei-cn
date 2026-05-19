@@ -9,7 +9,7 @@
   <view class="loading-text" wx:if="{{loading}}">加载中...</view>
 
   <!-- 今日读数摘要 -->
-  <view class="card" wx:if="{{latestReading}}">
+  <view class="card" wx:elif="{{latestReading}}">
     <text class="section-title">最近一次测量</text>
     <bp-card
       systolic="{{latestReading.systolic}}"
