@@ -43,11 +43,17 @@
       <text class="form-label">用药清单</text>
       <view class="med-list">
         <view class="med-item" wx:for="{{medications}}" wx:key="index">
-          <text>{{item.name}} {{item.dose}}（{{item.time}}）</text>
+          <view class="med-row">
+            <input class="med-input" placeholder="药品名" value="{{item.name}}" bindinput="onMedInput" data-index="{{index}}" data-field="name" />
+            <input class="med-input med-dose" placeholder="剂量" value="{{item.dose}}" bindinput="onMedInput" data-index="{{index}}" data-field="dose" />
+            <picker mode="selector" range="{{timeOptions}}" bindchange="onMedTimeChange" data-index="{{index}}">
+              <view class="med-time-picker">{{timeLabels[item.time] || '时间'}}</view>
+            </picker>
+          </view>
           <text class="med-del" bindtap="delMed" data-index="{{index}}">删除</text>
         </view>
       </view>
-      <button class="btn-secondary" bindtap="addMed">添加用药</button>
+      <button class="btn-secondary" bindtap="addMed">+ 添加用药</button>
     </view>
   </view>
 
