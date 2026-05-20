@@ -6,5 +6,5 @@ echo 启动血压监测 API 服务...
 echo 地址：http://localhost:8080
 echo 按 Ctrl+C 停止
 echo.
-uvicorn backend.main:app --host 0.0.0.0 --port 8080
+python -m uvicorn backend.main:app --host 0.0.0.0 --port 8080
 pause

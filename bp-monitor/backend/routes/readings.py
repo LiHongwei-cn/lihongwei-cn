@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, timedelta
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
@@ -96,7 +96,7 @@ async def get_stats(
     user: dict = Depends(get_current_user),
     conn=Depends(get_db),
 ):
-    cutoff = f"date('now', '-{days} days')"
+    cutoff = (date.today() - timedelta(days=days)).isoformat()
     rows = conn.execute(
         """SELECT systolic, diastolic, heart_rate, measured_at, time_period
            FROM readings
@@ -160,7 +160,7 @@ async def get_trends(
     user: dict = Depends(get_current_user),
     conn=Depends(get_db),
 ):
-    cutoff = f"date('now', '-{days} days')"
+    cutoff = (date.today() - timedelta(days=days)).isoformat()
     rows = conn.execute(
         """SELECT date(measured_at) as d, systolic, diastolic, heart_rate
            FROM readings
