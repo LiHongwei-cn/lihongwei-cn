@@ -98,11 +98,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
   <div class="section">
     <h2 class="section-title"><span class="num">1</span> 工作原理</h2>
     <div class="arch-row">
-      <span>claude-start.bat</span>
+      <span>claude-start</span>
       <span class="arrow">→</span>
       <span>检测 claude 命令</span>
       <span class="arrow">→</span>
-      <span>读取注册表密钥</span>
+      <span>读取环境变量密钥</span>
       <span class="arrow">→</span>
       <span>启动 CCS 代理</span>
       <span class="arrow">→</span>
@@ -110,7 +110,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     </div>
     <p style="font-size:13px;color:var(--dim);text-align:center">
       脚本自动完成 4 步检查：claude 已安装 → API Key 已配置 → CCS 代理在运行 → 启动对话。<br>
-      任一步失败都有明确的中文提示，不需要猜哪里出了问题。
+      任一步失败都有明确的中文提示，不需要猜哪里出了问题。<br>
+      <strong>Windows</strong> 用 <code>.bat</code>，<strong>macOS</strong> 用 <code>.command</code>，功能完全一致。
     </p>
   </div>
 
