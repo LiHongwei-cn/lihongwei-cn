@@ -20,12 +20,26 @@
 
 ## 快速开始
 
-### 1. 配置环境变量
+### 0. 本地开发模式（推荐先用这个测试）
+
+无需微信 AppID，直接启动后端即可在微信开发者工具中测试：
 
 ```bash
 cd backend
 cp .env.example .env
-# 编辑 .env 填入真实的 Key
+# .env.example 默认 BP_DEV_MODE=1，只需填入 DEEPSEEK_API_KEY 和 CRON_SECRET_TOKEN
+# WECHAT_APPID / WECHAT_SECRET 开发模式下可留空
+```
+
+### 1. 配置生产环境变量
+
+```bash
+cd backend
+cp .env.example .env
+# 编辑 .env：
+#   - 将 BP_DEV_MODE 改为 0
+#   - 填入真实的 WECHAT_APPID、WECHAT_SECRET
+#   - 填入 DEEPSEEK_API_KEY、CRON_SECRET_TOKEN
 ```
 
 ### 2. 安装依赖
@@ -65,9 +79,10 @@ sudo nginx -t && sudo systemctl reload nginx
 
 ### 5. 配置微信小程序
 
-1. 在微信开发者工具中打开 `miniprogram/` 目录
-2. 修改 `app.js` 中的 `apiBase` 为你的 HTTPS 域名
-3. 修改 `project.config.json` 中的 `appid` 为你的小程序 AppID
+1. 在[微信开发者工具](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)中打开 `miniprogram/` 目录
+2. 修改 `project.config.json` 中的 `appid` 为你的小程序 AppID
+3. **开发调试设置**：工具栏 → 详情 → 本地设置 → 勾选「不校验合法域名」
+4. `app.js` 中 `devApiBase` 指向本地后端（默认 `http://localhost:8080/api`），`prodApiBase` 指向生产 HTTPS 地址。工具自动根据环境切换
 
 ### 6. 设置定时周报
 

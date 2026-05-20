@@ -1,4 +1,5 @@
 const api = require('../../utils/api.js');
+const auth = require('../../utils/auth.js');
 const app = getApp();
 
 Page({
@@ -106,8 +107,7 @@ Page({
       content: '退出后需要重新登录',
       success: (res) => {
         if (res.confirm) {
-          app.clearLogin();
-          wx.reLaunch({ url: '/pages/index/index' });
+          auth.logout();
         }
       }
     });

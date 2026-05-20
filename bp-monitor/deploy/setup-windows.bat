@@ -31,10 +31,11 @@ if not exist "backend\.env" (
     copy backend\.env.example backend\.env >nul
     echo.
     echo !!! 请编辑 backend\.env 填入真实的 Key !!!
-    echo      DEEPSEEK_API_KEY=sk-你的密钥
-    echo      WECHAT_APPID=wx你的AppID
-    echo      WECHAT_SECRET=你的小程序密钥
-    echo      CRON_SECRET_TOKEN=自己编一个随机字符串
+    echo     DEEPSEEK_API_KEY=sk-你的密钥（必填）
+    echo     CRON_SECRET_TOKEN=自己编一个随机字符串（必填）
+    echo.
+    echo     本地测试保持 BP_DEV_MODE=1 即可，无需填写微信凭证
+    echo     正式上线时改为 BP_DEV_MODE=0 并填写 WECHAT_APPID / WECHAT_SECRET
     echo.
     start notepad backend\.env
     echo 填写完成后按任意键继续...
