@@ -114,6 +114,14 @@ python tools/autosave.py
 
 # MATLAB（通过启动脚本）
 matlab.bat
+
+# bp-monitor 后端启动
+cd bp-monitor && bash deploy/start.sh        # macOS/Linux
+cd bp-monitor && deploy\setup-windows.bat     # Windows 首次部署
+cd bp-monitor && deploy\start.bat            # Windows 日常启动
+
+# bp-monitor 测试
+cd bp-monitor/backend && python -m pytest tests/ -v
 ```
 
 ## 页面开发

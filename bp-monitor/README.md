@@ -90,9 +90,89 @@ crontab -e
 不构成医疗诊断或处方。请以执业医师的诊断和治疗方案为准。
 如有不适，请及时就医。
 
+## 项目结构
+
+```
+bp-monitor/
+├── backend/
+│   ├── main.py              # FastAPI 应用入口，5 组路由
+│   ├── config.py            # 环境变量读取
+│   ├── database.py          # SQLite 初始化 + Token 认证
+│   ├── models.py            # Pydantic 数据模型
+│   ├── requirements.txt     # Python 依赖
+│   ├── .env.example         # 环境变量模板
+│   ├── routes/              # API 路由
+│   │   ├── auth.py          # 微信登录 / Token 验证
+│   │   ├── users.py         # 用户信息读写
+│   │   ├── readings.py      # 血压记录 CRUD + 统计 + 趋势
+│   │   ├── reports.py       # 周报列表 / 生成
+│   │   └── ai.py            # AI 重新分析
+│   ├── services/            # 业务逻辑
+│   │   ├── analyzer.py      # 读数分析（含紧急判断）
+│   │   ├── report_gen.py    # 周报生成
+│   │   ├── wechat.py        # 微信 code2session
+│   │   ├── deepseek.py      # DeepSeek API 客户端
+│   │   └── medical.py       # 血压分级 / 紧急指征
+│   ├── prompts/             # AI 提示词模板
+│   │   ├── system_prompt.py # 系统提示词（含完整指南知识）
+│   │   ├── reading_analysis.py
+│   │   └── weekly_report.py
+│   └── tests/
+│       ├── test_medical.py  # 血压分级 / 紧急判断测试
+│       └── test_readings.py # 读数逻辑测试
+├── miniprogram/             # 微信小程序前端
+│   ├── app.js / app.json
+│   ├── utils/api.js / auth.js
+│   └── pages/ (index, record, history, report, profile)
+├── deploy/                  # 部署脚本
+│   ├── start.sh / start.bat
+│   ├── setup-windows.bat
+│   ├── cron-report.sh / cron-report.bat
+│   └── nginx.conf.example
+└── index.html               # GitHub Pages 项目页
+```
+
+## API 路由
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| POST | `/api/auth/login` | 微信登录（code → token + user） |
+| GET | `/api/auth/check` | Token 有效性检查 |
+| GET | `/api/users/me` | 获取当前用户信息 |
+| PUT | `/api/users/me` | 更新用户信息（年龄/性别/用药等） |
+| POST | `/api/readings` | 提交血压读数（自动触发 AI 分析） |
+| GET | `/api/readings` | 读数列表（分页 + 日期筛选） |
+| GET | `/api/readings/stats` | 统计摘要（均值/趋势/极值） |
+| GET | `/api/readings/trends` | 趋势数据（30 天日平均） |
+| GET | `/api/readings/{id}` | 单条读数详情 |
+| GET | `/api/reports` | 周报列表（最近 52 周） |
+| GET | `/api/reports/latest` | 最新周报 |
+| GET | `/api/reports/{id}` | 指定周报详情 |
+| POST | `/api/reports/generate` | 生成周报（支持 all_users 批量） |
+| POST | `/api/ai/analyze/{id}` | 重新分析指定读数 |
+| GET | `/api/health` | 健康检查 |
+
+所有读写接口（除 `/api/health` 和 cron 批量生成）均需 Bearer Token。
+
+## 环境变量
+
+| 变量 | 说明 |
+|------|------|
+| `DEEPSEEK_API_KEY` | DeepSeek API 密钥 |
+| `WECHAT_APPID` | 微信小程序 AppID |
+| `WECHAT_SECRET` | 微信小程序 AppSecret |
+| `CRON_SECRET_TOKEN` | 定时任务鉴权 Token |
+
+## 运行测试
+
+```bash
+cd backend
+python -m pytest tests/ -v
+```
+
 ## 技术栈
 
 - 前端：微信小程序（WXML/WXSS/JS）
-- 后端：Python FastAPI
-- 数据库：SQLite（WAL 模式）
+- 后端：Python 3.12 + FastAPI
+- 数据库：SQLite（WAL 模式，4 张表：users / readings / reports / ai_feedback）
 - AI：DeepSeek API（deepseek-v4-pro）

@@ -82,6 +82,17 @@ MATLAB 仿真 · AI 工具开发
 
 🔗 [查看完整教程](https://lihongwei-cn.github.io/win-optimize/)
 
+## 家庭血压监测助手
+
+微信小程序 + FastAPI + DeepSeek AI 驱动的家庭血压健康管理工具。
+
+- 微信一键登录，全家多人使用
+- 每次记录即时 AI 分析（基于全球四大高血压指南）
+- 长期趋势追踪 + 每周自动生成健康周报
+- 大字体 UI 专为老年人设计，数据仅存用户自己的服务器
+
+🔗 [查看项目页面](https://lihongwei-cn.github.io/bp-monitor/) ｜ [源码](https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/bp-monitor)
+
 ## Claude Code 从零入门教程
 
 Claude Code 的完整入门教程。Mac / Windows 双平台，有魔法没魔法都有对应方案。
