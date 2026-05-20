@@ -126,13 +126,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       </div>
       <div class="step-item">
         <h3>安装 CCS 代理</h3>
-        <p>将 CCS 项目放到 <code>F:\111\ccs\</code> 目录下，确保有 <code>server.js</code>、<code>index.js</code> 或 <code>app.js</code> 入口文件。</p>
+        <p>将 CCS 项目放到你的工作目录下（如 <code>~/ccs/</code> 或任意位置），确保有 <code>server.js</code>、<code>index.js</code> 或 <code>app.js</code> 入口文件。</p>
         <div class="tip info">CCS（Claude Code Server）是一个本地代理，将 Claude Code 的 Anthropic API 请求转发到 DeepSeek API。没有 CCS，Claude Code 无法使用 DeepSeek 模型。</div>
       </div>
       <div class="step-item">
         <h3>配置 API Key</h3>
-        <p>在终端执行（只需一次）：</p>
+        <p><strong>Windows：</strong></p>
         <div class="cmd">setx ANTHROPIC_API_KEY "sk-你的deepseek密钥"</div>
+        <p style="margin-top:6px"><strong>macOS：</strong></p>
+        <div class="cmd">echo 'export ANTHROPIC_API_KEY="sk-你的deepseek密钥"' >> ~/.zshrc && source ~/.zshrc</div>
         <p style="margin-top:4px">或设置 <code>DEEPSEEK_API_KEY</code>，脚本会自动读取。</p>
       </div>
     </div>
