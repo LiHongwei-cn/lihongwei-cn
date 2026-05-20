@@ -187,26 +187,33 @@ export ANTHROPIC_BASE_URL="http://127.0.0.1:3000"</div>
     <div class="faq-item">
       <h4>提示 claude 命令未找到</h4>
       <p>运行 <code>npm install -g @anthropic-ai/claude-code</code>。如果装完还是找不到，需要把 npm 全局 bin 目录加到 PATH：</p>
-      <div class="cmd">setx PATH "%PATH%;%APPDATA%\npm"</div>
+      <div class="cmd">:: Windows
+setx PATH "%PATH%;%APPDATA%\npm"
+
+# macOS
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc</div>
     </div>
 
     <div class="faq-item">
       <h4>CCS 代理无响应</h4>
-      <p>确认 CCS 已安装到 <code>F:\111\ccs\</code>。在终端手动启动测试：</p>
-      <div class="cmd">cd F:\111\ccs
+      <p>确认 CCS 已安装到工作目录。在终端手动启动测试：</p>
+      <div class="cmd">cd 你的CCS目录
 node server.js</div>
-      <p style="margin-top:4px">如果手动能启动但脚本不能，检查端口号是否一致。</p>
+      <p style="margin-top:4px">如果手动能启动但脚本不能，检查启动脚本中的端口号是否一致。</p>
     </div>
 
     <div class="faq-item">
       <h4>连不上 DeepSeek API</h4>
       <p>CCS 代理启动了但转发出错。检查 <code>ANTHROPIC_API_KEY</code> 是否正确，以及是否需要代理访问外网。</p>
-      <div class="cmd">:: 如果需代理，在 bat 中加：
-set HTTPS_PROXY=http://127.0.0.1:7897</div>
+      <div class="cmd">:: Windows .bat 中加代理
+set HTTPS_PROXY=http://127.0.0.1:7897
+
+# macOS .command 中加代理
+export HTTPS_PROXY="http://127.0.0.1:7897"</div>
     </div>
 
     <div class="faq-item">
-      <h4>打开的是黑窗口不是 Windows Terminal</h4>
+      <h4>Windows 打开的是黑窗口不是 Windows Terminal</h4>
       <p>在 Microsoft Store 搜索"Windows Terminal"安装（免费），再双击 bat 即可在新终端中打开。</p>
     </div>
   </div>
