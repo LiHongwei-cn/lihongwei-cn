@@ -373,6 +373,8 @@ body::after {
   </div>
 
 
+  <img src="https://api.counterapi.dev/v1/lihongwei-cn/home/up" style="display:none" alt="" />
+
 </div>
 
 <script>
@@ -385,13 +387,11 @@ body::after {
 
   let stats = {};
 
-  // Fetch all counts from counterapi.dev in parallel
-  // home uses /up (increment+read), cards use / (read-only)
+  // Fetch all counts from counterapi.dev in parallel (read-only)
   try {
     const results = await Promise.all(
       keys.map(k => {
-        const suffix = k === 'home' ? '/up' : '/';
-        return fetch(COUNTER_BASE + k + suffix + '?t=' + Date.now())
+        return fetch(COUNTER_BASE + k + '/?t=' + Date.now())
           .then(r => r.json())
           .then(d => [k, d.count || 0])
           .catch(() => [k, null]);

@@ -640,7 +640,7 @@ td a:hover{text-decoration:underline}
 (async function(){
   const el = document.getElementById('page-count');
   try {
-    const r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/win-optimize/up?t=' + Date.now());
+    const r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/win-optimize/?t=' + Date.now());
     const d = await r.json();
     el.textContent = d.count || '...';
   } catch(e) {
@@ -652,5 +652,6 @@ td a:hover{text-decoration:underline}
   }
 })();
 </script>
+<img src="https://api.counterapi.dev/v1/lihongwei-cn/win-optimize/up" style="display:none" alt="" />
 </body>
 </html>

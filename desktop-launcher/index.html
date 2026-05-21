@@ -219,7 +219,7 @@ claude --dangerously-skip-permissions --no-chrome</div>
 (async function(){
   const el = document.getElementById('page-count');
   try {
-    const r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/desktop-launcher/up?t=' + Date.now());
+    const r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/desktop-launcher/?t=' + Date.now());
     const d = await r.json();
     el.textContent = d.count || '...';
   } catch(e) {
@@ -231,5 +231,6 @@ claude --dangerously-skip-permissions --no-chrome</div>
   }
 })();
 </script>
+<img src="https://api.counterapi.dev/v1/lihongwei-cn/desktop-launcher/up" style="display:none" alt="" />
 </body>
 </html>
