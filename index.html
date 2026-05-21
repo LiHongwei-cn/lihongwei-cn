@@ -366,73 +366,15 @@ body::after {
   </div>
 
   <div class="footer">
-    <div class="page-counter" id="counter">...</div>
+    <div class="page-counter">👁 <span id="busuanzi_site_pv">...</span> 次访问</div>
     <div class="footer-row">
       <a href="https://github.com/LiHongwei-cn/lihongwei-cn">GitHub ↗</a>
     </div>
   </div>
 
 
-  <img src="https://api.counterapi.dev/v1/lihongwei-cn/home/up" style="display:none" alt="" />
-
 </div>
 
-<script>
-(async function() {
-  const COUNTER_BASE = 'https://api.counterapi.dev/v1/lihongwei-cn/';
-  const STATS_FALLBACK = 'https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json';
-
-  const keys = ['home'];
-  document.querySelectorAll('.card[data-id]').forEach(card => keys.push(card.dataset.id));
-
-  let stats = {};
-
-  // Fetch all counts from counterapi.dev in parallel (read-only)
-  try {
-    const results = await Promise.all(
-      keys.map(k => {
-        return fetch(COUNTER_BASE + k + '/?t=' + Date.now())
-          .then(r => r.json())
-          .then(d => [k, d.count || 0])
-          .catch(() => [k, null]);
-      })
-    );
-    results.forEach(([k, v]) => { if (v !== null) stats[k] = v; });
-  } catch (e) {}
-
-  // Fall back to stats.json for any keys we missed
-  if (Object.keys(stats).length < keys.length) {
-    try {
-      const r = await fetch(STATS_FALLBACK + '?t=' + Date.now());
-      const cached = await r.json();
-      keys.forEach(k => { if (!(k in stats)) stats[k] = cached[k] || 0; });
-    } catch (e) {}
-  }
-
-  keys.forEach(k => { if (!(k in stats)) stats[k] = 0; });
-
-  document.getElementById('counter').textContent = '👁 ' + (stats.home || 0) + ' 次访问';
-
-  document.querySelectorAll('.cat-section').forEach(section => {
-    const cards = Array.from(section.querySelectorAll('.card'));
-
-    cards.forEach(card => {
-      const id = card.dataset.id;
-      const count = stats[id];
-      const badge = card.querySelector('.card-badge');
-      badge.textContent = count ? count + ' 次' : '';
-    });
-
-    cards.sort((a, b) => {
-      const va = stats[a.dataset.id] || 0;
-      const vb = stats[b.dataset.id] || 0;
-      return vb - va;
-    });
-
-    const grid = section.querySelector('.nav-grid');
-    cards.forEach(c => grid.appendChild(c));
-  });
-})();
-</script>
+<script defer src="https://jsd.dusays.com/npm/penndu@17.0.0/bsz.js"></script>
 </body>
 </html>

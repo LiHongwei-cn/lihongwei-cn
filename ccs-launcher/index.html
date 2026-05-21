@@ -224,7 +224,7 @@ export HTTPS_PROXY="http://127.0.0.1:7897"</div>
   </div>
 
   <div style="text-align:center;padding:24px 0 8px;font-size:13px;color:rgba(255,255,255,0.2)">
-    本页被阅读 <span id="page-count">...</span> 次
+    本页被阅读 <span id="busuanzi_page_pv">...</span> 次
   </div>
 
   <div class="footer">
@@ -232,22 +232,6 @@ export HTTPS_PROXY="http://127.0.0.1:7897"</div>
   </div>
 
 </div>
-<script>
-(async function(){
-  const el = document.getElementById('page-count');
-  try {
-    const r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/ccs-launcher/?t=' + Date.now());
-    const d = await r.json();
-    el.textContent = d.count || '...';
-  } catch(e) {
-    try {
-      const r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json?t=' + Date.now());
-      const s = await r.json();
-      el.textContent = s['ccs-launcher'] || '...';
-    } catch(e2) { el.textContent = '...'; }
-  }
-})();
-</script>
-<img src="https://api.counterapi.dev/v1/lihongwei-cn/ccs-launcher/up" style="display:none" alt="" />
+<script defer src="https://jsd.dusays.com/npm/penndu@17.0.0/bsz.js"></script>
 </body>
 </html>

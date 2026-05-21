@@ -398,7 +398,7 @@ copy project-CLAUDE.md $env:USERPROFILE\Desktop\lihongwei-cn\CLAUDE.md</div>
 
   <!-- 访问计数 -->
   <div class="page-counter">
-    本页被阅读 <span id="page-count">...</span> 次
+    本页被阅读 <span id="busuanzi_page_pv">...</span> 次
   </div>
 
   <div class="footer">
@@ -409,22 +409,6 @@ copy project-CLAUDE.md $env:USERPROFILE\Desktop\lihongwei-cn\CLAUDE.md</div>
 
 </div>
 
-<script>
-(async function(){
-  const el = document.getElementById('page-count');
-  try {
-    const r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/claude-code-tutorial/?t=' + Date.now());
-    const d = await r.json();
-    el.textContent = d.count || '...';
-  } catch(e) {
-    try {
-      const r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json?t=' + Date.now());
-      const s = await r.json();
-      el.textContent = s['claude-code-tutorial'] || '...';
-    } catch(e2) { el.textContent = '...'; }
-  }
-})();
-</script>
-<img src="https://api.counterapi.dev/v1/lihongwei-cn/claude-code-tutorial/up" style="display:none" alt="" />
+<script defer src="https://jsd.dusays.com/npm/penndu@17.0.0/bsz.js"></script>
 </body>
 </html>
