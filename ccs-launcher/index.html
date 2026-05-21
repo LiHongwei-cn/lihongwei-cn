@@ -236,7 +236,7 @@ export HTTPS_PROXY="http://127.0.0.1:7897"</div>
 (async function(){
   const el = document.getElementById('page-count');
   try {
-    const r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/ccs-launcher/up');
+    const r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/ccs-launcher/up?t=' + Date.now());
     const d = await r.json();
     el.textContent = d.count || '...';
   } catch(e) {

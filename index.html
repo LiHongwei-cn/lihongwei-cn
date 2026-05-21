@@ -391,7 +391,7 @@ body::after {
     const results = await Promise.all(
       keys.map(k => {
         const suffix = k === 'home' ? '/up' : '/';
-        return fetch(COUNTER_BASE + k + suffix)
+        return fetch(COUNTER_BASE + k + suffix + '?t=' + Date.now())
           .then(r => r.json())
           .then(d => [k, d.count || 0])
           .catch(() => [k, null]);

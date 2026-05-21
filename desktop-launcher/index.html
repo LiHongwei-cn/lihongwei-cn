@@ -219,7 +219,7 @@ claude --dangerously-skip-permissions --no-chrome</div>
 (async function(){
   const el = document.getElementById('page-count');
   try {
-    const r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/desktop-launcher/up');
+    const r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/desktop-launcher/up?t=' + Date.now());
     const d = await r.json();
     el.textContent = d.count || '...';
   } catch(e) {

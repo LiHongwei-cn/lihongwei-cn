@@ -413,7 +413,7 @@ copy project-CLAUDE.md $env:USERPROFILE\Desktop\lihongwei-cn\CLAUDE.md</div>
 (async function(){
   const el = document.getElementById('page-count');
   try {
-    const r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/claude-code-tutorial/up');
+    const r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/claude-code-tutorial/up?t=' + Date.now());
     const d = await r.json();
     el.textContent = d.count || '...';
   } catch(e) {
