@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>刘锦奕 · 21 岁生日快乐 🎂</title>
-<meta name="description" content="刘锦奕21岁生日快乐！愿你脚下的每一步，都通向更远的风景。">
+<meta name="description" content="刘锦奕21岁生日快乐！老同学祝你前程似锦，万事胜意。">
 <style>
 :root {
   --bg: #0a0a14;
@@ -176,25 +176,6 @@ canvas#confetti  { position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
   opacity: 0;
 }
 
-/* 徒步毒鸡汤气泡 */
-.float-quote {
-  position: absolute;
-  font-size: 15px;
-  font-weight: 700;
-  color: #fff;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 20px;
-  padding: 6px 16px;
-  white-space: nowrap;
-  animation: floatUp linear infinite;
-  opacity: 0;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  text-shadow: 0 0 10px rgba(255,255,255,0.5);
-  box-shadow: 0 0 20px rgba(255,200,50,0.1);
-}
-
 @keyframes floatUp {
   0% { transform: translateY(105vh) rotate(0deg) scale(0.4); opacity: 0; }
   5% { opacity: 0.7; }
@@ -266,14 +247,14 @@ canvas#confetti  { position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
   <p class="name-display">刘锦奕</p>
 
   <div class="wish-text">
-    <span>21 岁了牢弟，膝盖还行不行啊 🦵</span>
-    <span>"休闲徒步"——然后走了 30 公里 🏔️</span>
-    <span>别人看风景，你搁那研究脚上的水泡 🔍</span>
-    <span>背的包比你人还重，里面全是零食 🎒</span>
-    <span>生日快乐，永远在路上，永远在迷路 🗺️</span>
+    <span>21 岁了，又长大了一岁 🎂</span>
+    <span>不管你身在何方、在做什么</span>
+    <span>愿你想要的都得到，得不到的都释怀 ✨</span>
+    <span>愿你前程似锦，万事胜意 🚀</span>
+    <span>生日快乐，永远年轻，永远帅得离谱 😎</span>
   </div>
 
-  <p class="hint">— 点屏幕放烟花 · 每点一次锦奕多走一公里 · v3 —</p>
+  <p class="hint">— 点屏幕放烟花 · 老同学祝你生日快乐 · v4 —</p>
 </main>
 
 <script>
@@ -396,39 +377,10 @@ function drawConfetti() {
 }
 drawConfetti();
 
-// ============ 漂浮系统：emoji + 徒步毒鸡汤 ============
+// ============ 漂浮系统：emoji ============
 const floatLayer = document.getElementById('floatingLayer');
 
-const EMOJIS = ['🎂','🎉','🎈','🎁','🎊','🥳','🔥','🍰','🕯️','💖','🎆','⚡','🏆','✨','🌟','🎵','🍀','🌈','💫','🎯','🚀','💎','🌻','🦋','🎪','🍾','🧁','🎀','💝','🤗','⛰️','🥾','🏔️','🌄','🗻','🏕️','🧗','🌿','🌲','🎒','🗺️','☀️','🌙','⭐'];
-
-const HIKE_QUOTES = [
-  '⛰️ "快到了"——这是你说的第 18 遍了',
-  '🥾 别人徒步看风景，你徒步看脚上的水泡',
-  '🎒 包里装的全是零食，负重拉练了属于是',
-  '🗺️ 迷路了不叫迷路，叫"探索新路线"',
-  '🦵 21 岁了，膝盖且行且珍惜',
-  '🏔️ "休闲局"——结果走了 30 公里',
-  '😤 又菜又爱走，说的就是你',
-  '📸 徒步三小时，拍照 298 张，前进 300 米',
-  '💨 山上的风很大，但没有你吹的牛大',
-  '🪨 "这坡不陡"——说完四肢并用开始爬',
-  '🥵 5000 块钱装备，最远到过小区门口',
-  '🏕️ 露营一晚，被蚊子抬走了帐篷',
-  '🎯 别人的 K/D 过 2.0，你步数过 4 万',
-  '🧗 登山杖不是用来支撑的，是摆拍道具',
-  '🌧️ 每次出门徒步就下雨，你是萧敬腾分腾',
-  '🍜 山顶泡面是你吃过最香的东西——饿的',
-  '💀 "我体力还行"——说完这句话你抽筋了',
-  '🔋 充电宝带了三个，因为拍照比走路累',
-  '🦟 蚊子为什么不咬别人只咬你？因为你是甜的',
-  '🎪 刘锦奕の迷路日记·第 21 卷',
-  '🗑️ 一路上把垃圾都捡了——人设环保 boy',
-  '😂 说好六点出发，十点你还在床上',
-  '👃 你闻闻这山里的空气——全是牛粪味',
-  '🎂 生日也得走！蛋糕在路上，终点见',
-  '🤳 每次徒步唯一不累的器官：自拍杆',
-  '🧦 穿了新鞋就上山——水泡养成计划启动',
-];
+const EMOJIS = ['🎂','🎉','🎈','🎁','🎊','🥳','🔥','🍰','🕯️','💖','🎆','⚡','🏆','✨','🌟','🎵','🍀','🌈','💫','🎯','🚀','💎','🌻','🦋','🎪','🍾','🧁','🎀','💝','🤗'];
 
 function spawnEmoji() {
   const el = document.createElement('span');
@@ -442,28 +394,14 @@ function spawnEmoji() {
   el.addEventListener('animationend', () => el.remove());
 }
 
-function spawnQuote() {
-  const el = document.createElement('span');
-  el.className = 'float-quote';
-  el.textContent = HIKE_QUOTES[Math.floor(Math.random() * HIKE_QUOTES.length)];
-  el.style.left = Math.random() * 88 + '%';
-  el.style.animationDuration = (10 + Math.random() * 14) + 's';
-  el.style.animationDelay = Math.random() * 3 + 's';
-  floatLayer.appendChild(el);
-  el.addEventListener('animationend', () => el.remove());
-}
-
 // 初始一波
-for (let i = 0; i < 5; i++) { setTimeout(() => spawnEmoji(), i * 300); }
-for (let i = 0; i < 3; i++) { setTimeout(() => spawnQuote(), 400 + i * 600); }
+for (let i = 0; i < 8; i++) { setTimeout(() => spawnEmoji(), i * 300); }
 
-// 持续生成，控制比例
+// 持续生成
 setInterval(() => {
-  if (floatLayer.children.length > 25) return;
-  const r = Math.random();
-  if (r < 0.5) spawnEmoji();
-  else spawnQuote();
-}, 1200);
+  if (floatLayer.children.length > 30) return;
+  spawnEmoji();
+}, 1000);
 
 // ============ 交互 ============
 document.addEventListener('click', (e) => {
@@ -471,16 +409,7 @@ document.addEventListener('click', (e) => {
 
   const ripple = document.createElement('span');
   ripple.className = 'ripple';
-  const r = Math.random();
-  if (r < 0.5) {
-    ripple.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
-  } else {
-    ripple.textContent = HIKE_QUOTES[Math.floor(Math.random() * HIKE_QUOTES.length)];
-    ripple.style.fontSize = '20px';
-    ripple.style.fontWeight = '700';
-    ripple.style.color = '#fff';
-    ripple.style.textShadow = '0 0 16px rgba(255,255,255,0.7)';
-  }
+  ripple.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
   ripple.style.left = e.clientX + 'px';
   ripple.style.top = e.clientY + 'px';
   document.body.appendChild(ripple);
