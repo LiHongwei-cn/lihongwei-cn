@@ -10,7 +10,13 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## 项目概览
 
-简述项目用途和技术栈。
+简述项目用途和技术栈（2-3 句话）。
+
+## 技术栈
+
+- 语言/框架
+- 构建工具
+- 部署平台
 
 ## 目录架构
 
@@ -23,23 +29,24 @@ This file provides guidance to Claude Code when working with code in this reposi
 └── README.md
 ```
 
-## 技术规范
+## 代码质量
 
-- 代码风格遵循全局规范（`~/.claude/rules/`）
 - 文件命名：`kebab-case` / `snake_case`（选定后全局一致）
-- 函数单一职责，< 50 行
+- 函数单一职责，< 50 行（Python）/ < 200 行（MATLAB）
+- 复用优先：公共函数不重复定义
+- 参数验证：公共函数入口检查参数合法性
 
 ## Git 规范
 
 - commit message: `<type>: <description>`（feat, fix, refactor, docs, chore）
-- 不提交 `.env`、密钥、`__pycache__`、`node_modules`
+- 先 diff 再 commit，不提交 `.env`、密钥、`__pycache__`
 
 ## 安全红线
 
 - 绝不硬编码密钥（API Key、Token、密码）
 - 所有密钥从环境变量读取
 - `.env` 不提交到 Git
-- 外部输入（用户消息、API 响应）在显示/执行前验证
+- 外部输入在显示/执行前验证
 
 ## 常用命令
 

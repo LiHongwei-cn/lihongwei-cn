@@ -6,13 +6,14 @@
 
 | 目录/文件 | 说明 | 目标位置 |
 |-----------|------|----------|
-| `CLAUDE.md` | 全局用户指令（代码洁癖、安装洁癖、蒙多学习引擎） | `~/.claude/CLAUDE.md` |
+| `CLAUDE.md` | 全局用户指令（Skill 自动调用、代码洁癖、记忆系统架构、蒙多学习引擎） | `~/.claude/CLAUDE.md` |
 | `settings.json` | DeepSeek API 接入配置（含占位 Key，需修改） | `~/.claude/settings.json` |
 | `settings.local.json` | 权限白名单 | `~/.claude/settings.local.json` |
 | `project-CLAUDE.md` | 项目级 CLAUDE.md 通用模板 | 各项目根目录 `CLAUDE.md` |
 | `rules/*.md` | 6 大规范（代码风格、Git、测试、性能、Agent、安全） | `~/.claude/rules/` |
 | `skills/neat-freak/` | 知识库洁癖审查 Skill | `~/.claude/skills/neat-freak/` |
 | `skills/code-tidy/` | 代码洁癖整理 Skill | `~/.claude/skills/code-tidy/` |
+| `skills/homepage-layout/` | 主页布局自检 Skill | `~/.claude/skills/homepage-layout/` |
 | `skills/蒙多/` | 跨界学习引擎 Skill | `~/.claude/skills/蒙多/` |
 
 ## 一键部署
