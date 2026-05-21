@@ -159,6 +159,15 @@ cd bp-monitor/backend && python -m pytest tests/ -v
 2. 检查 `bot/` 目录是否需要同步更新（系统提示词、启动脚本等）
 3. 确认 GitHub Pages 网址内容与代码一致
 
+## 全局规范同步（红线）
+
+每次修改全局规范文件（`~/.claude/CLAUDE.md`、`rules/`、`skills/`、`settings.json`）后，必须自动同步到 `global-specs/`：
+- `~/.claude/CLAUDE.md` → `global-specs/CLAUDE.md`
+- `~/.claude/rules/*.md` → `global-specs/rules/*.md`
+- 新增/修改的 skills → `global-specs/skills/`
+- 配置变更 → `global-specs/settings.json` / `settings.local.json`
+- 更新 `global-specs/README.md` 中受影响的说明
+
 ## 全站校验（红线）
 
 每次新增项目页面后：
