@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>生日快乐 · 余李满</title>
+<style>
+:root {
+  --bg: #0a0a14;
+  --gold: #f0c060;
+  --gold-light: #fde68a;
+  --rose: #f472b6;
+  --text: #e4e4e7;
+  --dim: rgba(255,255,255,0.45);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+canvas#fireworks {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+canvas#confetti {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.main {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 48px 32px;
+  max-width: 600px;
+  width: 100%;
+}
+
+/* 蜡烛 */
+.candle-row {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  margin-bottom: 40px;
+}
+
+.candle-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.flame {
+  width: 14px;
+  height: 24px;
+  background: radial-gradient(ellipse at 50% 80%, #fff 0%, #fbbf24 40%, #f97316 100%);
+  border-radius: 50% 50% 30% 30%;
+  animation: flicker 0.15s infinite alternate ease-in-out;
+  margin-bottom: -2px;
+  position: relative;
+  z-index: 2;
+}
+.flame:nth-child(1) { animation-delay: 0s; }
+.flame:nth-child(1) ~ .candle { /* no */ }
+
+.candle {
+  width: 18px;
+  height: 48px;
+  border-radius: 4px 4px 2px 2px;
+  position: relative;
+}
+
+.candle-1 { background: linear-gradient(180deg, #fbbf24, #f59e0b); }
+.candle-2 { background: linear-gradient(180deg, #f472b6, #ec4899); }
+.candle-3 { background: linear-gradient(180deg, #a78bfa, #8b5cf6); }
+.candle-4 { background: linear-gradient(180deg, #34d399, #10b981); }
+.candle-5 { background: linear-gradient(180deg, #f87171, #ef4444); }
+
+@keyframes flicker {
+  0% { transform: scale(1, 0.95) translateY(0); opacity: 0.9; }
+  100% { transform: scale(1.1, 1.08) translateY(-2px); opacity: 1; }
+}
+
+/* 主文字 */
+.greeting {
+  font-size: 52px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold), #d97706);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  0% { filter: drop-shadow(0 0 8px rgba(240,192,96,0.3)); }
+  100% { filter: drop-shadow(0 0 20px rgba(240,192,96,0.6)); }
+}
+
+.name-display {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  margin-bottom: 28px;
+  color: #fff;
+}
+
+.wish-text {
+  font-size: 17px;
+  line-height: 2;
+  color: var(--dim);
+  max-width: 420px;
+  margin: 0 auto 36px;
+}
+
+.wish-text span {
+  display: block;
+  opacity: 0;
+  animation: fadeInLine 0.8s ease forwards;
+}
+.wish-text span:nth-child(1) { animation-delay: 0.4s; }
+.wish-text span:nth-child(2) { animation-delay: 0.9s; }
+.wish-text span:nth-child(3) { animation-delay: 1.4s; }
+.wish-text span:nth-child(4) { animation-delay: 1.9s; }
+
+@keyframes fadeInLine {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* 漂浮 emoji */
+.floating-emojis {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.float-emoji {
+  position: absolute;
+  font-size: 28px;
+  animation: floatUp linear infinite;
+  opacity: 0;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(105vh) rotate(0deg) scale(0.5); opacity: 0; }
+  5% { opacity: 0.7; }
+  85% { opacity: 0.5; }
+  100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
+}
+
+/* 点击涟漪 */
+.ripple {
+  position: fixed;
+  pointer-events: none;
+  z-index: 100;
+  font-size: 40px;
+  animation: rippleOut 1s ease-out forwards;
+}
+
+@keyframes rippleOut {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+}
+
+/* 底部提示 */
+.hint {
+  margin-top: 48px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.2);
+  animation: fadeInLine 1s ease 3s forwards;
+  opacity: 0;
+}
+
+/* 响应式 */
+@media (max-width: 480px) {
+  .greeting { font-size: 36px; }
+  .name-display { font-size: 26px; }
+  .wish-text { font-size: 15px; padding: 0 16px; }
+  .candle-row { gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="fireworks"></canvas>
+<canvas id="confetti"></canvas>
+<div class="floating-emojis" id="floatingEmojis"></div>
+
+<main class="main">
+  <div class="candle-row">
+    <div class="candle-wrap"><div class="flame"></div><div class="candle candle-1"></div></div>
+    <div class="candle-wrap"><div class="flame"></div><div class="candle candle-2"></div></div>
+    <div class="candle-wrap"><div class="flame"></div><div class="candle candle-3"></div></div>
+    <div class="candle-wrap"><div class="flame"></div><div class="candle candle-4"></div></div>
+    <div class="candle-wrap"><div class="flame"></div><div class="candle candle-5"></div></div>
+  </div>
+
+  <h1 class="greeting">生日快乐</h1>
+  <p class="name-display">余李满</p>
+
+  <div class="wish-text">
+    <span>愿你的每一天都闪闪发光 ✨</span>
+    <span>愿你想要的都得到，得到的都美好 🎁</span>
+    <span>愿所有幸运都向你奔赴而来 🍀</span>
+    <span>新的一岁，继续做最酷的自己 🚀</span>
+  </div>
+
+  <p class="hint">— 点击屏幕放烟花 —</p>
+</main>
+
+<script>
+// ============ 烟花 Canvas ============
+const fwCanvas = document.getElementById('fireworks');
+const fwCtx = fwCanvas.getContext('2d');
+
+let W, H;
+function resize() {
+  W = fwCanvas.width = window.innerWidth;
+  H = fwCanvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Particle {
+  constructor(x, y, color) {
+    this.x = x;
+    this.y = y;
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 2 + Math.random() * 6;
+    this.vx = Math.cos(angle) * speed;
+    this.vy = Math.sin(angle) * speed;
+    this.color = color;
+    this.alpha = 1;
+    this.decay = 0.008 + Math.random() * 0.02;
+    this.size = 2 + Math.random() * 2.5;
+    this.gravity = 0.04;
+  }
+
+  update() {
+    this.vx *= 0.99;
+    this.vy *= 0.99;
+    this.vy += this.gravity;
+    this.x += this.vx;
+    this.y += this.vy;
+    this.alpha -= this.decay;
+  }
+
+  draw(ctx) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, this.alpha);
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+const particles = [];
+const COLORS = ['#fbbf24','#f59e0b','#f472b6','#a78bfa','#34d399','#f87171','#60a5fa','#fde68a','#fff'];
+
+function spawnFirework() {
+  const x = W * 0.15 + Math.random() * W * 0.7;
+  const y = H * 0.1 + Math.random() * H * 0.45;
+  const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+  const count = 40 + Math.floor(Math.random() * 60);
+  for (let i = 0; i < count; i++) {
+    particles.push(new Particle(x, y, color));
+  }
+}
+
+function drawFireworks() {
+  fwCtx.clearRect(0, 0, W, H);
+
+  // trail effect
+  fwCtx.fillStyle = 'rgba(10,10,20,0.15)';
+  fwCtx.fillRect(0, 0, W, H);
+
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.update();
+    p.draw(fwCtx);
+    if (p.alpha <= 0) particles.splice(i, 1);
+  }
+  requestAnimationFrame(drawFireworks);
+}
+
+// 初始放一波烟花
+for (let i = 0; i < 5; i++) {
+  setTimeout(() => spawnFirework(), i * 300);
+}
+// 之后每隔一段时间随机放
+setInterval(() => {
+  if (Math.random() < 0.6) spawnFirework();
+}, 1200);
+
+drawFireworks();
+
+// ============ 五彩纸屑 Canvas ============
+const cfCanvas = document.getElementById('confetti');
+const cfCtx = cfCanvas.getContext('2d');
+cfCanvas.width = W;
+cfCanvas.height = H;
+window.addEventListener('resize', () => {
+  cfCanvas.width = window.innerWidth;
+  cfCanvas.height = window.innerHeight;
+});
+
+const confettiPieces = [];
+const CONFETTI_COLORS = ['#fbbf24','#f472b6','#a78bfa','#34d399','#f87171','#60a5fa','#fde68a','#fb923c','#c084fc'];
+
+class Confetti {
+  constructor() {
+    this.reset(true);
+  }
+
+  reset(initial) {
+    this.x = Math.random() * cfCanvas.width;
+    this.y = initial ? Math.random() * -cfCanvas.height : -20;
+    this.w = 6 + Math.random() * 10;
+    this.h = 4 + Math.random() * 8;
+    this.color = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+    this.vy = 1.5 + Math.random() * 3;
+    this.vx = (Math.random() - 0.5) * 2;
+    this.rot = Math.random() * 360;
+    this.rotSpeed = (Math.random() - 0.5) * 8;
+    this.swing = Math.random() * 0.03;
+    this.swingPhase = Math.random() * Math.PI * 2;
+  }
+
+  update() {
+    this.y += this.vy;
+    this.x += this.vx + Math.sin(this.y * this.swing + this.swingPhase) * 0.8;
+    this.rot += this.rotSpeed;
+    if (this.y > cfCanvas.height + 30) this.reset(false);
+  }
+
+  draw(ctx) {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate((this.rot * Math.PI) / 180);
+    ctx.fillStyle = this.color;
+    ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
+    ctx.restore();
+  }
+}
+
+for (let i = 0; i < 80; i++) {
+  confettiPieces.push(new Confetti());
+}
+
+function drawConfetti() {
+  cfCtx.clearRect(0, 0, cfCanvas.width, cfCanvas.height);
+  for (const c of confettiPieces) {
+    c.update();
+    c.draw(cfCtx);
+  }
+  requestAnimationFrame(drawConfetti);
+}
+drawConfetti();
+
+// ============ 漂浮 emoji ============
+const emojiContainer = document.getElementById('floatingEmojis');
+const EMOJIS = ['🎂','🎉','🎈','🎁','🎊','✨','💫','🌟','💝','🥳','🎵','🍰','🧁','💐','🕯️'];
+
+function spawnEmoji() {
+  const el = document.createElement('span');
+  el.className = 'float-emoji';
+  el.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+  el.style.left = Math.random() * 95 + '%';
+  el.style.fontSize = (20 + Math.random() * 24) + 'px';
+  el.style.animationDuration = (8 + Math.random() * 10) + 's';
+  emojiContainer.appendChild(el);
+
+  el.addEventListener('animationend', () => el.remove());
+}
+
+// 初始一批
+for (let i = 0; i < 12; i++) {
+  setTimeout(() => spawnEmoji(), i * 400);
+}
+// 持续生成
+setInterval(() => {
+  if (emojiContainer.children.length < 20) spawnEmoji();
+}, 1500);
+
+// ============ 点击放烟花 + 涟漪 ============
+document.addEventListener('click', (e) => {
+  // 烟花从点击位置发出
+  const x = e.clientX;
+  const y = e.clientY;
+  const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+  const count = 30 + Math.floor(Math.random() * 40);
+  for (let i = 0; i < count; i++) {
+    particles.push(new Particle(x, y, color));
+  }
+
+  // emoji 涟漪
+  const ripple = document.createElement('span');
+  ripple.className = 'ripple';
+  ripple.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+  ripple.style.left = x + 'px';
+  ripple.style.top = y + 'px';
+  document.body.appendChild(ripple);
+  ripple.addEventListener('animationend', () => ripple.remove());
+});
+
+// ============ 键盘也要有反应 ============
+document.addEventListener('keydown', () => {
+  spawnFirework();
+});
+</script>
+</body>
+</html>
