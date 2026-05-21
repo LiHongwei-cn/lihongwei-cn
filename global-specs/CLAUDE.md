@@ -318,3 +318,74 @@ memory/
 **禁止**：直接复制粘贴未理解的代码、在一个来源上花超过 10 分钟。
 
 详见 `/蒙多` skill。
+
+## Scrapling 爬虫框架（红线）
+
+所有网页抓取任务**必须使用 Scrapling**，禁止用 requests/urllib 裸写爬虫。
+
+官网：https://github.com/D4Vinci/Scrapling | Python 3.10+ | BSD-3-Clause
+
+### 为什么用 Scrapling
+
+- **自适应抓取**：网站改版后自动重新定位元素，选择器不失效
+- **反检测**：内置 TLS 指纹模拟、Cloudflare 绕过、StealthyFetcher
+- **Spider 框架**：类 Scrapy 的 async Spider，支持断点续抓、并发控制、robots.txt
+- **性能**：解析器比 BS4 快 ~784 倍，元素相似性查找比 AutoScraper 快 5.2 倍
+- **MCP 集成**：内置 MCP 服务器，AI 辅助抓取时降低 token 消耗
+- **CLI**：`scrapling extract` 直接从终端抓取页面
+
+### 安装
+
+```bash
+pip install "scrapling[all]"
+scrapling install
+```
+
+### 使用原则
+
+1. **简单页面** → `Fetcher`：快速 HTTP 请求，模拟浏览器指纹
+2. **受保护页面** → `StealthyFetcher`：绕过 Cloudflare Turnstile/Interstitial
+3. **JS 渲染页面** → `DynamicFetcher`：基于 Playwright 的浏览器自动化
+4. **批量爬取** → `Spider`：并发控制、断点续抓、自动导出 JSON/JSONL
+5. **选择器** → 优先用 `page.css()` 和 `page.xpath()`，自适应场景加 `auto_save=True` + `adaptive=True`
+
+### 快速参考
+
+```python
+# 基本请求
+from scrapling.fetchers import Fetcher
+page = Fetcher.get('https://example.com')
+data = page.css('.item::text').getall()
+
+# 隐秘模式（绕过 Cloudflare）
+from scrapling.fetchers import StealthyFetcher
+StealthyFetcher.adaptive = True
+page = StealthyFetcher.fetch('https://example.com', headless=True)
+
+# Spider 批量爬取
+from scrapling.spiders import Spider, Request, Response
+class MySpider(Spider):
+    name = "my"
+    start_urls = ["https://example.com/"]
+    concurrent_requests = 10
+    async def parse(self, response: Response):
+        for item in response.css('.item'):
+            yield {"text": item.css('::text').get()}
+        next_page = response.css('.next a')
+        if next_page:
+            yield response.follow(next_page[0].attrib['href'])
+
+result = MySpider().start()
+result.items.to_json("output.json")
+
+# CLI 快速抓取
+# scrapling extract get 'https://example.com' content.md
+# scrapling extract stealthy-fetch 'https://example.com' output.html --solve-cloudflare
+```
+
+### 强制规则
+
+- 禁止 `import requests` 裸写爬虫——发现即改写为 Scrapling
+- 禁止 `from bs4 import BeautifulSoup`——Scrapling 内置等价功能且更快
+- 爬取结果统一用 `.to_json()` / `.to_jsonl()` 导出，保持数据格式一致
+- 批量任务必须用 Spider + `crawldir` 断点续抓，防止中断重来

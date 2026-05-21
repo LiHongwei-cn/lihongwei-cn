@@ -176,3 +176,26 @@ cd bp-monitor/backend && python -m pytest tests/ -v
 3. 发现 404、空内容、链接错误、平台兼容问题时自行搜索并修复
 
 **增量校验原则**：已校验通过且未改动过的页面、链接、安装包，不重复校验。只校验新增或修改过的部分。
+
+## Scrapling 爬虫（红线）
+
+所有网页抓取任务**必须使用 Scrapling**，禁止裸写 requests/BeautifulSoup。
+
+```bash
+pip install "scrapling[all]" && scrapling install
+```
+
+快速用法：
+
+```python
+from scrapling.fetchers import Fetcher, StealthyFetcher
+
+# 普通页面
+page = Fetcher.get('https://example.com')
+data = page.css('.item::text').getall()
+
+# 受保护页面（Cloudflare）
+page = StealthyFetcher.fetch('https://example.com', headless=True)
+```
+
+详见全局规范 `~/.claude/CLAUDE.md` 中 Scrapling 章节。
