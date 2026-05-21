@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="免费VPN自建指南 — Cloudflare零成本搭建 · 全平台客户端 · 零度解说2026教程整理 · 无需技术背景">
+<meta name="description" content="免费VPN自建指南 — Cloudflare 零成本搭建 · 全平台客户端 · 详细图文教程 · 老人也能跟着做">
 <title>免费VPN自建指南 · LiHongwei</title>
 <style>
 :root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#6c8cff;--green:#4ade80;--orange:#fb923c;--red:#f87171}
@@ -59,6 +59,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 .tip.info{background:rgba(108,140,255,0.07);border-color:rgba(108,140,255,0.12);color:var(--accent)}
 .tip.warn{background:rgba(248,113,113,0.07);border-color:rgba(248,113,113,0.12);color:var(--red)}
 
+/* feature grid */
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center}
+.feature-card .f-icon{font-size:26px;margin-bottom:8px}
+.feature-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.feature-card p{font-size:13px;color:var(--dim);line-height:1.6}
+.page-counter{text-align:center;padding:24px 0 8px;font-size:13px;color:rgba(255,255,255,0.2)}
+
 /* table */
 .table-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow-x:auto;margin-top:10px}
 table{width:100%;border-collapse:collapse;font-size:13px}
@@ -92,7 +100,7 @@ td a:hover{text-decoration:underline}
   <div class="hero">
     <div class="hero-badge">教程 · 2026</div>
     <h1>免费 VPN 自建指南</h1>
-    <p>基于 Cloudflare 免费套餐，零成本搭建属于你自己的 VPN 节点。<br>Windows / Mac / Android / iOS 全平台客户端配置，参考 YouTube 博主 <strong>零度解说</strong> 2026 年教程整理。</p>
+    <p>基于 Cloudflare 免费套餐，零成本搭建属于你自己的 VPN 节点。<br>Windows / Mac / Android / iOS 全平台覆盖，每一步都有详细说明，不跳过任何一个点击。</p>
     <div class="disclaimer">⚠️ 本教程仅用于学习和研究网络技术，请遵守当地法律法规，勿用于非法用途。</div>
   </div>
 
@@ -101,6 +109,27 @@ td a:hover{text-decoration:underline}
     <span><span class="badge ok" style="font-size:12px">✅ 无需梯子</span> 可直接访问</span>
     <span><span class="badge need" style="font-size:12px">⚠️ 需要梯子</span> 需自备网络环境</span>
     <span><span class="badge caution" style="font-size:12px">⚡ 完成后可用</span> 搭建成功后可访问</span>
+  </div>
+
+  <!-- 新手必读 -->
+  <div class="section" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 28px;margin-bottom:36px">
+    <h2 class="section-title" style="margin-bottom:10px"><span class="num method-a">📖</span> 新手必读：在开始之前</h2>
+    <p style="font-size:13px;color:var(--dim);line-height:1.8;margin-bottom:12px">
+      如果你不太懂电脑，没关系。这篇教程就是写给你的。<strong>你不需要懂代码，不需要懂网络，只要能打开浏览器、会点击鼠标、会复制粘贴，就能完成。</strong>
+    </p>
+    <p style="font-size:13px;color:var(--dim);line-height:1.8;margin-bottom:12px">
+      <strong>先搞清楚几个词，后面会反复出现：</strong><br>
+      🔹 <strong>VPN / 代理</strong> — 就是让你能访问被屏蔽网站的工具。相当于给你的网络换一条路走。<br>
+      🔹 <strong>节点</strong> — 就是那条"路"。你搭建完会得到一个节点地址，连上它就能翻墙。<br>
+      🔹 <strong>Cloudflare</strong> — 一家美国网络公司，提供免费的 VPN 搭建服务。它的网站国内可以直接打开，不需要梯子。<br>
+      🔹 <strong>客户端</strong> — 你手机或电脑上安装的 App，用来连接节点。比如 WARP、Clash、Shadowrocket 都是客户端。
+    </p>
+    <p style="font-size:13px;color:var(--dim);line-height:1.8">
+      <strong>两种方法怎么选？</strong><br>
+      🔸 <strong>方法 A（WARP）</strong>：最简单，全程不需要梯子，适合只想上网、不想折腾的人。装好就能用，像开灯一样简单。<br>
+      🔸 <strong>方法 B（edgetunnel）</strong>：功能更强，可以自己管理节点、多设备共享。但 Fork GitHub 这一步需要梯子，稍微复杂一点。<br>
+      💡 <strong>建议</strong>：先做方法 A，能上网了再做方法 B。
+    </p>
   </div>
 
   <!-- ===== 方法一：Cloudflare Zero Trust ===== -->
@@ -203,8 +232,8 @@ td a:hover{text-decoration:underline}
       <div class="link-row"><span class="label">Cloudflare 注册</span><span class="url"><a href="https://dash.cloudflare.com/sign-up" target="_blank">dash.cloudflare.com/sign-up</a> <span class="badge ok">✅</span></span></div>
       <div class="link-row"><span class="label">Zero Trust 后台</span><span class="url"><a href="https://one.dash.cloudflare.com/" target="_blank">one.dash.cloudflare.com</a> <span class="badge ok">✅</span></span></div>
       <div class="link-row"><span class="label">WARP 下载页</span><span class="url"><a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/download-warp/" target="_blank">developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/download-warp/</a> <span class="badge ok">✅</span></span></div>
-      <div class="link-row"><span class="label">配套文章</span><span class="url"><a href="https://www.freedidi.com/23223.html" target="_blank">freedidi.com/23223.html</a> <span class="badge ok">✅</span></span></div>
-      <div class="link-row"><span class="label">视频教程</span><span class="url"><a href="https://www.youtube.com/@freedidi/videos" target="_blank">YouTube @freedidi（零度解说频道）</a> <span class="badge need">⚠️</span></span></div>
+      <div class="link-row"><span class="label">Cloudflare 文档</span><span class="url"><a href="https://developers.cloudflare.com/cloudflare-one/" target="_blank">developers.cloudflare.com/cloudflare-one/</a> <span class="badge ok">✅</span></span></div>
+      <div class="link-row"><span class="label">WARP 帮助</span><span class="url"><a href="https://developers.cloudflare.com/warp-client/" target="_blank">developers.cloudflare.com/warp-client/</a> <span class="badge ok">✅</span></span></div>
     </div>
   </div>
 
@@ -237,10 +266,13 @@ td a:hover{text-decoration:underline}
 
       <div class="step-item">
         <h3>生成 UUID <span class="badge ok">✅ 无需梯子</span></h3>
-        <p>UUID 是节点的唯一身份标识。打开 <a href="https://www.uuidgenerator.net/" target="_blank">www.uuidgenerator.net</a>：</p>
-        <p>① 页面加载后，你会看到一个类似 <code>550e8400-e29b-41d4-a716-446655440000</code> 的字符串</p>
-        <p>② 点击下方的 <strong>"Copy to Clipboard"</strong> 按钮复制它</p>
-        <p>③ 打开记事本或备忘录，粘贴保存（后面要用）</p>
+        <p><strong>UUID 是什么？</strong>把它想象成你节点的"门牌号"——每个节点都有一个唯一的 UUID，客户端通过它来识别和连接你的节点。它是一串像这样的字符：<code>550e8400-e29b-41d4-a716-446655440000</code></p>
+        <p>① 打开浏览器新标签页，地址栏输入 <a href="https://www.uuidgenerator.net/" target="_blank">www.uuidgenerator.net</a> 并回车</p>
+        <p>② 页面中间会显示一大串字符（格式像 8-4-4-4-12，中间用短横线连接）</p>
+        <p>③ 点击字符下方的 <strong>"Copy to Clipboard"</strong> 按钮（意思是"复制到剪贴板"）</p>
+        <p>④ 打开电脑上的<strong>记事本</strong>（Windows：开始菜单搜索"记事本"；Mac：启动台搜索"文本编辑"）</p>
+        <p>⑤ 在记事本里按 <strong>Ctrl+V</strong>（Mac 按 <strong>Command+V</strong>）粘贴，保存这个文件，后面要用</p>
+        <div class="tip info">为什么不能自己随便编一个 UUID？因为格式有严格要求，生成器确保符合国际标准。不要用网上别人分享的 UUID，自己生成的最安全。</div>
       </div>
 
       <div class="step-item">
@@ -259,52 +291,62 @@ td a:hover{text-decoration:underline}
 
       <div class="step-item">
         <h3>配置环境变量 <span class="badge ok">✅ 无需梯子</span></h3>
-        <p>部署失败后，回到 Pages 项目页面：</p>
-        <p>① 点击顶部的 <strong>"设置"</strong>（Settings）选项卡</p>
-        <p>② 在左侧子菜单点击 <strong>"变量和机密"</strong>（Environment variables）</p>
-        <p>③ 点击 <strong>"添加变量"</strong>（Add variable）按钮</p>
-        <p>④ 在弹出的对话框中，按以下内容填写：</p>
+        <p><strong>环境变量是什么？</strong>简单理解就是"给程序下达的指令"。就像你跟咖啡师说"大杯、加糖、去冰"，程序读到这些变量就知道该怎么运行。</p>
+        <p>部署失败后（看到红色的 ❌），按以下步骤操作：</p>
+        <p>① 在当前页面顶部，点击 <strong>"设置"</strong>（Settings）选项卡</p>
+        <p>② 左侧会展开子菜单，点击 <strong>"变量和机密"</strong>（Environment variables）</p>
+        <p>③ 页面中间点击 <strong>"添加变量"</strong>（Add variable）按钮</p>
+        <p>④ 会弹出两行输入框，按下面的表格填写：</p>
         <div class="table-wrap">
           <table>
             <thead>
-              <tr><th>变量名</th><th>值</th><th>说明</th></tr>
+              <tr><th>变量名</th><th>值填什么</th><th>通俗解释</th></tr>
             </thead>
             <tbody>
-              <tr><td><code>UUID</code></td><td>你刚才生成的 UUID 字符串</td><td>节点身份标识，必填</td></tr>
-              <tr><td><code>PROXYIP</code></td><td><code>proxyip.cmliussss.net</code></td><td>代理转发地址，推荐填</td></tr>
-              <tr><td><code>ADD</code></td><td>留空或填优选 IP</td><td>可选，不填也能用</td></tr>
+              <tr><td><code>UUID</code></td><td>粘贴你刚才在记事本里保存的 UUID</td><td><strong>必填</strong>。相当于你节点的"密码"，客户端靠它连接</td></tr>
+              <tr><td><code>PROXYIP</code></td><td><code>proxyip.cmliussss.net</code></td><td><strong>推荐填</strong>。加速节点连接速度的中转站，不填可能很慢</td></tr>
+              <tr><td><code>ADD</code></td><td>留空不填（或者去网上搜"Cloudflare 优选 IP"填一个）</td><td><strong>可选</strong>。进一步优化速度的高级选项，不填也能正常用</td></tr>
             </tbody>
           </table>
         </div>
-        <p>⑤ 填完点击 <strong>"保存"</strong>（Save）</p>
-        <p>⑥ 回到 <strong>"部署"</strong>（Deployments）选项卡 → 找到刚才失败的那条记录 → 点击右侧的 <strong>"..."</strong> → <strong>"重试部署"</strong>（Retry deployment）</p>
-        <p>⑦ 等待约 1-2 分钟，部署成功后会出现绿色 ✅ 标记</p>
+        <p>⑤ 每填完一行，点击右边的 <strong>"保存"</strong> 按钮</p>
+        <p>⑥ 所有变量都添加完毕后，点击页面顶部的 <strong>"部署"</strong>（Deployments）选项卡</p>
+        <p>⑦ 你会看到一条部署记录，状态显示红色 ❌ → 点击这条记录右边的 <strong>"⋯"</strong>（三个点）→ 在弹出菜单中点击 <strong>"重试部署"</strong>（Retry deployment）</p>
+        <p>⑧ 等待页面上出现旋转的加载图标…大约 1-2 分钟后，状态变成绿色 ✅ <strong>"Success"</strong>，部署就完成了</p>
+        <div class="tip warn">如果重试后还是红色失败：检查 UUID 变量有没有打错字（大小写、短横线都要一模一样）。最常见的错误就是把 UUID 粘贴时多了一个空格。</div>
       </div>
 
       <div class="step-item">
         <h3>获取订阅链接 <span class="badge ok">✅ 无需梯子</span></h3>
-        <p>部署成功后：</p>
-        <p>① 回到 Pages 项目的 <strong>"部署"</strong> 选项卡</p>
-        <p>② 在成功的部署记录中，找到 <strong>"你的项目名.pages.dev"</strong> 这样的域名链接，点击打开</p>
-        <p>③ 浏览器地址栏中这个网址的末尾加上 <strong>/你的UUID</strong>，例如：</p>
+        <p>部署成功（看到绿色 ✅）后，来获取你的节点连接信息：</p>
+        <p>① 在 Pages 项目页面，点击 <strong>"部署"</strong>（Deployments）选项卡</p>
+        <p>② 在"生产环境"（Production）那一行，你会看到一个蓝色的网址链接，格式是 <strong>你的项目名.pages.dev</strong>（比如你项目名叫 my-vpn，链接就是 my-vpn.pages.dev）→ <strong>点击这个蓝色链接</strong>，浏览器会打开新标签页</p>
+        <p>③ 新标签页可能显示空白或一些文字，不用担心。看浏览器<strong>顶部的地址栏</strong>，在地址栏里这个网址的<strong>末尾</strong>，加上：<br><code style="font-size:14px;background:rgba(74,222,128,0.1);padding:2px 8px;display:inline-block;margin-top:4px">/你的UUID</code></p>
+        <p>   <strong>注意：</strong>是加一个斜杠 <code>/</code> 然后粘贴你之前保存的 UUID 那串字符。不是加文字"你的UUID"</p>
+        <p>   举例：如果你的项目名是 <code>my-vpn</code>，UUID 是 <code>550e8400-e29b-41d4-a716-446655440000</code>，那网址就是：</p>
         <div class="cmd">https://my-vpn.pages.dev/550e8400-e29b-41d4-a716-446655440000</div>
-        <p>④ 回车访问，页面会返回一段文本，里面包含：</p>
-        <p>   - 一个 <strong>VLESS 节点链接</strong>（以 vless:// 开头）</p>
-        <p>   - 一个 <strong>Clash 订阅地址</strong>（以 https:// 开头）</p>
-        <p>⑤ 复制这个 Clash 订阅地址，后面要用</p>
+        <p>④ 按<strong>回车键</strong>。页面会显示出几行文本，你要找的是：</p>
+        <p>   📌 一个 <strong>Clash 订阅地址</strong> — 以 <code>https://</code> 开头，类似 <code>https://my-vpn.pages.dev/你的UUID?sub</code></p>
+        <p>   📌 还有 <strong>VLESS 节点链接</strong> — 以 <code>vless://</code> 开头（如果只用 Clash 客户端，这个可以先不管）</p>
+        <p>⑤ 用鼠标<strong>选中 Clash 订阅地址整行</strong> → 右键 → <strong>"复制"</strong>（或用快捷键 Ctrl+C / Command+C）</p>
+        <p>⑥ 打开记事本，粘贴进去<strong>保存好</strong>。这是你辛苦搭好的成果，丢了要重新来过。</p>
+        <div class="tip info">如果页面显示"404 Not Found"：检查网址有没有打错，UUID 有没有漏了字母。常见的错误是复制 UUID 时漏掉了最后几个字符。</div>
       </div>
 
       <div class="step-item">
         <h3>导入 Clash 使用 <span class="badge need">⚠️ 需要梯子才能测通</span></h3>
-        <p>打开你电脑上安装好的 Clash Verge Rev（下载方式见章节 C）：</p>
-        <p>① 左侧导航点击 <strong>"订阅"</strong>（Subscription）标签页</p>
-        <p>② 点击右上角的 <strong>"新建"</strong> 按钮</p>
-        <p>③ 在弹出的框中，<strong>"URL"</strong> 处粘贴刚才复制的 Clash 订阅地址</p>
-        <p>④ 随便填一个名称（如 edgetunnel）→ 点击 <strong>"导入"</strong></p>
-        <p>⑤ 导入后回到订阅页，点击该订阅行右侧的 <strong>"启用"</strong> 按钮</p>
-        <p>⑥ 切换到 <strong>"代理"</strong> 标签页，会看到列表中有节点了，选择一个延迟低的</p>
-        <p>⑦ 确保顶部的模式是 <strong>"Rule"（规则）</strong>，然后打开 <strong>"系统代理"</strong> 开关</p>
-        <div class="tip warn">Cloudflare 禁止使用 Workers/Pages 部署代理，存在封号风险。仅供学习实验，不要用于大流量场景。</div>
+        <p><strong>前提：</strong>你电脑上必须已经安装了 Clash Verge Rev。如果还没装，先跳转到下方的 <a href="#clash">章节 C：Clash 客户端下载与使用</a>，装好再回来。</p>
+        <p>打开 Clash Verge Rev（桌面快捷方式或开始菜单里找 "Clash Verge"）：</p>
+        <p>① 在 Clash Verge Rev 窗口的<strong>左侧竖排导航栏</strong>中，点击 <strong>"订阅"</strong>（图标像文件夹，鼠标放上去会显示"订阅"两个字）</p>
+        <p>② 点击页面右上角的 <strong>"新建"</strong> 按钮（蓝色按钮，有个 + 号）</p>
+        <p>③ 会弹出一个对话框。在 <strong>"URL"</strong> 那一行，粘贴你刚才复制的 Clash 订阅地址</p>
+        <p>④ 在 <strong>"名称"</strong> 那一行，随便填一个名字（如"我的自建节点"）</p>
+        <p>⑤ 点击对话框右下角的 <strong>"导入"</strong> 按钮</p>
+        <p>⑥ 导入完成后回到订阅页面，你会看到刚添加的订阅显示在列表中。点击它那一行最右边的 <strong>"启用"</strong> 开关（变成蓝色即开启）</p>
+        <p>⑦ 稍等 3-5 秒（Clash 在后台下载节点信息）→ 点击左侧 <strong>"代理"</strong> 标签 → 你会看到列表中有至少一个节点了</p>
+        <p>⑧ 点击一个延迟数字较低的节点选中它 → 确保顶部模式选的是 <strong>"Rule"（规则）</strong> → 打开 <strong>"系统代理"</strong> 开关使之变蓝</p>
+        <p>⑨ 打开浏览器，尝试访问 Google（www.google.com）。如果能打开了，恭喜你，搭建成功！</p>
+        <div class="tip warn">⚠️ Cloudflare 官方禁止使用 Workers/Pages 部署代理服务，存在封号风险。本教程仅供学习网络技术，请勿用于大流量或商业用途。建议仅个人小流量使用。</div>
       </div>
     </div>
 
@@ -318,7 +360,7 @@ td a:hover{text-decoration:underline}
   </div>
 
   <!-- ===== Clash 客户端 ===== -->
-  <div class="section">
+  <div class="section" id="clash">
     <h2 class="section-title"><span class="num link-icon">C</span> Clash 客户端下载与使用指南</h2>
     <p style="font-size:14px;color:var(--dim);margin-bottom:14px">
       Clash 是最主流的代理客户端，支持规则分流、自动选节点、订阅更新。<strong>下载 Clash 客户端本身需要梯子（GitHub 被封锁）</strong>。
@@ -506,7 +548,7 @@ td a:hover{text-decoration:underline}
     </p>
 
     <!-- 美区 ID -->
-    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;margin-top:24px;color:var(--orange)}">▎前置准备：注册美区 Apple ID</h3>
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;margin-top:24px;color:var(--orange)">▎前置准备：注册美区 Apple ID</h3>
     <p style="font-size:13px;color:var(--dim);margin-bottom:12px">
       以下方法 2026 年实测有效，不需要美国信用卡，用国内手机号即可完成。
     </p>
@@ -581,7 +623,7 @@ td a:hover{text-decoration:underline}
     </div>
 
     <!-- Shadowrocket 配置 -->
-    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;margin-top:28px;color:var(--orange)}">▎Shadowrocket 配置使用</h3>
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;margin-top:28px;color:var(--orange)">▎Shadowrocket 配置使用</h3>
 
     <div class="step-list" style="counter-reset:step 0">
       <div class="step-item">
@@ -655,13 +697,13 @@ td a:hover{text-decoration:underline}
           <tr><td>Cloudflare 登录后台</td><td><a href="https://dash.cloudflare.com/" target="_blank">dash.cloudflare.com</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
           <tr><td>Zero Trust 仪表盘</td><td><a href="https://one.dash.cloudflare.com/" target="_blank">one.dash.cloudflare.com</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
           <tr><td>WARP 客户端下载</td><td><a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/download-warp/" target="_blank">developers.cloudflare.com</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
-          <tr><td>零度解说文章</td><td><a href="https://www.freedidi.com/23223.html" target="_blank">freedidi.com/23223.html</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
+          <tr><td>Cloudflare 文档中心</td><td><a href="https://developers.cloudflare.com/" target="_blank">developers.cloudflare.com</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
           <tr><td>edgetunnel 项目</td><td><a href="https://github.com/cmliu/edgetunnel" target="_blank">github.com/cmliu/edgetunnel</a></td><td><span class="badge need">⚠️ 需要</span></td></tr>
           <tr><td>UUID 生成器</td><td><a href="https://www.uuidgenerator.net/" target="_blank">www.uuidgenerator.net</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
           <tr><td>Clash Verge Rev</td><td><a href="https://github.com/clash-verge-rev/clash-verge-rev/releases" target="_blank">GitHub Releases</a></td><td><span class="badge need">⚠️ 需要</span></td></tr>
           <tr><td>FlClash</td><td><a href="https://github.com/chen08209/FlClash/releases" target="_blank">GitHub Releases</a></td><td><span class="badge need">⚠️ 需要</span></td></tr>
           <tr><td>ClashX Pro</td><td><a href="https://github.com/ClashX-Pro/ClashX/releases" target="_blank">GitHub Releases</a></td><td><span class="badge need">⚠️ 需要</span></td></tr>
-          <tr><td>YouTube 零度解说</td><td><a href="https://www.youtube.com/@freedidi/videos" target="_blank">youtube.com/@freedidi/videos</a></td><td><span class="badge need">⚠️ 需要</span></td></tr>
+          <tr><td>Stash（iOS 国区）</td><td><a href="https://apps.apple.com/app/stash/id1596063349" target="_blank">App Store 搜索 Stash</a></td><td><span class="badge ok">✅ 无需</span></td></tr>
         </tbody>
       </table>
     </div>
