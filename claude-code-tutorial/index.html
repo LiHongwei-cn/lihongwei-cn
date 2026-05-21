@@ -194,13 +194,44 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
 
   <!-- 2. 接模型 -->
   <div class="section" id="model">
-    <h2 class="section-title"><span class="num">2</span> 接入 DeepSeek 模型（国产，有免费额度）</h2>
-    <p class="section-desc">Claude Code 装好只是空壳，需要接模型。有 Claude 账号可以直接 <code>claude</code> 登录。这里教接 <strong>DeepSeek</strong>（国产），不需要 Claude 账号、不需要魔法。</p>
+    <h2 class="section-title"><span class="num">2</span> 接入 AI 模型（DeepSeek / GLM / 任意模型）</h2>
+    <p class="section-desc">Claude Code 装好只是空壳，需要接模型。有 Claude 账号可以直接 <code>claude</code> 登录。这里教接 <strong>DeepSeek</strong>（国产，有免费额度），不需要 Claude 账号、不需要魔法。</p>
     <div class="tip info" style="margin-bottom:16px">
       <strong>准备工作：</strong>去 <a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a> 注册 → API Keys → 创建 Key → 复制保存（以 <code>sk-</code> 开头）。
     </div>
 
-    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;color:var(--purple)">▎方法一（推荐⭐）：直接配置 settings.json</h3>
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;color:var(--purple)">▎方法一（极力推荐⭐⭐）：CC Switch 一键切换</h3>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:12px">CC Switch 是专为 Claude Code 打造的模型切换工具，图形化界面，一键添加/切换模型，再也不用手动改配置文件。</p>
+
+    <div class="step-list" style="counter-reset:step 0">
+      <div class="step-item">
+        <h3>安装 CC Switch</h3>
+        <p><strong>macOS：</strong>终端执行</p>
+        <div class="cmd">brew tap farion1231/ccswitch && brew install --cask cc-switch</div>
+        <p style="margin-top:8px"><strong>Windows：</strong>去 <a href="https://github.com/farion1231/cc-switch/releases" target="_blank">GitHub Releases</a> 下载安装包，双击运行（需魔法）。也可用 <a href="../ccs-launcher/" target="_blank">CCS 一键启动器</a> 国内直链下载。</p>
+      </div>
+      <div class="step-item">
+        <h3>添加 DeepSeek 模型</h3>
+        <p>打开 CC Switch → 点 <strong>"+"</strong> 按钮 → 填入以下信息：</p>
+        <div class="cmd">名称：DeepSeek
+        API Key：sk-你的deepseek_api_key
+        Base URL：https://api.deepseek.com/anthropic
+        模型名：deepseek-v4-pro</div>
+        <p style="margin-top:6px">点「保存」即完成。也可以添加 GLM、Qwen 等其他模型，随时切换。</p>
+      </div>
+      <div class="step-item">
+        <h3>切换模型</h3>
+        <p>在 Claude Code 终端中输入 <code>/model</code>，上下键选择想要的模型，回车即切换。无需重启、无需改文件。</p>
+        <div class="tip green">CC Switch 自动管理 settings.json，不用手动编辑任何配置文件。添加多个模型后，<code>/model</code> 命令随时秒切。</div>
+      </div>
+    </div>
+
+    <div class="tip" style="margin-top:12px">
+      <strong>CC Switch 的核心优势：</strong>① 图形界面，不写一行配置；② 支持同时添加多个模型（DeepSeek / GLM / Qwen / Claude），<code>/model</code> 一键切换；③ 自动管理 settings.json，不会因手误导致配置错误；④ 支持不同项目用不同模型。
+    </div>
+
+    <h3 style="font-size:16px;font-weight:700;margin:28px 0 12px;color:var(--accent)">▎方法二（备选）：手动配置 settings.json</h3>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:10px">如果你不想安装额外工具，也可以直接编辑配置文件。</p>
     <div class="step-list" style="counter-reset:step 0">
       <div class="step-item">
         <h3>找到配置文件 <span class="badge ok">无需魔法</span></h3>
@@ -223,21 +254,6 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
   "theme": "dark"
 }</div>
         <div class="tip green">这六行把 Claude Code 内部所有模型都指向 DeepSeek，不管 Agent 请求哪个模型，实际走的都是 DeepSeek。</div>
-      </div>
-    </div>
-
-    <h3 style="font-size:16px;font-weight:700;margin:24px 0 12px;color:var(--accent)">▎方法二（备选）：CC Switch 图形化工具</h3>
-    <p style="font-size:13px;color:var(--dim);margin-bottom:10px">不想手动编辑配置文件的话，可以用 CC Switch 图形化管理模型（<a href="https://github.com/farion1231/cc-switch/releases" target="_blank">下载</a>，需魔法）。</p>
-    <div class="step-list" style="counter-reset:step 0">
-      <div class="step-item">
-        <h3>安装 CC Switch</h3>
-        <p><strong>macOS：</strong></p>
-        <div class="cmd">brew tap farion1231/ccswitch && brew install --cask cc-switch</div>
-        <p style="margin-top:6px"><strong>Windows：</strong>下载安装包双击运行。</p>
-      </div>
-      <div class="step-item">
-        <h3>配置 DeepSeek</h3>
-        <p>打开 CC Switch → Claude Code 栏点 "+" → 选 DeepSeek 或自定义 → 填入 API Key / Base URL / 模型名 → 添加。之后在 Claude Code 中输入 <code>/model</code> 即可切换。</p>
       </div>
     </div>
   </div>
