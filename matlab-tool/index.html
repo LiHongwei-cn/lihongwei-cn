@@ -341,15 +341,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 </div>
 <script>
 (async function(){
+  const el = document.getElementById('page-count');
   try {
-    let r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json');
-    let s = await r.json();
-    document.getElementById('page-count').textContent = s['matlab-tool'] || '...';
+    const r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/matlab-tool/up');
+    const d = await r.json();
+    el.textContent = d.count || '...';
   } catch(e) {
-    document.getElementById('page-count').textContent = '...';
+    try {
+      const r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json?t=' + Date.now());
+      const s = await r.json();
+      el.textContent = s['matlab-tool'] || '...';
+    } catch(e2) { el.textContent = '...'; }
   }
 })();
 </script>
-<img src="https://api.counterapi.dev/v1/lihongwei-cn/matlab-tool/up" style="display:none" alt="" />
 </body>
 </html>

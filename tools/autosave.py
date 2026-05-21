@@ -19,7 +19,7 @@ PROXY = os.environ.get("HTTPS_PROXY", "")
 
 COUNTER_PAGES = [
     "home", "matlab-tool", "desktop-launcher", "claude-code-tutorial",
-    "vpn-guide", "win-optimize", "github-trending", "ccs-launcher", "global-specs",
+    "vpn-guide", "win-optimize", "ccs-launcher", "global-specs", "bp-monitor",
 ]
 
 # 不触发自动保存的关键词（含这些词的文件变更不会被自动提交）

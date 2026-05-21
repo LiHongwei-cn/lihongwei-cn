@@ -399,7 +399,6 @@ copy project-CLAUDE.md $env:USERPROFILE\Desktop\lihongwei-cn\CLAUDE.md</div>
   <!-- 访问计数 -->
   <div class="page-counter">
     本页被阅读 <span id="page-count">...</span> 次
-    <img src="https://api.counterapi.dev/v1/lihongwei-cn/claude-code-tutorial/up" style="display:none" alt="" onload="fetchCount()">
   </div>
 
   <div class="footer">
@@ -411,14 +410,18 @@ copy project-CLAUDE.md $env:USERPROFILE\Desktop\lihongwei-cn\CLAUDE.md</div>
 </div>
 
 <script>
-// 页面访问计数
 (async function(){
+  const el = document.getElementById('page-count');
   try {
-    let r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json');
-    let s = await r.json();
-    document.getElementById('page-count').textContent = s['claude-code-tutorial'] || '...';
+    const r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/claude-code-tutorial/up');
+    const d = await r.json();
+    el.textContent = d.count || '...';
   } catch(e) {
-    document.getElementById('page-count').textContent = '...';
+    try {
+      const r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json?t=' + Date.now());
+      const s = await r.json();
+      el.textContent = s['claude-code-tutorial'] || '...';
+    } catch(e2) { el.textContent = '...'; }
   }
 })();
 </script>

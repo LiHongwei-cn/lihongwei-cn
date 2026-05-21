@@ -221,13 +221,19 @@ setx ANTHROPIC_AUTH_TOKEN "sk-xxx"   # Windows</div>
 </div>
 <script>
 (async function(){
+  const el = document.getElementById('page-count');
   try {
-    let r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json');
-    let s = await r.json();
-    document.getElementById('page-count').textContent = s['global-specs'] || '...';
-  } catch(e) {}
+    const r = await fetch('https://api.counterapi.dev/v1/lihongwei-cn/global-specs/up');
+    const d = await r.json();
+    el.textContent = d.count || '...';
+  } catch(e) {
+    try {
+      const r = await fetch('https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json?t=' + Date.now());
+      const s = await r.json();
+      el.textContent = s['global-specs'] || '...';
+    } catch(e2) { el.textContent = '...'; }
+  }
 })();
 </script>
-<img src="https://api.counterapi.dev/v1/lihongwei-cn/global-specs/up" style="display:none" alt="" />
 </body>
 </html>

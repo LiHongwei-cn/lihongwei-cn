@@ -372,19 +372,44 @@ body::after {
     </div>
   </div>
 
-  <img src="https://api.counterapi.dev/v1/lihongwei-cn/home/up" style="display:none" alt="" />
 
 </div>
 
 <script>
 (async function() {
-  const STATS_URL = 'https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json';
+  const COUNTER_BASE = 'https://api.counterapi.dev/v1/lihongwei-cn/';
+  const STATS_FALLBACK = 'https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/stats.json';
+
+  const keys = ['home'];
+  document.querySelectorAll('.card[data-id]').forEach(card => keys.push(card.dataset.id));
 
   let stats = {};
+
+  // Fetch all counts from counterapi.dev in parallel
+  // home uses /up (increment+read), cards use / (read-only)
   try {
-    const r = await fetch(STATS_URL + '?t=' + Date.now());
-    stats = await r.json();
+    const results = await Promise.all(
+      keys.map(k => {
+        const suffix = k === 'home' ? '/up' : '/';
+        return fetch(COUNTER_BASE + k + suffix)
+          .then(r => r.json())
+          .then(d => [k, d.count || 0])
+          .catch(() => [k, null]);
+      })
+    );
+    results.forEach(([k, v]) => { if (v !== null) stats[k] = v; });
   } catch (e) {}
+
+  // Fall back to stats.json for any keys we missed
+  if (Object.keys(stats).length < keys.length) {
+    try {
+      const r = await fetch(STATS_FALLBACK + '?t=' + Date.now());
+      const cached = await r.json();
+      keys.forEach(k => { if (!(k in stats)) stats[k] = cached[k] || 0; });
+    } catch (e) {}
+  }
+
+  keys.forEach(k => { if (!(k in stats)) stats[k] = 0; });
 
   document.getElementById('counter').textContent = '👁 ' + (stats.home || 0) + ' 次访问';
 
