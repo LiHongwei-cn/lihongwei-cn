@@ -164,8 +164,8 @@ canvas#confetti  { position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
   100% { opacity: 1; transform: translateY(0); }
 }
 
-/* 漂浮 emoji */
-.floating-emojis {
+/* 漂浮元素 */
+.floating-layer {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   pointer-events: none; z-index: 2;
 }
@@ -177,9 +177,45 @@ canvas#confetti  { position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
   opacity: 0;
 }
 
+/* zmjjkk 语录气泡 */
+.float-quote {
+  position: absolute;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 6px 16px;
+  white-space: nowrap;
+  animation: floatUp linear infinite;
+  opacity: 0;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  text-shadow: 0 0 10px rgba(255,255,255,0.5);
+  box-shadow: 0 0 20px rgba(255,200,50,0.1);
+}
+
+/* 三角洲大红物品 */
+.float-red {
+  position: absolute;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ff4444;
+  background: rgba(255,0,0,0.08);
+  border: 1px solid rgba(255,80,80,0.3);
+  border-radius: 6px;
+  padding: 4px 12px;
+  white-space: nowrap;
+  animation: floatUp linear infinite;
+  opacity: 0;
+  text-shadow: 0 0 12px rgba(255,0,0,0.6);
+  box-shadow: 0 0 16px rgba(255,0,0,0.08);
+}
+
 @keyframes floatUp {
   0% { transform: translateY(105vh) rotate(0deg) scale(0.4); opacity: 0; }
-  5% { opacity: 0.65; }
+  5% { opacity: 0.7; }
   90% { opacity: 0.4; }
   100% { transform: translateY(-10vh) rotate(360deg) scale(1.1); opacity: 0; }
 }
@@ -224,7 +260,7 @@ canvas#confetti  { position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
 
 <canvas id="fireworks"></canvas>
 <canvas id="confetti"></canvas>
-<div class="floating-emojis" id="floatingEmojis"></div>
+<div class="floating-layer" id="floatingLayer"></div>
 
 <main class="main">
 
@@ -255,7 +291,7 @@ canvas#confetti  { position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
     <span>头盔戴好，前方一路绿灯 🏍️💨</span>
   </div>
 
-  <p class="hint">— 点击屏幕放烟花 —</p>
+  <p class="hint">— 点击屏幕放烟花 · 康康语录随机掉落 —</p>
 </main>
 
 <script>
@@ -378,9 +414,40 @@ function drawConfetti() {
 }
 drawConfetti();
 
-// ============ 漂浮 emoji ============
-const emojiBox = document.getElementById('floatingEmojis');
-const EMOJIS = ['🎂','🎉','🎈','🎁','🎊','🏍️','🎯','🪂','💨','🥳','🔥','🍰','🧁','💐','🕯️','💖','🎆','⚡','🏆'];
+// ============ 漂浮系统：emoji + zmjjkk 语录 + 三角洲大红 ============
+const floatLayer = document.getElementById('floatingLayer');
+
+const EMOJIS = ['🎂','🎉','🎈','🎁','🎊','🏍️','🎯','🪂','💨','🥳','🔥','🍰','💐','🕯️','💖','🎆','⚡','🏆','💀','🎮'];
+
+// zmjjkk 经典语录
+const ZMJJKK_QUOTES = [
+  '大明星！',
+  '这就是康康！',
+  '狂！',
+  '拿下！',
+  '我太狂了！',
+  '兄弟们冲！',
+  '随便打！',
+  '太简单了！',
+  '一枪一个！',
+  '我就是大明星',
+  '别急，有康康',
+  'ACE！',
+];
+
+// 三角洲部队大红物品
+const DELTA_RED_ITEMS = [
+  '🔴 显卡',
+  '🔴 金条',
+  '🔴 钻石',
+  '🔴 军用电台',
+  '🔴 机密文件',
+  '🔴 处理器',
+  '🔴 坦克电池',
+  '🔴 古董花瓶',
+  '🔴 心脏起搏器',
+  '🔴 比特币矿机',
+];
 
 function spawnEmoji() {
   const el = document.createElement('span');
@@ -389,19 +456,69 @@ function spawnEmoji() {
   el.style.left = Math.random() * 94 + '%';
   el.style.fontSize = (20 + Math.random() * 22) + 'px';
   el.style.animationDuration = (8 + Math.random() * 12) + 's';
-  emojiBox.appendChild(el);
+  el.style.animationDelay = Math.random() * 2 + 's';
+  floatLayer.appendChild(el);
   el.addEventListener('animationend', () => el.remove());
 }
 
-for (let i = 0; i < 14; i++) { setTimeout(() => spawnEmoji(), i * 350); }
-setInterval(() => { if (emojiBox.children.length < 22) spawnEmoji(); }, 1400);
+function spawnQuote() {
+  const el = document.createElement('span');
+  el.className = 'float-quote';
+  el.textContent = ZMJJKK_QUOTES[Math.floor(Math.random() * ZMJJKK_QUOTES.length)];
+  el.style.left = Math.random() * 88 + '%';
+  el.style.animationDuration = (10 + Math.random() * 14) + 's';
+  el.style.animationDelay = Math.random() * 3 + 's';
+  floatLayer.appendChild(el);
+  el.addEventListener('animationend', () => el.remove());
+}
+
+function spawnRedItem() {
+  const el = document.createElement('span');
+  el.className = 'float-red';
+  el.textContent = DELTA_RED_ITEMS[Math.floor(Math.random() * DELTA_RED_ITEMS.length)];
+  el.style.left = Math.random() * 88 + '%';
+  el.style.animationDuration = (11 + Math.random() * 13) + 's';
+  el.style.animationDelay = Math.random() * 4 + 's';
+  floatLayer.appendChild(el);
+  el.addEventListener('animationend', () => el.remove());
+}
+
+// 初始一波
+for (let i = 0; i < 6; i++) { setTimeout(() => spawnEmoji(), i * 300); }
+for (let i = 0; i < 3; i++) { setTimeout(() => spawnQuote(), 500 + i * 600); }
+for (let i = 0; i < 3; i++) { setTimeout(() => spawnRedItem(), 800 + i * 700); }
+
+// 持续生成，控制每种比例
+setInterval(() => {
+  if (floatLayer.children.length > 25) return;
+  const r = Math.random();
+  if (r < 0.35) spawnEmoji();
+  else if (r < 0.65) spawnQuote();
+  else spawnRedItem();
+}, 1200);
 
 // ============ 交互 ============
 document.addEventListener('click', (e) => {
   spawnFirework(e.clientX, e.clientY);
+
   const ripple = document.createElement('span');
   ripple.className = 'ripple';
-  ripple.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+  const r = Math.random();
+  if (r < 0.33) {
+    ripple.textContent = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+  } else if (r < 0.66) {
+    ripple.textContent = ZMJJKK_QUOTES[Math.floor(Math.random() * ZMJJKK_QUOTES.length)];
+    ripple.style.fontSize = '24px';
+    ripple.style.fontWeight = '700';
+    ripple.style.color = '#fff';
+    ripple.style.textShadow = '0 0 16px rgba(255,255,255,0.7)';
+  } else {
+    ripple.textContent = DELTA_RED_ITEMS[Math.floor(Math.random() * DELTA_RED_ITEMS.length)];
+    ripple.style.fontSize = '20px';
+    ripple.style.fontWeight = '700';
+    ripple.style.color = '#ff4444';
+    ripple.style.textShadow = '0 0 16px rgba(255,0,0,0.8)';
+  }
   ripple.style.left = e.clientX + 'px';
   ripple.style.top = e.clientY + 'px';
   document.body.appendChild(ripple);
