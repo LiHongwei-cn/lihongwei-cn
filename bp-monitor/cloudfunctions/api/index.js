@@ -1,5 +1,5 @@
 const cloud = require('wx-server-sdk');
-const OpenAI = require('openai');
+const https = require('https');
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
@@ -10,12 +10,6 @@ const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || '';
 const CRON_SECRET_TOKEN = process.env.CRON_SECRET_TOKEN || '';
 const DEEPSEEK_BASE_URL = 'https://api.deepseek.com';
 const DEEPSEEK_MODEL = 'deepseek-v4-pro';
-
-const client = DEEPSEEK_API_KEY ? new OpenAI({
-  apiKey: DEEPSEEK_API_KEY,
-  baseURL: DEEPSEEK_BASE_URL,
-  timeout: 60000,
-}) : null;
 
 // ── Rate limits ───────────────────────────────────────────────
 const MAX_READINGS_PER_DAY = 10;
@@ -216,17 +210,28 @@ ${MEDICAL_DISCLAIMER}`;
 
 // ── DeepSeek API ──────────────────────────────────────────────
 async function chat(messages) {
-  if (!client) return 'AI分析暂时不可用，请配置DEEPSEEK_API_KEY环境变量。您的血压数据已安全保存。';
-  try {
-    const response = await client.chat.completions.create({
-      model: DEEPSEEK_MODEL,
-      messages,
+  if (!DEEPSEEK_API_KEY) return 'AI分析暂时不可用，请配置DEEPSEEK_API_KEY环境变量。您的血压数据已安全保存。';
+  return new Promise(function (resolve) {
+    var data = JSON.stringify({ model: DEEPSEEK_MODEL, messages: messages });
+    var req = https.request({
+      hostname: 'api.deepseek.com',
+      path: '/v1/chat/completions',
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + DEEPSEEK_API_KEY },
+      timeout: 60000
+    }, function (res) {
+      var body = '';
+      res.on('data', function (chunk) { body += chunk; });
+      res.on('end', function () {
+        try { var json = JSON.parse(body); resolve(json.choices[0].message.content || ''); }
+        catch (e) { console.error('DeepSeek parse error:', body); resolve('AI分析暂时不可用，请稍后再试。'); }
+      });
     });
-    return response.choices[0].message.content || '';
-  } catch (e) {
-    console.error('DeepSeek API error:', e.message);
-    return 'AI分析暂时不可用，请稍后再试。您的血压数据已安全保存。';
-  }
+    req.on('error', function (e) { console.error('DeepSeek error:', e.message); resolve('AI分析暂时不可用，请稍后再试。'); });
+    req.on('timeout', function () { req.destroy(); resolve('AI分析暂时不可用，请稍后再试。'); });
+    req.write(data);
+    req.end();
+  });
 }
 
 // ── User helpers ──────────────────────────────────────────────

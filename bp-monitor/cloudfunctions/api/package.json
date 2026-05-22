@@ -4,6 +4,6 @@
   "description": "血压监测助手云函数",
   "main": "index.js",
   "dependencies": {
-    "openai": "^4.73.0"
+    "wx-server-sdk": "latest"
   }
 }

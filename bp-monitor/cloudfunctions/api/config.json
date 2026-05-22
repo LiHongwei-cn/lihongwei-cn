@@ -1,9 +1,5 @@
 {
-  "permissions": {
-    "openapi": []
-  },
-  "env": {
-    "DEEPSEEK_API_KEY": "",
-    "CRON_SECRET_TOKEN": ""
-  }
+  "runtime": "Nodejs18.15",
+  "timeout": 30,
+  "type": "event"
 }

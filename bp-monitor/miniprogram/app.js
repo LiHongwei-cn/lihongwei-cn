@@ -10,7 +10,7 @@ App({
       return;
     }
     wx.cloud.init({
-      env: 'prod-0g1g5jq3e2a5e4f8',
+      env: 'cloud1-d1gh87tb74f34ecb9',
       traceUser: true
     });
     this.globalData.cloudReady = true;
