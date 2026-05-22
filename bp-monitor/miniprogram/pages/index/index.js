@@ -14,6 +14,28 @@ Page({
 
   onShow() {
     this.setGreeting();
+
+    if (app.globalData.cloudDiag) {
+      this.setData({
+        loading: false,
+        loginError: app.globalData.cloudDiag
+      });
+      return;
+    }
+
+    if (!app.globalData.cloudCheckDone) {
+      this.setData({ loading: true });
+      return;
+    }
+
+    if (!app.globalData.userInfo && !app.globalData.cloudReady) {
+      this.setData({
+        loading: false,
+        loginError: '云开发服务未就绪，请在微信开发者工具中开通云开发'
+      });
+      return;
+    }
+
     if (!app.globalData.userInfo) {
       this.doLogin();
     } else {
@@ -54,21 +76,26 @@ Page({
   },
 
   retryLogin() {
-    this.doLogin();
+    app.globalData.cloudDiag = '';
+    app.globalData.cloudCheckDone = false;
+    app.checkCloudConnectivity();
+    var self = this;
+    setTimeout(function () { self.doLogin(); }, 1500);
   },
 
   loadData() {
     this.setData({ loading: true });
     Promise.all([
-      cloud.getReadings({ page: 1, limit: 1 }),
-      cloud.getStats({ days: 7 })
+      cloud.getReadings({ page: 1, limit: 1 }, { silent: true }),
+      cloud.getStats({ days: 7 }, { silent: true })
     ]).then(([listRes, statsRes]) => {
       this.setData({
         latestReading: (listRes.items && listRes.items[0]) || null,
         stats: statsRes
       });
-    }).catch(() => {
-      wx.showToast({ title: '加载数据失败', icon: 'none' });
+    }).catch((err) => {
+      var msg = err && err.message ? err.message : '加载数据失败';
+      wx.showToast({ title: msg, icon: 'none' });
     }).finally(() => {
       this.setData({ loading: false });
     });

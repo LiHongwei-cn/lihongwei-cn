@@ -5,4 +5,5 @@ __pycache__/
 bp_monitor.db
 node_modules/
 cloudbaserc.json
+project.private.config.json
 .DS_Store

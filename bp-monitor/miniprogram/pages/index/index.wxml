@@ -4,11 +4,17 @@
     <text class="date-text">{{todayDate}}</text>
   </view>
 
-  <!-- 登录错误 -->
+  <!-- 登录 / 连接错误 -->
   <view class="card login-error" wx:if="{{loginError}}">
-    <text class="login-error-title">登录失败</text>
+    <text class="login-error-title">连接失败</text>
     <text class="login-error-detail">{{loginError}}</text>
-    <button class="btn-primary" style="margin-top: 20rpx;" bindtap="retryLogin">重新登录</button>
+    <view class="login-error-tips">
+      <text class="login-error-tip-title">常见原因：</text>
+      <text class="login-error-tip">1. 云函数未部署 → 微信开发者工具中右键 cloudfunctions/api → 上传并部署</text>
+      <text class="login-error-tip">2. 云开发环境未开通 → 点击工具栏「云开发」按钮开通</text>
+      <text class="login-error-tip">3. 环境ID不匹配 → 确认 app.js 中的 env 与云开发控制台一致</text>
+    </view>
+    <button class="btn-primary" style="margin-top: 20rpx;" bindtap="retryLogin">重新连接</button>
   </view>
 
   <!-- 加载中 -->

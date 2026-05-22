@@ -1,5 +1,8 @@
 {
   "runtime": "Nodejs18.15",
   "timeout": 30,
-  "type": "event"
+  "envVariables": {
+    "DEEPSEEK_API_KEY": "",
+    "CRON_SECRET_TOKEN": ""
+  }
 }
