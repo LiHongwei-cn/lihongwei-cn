@@ -32,8 +32,9 @@ App({
     this.checkCloudConnectivity();
   },
 
-  checkCloudConnectivity() {
+  checkCloudConnectivity(retryCount) {
     var app = this;
+    retryCount = retryCount || 0;
     wx.cloud.callFunction({
       name: 'api',
       data: { action: 'login' }
@@ -47,8 +48,14 @@ App({
         app.globalData.cloudDiag = res.result.error;
       }
     }).catch(function (err) {
-      app.globalData.cloudCheckDone = true;
       var errMsg = (err && err.errMsg) || '';
+      // 超时且未超过重试次数，等冷启动完成后重试
+      if (errMsg.indexOf('timeout') !== -1 && retryCount < 2) {
+        console.log('[app] 云函数冷启动超时，3秒后重试...');
+        setTimeout(function () { app.checkCloudConnectivity(retryCount + 1); }, 3000);
+        return;
+      }
+      app.globalData.cloudCheckDone = true;
       console.error('[app] 云函数连通性检测失败:', errMsg);
       if (errMsg.indexOf('-501000') !== -1 || errMsg.indexOf('Function not found') !== -1) {
         app.globalData.cloudDiag = '云函数未部署，请在微信开发者工具中右键 cloudfunctions/api → 上传并部署';

@@ -1,6 +1,6 @@
 {
   "runtime": "Nodejs18.15",
-  "timeout": 30,
+  "timeout": 60,
   "envVariables": {
     "DEEPSEEK_API_KEY": "",
     "CRON_SECRET_TOKEN": ""

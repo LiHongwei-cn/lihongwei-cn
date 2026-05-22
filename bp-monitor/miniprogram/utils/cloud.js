@@ -28,25 +28,42 @@ function diagnoseError(err) {
 
 function callFunction(action, data, opts) {
   opts = opts || {};
-  return new Promise(function (resolve, reject) {
-    wx.cloud.callFunction({
-      name: 'api',
-      data: { action: action, data: data || {} }
-    }).then(function (res) {
-      if (res.result && res.result.error) {
-        reject(new Error(res.result.error));
-        return;
-      }
-      resolve(res.result || {});
-    }).catch(function (err) {
-      var msg = diagnoseError(err);
-      console.error('[cloud] callFunction ' + action + ' 失败:', err.errMsg || err.message, '→', msg);
-      if (opts.silent !== true) {
-        wx.showToast({ title: msg, icon: 'none', duration: 3000 });
-      }
-      reject(new Error(msg));
+  var maxRetries = opts.maxRetries || 0;
+  var attempt = 0;
+
+  function tryCall() {
+    return new Promise(function (resolve, reject) {
+      wx.cloud.callFunction({
+        name: 'api',
+        data: { action: action, data: data || {} }
+      }).then(function (res) {
+        if (res.result && res.result.error) {
+          reject(new Error(res.result.error));
+          return;
+        }
+        resolve(res.result || {});
+      }).catch(function (err) {
+        var msg = diagnoseError(err);
+        console.error('[cloud] callFunction ' + action + ' 失败:', err.errMsg || err.message, '→', msg);
+
+        // timeout 自动重试一次
+        var isTimeout = (err && err.errMsg && String(err.errMsg).indexOf('timeout') !== -1);
+        if (isTimeout && attempt < maxRetries) {
+          attempt++;
+          console.log('[cloud] timeout 重试 ' + attempt + '/' + maxRetries + '...');
+          tryCall().then(resolve).catch(reject);
+          return;
+        }
+
+        if (opts.silent !== true) {
+          wx.showToast({ title: msg, icon: 'none', duration: 3000 });
+        }
+        reject(new Error(msg));
+      });
     });
-  });
+  }
+
+  return tryCall();
 }
 
 module.exports = {
