@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Hermes Agent 完整指南 — 安装 · DeepSeek接入 · Telegram Gateway · 中文配置 · 程序坞启动 · 全部踩坑解决">
+<title>Hermes Agent 完整指南 · LiHongwei</title>
+<style>
+:root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#6c8cff;--green:#4ade80;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;--teal:#2dd4bf;--cyan:#22d3ee;--teal-dim:rgba(45,212,191,0.12);--cyan-dim:rgba(34,211,238,0.12)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);min-height:100vh;line-height:1.7}
+.container{max-width:900px;margin:0 auto;padding:32px 24px 80px}
+
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color .2s}
+.back-link:hover{color:var(--text)}
+
+.hero{text-align:center;padding:40px 0 24px}
+.hero-badge{display:inline-block;background:var(--teal-dim);color:var(--teal);border:1px solid rgba(45,212,191,0.2);padding:4px 14px;border-radius:20px;font-size:12px;margin-bottom:16px;letter-spacing:1px}
+.hero h1{font-size:34px;font-weight:800;background:linear-gradient(135deg,#2dd4bf,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
+.hero p{font-size:15px;color:var(--dim);max-width:620px;margin:0 auto}
+.hero .disclaimer{margin-top:14px;font-size:12px;color:var(--dim);border:1px solid rgba(45,212,191,0.15);background:rgba(45,212,191,0.05);border-radius:10px;padding:10px 16px;display:inline-block}
+
+.section{margin-bottom:40px}
+.section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--teal-dim);color:var(--teal);font-size:14px;font-weight:700;flex-shrink:0}
+.section-title .p-icon{background:var(--cyan-dim);color:var(--cyan)}
+.section-desc{font-size:14px;color:var(--dim);margin-bottom:14px}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:6px;font-size:11px;font-weight:600;margin-left:6px;vertical-align:middle}
+.badge.ok{background:rgba(74,222,128,0.1);color:var(--green);border:1px solid rgba(74,222,128,0.15)}
+.badge.need{background:rgba(248,113,113,0.1);color:var(--red);border:1px solid rgba(248,113,113,0.15)}
+.badge.teal{background:var(--teal-dim);color:var(--teal);border:1px solid rgba(45,212,191,0.15)}
+.badge.cyan{background:var(--cyan-dim);color:var(--cyan);border:1px solid rgba(34,211,238,0.15)}
+.badge.warn{background:rgba(251,191,36,0.1);color:var(--orange);border:1px solid rgba(251,191,36,0.15)}
+
+.step-list{counter-reset:step;display:flex;flex-direction:column;gap:10px}
+.step-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;position:relative;padding-left:60px}
+.step-item::before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:20px;width:26px;height:26px;border-radius:8px;background:var(--teal-dim);color:var(--teal);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.step-item h3{font-size:15px;font-weight:600;margin-bottom:6px}
+.step-item p{font-size:13px;color:var(--dim);line-height:1.6}
+.step-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:#2dd4bf}
+.step-item .cmd{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 16px;margin-top:6px;font-family:'Consolas','Courier New',monospace;font-size:13px;color:#b8c7ff;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+.step-item .cmd .c{color:rgba(255,255,255,0.3)}
+.step-item a{color:var(--accent)}
+.step-item strong{color:var(--text)}
+.step-item ul{margin:4px 0;padding-left:18px;font-size:13px;color:var(--dim)}
+.step-item li{margin-bottom:2px}
+
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.feature-card .f-icon{font-size:22px;margin-bottom:8px}
+.feature-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.feature-card p{font-size:13px;color:var(--dim);line-height:1.6}
+
+.compare-table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}
+.compare-table th{text-align:left;padding:10px 14px;background:rgba(45,212,191,0.06);color:var(--teal);font-weight:600;border-bottom:1px solid var(--border)}
+.compare-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--dim)}
+.compare-table tr td:first-child{color:var(--text);font-weight:500}
+
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow-x:auto;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 16px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.04)}
+th{color:var(--dim);font-weight:600;background:rgba(255,255,255,0.02)}
+td{color:var(--text)} tr:last-child td{border-bottom:none}
+td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underline}
+
+.link-block{background:var(--teal-dim);border:1px solid rgba(45,212,191,0.1);border-radius:14px;padding:20px 24px;margin-bottom:12px}
+.link-block h3{font-size:15px;font-weight:600;margin-bottom:10px;color:var(--teal)}
+.link-block .link-row{display:flex;align-items:center;padding:6px 0;font-size:13px;gap:8px}
+.link-block .link-row .label{color:var(--dim);min-width:80px;flex-shrink:0}
+.link-block .link-row a{color:var(--accent);text-decoration:none}
+.link-block .link-row a:hover{text-decoration:underline}
+
+.tip{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.12);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--orange);margin-top:10px}
+.tip.info{background:rgba(108,140,255,0.07);border-color:rgba(108,140,255,0.12);color:var(--accent)}
+.tip.green{background:rgba(74,222,128,0.07);border-color:rgba(74,222,128,0.12);color:var(--green)}
+.tip.cyan{background:var(--cyan-dim);border-color:rgba(34,211,238,0.12);color:var(--cyan)}
+.tip.red{background:rgba(248,113,113,0.07);border-color:rgba(248,113,113,0.12);color:var(--red)}
+
+.toc{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px}
+.toc a{font-size:12px;color:var(--dim);text-decoration:none;padding:4px 12px;border-radius:8px;border:1px solid var(--border);transition:all .2s}
+.toc a:hover{color:var(--text);border-color:rgba(255,255,255,0.15)}
+
+.arch-flow{display:flex;align-items:center;gap:10px;font-family:'SF Mono','Consolas',monospace;font-size:12px;color:var(--dim);flex-wrap:wrap;justify-content:center;margin-bottom:20px}
+.arch-flow span{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;white-space:nowrap}
+.arch-flow .arrow{background:none;border:none;color:var(--teal);padding:0 2px;font-size:14px}
+
+.page-counter{text-align:center;padding:24px 0 0;font-size:13px;color:rgba(255,255,255,0.2)}
+.page-counter span{color:var(--dim)}
+
+.footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:32px}
+.footer a{color:rgba(255,255,255,0.3);text-decoration:none}
+.footer a:hover{color:rgba(255,255,255,0.5)}
+
+@media(max-width:640px){
+  .container{padding:20px 16px 60px}
+  .hero h1{font-size:26px}
+  .step-item{padding:16px 16px 16px 48px}
+  .step-item::before{left:14px;top:16px;width:22px;height:22px;font-size:12px}
+  .arch-flow{gap:6px}
+  .arch-flow span{padding:4px 8px;font-size:11px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="../">← 返回主页</a>
+
+  <div class="hero">
+    <div class="hero-badge">Nous Research · MIT 开源 · 2026</div>
+    <h1>Hermes Agent 完整指南</h1>
+    <p>安装 · DeepSeek 接入 · Telegram Gateway · 中文配置 · 程序坞启动<br>macOS / Windows 双平台，所有踩坑已替你填平</p>
+    <div class="disclaimer">⚡ Hermes Agent 是 Nous Research 开源的 AI Agent 框架。接入 DeepSeek 后无需 Claude 账号、无需魔法、不封号。</div>
+  </div>
+
+  <!-- 目录 -->
+  <div class="toc">
+    <a href="#what">是什么</a>
+    <a href="#vs">对比 Claude Code</a>
+    <a href="#install">安装</a>
+    <a href="#setup">初始化配置</a>
+    <a href="#gateway">Telegram Gateway</a>
+    <a href="#chinese">中文配置</a>
+    <a href="#dock">程序坞启动</a>
+    <a href="#commands">命令速查</a>
+    <a href="#faq">踩坑合集</a>
+  </div>
+
+  <!-- 0. 是什么 -->
+  <div class="section" id="what">
+    <h2 class="section-title"><span class="num">0</span> Hermes Agent 是什么</h2>
+    <p class="section-desc">Hermes Agent 是 <strong>Nous Research</strong> 开发的开源 AI Agent 框架（MIT 协议）。和 Claude Code 类似——在终端里运行，能读文件、写代码、执行命令、操控浏览器。但它<strong>不绑定任何模型厂商</strong>，可以自由接入 DeepSeek、OpenAI、Anthropic 等任意模型。</p>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="f-icon">🔓</div><h3>完全开源</h3><p>MIT 协议，代码公开，可自由修改和分发</p></div>
+      <div class="feature-card"><div class="f-icon">🔌</div><h3>模型自由</h3><p>支持 DeepSeek / OpenAI / Anthropic / Google 等任意厂商</p></div>
+      <div class="feature-card"><div class="f-icon">🧰</div><h3>89 个内置技能</h3><p>浏览器操控、GitHub 管理、论文写作、代码执行、音乐创作</p></div>
+      <div class="feature-card"><div class="f-icon">🧠</div><h3>长期记忆</h3><p>跨会话保持上下文，SOUL.md 系统提示词持久注入</p></div>
+      <div class="feature-card"><div class="f-icon">💬</div><h3>Telegram 原生集成</h3><p>内置 Gateway，一条命令接入 Telegram Bot</p></div>
+      <div class="feature-card"><div class="f-icon">🖥️</div><h3>电脑操控</h3><p>cua-driver 驱动，可操控 macOS 桌面应用</p></div>
+    </div>
+    <div class="tip info"><strong>一句话总结：</strong>Hermes Agent = 开源版 Claude Code + 内置 Telegram Bot + 更多技能。如果你想要一个能接国产模型、能跑在 Telegram 上的 AI Agent，这就是目前最好的选择。</div>
+  </div>
+
+  <!-- 0.5 对比 -->
+  <div class="section" id="vs">
+    <h2 class="section-title"><span class="num p-icon">◆</span> Hermes Agent vs Claude Code</h2>
+    <table class="compare-table">
+      <tr><th>维度</th><th>Hermes Agent <span class="badge teal">推荐</span></th><th>Claude Code</th></tr>
+      <tr><td>开源协议</td><td>MIT（完全自由）</td><td>专有（Anthropic）</td></tr>
+      <tr><td>模型支持</td><td>DeepSeek / OpenAI / Anthropic / Google / 任意</td><td>仅 Anthropic 官方 + 第三方兼容</td></tr>
+      <tr><td>Telegram Bot</td><td>内置 Gateway，一条命令接入</td><td>需自己写 bot 脚本</td></tr>
+      <tr><td>技能系统</td><td>89 个内置 Skill，可自定义</td><td>需手动安装第三方 Skill</td></tr>
+      <tr><td>记忆系统</td><td>SOUL.md + 跨会话持久记忆</td><td>CLAUDE.md + memory/ 目录</td></tr>
+      <tr><td>电脑操控</td><td>内置 cua-driver（macOS）</td><td>需额外配置</td></tr>
+      <tr><td>部署方式</td><td>一条命令安装 + launchd 开机自启</td><td>brew install + 手动配置</td></tr>
+      <tr><td>更新方式</td><td><code>hermes update</code> 自动更新</td><td><code>brew upgrade claude-code</code></td></tr>
+    </table>
+  </div>
+
+  <!-- 1. 安装 -->
+  <div class="section" id="install">
+    <h2 class="section-title"><span class="num">1</span> 安装 Hermes Agent</h2>
+    <p class="section-desc">一条命令完成安装。脚本自动处理 uv、Python 3.11、Node.js 及全部依赖。</p>
+
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:12px;color:var(--teal)">▎macOS 安装</h3>
+    <div class="step-list" style="counter-reset:step 0">
+      <div class="step-item">
+        <h3>打开终端</h3>
+        <p>按 <strong>Command + 空格</strong> 搜索「终端」，打开终端 App。</p>
+      </div>
+      <div class="step-item">
+        <h3>执行安装脚本 <span class="badge ok">无需魔法</span></h3>
+        <div class="cmd">curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash</div>
+        <p style="margin-top:4px">脚本会自动完成：安装 uv 包管理器 → 创建 Python 3.11 虚拟环境 → 安装 100+ 依赖包 → 安装 Node.js → 安装 cua-driver。</p>
+      </div>
+      <div class="step-item">
+        <h3>重启终端</h3>
+        <p>安装完成后<strong>关闭终端重新打开</strong>，让 PATH 生效。然后验证：</p>
+        <div class="cmd">hermes --version</div>
+        <p>输出版本号（如 <code>hermes 0.14.0</code>）即安装成功。</p>
+      </div>
+    </div>
+
+    <div class="tip red" style="margin-top:12px">
+      <strong>⚠️ 常见坑：HTTP/2 下载失败。</strong>安装脚本在下载 Node.js 时可能报 <code>curl: (92) HTTP/2 stream error</code>。这是因为 nodejs.org 的 HTTP/2 在某些网络下不稳定。<br>
+      <strong>解决方法：</strong>如果脚本卡在 Node.js 下载，按 <code>Ctrl+C</code> 终止，然后手动下载：
+      <div class="cmd" style="margin-top:6px">curl --http1.1 -L "https://nodejs.org/dist/v22.11.0/node-v22.11.0-darwin-arm64.tar.gz" -o /tmp/node.tar.gz
+mkdir -p ~/.hermes/node
+tar -xzf /tmp/node.tar.gz -C ~/.hermes/node --strip-components=1
+rm /tmp/node.tar.gz</div>
+      关键是用 <code>--http1.1</code> 标志强制使用 HTTP/1.1 协议。然后重新运行安装脚本即可跳过 Node.js 下载步骤。
+    </div>
+
+    <h3 style="font-size:16px;font-weight:700;margin:28px 0 12px;color:var(--accent)">▎Windows 安装</h3>
+    <div class="step-list" style="counter-reset:step 0">
+      <div class="step-item">
+        <h3>先装 Git Bash <span class="badge ok">无需魔法</span></h3>
+        <p>Hermes Agent 在 Windows 依赖 Git Bash。按 <strong>Win + R</strong> 输入 <code>wt</code> 打开终端：</p>
+        <div class="cmd">winget install Git.Git</div>
+      </div>
+      <div class="step-item">
+        <h3>在 Git Bash 中执行安装脚本</h3>
+        <p>打开 Git Bash，执行：</p>
+        <div class="cmd">curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash</div>
+      </div>
+      <div class="step-item">
+        <h3>重启 Git Bash 验证</h3>
+        <div class="cmd">hermes --version</div>
+      </div>
+    </div>
+    <div class="tip green" style="margin-top:12px">安装后目录结构：程序在 <code>~/.local/bin/hermes</code>，配置在 <code>~/.hermes/</code>，日志在 <code>~/.hermes/logs/</code>。</div>
+  </div>
+
+  <!-- 2. 初始化配置 -->
+  <div class="section" id="setup">
+    <h2 class="section-title"><span class="num">2</span> 初始化配置（setup 向导）</h2>
+    <p class="section-desc">安装完成后运行 <code>hermes setup</code> 进入交互式配置向导，配置模型和 API Key。</p>
+
+    <div class="step-list">
+      <div class="step-item">
+        <h3>启动配置向导</h3>
+        <div class="cmd">hermes setup</div>
+        <p>向导会依次询问以下配置项。</p>
+      </div>
+      <div class="step-item">
+        <h3>选择模型提供商 → DeepSeek</h3>
+        <p>向导列出支持的提供商，选择 <strong>DeepSeek</strong>（或用方向键选择后回车）。</p>
+      </div>
+      <div class="step-item">
+        <h3>输入 DeepSeek API Key</h3>
+        <p>去 <a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a> 注册 → API Keys → 创建 Key → 复制粘贴到终端。</p>
+        <div class="tip green">Key 以 <code>sk-</code> 开头。新用户有免费额度，轻度使用足够。</div>
+      </div>
+      <div class="step-item">
+        <h3>其余选项回车默认</h3>
+        <p>模型名默认 <code>deepseek-v4-pro</code>、Base URL 默认 <code>https://api.deepseek.com/v1</code>，直接回车确认。TTS（文字转语音）选 <strong>N</strong> 跳过。</p>
+      </div>
+      <div class="step-item">
+        <h3>验证配置</h3>
+        <div class="cmd">hermes chat</div>
+        <p>输入一句话测试，收到回复说明模型连接成功。</p>
+      </div>
+    </div>
+
+    <div class="tip info" style="margin-top:12px">
+      <strong>配置文件位置：</strong>setup 向导会把配置写入 <code>~/.hermes/config.yaml</code>，密钥写入 <code>~/.hermes/.env</code>。你可以随时编辑这两个文件修改配置。
+    </div>
+
+    <div class="tip red" style="margin-top:8px">
+      <strong>⚠️ 踩坑：DeepSeek API Key 有多个。</strong>如果你之前用过 Claude Code + DeepSeek，可能有两个不同的 Key：一个是 Claude Code 里用的 <code>ANTHROPIC_AUTH_TOKEN</code>，一个是 DeepSeek 原生 Key。两者格式相同但值不同。<strong>用 DeepSeek 平台上的原始 Key</strong>，不要用 Claude Code 转接的那个。如果配置后对话报 401 认证失败，说明 Key 无效——去 DeepSeek 平台重新创建一个。
+    </div>
+  </div>
+
+  <!-- 3. Telegram Gateway -->
+  <div class="section" id="gateway">
+    <h2 class="section-title"><span class="num">3</span> 接入 Telegram Gateway（核心功能）</h2>
+    <p class="section-desc">Hermes Agent 内置 Telegram Gateway，让你的 Bot 在 Telegram 中 24 小时在线，自动回复消息。这是它相比 Claude Code 最大的优势之一。</p>
+
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--teal)">3.1 架构原理</h3>
+    <div class="arch-flow">
+      <span>Telegram 消息</span>
+      <span class="arrow">→</span>
+      <span>Hermes Gateway</span>
+      <span class="arrow">→</span>
+      <span>DeepSeek API</span>
+      <span class="arrow">→</span>
+      <span>+ 89 个技能</span>
+      <span class="arrow">→</span>
+      <span>AI 回复</span>
+      <span class="arrow">→</span>
+      <span>Telegram 聊天</span>
+    </div>
+    <p style="font-size:13px;color:var(--dim);text-align:center;margin-bottom:20px">
+      Gateway 作为 macOS launchd 服务 24 小时运行，崩溃自动重启。支持 30+ 命令，DuckDuckGo 搜索、代码执行、浏览器操控全在 Telegram 里完成。
+    </p>
+
+    <h3 style="font-size:15px;font-weight:600;margin-bottom:10px;color:var(--teal)">3.2 创建 Telegram Bot</h3>
+    <div class="step-list" style="counter-reset:step 0">
+      <div class="step-item">
+        <h3>去 @BotFather 创建 Bot</h3>
+        <p>在 Telegram 中搜索 <a href="https://t.me/BotFather" target="_blank">@BotFather</a> → 发送 <code>/newbot</code> → 按提示设置名称和用户名 → 获取 <strong>Bot Token</strong>（格式：<code>123456:ABC-DEF1234ghiJKL</code>）。</p>
+      </div>
+      <div class="step-item">
+        <h3>获取你的 Telegram 用户 ID</h3>
+        <p>在 Telegram 中搜索 <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a> → 发送 <code>/start</code> → 获取你的数字 ID。</p>
+      </div>
+    </div>
+
+    <h3 style="font-size:15px;font-weight:600;margin:20px 0 10px;color:var(--teal)">3.3 配置环境变量</h3>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:8px">创建 <code>~/.hermes/.env</code> 文件：</p>
+    <div class="cmd" style="margin-bottom:8px">DEEPSEEK_API_KEY=sk-你的deepseek密钥
+TELEGRAM_BOT_TOKEN=123456:ABC-DEF1234ghiJKL
+TELEGRAM_ALLOWED_USERS=你的Telegram数字ID
+TELEGRAM_HOME_CHANNEL=你的Telegram数字ID
+GATEWAY_ALLOW_ALL_USERS=true</div>
+
+    <div class="tip red" style="margin-top:8px">
+      <strong>🚨 最重要的坑：launchd 不读 .env 文件！</strong>这是整个配置过程中最隐秘的坑。Gateway 作为 launchd 服务运行时，<strong>不会 source shell 配置文件</strong>（.zshrc / .bashrc），也<strong>不读取 .env 文件</strong>。launchd 服务运行在最简系统环境中。<br><br>
+      <strong>解决方法：</strong>必须把环境变量直接写入 launchd plist 的 <code>EnvironmentVariables</code> 字典中。详见下一步。
+    </div>
+
+    <h3 style="font-size:15px;font-weight:600;margin:20px 0 10px;color:var(--teal)">3.4 安装并启动 Gateway 服务</h3>
+    <div class="step-list" style="counter-reset:step 0">
+      <div class="step-item">
+        <h3>安装 Gateway（自动注册 launchd）</h3>
+        <div class="cmd">hermes gateway install</div>
+        <p>这条命令会：创建 launchd plist → 注册为开机自启服务 → 启动 Gateway。</p>
+      </div>
+      <div class="step-item">
+        <h3>🚨 关键步骤：把环境变量写入 plist</h3>
+        <p>打开 launchd 配置文件：</p>
+        <div class="cmd">open ~/Library/LaunchAgents/ai.hermes.gateway.plist</div>
+        <p>在 <code>&lt;dict&gt;</code> 中添加 <code>EnvironmentVariables</code> 段：</p>
+        <div class="cmd">&lt;key&gt;EnvironmentVariables&lt;/key&gt;
+&lt;dict&gt;
+    &lt;key&gt;DEEPSEEK_API_KEY&lt;/key&gt;
+    &lt;string&gt;sk-你的deepseek密钥&lt;/string&gt;
+    &lt;key&gt;TELEGRAM_BOT_TOKEN&lt;/key&gt;
+    &lt;string&gt;你的Bot Token&lt;/string&gt;
+    &lt;key&gt;TELEGRAM_ALLOWED_USERS&lt;/key&gt;
+    &lt;string&gt;你的用户ID&lt;/string&gt;
+    &lt;key&gt;TELEGRAM_HOME_CHANNEL&lt;/key&gt;
+    &lt;string&gt;你的用户ID&lt;/string&gt;
+    &lt;key&gt;GATEWAY_ALLOW_ALL_USERS&lt;/key&gt;
+    &lt;string&gt;true&lt;/string&gt;
+&lt;/dict&gt;</div>
+        <p style="margin-top:6px">保存后重启 Gateway：</p>
+        <div class="cmd">hermes gateway restart</div>
+      </div>
+      <div class="step-item">
+        <h3>验证 Gateway 运行状态</h3>
+        <div class="cmd">hermes gateway status</div>
+        <p>看到 <code>✓ telegram connected</code> 即成功。</p>
+        <div class="cmd" style="margin-top:6px">tail -f ~/.hermes/logs/gateway.log</div>
+        <p>实时查看日志，确认消息收发正常。</p>
+      </div>
+    </div>
+
+    <div class="tip green" style="margin-top:12px">
+      <strong>故障排查口诀：</strong>Bot 没反应 → 先查 <code>hermes gateway status</code> 是否 running → 再查日志 <code>tail -f ~/.hermes/logs/gateway.log</code> → 看到 "No messaging platforms enabled" 说明 Token 没读到 → 检查 plist 的 EnvironmentVariables → 改完 <code>hermes gateway restart</code> → 再次验证。
+    </div>
+  </div>
+
+  <!-- 4. 中文配置 -->
+  <div class="section" id="chinese">
+    <h2 class="section-title"><span class="num">4</span> 配置中文回复</h2>
+    <p class="section-desc">Hermes Agent 默认用英文回复。编辑 <code>SOUL.md</code> 文件可以改变它的行为、语言、知识库——这是 Hermes 最强大的定制入口。</p>
+
+    <div class="step-list">
+      <div class="step-item">
+        <h3>编辑 SOUL.md</h3>
+        <p><code>SOUL.md</code> 是 Hermes 的系统提示词文件，<strong>每次对话都会被注入</strong>。你可以在这里写入任何想让 Hermes 知道的信息。</p>
+        <div class="cmd">open ~/.hermes/SOUL.md</div>
+      </div>
+      <div class="step-item">
+        <h3>添加中文语言规则</h3>
+        <p>在文件顶部添加：</p>
+        <div class="cmd">CRITICAL LANGUAGE RULE: You MUST reply in Chinese (简体中文) at all times.
+The user speaks Chinese. Never use English unless the user explicitly asks.</div>
+      </div>
+      <div class="step-item">
+        <h3>（可选）注入项目知识</h3>
+        <p>你还可以在 SOUL.md 中写入：用户身份和技能、项目结构、代码规范、GitHub 仓库信息、常用命令…… 这些会成为 Hermes 的"长期记忆"，每次对话都能引用。</p>
+      </div>
+      <div class="step-item">
+        <h3>重启 Gateway 生效</h3>
+        <div class="cmd">hermes gateway restart</div>
+        <p>修改 SOUL.md 后必须重启 Gateway 才能生效。终端 chat 模式则无需重启，下次启动自动加载。</p>
+      </div>
+    </div>
+
+    <div class="tip cyan" style="margin-top:10px"><strong>SOUL.md 的作用：</strong>它不仅控制语言，还能注入你的身份信息、项目上下文、代码规范、安全红线——相当于 Claude Code 的 CLAUDE.md + rules/ + memory/ 三合一。</div>
+  </div>
+
+  <!-- 5. 程序坞 -->
+  <div class="section" id="dock">
+    <h2 class="section-title"><span class="num">5</span> 程序坞一键启动（macOS）</h2>
+    <p class="section-desc">创建一个 .app 捆绑包放在程序坞，点击图标即可启动 Hermes Agent 对话。</p>
+
+    <div class="step-list">
+      <div class="step-item">
+        <h3>创建 .app 目录结构</h3>
+        <div class="cmd">mkdir -p ~/Applications/hermes.app/Contents/{MacOS,Resources}</div>
+      </div>
+      <div class="step-item">
+        <h3>创建启动脚本</h3>
+        <p>用以下内容创建 <code>~/Applications/hermes.app/Contents/MacOS/hermes-launcher</code>：</p>
+        <div class="cmd">#!/bin/bash
+HERMES_BIN="$HOME/.local/bin/hermes"
+
+if [ ! -f "$HERMES_BIN" ]; then
+    osascript -e 'display dialog "Hermes Agent 未安装" buttons {"好"} with icon stop'
+    exit 1
+fi
+
+TMP_SCRIPT=$(mktemp /tmp/hermes-launch.XXXXXX)
+cat > "$TMP_SCRIPT" << 'SCRIPT'
+clear
+echo "⚕ Hermes Agent"
+echo ""
+export PATH="$HOME/.local/bin:$PATH"
+exec hermes chat
+SCRIPT
+chmod +x "$TMP_SCRIPT"
+
+osascript -e 'tell app "Terminal" to activate' \
+          -e "tell app \"Terminal\" to do script \"$TMP_SCRIPT; rm -f $TMP_SCRIPT\""</div>
+        <p style="margin-top:4px">赋予执行权限：<code>chmod +x ~/Applications/hermes.app/Contents/MacOS/hermes-launcher</code></p>
+      </div>
+      <div class="step-item">
+        <h3>创建 Info.plist</h3>
+        <div class="cmd">cat > ~/Applications/hermes.app/Contents/Info.plist << 'EOF'
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+    &lt;key&gt;CFBundleExecutable&lt;/key&gt;
+    &lt;string&gt;hermes-launcher&lt;/string&gt;
+    &lt;key&gt;CFBundleName&lt;/key&gt;
+    &lt;string&gt;Hermes&lt;/string&gt;
+    &lt;key&gt;CFBundleIdentifier&lt;/key&gt;
+    &lt;string&gt;ai.hermes.launcher&lt;/string&gt;
+    &lt;key&gt;CFBundleVersion&lt;/key&gt;
+    &lt;string&gt;1.0&lt;/string&gt;
+    &lt;key&gt;LSUIElement&lt;/key&gt;
+    &lt;true/&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+EOF</div>
+      </div>
+      <div class="step-item">
+        <h3>拖入程序坞</h3>
+        <p>在 Finder 中打开 <code>~/Applications/</code>，将 <code>hermes.app</code> 拖入程序坞即可。点击图标 → 自动打开终端 → 启动 Hermes Agent 对话。</p>
+      </div>
+    </div>
+
+    <div class="tip red" style="margin-top:12px">
+      <strong>⚠️ 踩坑：osascript 转义地狱。</strong>直接在 osascript 中内嵌复杂脚本会因为引号嵌套导致 <code>预期是"却找到未知的记号"</code> 语法错误。<br>
+      <strong>正确做法：</strong>先把脚本写入临时文件，再让 osascript 调用该文件路径。如上面启动脚本所示——用 <code>mktemp</code> + heredoc + <code>chmod +x</code>，避免任何嵌套转义。
+    </div>
+  </div>
+
+  <!-- 6. 常用命令 -->
+  <div class="section" id="commands">
+    <h2 class="section-title"><span class="num p-icon">◆</span> 常用命令速查</h2>
+    <div class="table-wrap">
+      <table>
+        <tr><th>命令</th><th>作用</th></tr>
+        <tr><td><code>hermes chat</code></td><td>启动终端对话模式</td></tr>
+        <tr><td><code>hermes --tui</code></td><td>启动 TUI 界面模式</td></tr>
+        <tr><td><code>hermes setup</code></td><td>重新运行配置向导</td></tr>
+        <tr><td><code>hermes gateway install</code></td><td>安装 Gateway launchd 服务</td></tr>
+        <tr><td><code>hermes gateway status</code></td><td>查看 Gateway 运行状态</td></tr>
+        <tr><td><code>hermes gateway restart</code></td><td>重启 Gateway（改配置后必执行）</td></tr>
+        <tr><td><code>hermes gateway logs</code></td><td>查看 Gateway 日志</td></tr>
+        <tr><td><code>hermes update</code></td><td>更新 Hermes Agent 到最新版</td></tr>
+        <tr><td><code>hermes --version</code></td><td>查看版本号</td></tr>
+        <tr><td><code>tail -f ~/.hermes/logs/gateway.log</code></td><td>实时查看 Gateway 日志</td></tr>
+        <tr><td><code>launchctl list ai.hermes.gateway</code></td><td>查看 launchd 服务状态（macOS）</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 7. 踩坑合集 FAQ -->
+  <div class="section" id="faq">
+    <h2 class="section-title"><span class="num p-icon">◆</span> 踩坑合集（全部亲测）</h2>
+    <p class="section-desc">以下所有问题都是我在部署过程中实际遇到的，附详细原因和解决方法。</p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
+        <p style="font-weight:600;margin-bottom:4px">Q：安装脚本卡在 Node.js 下载？HTTP/2 报错？</p>
+        <p style="font-size:13px;color:var(--dim)"><strong>原因：</strong>nodejs.org 的 HTTP/2 在某些网络环境下不稳定，curl 报 <code>HTTP/2 stream error (92)</code>。<br>
+        <strong>解决：</strong>Ctrl+C 终止脚本 → 用 <code>curl --http1.1 -L "https://nodejs.org/dist/v22.11.0/..." -o /tmp/node.tar.gz</code> 手动下载 → 解压到 <code>~/.hermes/node/</code> → 重新运行安装脚本。关键是 <code>--http1.1</code> 标志。</p>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
+        <p style="font-weight:600;margin-bottom:4px">Q：Gateway 启动后 Bot 完全没反应？</p>
+        <p style="font-size:13px;color:var(--dim)"><strong>原因：</strong>最可能的原因是 launchd 没有读到环境变量。launchd 服务不 source shell 配置文件，也不读 .env 文件。<br>
+        <strong>诊断：</strong>日志中出现 <code>No messaging platforms enabled</code> 即说明 Token 未加载。<br>
+        <strong>解决：</strong>必须把 <code>TELEGRAM_BOT_TOKEN</code>、<code>DEEPSEEK_API_KEY</code> 等环境变量直接写入 <code>~/Library/LaunchAgents/ai.hermes.gateway.plist</code> 的 <code>EnvironmentVariables</code> 字典中，然后 <code>hermes gateway restart</code>。</p>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
+        <p style="font-weight:600;margin-bottom:4px">Q：Bot 回复了但是英文？怎么改成中文？</p>
+        <p style="font-size:13px;color:var(--dim)"><strong>解决：</strong>编辑 <code>~/.hermes/SOUL.md</code>，在顶部添加 <code>CRITICAL LANGUAGE RULE: You MUST reply in Chinese (简体中文) at all times.</code>，然后 <code>hermes gateway restart</code> 重启生效。</p>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
+        <p style="font-weight:600;margin-bottom:4px">Q：DeepSeek API 返回 401 Authentication Fails？</p>
+        <p style="font-size:13px;color:var(--dim)"><strong>原因：</strong>你可能有两个不同的 API Key（Claude Code 用的 ANTHROPIC_AUTH_TOKEN 和 DeepSeek 原生 Key）。setup 向导中输入的 Key 可能无效。<br>
+        <strong>诊断：</strong>用 curl 测试 Key 是否有效：<br>
+        <code>curl https://api.deepseek.com/v1/chat/completions -H "Authorization: Bearer sk-你的key" -H "Content-Type: application/json" -d '{"model":"deepseek-v4-pro","messages":[{"role":"user","content":"hi"}]}'</code><br>
+        返回 200 则 Key 有效，返回 401 则 Key 无效。<br>
+        <strong>解决：</strong>用有效的 Key 替换 plist 中 <code>DEEPSEEK_API_KEY</code> 的值，重启 Gateway。</p>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
+        <p style="font-weight:600;margin-bottom:4px">Q：Gateway 状态是 running 但 Bot 还是没反应？</p>
+        <p style="font-size:13px;color:var(--dim)"><strong>原因：</strong>可能 Gateway 进程在运行但卡在某个步骤（如首次启动时自动安装 Node.js 卡住）。<br>
+        <strong>诊断：</strong><code>tail -f ~/.hermes/logs/gateway.log</code> 实时看日志，看卡在哪一步。<br>
+        <strong>解决：</strong>如果日志中长时间无新输出，先 <code>launchctl unload ~/Library/LaunchAgents/ai.hermes.gateway.plist</code> 停止 → 检查环境变量配置 → 手动完成卡住的依赖安装 → <code>launchctl load ~/Library/LaunchAgents/ai.hermes.gateway.plist</code> 重新加载。</p>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
+        <p style="font-weight:600;margin-bottom:4px">Q：程序坞 hermes.app 点击后报错打不开？</p>
+        <p style="font-size:13px;color:var(--dim)"><strong>原因：</strong>通常是 osascript 脚本中的引号嵌套导致语法错误（"预期是"却找到未知的记号"）。<br>
+        <strong>解决：</strong>不要在 osascript 中内嵌复杂脚本。用 <code>mktemp</code> 创建临时脚本文件，heredoc 写入内容，然后让 osascript 只调用文件路径。详见上方「程序坞一键启动」章节的完整脚本。</p>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
+        <p style="font-weight:600;margin-bottom:4px">Q：安装完成后 <code>hermes</code> 命令找不到？</p>
+        <p style="font-size:13px;color:var(--dim)"><strong>解决：</strong>安装脚本会在 <code>~/.zshrc</code> 中添加 PATH。执行 <code>source ~/.zshrc</code> 或关闭终端重新打开即可。确认 <code>~/.local/bin/hermes</code> 文件存在。</p>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px">
+        <p style="font-weight:600;margin-bottom:4px">Q：Gateway 可以在 Windows 上运行吗？</p>
+        <p style="font-size:13px;color:var(--dim)">Hermes Agent 本身支持 Windows，但 Gateway 的 launchd 服务模式是 macOS 专属。Windows 上可以通过任务计划程序（Task Scheduler）实现类似的开机自启效果，或者直接在终端中运行 <code>hermes gateway run</code> 前台运行。</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 相关链接 -->
+  <div class="link-block" style="margin-top:16px">
+    <h3>相关链接</h3>
+    <div class="link-row"><span class="label">Hermes Agent</span><a href="https://github.com/NousResearch/hermes-agent" target="_blank">github.com/NousResearch/hermes-agent</a> <span class="badge ok">MIT 开源</span></div>
+    <div class="link-row"><span class="label">一键启动器</span><a href="../hermes-launcher/">Hermes Agent 桌面快捷启动</a></div>
+    <div class="link-row"><span class="label">Telegram Bot</span><a href="../telegram-bot/">Telegram AI 机器人项目页面</a></div>
+    <div class="link-row"><span class="label">DeepSeek 平台</span><a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a> <span class="badge ok">无需魔法</span></div>
+    <div class="link-row"><span class="label">BotFather</span><a href="https://t.me/BotFather" target="_blank">t.me/BotFather</a>（Telegram 内打开）</div>
+    <div class="link-row"><span class="label">Claude Code 指南</span><a href="../claude-code-tutorial/">Claude Code 完整指南</a></div>
+  </div>
+
+  <!-- 访问计数 -->
+  <div class="page-counter">
+    本页被阅读 <span id="busuanzi_page_pv">...</span> 次
+  </div>
+
+  <div class="footer">
+    <a href="https://github.com/LiHongwei-cn/lihongwei-cn" target="_blank">GitHub</a>
+    &nbsp;·&nbsp; 全部亲测 · 所有坑已替你踩过
+    &nbsp;·&nbsp; LiHongwei
+  </div>
+
+</div>
+
+<script defer src="https://jsd.dusays.com/npm/penndu@17.0.0/bsz.js"></script>
+</body>
+</html>
