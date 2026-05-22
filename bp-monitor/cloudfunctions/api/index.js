@@ -40,8 +40,12 @@ function isEmergency(systolic, diastolic, notes) {
 }
 
 function medicationSummary(medications) {
-  if (!Array.isArray(medications) || medications.length === 0) return '未填写';
-  return medications.map(m => m.name + (m.dose ? ' ' + m.dose : '') + (m.time ? '（' + m.time + '）' : '')).join('、');
+  let meds = medications;
+  if (typeof meds === 'string') {
+    try { meds = JSON.parse(meds); } catch (e) { return '未填写'; }
+  }
+  if (!Array.isArray(meds) || meds.length === 0) return '未填写';
+  return meds.map(m => (m.name || '') + (m.dose ? ' ' + m.dose : '') + (m.time ? '（' + m.time + '）' : '')).join('、');
 }
 
 // ── Prompts (from prompts/) ───────────────────────────────────
@@ -283,6 +287,15 @@ async function handleUpdateUserProfile(openid, data) {
 async function handleAddReading(openid, data) {
   const { systolic, diastolic, heartRate, measuredAt, timePeriod, notes } = data;
 
+  // Input validation
+  if (typeof systolic !== 'number' || typeof diastolic !== 'number' ||
+      systolic < 60 || systolic > 300 || diastolic < 30 || diastolic > 200) {
+    return { error: '血压数值超出合理范围（收缩压60-300，舒张压30-200）' };
+  }
+  if (heartRate !== undefined && heartRate !== null && (typeof heartRate !== 'number' || heartRate < 30 || heartRate > 250)) {
+    return { error: '心率数值超出合理范围（30-250 bpm）' };
+  }
+
   // Rate limit check
   const todayStr = new Date().toISOString().substring(0, 10);
   const tomorrowStr = new Date(Date.now() + 86400000).toISOString().substring(0, 10);
@@ -416,6 +429,7 @@ async function handleGetStats(openid, data) {
   const res = await db.collection('readings')
     .where({ _openid: openid, measuredAt: _.gte(cutoff.toISOString()) })
     .orderBy('measuredAt', 'asc')
+    .limit(500)
     .get();
 
   const rows = res.data;
@@ -484,6 +498,7 @@ async function handleGenerateReport(openid, data) {
   const readingsRes = await db.collection('readings')
     .where({ _openid: openid, measuredAt: _.gte(weekStart).and(_.lte(weekEnd + 'T23:59:59')) })
     .orderBy('measuredAt', 'asc')
+    .limit(200)
     .get();
   const readings = readingsRes.data;
 
