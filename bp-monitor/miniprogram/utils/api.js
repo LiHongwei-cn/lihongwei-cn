@@ -4,8 +4,8 @@ function request(url, options) {
   options = options || {};
   var token = app.globalData.token || wx.getStorageSync('token');
 
-  return new Promise(function (resolve, reject) {
-    function doRequest(apiUrl) {
+  function doRequest(apiUrl) {
+    return new Promise(function (resolve, reject) {
       wx.request({
         url: apiUrl + url,
         method: options.method || 'GET',
@@ -26,7 +26,6 @@ function request(url, options) {
             resolve(res.data);
           } else {
             var msg = (res.data && res.data.detail) || '服务器繁忙';
-            wx.showToast({ title: msg, icon: 'none', duration: 3000 });
             reject(new Error(msg));
           }
         },
@@ -34,14 +33,18 @@ function request(url, options) {
           reject(err);
         }
       });
-    }
+    });
+  }
 
-    // 第一次尝试
-    doRequest(app.globalData.apiBase).catch(function (err) {
-      // 如果是真机且用了隧道 URL 失败，可能是 tunnel 断了
-      // 等待 1 秒重试一次（排除瞬时网络波动）
+  return doRequest(app.globalData.apiBase).catch(function (err) {
+    // 401 不重试
+    if (err.message === '登录已过期') {
+      return Promise.reject(err);
+    }
+    // 网络错误：等 1 秒重试一次
+    return new Promise(function (resolve, reject) {
       setTimeout(function () {
-        doRequest(app.globalData.apiBase).catch(function (err2) {
+        doRequest(app.globalData.apiBase).then(resolve).catch(function (err2) {
           var msg = '网络连接失败';
           if (err2.errMsg && err2.errMsg.indexOf('timeout') !== -1) {
             msg = '请求超时，请检查网络或后端服务';
