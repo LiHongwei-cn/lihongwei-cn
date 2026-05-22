@@ -661,6 +661,31 @@ function sanitizeUser(u) {
   };
 }
 
+// ── Delete handler ────────────────────────────────────────────
+
+async function handleDeleteReading(openid, data) {
+  const { readingId } = data || {};
+  if (!readingId) return { error: '缺少记录ID' };
+
+  const reading = await db.collection('readings').doc(readingId).get();
+  if (!reading.data || reading.data.length === 0) {
+    return { error: '记录不存在' };
+  }
+  if (reading.data._openid !== openid) {
+    return { error: '无权删除此记录' };
+  }
+
+  await db.collection('readings').doc(readingId).remove();
+
+  // Clean up associated AI feedback
+  const feedbackRes = await db.collection('ai_feedback').where({ readingId }).get();
+  if (feedbackRes.data.length > 0) {
+    await db.collection('ai_feedback').doc(feedbackRes.data[0]._id).remove();
+  }
+
+  return { success: true };
+}
+
 // ── Main ──────────────────────────────────────────────────────
 
 exports.main = async (event, context) => {
@@ -689,6 +714,8 @@ exports.main = async (event, context) => {
         return await handleGenerateReport(OPENID, data || {});
       case 'getReports':
         return await handleGetReports(OPENID);
+      case 'deleteReading':
+        return await handleDeleteReading(OPENID, data || {});
       default:
         return { error: '未知操作: ' + action };
     }
