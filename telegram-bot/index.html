@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Telegram AI 机器人 — DeepSeek 驱动，文字+图片理解，支持 Win/Mac/Linux 部署">
+<title>Telegram AI 机器人 · LiHongwei</title>
+<style>
+:root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#6c8cff;--green:#4ade80;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.12);--cyan:#22d3ee}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);min-height:100vh;line-height:1.7}
+.container{max-width:800px;margin:0 auto;padding:32px 24px 80px}
+
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color .2s}
+.back-link:hover{color:var(--text)}
+
+.hero{text-align:center;padding:40px 0 24px}
+.hero-badge{display:inline-block;background:rgba(34,211,238,0.1);color:var(--cyan);border:1px solid rgba(34,211,238,0.2);padding:4px 14px;border-radius:20px;font-size:12px;margin-bottom:16px;letter-spacing:1px}
+.hero h1{font-size:34px;font-weight:800;background:linear-gradient(135deg,#22d3ee,#6c8cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
+.hero p{font-size:15px;color:var(--dim);max-width:580px;margin:0 auto}
+
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:12px}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.feature-card .f-icon{font-size:22px;margin-bottom:8px}
+.feature-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.feature-card p{font-size:13px;color:var(--dim);line-height:1.6}
+
+.section{margin-bottom:40px}
+.section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(34,211,238,0.12);color:var(--cyan);font-size:14px;font-weight:700;flex-shrink:0}
+
+.arch-flow{display:flex;align-items:center;gap:10px;font-family:'SF Mono','Consolas',monospace;font-size:12px;color:var(--dim);flex-wrap:wrap;justify-content:center;margin-bottom:20px}
+.arch-flow span{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;white-space:nowrap}
+.arch-flow .arrow{background:none;border:none;color:var(--cyan);padding:0 2px;font-size:14px}
+
+.step-list{counter-reset:step;display:flex;flex-direction:column;gap:10px}
+.step-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;position:relative;padding-left:60px}
+.step-item::before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:20px;width:26px;height:26px;border-radius:8px;background:rgba(34,211,238,0.12);color:var(--cyan);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.step-item h3{font-size:15px;font-weight:600;margin-bottom:6px}
+.step-item p{font-size:13px;color:var(--dim);line-height:1.6}
+.step-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:#22d3ee}
+.step-item .cmd{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 16px;margin-top:6px;font-family:'Consolas','Courier New',monospace;font-size:13px;color:#b8c7ff;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+.step-item .cmd.mac{border-left:2px solid var(--green)}
+.step-item .cmd.win{border-left:2px solid var(--accent);margin-top:4px}
+.step-item .os-label{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;margin-bottom:2px}
+.step-item .os-label.mac{color:var(--green)} .step-item .os-label.win{color:var(--accent)}
+.step-item a{color:var(--accent)}
+.step-item strong{color:var(--text)}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:6px;font-size:11px;font-weight:600;margin-left:6px;vertical-align:middle}
+.badge.cyan{background:rgba(34,211,238,0.12);color:var(--cyan);border:1px solid rgba(34,211,238,0.15)}
+
+.file-tree{background:rgba(0,0,0,0.2);border:1px solid var(--border);border-radius:14px;padding:18px 24px;font-family:'SF Mono','Consolas',monospace;font-size:13px;line-height:2}
+.file-tree .dir{color:var(--cyan)}
+.file-tree .file{color:var(--dim);padding-left:20px}
+.file-tree .comment{color:rgba(255,255,255,0.2);padding-left:8px;font-size:12px}
+
+.tip{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.12);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--orange);margin-top:10px}
+.tip.info{background:rgba(108,140,255,0.07);border-color:rgba(108,140,255,0.12);color:var(--accent)}
+.tip.green{background:rgba(74,222,128,0.07);border-color:rgba(74,222,128,0.12);color:var(--green)}
+.tip.cyan{background:rgba(34,211,238,0.07);border-color:rgba(34,211,238,0.12);color:var(--cyan)}
+
+.faq-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px 24px;margin-bottom:8px}
+.faq-item h4{font-size:14px;font-weight:600;color:var(--cyan);margin-bottom:6px}
+.faq-item p{font-size:13px;color:var(--dim);line-height:1.6}
+.faq-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:#22d3ee}
+
+.link-block{background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.1);border-radius:14px;padding:20px 24px;margin-bottom:12px}
+.link-block h3{font-size:15px;font-weight:600;margin-bottom:10px;color:var(--cyan)}
+.link-block .link-row{display:flex;align-items:center;padding:6px 0;font-size:13px;gap:8px}
+.link-block .link-row .label{color:var(--dim);min-width:80px;flex-shrink:0}
+.link-block .link-row a{color:var(--accent);text-decoration:none}
+.link-block .link-row a:hover{text-decoration:underline}
+
+.footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:32px}
+.footer a{color:rgba(255,255,255,0.3);text-decoration:none}
+.footer a:hover{color:rgba(255,255,255,0.5)}
+
+@media(max-width:640px){
+  .container{padding:20px 16px 60px}
+  .hero h1{font-size:26px}
+  .step-item{padding:16px 16px 16px 48px}
+  .step-item::before{left:14px;top:16px;width:22px;height:22px;font-size:12px}
+  .arch-flow{gap:6px}
+  .arch-flow span{padding:4px 8px;font-size:11px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="../">← 返回主页</a>
+
+  <div class="hero">
+    <div class="hero-badge">DeepSeek · Telegram · 开源</div>
+    <h1>Telegram AI 机器人</h1>
+    <p>把 DeepSeek 接入 Telegram，发消息给机器人自动回复。<br>支持文字对话 + 图片理解，Win / Mac / Linux 都能跑。</p>
+  </div>
+
+  <!-- 功能亮点 -->
+  <div class="section">
+    <div class="feature-grid">
+      <div class="feature-card"><div class="f-icon">💬</div><h3>文字对话</h3><p>DeepSeek-V4 驱动，MATLAB/Simulink 代码直出</p></div>
+      <div class="feature-card"><div class="f-icon">🖼️</div><h3>图片理解</h3><p>发送截图/公式/图表，AI 识别并回复</p></div>
+      <div class="feature-card"><div class="f-icon">🔑</div><h3>安全第一</h3><p>密钥从环境变量读取，绝不硬编码</p></div>
+      <div class="feature-card"><div class="f-icon">🔄</div><h3>多平台部署</h3><p>Win .bat / Mac .sh / Linux nohup 一键启动</p></div>
+    </div>
+  </div>
+
+  <!-- 工作原理 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">1</span> 工作原理</h2>
+    <div class="arch-flow">
+      <span>Telegram 消息</span>
+      <span class="arrow">→</span>
+      <span>Python Bot</span>
+      <span class="arrow">→</span>
+      <span>DeepSeek API</span>
+      <span class="arrow">→</span>
+      <span>AI 回复</span>
+      <span class="arrow">→</span>
+      <span>Telegram 聊天</span>
+    </div>
+    <p style="font-size:13px;color:var(--dim);text-align:center">
+      用户在 Telegram 发消息 → Python 机器人接收 → 转发给 DeepSeek API → 拿到 AI 回复 → 发回 Telegram。<br>
+      全程走 Telegram 和 DeepSeek 官方 API，<strong>不需要魔法、不需要外国手机号</strong>。
+    </p>
+  </div>
+
+  <!-- 前置准备 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">2</span> 前置准备</h2>
+    <div class="step-list">
+      <div class="step-item">
+        <h3>Python 3.8+</h3>
+        <p>终端输入 <code>python3 --version</code> 检查。如果没有：</p>
+        <p class="os-label mac">macOS</p>
+        <div class="cmd mac">brew install python@3.12</div>
+        <p class="os-label win" style="margin-top:8px">Windows</p>
+        <div class="cmd win">winget install Python.Python.3.12</div>
+        <p style="margin-top:4px">或去 <a href="https://www.python.org/downloads/" target="_blank">python.org</a> 下载安装包。</p>
+      </div>
+      <div class="step-item">
+        <h3>DeepSeek API Key</h3>
+        <p>去 <a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a> 注册 → API Keys → 创建 Key → 复制保存（<code>sk-</code> 开头）。新用户有免费额度。</p>
+      </div>
+      <div class="step-item">
+        <h3>Telegram Bot Token</h3>
+        <p>Telegram 搜索 <strong>@BotFather</strong> → 发送 <code>/newbot</code> → 按提示取名字 → 获得 Token（格式：<code>123456:ABC-DEF1234...</code>）。</p>
+        <div class="tip info">Bot 名字可以随便取，创建后 Token 请妥善保存，不要发给任何人。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 部署 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">3</span> 部署运行</h2>
+
+    <div class="step-list">
+      <div class="step-item">
+        <h3>下载代码</h3>
+        <p>从 GitHub 仓库获取 <code>bot/</code> 目录：</p>
+        <div class="cmd">git clone https://github.com/LiHongwei-cn/lihongwei-cn.git
+cd lihongwei-cn/bot</div>
+        <p style="margin-top:4px">或直接在 GitHub 上下载 <code>bot/</code> 文件夹的 ZIP。</p>
+      </div>
+      <div class="step-item">
+        <h3>安装依赖</h3>
+        <div class="cmd">pip install -r requirements.txt</div>
+        <p style="margin-top:4px">依赖包：<code>python-telegram-bot</code>（Telegram API）、<code>openai</code>（DeepSeek API）、<code>python-dotenv</code>（环境变量）。</p>
+      </div>
+      <div class="step-item">
+        <h3>配置密钥</h3>
+        <p>在 <code>bot/</code> 目录下创建 <code>.env</code> 文件：</p>
+        <div class="cmd">TELEGRAM_TOKEN=123456:ABC-DEF1234ghiJKL
+DEEPSEEK_API_KEY=sk-你的deepseek密钥</div>
+        <div class="tip green">也可以用系统环境变量 <code>export</code> / <code>setx</code> 设置，启动脚本会自动读取。</div>
+      </div>
+      <div class="step-item">
+        <h3>启动机器人</h3>
+        <p class="os-label mac">macOS / Linux</p>
+        <div class="cmd mac">bash start_bot.sh</div>
+        <p class="os-label win" style="margin-top:8px">Windows</p>
+        <div class="cmd win">start_bot.bat</div>
+        <p style="margin-top:4px">看到 "Bot 已启动" 即可。去 Telegram 给你的 Bot 发消息试试。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 长期运行 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">4</span> 保持 24 小时在线</h2>
+    <div class="step-list">
+      <div class="step-item">
+        <h3>方案一：云服务器 <span class="badge cyan">推荐</span></h3>
+        <p>腾讯云/阿里云最低配（2核2G），月费几十块。代码上传后 <code>nohup python3 tgbot.py &</code> 即可 24 小时在线，最稳定。</p>
+      </div>
+      <div class="step-item">
+        <h3>方案二：macOS 后台运行</h3>
+        <p>终端进入 <code>bot/</code> 目录：</p>
+        <div class="cmd">nohup python3 tgbot.py > bot.log 2>&1 &</div>
+        <p style="margin-top:4px">Bot 在后台运行，关闭终端不影响。查看日志：<code>tail -f bot.log</code></p>
+        <p>如需开机自启：系统设置 → 通用 → 登录项 → 添加 <code>start_bot.sh</code>。</p>
+      </div>
+      <div class="step-item">
+        <h3>方案三：Windows 开机自启</h3>
+        <p>Win + R 输入 <code>taskschd.msc</code> → 创建基本任务 → 触发器选「计算机启动」→ 操作选 <code>start_bot.bat</code>。</p>
+        <p style="margin-top:4px">也可以用仓库提供的 <code>start_bot.vbs</code>，双击即可无窗口后台运行。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 代码结构 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">5</span> 代码结构</h2>
+    <div class="file-tree">
+      <div class="dir">bot/</div>
+      <div class="file">tgbot.py <span class="comment">— 主程序：消息处理 + DeepSeek 调用</span></div>
+      <div class="file">config.py <span class="comment">— 密钥读取（环境变量 / Windows 注册表）</span></div>
+      <div class="file">notify.py <span class="comment">— 主动推送通知工具</span></div>
+      <div class="file">requirements.txt <span class="comment">— Python 依赖清单</span></div>
+      <div class="file">start_bot.sh <span class="comment">— macOS/Linux 启动脚本</span></div>
+      <div class="file">start_bot.bat <span class="comment">— Windows 启动脚本</span></div>
+      <div class="file">start_bot.command <span class="comment">— macOS 双击启动</span></div>
+      <div class="file">start_bot.vbs <span class="comment">— Windows 无窗口后台启动</span></div>
+      <div class="file">test_bot.py <span class="comment">— 自动化测试</span></div>
+    </div>
+  </div>
+
+  <!-- 通知推送 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">6</span> 主动推送通知</h2>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:12px">
+      Bot 在运行时会自动保存聊天对象的 <code>chat_id</code>。之后可以从任何地方发通知到 Telegram：
+    </p>
+    <div class="cmd" style="margin-bottom:8px">python notify.py "任务完成：仿真结果已生成"</div>
+    <p style="font-size:13px;color:var(--dim)">
+      适合在脚本跑完后自动通知——在 MATLAB/Python 脚本末尾加一行 <code>python notify.py "xxx已完成"</code> 即可。
+    </p>
+  </div>
+
+  <!-- FAQ -->
+  <div class="section">
+    <h2 class="section-title"><span class="num" style="background:rgba(251,191,36,0.12);color:var(--orange)">?</span> 常见问题</h2>
+
+    <div class="faq-item">
+      <h4>启动后连接不上？</h4>
+      <p>检查 <code>.env</code> 文件中的 <code>TELEGRAM_TOKEN</code> 和 <code>DEEPSEEK_API_KEY</code> 是否正确，Key 前后不要有多余空格或引号。在国内网络环境下 Telegram API 可能需要代理，确认代理已开启。</p>
+    </div>
+
+    <div class="faq-item">
+      <h4>Bot 没反应 / 不回复？</h4>
+      <p>终端看日志输出。常见原因：① Token 填错（去 @BotFather 重新获取）；② API Key 失效（去 DeepSeek 平台检查余额）；③ 网络不通（Telegram API 在国内被墙，需要开代理）。</p>
+    </div>
+
+    <div class="faq-item">
+      <h4>提示 "Conflict: another bot instance is running"？</h4>
+      <p>另一台设备/进程正在运行同一个 Bot。Bot 同一时间只能有一个实例在线。去其他设备停掉 Bot，或重启当前进程（新实例会自动踢掉旧实例）。</p>
+    </div>
+
+    <div class="faq-item">
+      <h4>需要魔法吗？</h4>
+      <p>Telegram 本身在国内需要代理才能连接，但 Bot 代码本身不需要额外的翻墙工具——只要你的服务器/电脑能访问 api.telegram.org 即可。DeepSeek API 国内直连，不需要魔法。</p>
+    </div>
+
+    <div class="faq-item">
+      <h4>可以换其他 AI 模型吗？</h4>
+      <p>可以。代码用的是 OpenAI 兼容接口，把 <code>base_url</code> 和 <code>api_key</code> 换成 GLM / Qwen / Moonshot 等任意兼容接口即可。模型名在 <code>DEEPSEEK_MODEL</code> 变量处修改。</p>
+    </div>
+
+    <div class="faq-item">
+      <h4>怎么改机器人的回复风格？</h4>
+      <p>编辑 <code>tgbot.py</code> 中的 <code>SYSTEM_PROMPT</code> 变量。当前是针对新能源汽车工程学生的提示词，你可以改成任何角色和风格。</p>
+    </div>
+  </div>
+
+  <!-- 相关链接 -->
+  <div class="link-block">
+    <h3>相关链接</h3>
+    <div class="link-row"><span class="label">源码</span><a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/bot" target="_blank">github.com/LiHongwei-cn/lihongwei-cn/tree/main/bot</a></div>
+    <div class="link-row"><span class="label">DeepSeek 平台</span><a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a></div>
+    <div class="link-row"><span class="label">BotFather</span><a href="https://t.me/BotFather" target="_blank">t.me/BotFather</a>（Telegram 内打开）</div>
+    <div class="link-row"><span class="label">python-telegram-bot</span><a href="https://docs.python-telegram-bot.org/" target="_blank">docs.python-telegram-bot.org</a></div>
+  </div>
+
+  <div style="text-align:center;padding:24px 0 8px;font-size:13px;color:rgba(255,255,255,0.2)">
+    本页被阅读 <span id="busuanzi_page_pv">...</span> 次
+  </div>
+
+  <div class="footer">
+    <a href="https://github.com/LiHongwei-cn/lihongwei-cn" target="_blank">GitHub</a>
+    &nbsp;·&nbsp; MIT 开源
+    &nbsp;·&nbsp; LiHongwei
+  </div>
+
+</div>
+
+<script defer src="https://jsd.dusays.com/npm/penndu@17.0.0/bsz.js"></script>
+</body>
+</html>
