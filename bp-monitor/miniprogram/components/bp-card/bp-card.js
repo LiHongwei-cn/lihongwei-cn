@@ -1,5 +1,6 @@
 Component({
   properties: {
+    readingId: { type: String, value: '' },
     systolic: { type: Number, value: 0 },
     diastolic: { type: Number, value: 0 },
     heartRate: { type: Number, value: null },
@@ -30,6 +31,10 @@ Component({
   },
 
   methods: {
+    onDelete() {
+      this.triggerEvent('delete', { readingId: this.properties.readingId });
+    },
+
     updateDisplay() {
       const level = this.data.bpLevel || '';
       let cls = 'normal';

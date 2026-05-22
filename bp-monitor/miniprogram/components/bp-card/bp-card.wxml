@@ -4,7 +4,10 @@
       <text>{{displayTime}}</text>
       <text class="bp-period" wx:if="{{periodLabel}}">{{periodLabel}}</text>
     </view>
-    <view class="badge badge-{{levelClass}}">{{bpLevel || '未分类'}}</view>
+    <view class="bp-card-header-right">
+      <view class="badge badge-{{levelClass}}">{{bpLevel || '未分类'}}</view>
+      <text class="bp-delete" catchtap="onDelete">删除</text>
+    </view>
   </view>
 
   <view class="bp-card-values">

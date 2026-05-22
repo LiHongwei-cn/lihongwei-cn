@@ -58,5 +58,23 @@ Page({
   toggleAnalysis(e) {
     const id = e.currentTarget.dataset.id;
     this.setData({ expandedId: this.data.expandedId === id ? null : id });
+  },
+
+  onDeleteReading(e) {
+    const readingId = e.detail.readingId;
+    var self = this;
+    wx.showModal({
+      title: '确认删除',
+      content: '删除后无法恢复，确定要删除这条血压记录吗？',
+      success: function (res) {
+        if (res.confirm) {
+          cloud.deleteReading({ readingId: readingId }).then(function () {
+            wx.showToast({ title: '已删除', icon: 'success', duration: 1500 });
+            var readings = self.data.readings.filter(function (r) { return r._id !== readingId; });
+            self.setData({ readings: readings });
+          });
+        }
+      }
+    });
   }
 });

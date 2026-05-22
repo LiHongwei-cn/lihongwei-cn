@@ -11,9 +11,10 @@
   <view class="loading-text" wx:if="{{loading && readings.length === 0}}">加载中...</view>
 
   <view class="readings-list" wx:elif="{{readings.length > 0}}">
-    <view wx:for="{{readings}}" wx:key="id"
-      data-id="{{item.id}}" bindtap="toggleAnalysis">
+    <view wx:for="{{readings}}" wx:key="_id" wx:for-item="item"
+      data-id="{{item._id}}" bindtap="toggleAnalysis">
       <bp-card
+        readingId="{{item._id}}"
         systolic="{{item.systolic}}"
         diastolic="{{item.diastolic}}"
         heartRate="{{item.heartRate}}"
@@ -22,7 +23,8 @@
         bpLevel="{{item.bpLevel}}"
         notes="{{item.notes}}"
         aiAnalysis="{{item.aiAnalysis}}"
-        showAnalysis="{{expandedId === item.id}}"
+        showAnalysis="{{expandedId === item._id}}"
+        bind:delete="onDeleteReading"
       />
     </view>
 

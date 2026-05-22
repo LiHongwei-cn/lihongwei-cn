@@ -48,6 +48,25 @@
   color: #888;
 }
 
+.bp-card-header-right {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.bp-delete {
+  font-size: 24rpx;
+  color: #999;
+  padding: 4rpx 12rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 8rpx;
+}
+
+.bp-delete:active {
+  color: #e74c3c;
+  border-color: #e74c3c;
+}
+
 .bp-card-analysis {
   margin-top: 20rpx;
   padding: 20rpx;

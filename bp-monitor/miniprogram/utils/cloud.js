@@ -29,5 +29,6 @@ module.exports = {
   getReadings: function (data) { return callFunction('getReadings', data); },
   getStats: function (data) { return callFunction('getStats', data); },
   generateReport: function (data) { return callFunction('generateReport', data); },
-  getReports: function () { return callFunction('getReports'); }
+  getReports: function () { return callFunction('getReports'); },
+  deleteReading: function (data) { return callFunction('deleteReading', data); }
 };
