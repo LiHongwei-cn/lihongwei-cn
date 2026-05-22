@@ -1,5 +1,7 @@
 {
   "description": "家庭血压监测助手",
+  "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "cloudfunctions/",
   "packOptions": {
     "ignore": [],
     "include": []

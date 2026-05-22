@@ -1,4 +1,4 @@
-const api = require('../../utils/api.js');
+const cloud = require('../../utils/cloud.js');
 
 Page({
   data: {
@@ -35,11 +35,11 @@ Page({
     start.setDate(start.getDate() - filterDays);
     const startDate = start.toISOString().split('T')[0];
 
-    return api.get('/readings', { page, limit: 20, start_date: startDate, end_date: endDate })
+    return cloud.getReadings({ page, limit: 20, startDate, endDate })
       .then((data) => {
         this.setData({
           readings: page === 1 ? data.items : [...this.data.readings, ...data.items],
-          hasMore: data.has_more
+          hasMore: data.hasMore
         });
       }).catch(() => {
         wx.showToast({ title: '加载失败', icon: 'none' });

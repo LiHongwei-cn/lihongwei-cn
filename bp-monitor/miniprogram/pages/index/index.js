@@ -1,4 +1,4 @@
-const api = require('../../utils/api.js');
+const cloud = require('../../utils/cloud.js');
 const auth = require('../../utils/auth.js');
 const app = getApp();
 
@@ -14,7 +14,7 @@ Page({
 
   onShow() {
     this.setGreeting();
-    if (!app.globalData.token) {
+    if (!app.globalData.userInfo) {
       this.doLogin();
     } else {
       this.loadData();
@@ -31,7 +31,7 @@ Page({
     else g = '晚上好';
 
     const name = (app.globalData.userInfo && app.globalData.userInfo.nickname) || '';
-    const display = name ? `${name}，${g}` : g;
+    const display = name ? name + '，' + g : g;
 
     const d = now.toLocaleDateString('zh-CN', {
       year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'
@@ -60,8 +60,8 @@ Page({
   loadData() {
     this.setData({ loading: true });
     Promise.all([
-      api.get('/readings', { page: 1, limit: 1 }),
-      api.get('/readings/stats', { days: 7 })
+      cloud.getReadings({ page: 1, limit: 1 }),
+      cloud.getStats({ days: 7 })
     ]).then(([listRes, statsRes]) => {
       this.setData({
         latestReading: (listRes.items && listRes.items[0]) || null,

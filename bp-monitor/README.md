@@ -1,6 +1,6 @@
 # 家庭血压监测助手
 
-基于微信小程序 + FastAPI + DeepSeek AI 的家庭血压健康管理工具。
+基于微信小程序 + 微信云开发 + DeepSeek AI 的家庭血压健康管理工具。
 
 ## 功能
 
@@ -14,83 +14,56 @@
 ## 前置条件
 
 1. **微信小程序 AppID** — 在 [微信公众平台](https://mp.weixin.qq.com) 注册
-2. **已备案 HTTPS 域名** — 微信 API 强制要求
+2. **开通微信云开发** — 在微信开发者工具中开通云开发环境
 3. **DeepSeek API Key** — 在 [DeepSeek 开放平台](https://platform.deepseek.com) 获取
-4. **服务器** — VPS / 树莓派 / 家庭服务器均可
 
 ## 快速开始
 
-### 0. 本地开发模式（推荐先用这个测试）
+### 1. 开通云开发
 
-无需微信 AppID，直接启动后端即可在微信开发者工具中测试：
+在微信开发者工具中打开本项目（打开 `bp-monitor/` 目录）：
 
-```bash
-cd backend
-cp .env.example .env
-# .env.example 默认 BP_DEV_MODE=1，只需填入 DEEPSEEK_API_KEY 和 CRON_SECRET_TOKEN
-# WECHAT_APPID / WECHAT_SECRET 开发模式下可留空
+1. 点击工具栏「云开发」按钮
+2. 开通云开发环境，创建环境（建议命名 `prod`）
+3. 在「设置 → 环境设置」中复制环境 ID
+
+### 2. 配置环境 ID
+
+修改 `miniprogram/app.js` 中的 `wx.cloud.init` 环境 ID：
+
+```js
+wx.cloud.init({
+  env: '你的环境ID',
+  traceUser: true
+});
 ```
 
-### 1. 配置生产环境变量
+### 3. 创建数据库集合
 
-```bash
-cd backend
-cp .env.example .env
-# 编辑 .env：
-#   - 将 BP_DEV_MODE 改为 0
-#   - 填入真实的 WECHAT_APPID、WECHAT_SECRET
-#   - 填入 DEEPSEEK_API_KEY、CRON_SECRET_TOKEN
-```
+在云开发控制台 → 数据库中创建以下集合：
 
-### 2. 安装依赖
+| 集合名 | 说明 |
+|--------|------|
+| `users` | 用户信息 |
+| `readings` | 血压记录 |
+| `reports` | 周报 |
+| `ai_feedback` | AI 分析日志 |
 
-```bash
-cd backend
-pip install -r requirements.txt
-```
+所有集合权限设置为「仅创建者可读写」。
 
-### 3. 启动后端
+### 4. 部署云函数
 
-**macOS / Linux：**
+在微信开发者工具中，右键点击 `cloudfunctions/api` 目录 →「上传并部署：云端安装依赖」。
 
-```bash
-bash deploy/start.sh
-```
+部署前在云函数配置中添加环境变量：
+- `DEEPSEEK_API_KEY`：DeepSeek API 密钥
 
-**Windows：**
+### 5. 设置定时周报
 
-```bash
-# 首次部署（安装依赖 + 配置 .env + 启动）
-deploy\setup-windows.bat
+在云开发控制台 → 云函数 → 触发器，为 `api` 云函数添加定时触发器：
 
-# 日常启动
-deploy\start.bat
-```
-
-> Windows 详细部署说明见 [`deploy/README-windows.md`](deploy/README-windows.md)。
-
-### 4. 配置 Nginx HTTPS 反向代理
-
-```bash
-# 参考 deploy/nginx.conf.example
-# 修改域名后复制到 /etc/nginx/sites-enabled/
-sudo nginx -t && sudo systemctl reload nginx
-```
-
-### 5. 配置微信小程序
-
-1. 在[微信开发者工具](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)中打开 `miniprogram/` 目录
-2. 修改 `project.config.json` 中的 `appid` 为你的小程序 AppID
-3. **开发调试设置**：工具栏 → 详情 → 本地设置 → 勾选「不校验合法域名」
-4. `app.js` 中 `devApiBase` 指向本地后端（默认 `http://localhost:8080/api`），`prodApiBase` 指向生产 HTTPS 地址。工具自动根据环境切换
-
-### 6. 设置定时周报
-
-```bash
-crontab -e
-# 添加：
-# 0 8 * * 1 /path/to/bp-monitor/deploy/cron-report.sh
-```
+- 触发周期：每周一早 8:00
+- Cron 表达式：`0 0 8 * * 1`
 
 ## 医学知识来源
 
@@ -109,85 +82,53 @@ crontab -e
 
 ```
 bp-monitor/
-├── backend/
-│   ├── main.py              # FastAPI 应用入口，5 组路由
-│   ├── config.py            # 环境变量读取
-│   ├── database.py          # SQLite 初始化 + Token 认证
-│   ├── models.py            # Pydantic 数据模型
-│   ├── requirements.txt     # Python 依赖
-│   ├── .env.example         # 环境变量模板
-│   ├── routes/              # API 路由
-│   │   ├── auth.py          # 微信登录 / Token 验证
-│   │   ├── users.py         # 用户信息读写
-│   │   ├── readings.py      # 血压记录 CRUD + 统计 + 趋势
-│   │   ├── reports.py       # 周报列表 / 生成
-│   │   └── ai.py            # AI 重新分析
-│   ├── services/            # 业务逻辑
-│   │   ├── analyzer.py      # 读数分析（含紧急判断）
-│   │   ├── report_gen.py    # 周报生成
-│   │   ├── wechat.py        # 微信 code2session
-│   │   ├── deepseek.py      # DeepSeek API 客户端
-│   │   └── medical.py       # 血压分级 / 紧急指征
-│   ├── prompts/             # AI 提示词模板
-│   │   ├── system_prompt.py # 系统提示词（含完整指南知识）
-│   │   ├── reading_analysis.py
-│   │   └── weekly_report.py
-│   └── tests/
-│       ├── test_medical.py  # 血压分级 / 紧急判断测试
-│       └── test_readings.py # 读数逻辑测试
+├── project.config.json      # 微信项目配置（miniprogramRoot + cloudfunctionRoot）
 ├── miniprogram/             # 微信小程序前端
-│   ├── app.js / app.json
-│   ├── utils/api.js / auth.js
-│   └── pages/ (index, record, history, report, profile)
+│   ├── app.js / app.json   # 入口（含云开发初始化）
+│   ├── utils/
+│   │   ├── cloud.js         # 云函数调用封装
+│   │   └── auth.js          # 登录/退出
+│   ├── pages/
+│   │   ├── index/           # 首页（最新读数 + 统计）
+│   │   ├── record/          # 记录血压
+│   │   ├── history/         # 历史记录
+│   │   ├── report/          # 周报
+│   │   └── profile/         # 健康档案
+│   └── components/
+│       ├── bp-card/         # 血压卡片
+│       └── disclaimer/      # 免责声明
+├── cloudfunctions/
+│   └── api/                 # 云函数（登录、CRUD、AI 分析、周报生成）
+│       ├── index.js         # 主入口（路由分发）
+│       └── package.json     # 依赖（openai）
+├── backend/                 # [已弃用] 旧 FastAPI 后端（保留参考）
+│   ├── routes/
+│   ├── services/
+│   └── prompts/
 ├── deploy/                  # 部署脚本
-│   ├── start.sh / start.bat
-│   ├── setup-windows.bat
-│   ├── cron-report.sh / cron-report.bat
-│   └── nginx.conf.example
 └── index.html               # GitHub Pages 项目页
 ```
 
-## API 路由
+## API 说明
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| POST | `/api/auth/login` | 微信登录（code → token + user） |
-| GET | `/api/auth/check` | Token 有效性检查 |
-| GET | `/api/users/me` | 获取当前用户信息 |
-| PUT | `/api/users/me` | 更新用户信息（年龄/性别/用药等） |
-| POST | `/api/readings` | 提交血压读数（自动触发 AI 分析） |
-| GET | `/api/readings` | 读数列表（分页 + 日期筛选） |
-| GET | `/api/readings/stats` | 统计摘要（均值/趋势/极值） |
-| GET | `/api/readings/trends` | 趋势数据（30 天日平均） |
-| GET | `/api/readings/{id}` | 单条读数详情 |
-| GET | `/api/reports` | 周报列表（最近 52 周） |
-| GET | `/api/reports/latest` | 最新周报 |
-| GET | `/api/reports/{id}` | 指定周报详情 |
-| POST | `/api/reports/generate` | 生成周报（支持 all_users 批量） |
-| POST | `/api/ai/analyze/{id}` | 重新分析指定读数 |
-| GET | `/api/health` | 健康检查 |
+云函数通过 `action` 参数路由：
 
-所有读写接口（除 `/api/health` 和 cron 批量生成）均需 Bearer Token。
+| action | 说明 |
+|--------|------|
+| `login` | 微信云开发登录（自动获取 openid） |
+| `getUserProfile` | 获取用户健康档案 |
+| `updateUserProfile` | 更新用户健康档案 |
+| `addReading` | 提交血压读数（自动触发 AI 分析） |
+| `getReadings` | 读数列表（分页 + 日期筛选） |
+| `getStats` | 统计摘要（均值/趋势） |
+| `generateReport` | 生成周报 |
+| `getReports` | 周报列表 |
 
-## 环境变量
-
-| 变量 | 说明 |
-|------|------|
-| `DEEPSEEK_API_KEY` | DeepSeek API 密钥 |
-| `WECHAT_APPID` | 微信小程序 AppID |
-| `WECHAT_SECRET` | 微信小程序 AppSecret |
-| `CRON_SECRET_TOKEN` | 定时任务鉴权 Token |
-
-## 运行测试
-
-```bash
-cd backend
-python -m pytest tests/ -v
-```
+所有操作均由云开发自动鉴权（基于微信 openid）。
 
 ## 技术栈
 
 - 前端：微信小程序（WXML/WXSS/JS）
-- 后端：Python 3.12 + FastAPI
-- 数据库：SQLite（WAL 模式，4 张表：users / readings / reports / ai_feedback）
+- 后端：微信云开发（云函数 + 云数据库）
+- 数据库：云数据库（NoSQL，4 个集合：users / readings / reports / ai_feedback）
 - AI：DeepSeek API（deepseek-v4-pro）

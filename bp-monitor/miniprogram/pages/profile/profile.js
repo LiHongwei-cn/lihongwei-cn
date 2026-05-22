@@ -1,4 +1,4 @@
-const api = require('../../utils/api.js');
+const cloud = require('../../utils/cloud.js');
 const auth = require('../../utils/auth.js');
 const app = getApp();
 
@@ -22,10 +22,13 @@ Page({
 
   loadProfile() {
     this.setData({ loading: true });
-    api.get('/users/me').then((user) => {
+    cloud.getUserProfile().then((data) => {
+      const user = data.user;
       app.globalData.userInfo = user;
-      let meds = [];
-      try { meds = JSON.parse(user.medications || '[]'); } catch (e) { /* ignore */ }
+      let meds = user.medications || [];
+      if (typeof meds === 'string') {
+        try { meds = JSON.parse(meds); } catch (e) { meds = []; }
+      }
 
       const years = [];
       const thisYear = new Date().getFullYear();
@@ -37,10 +40,10 @@ Page({
         userInfo: user,
         age: user.age ? String(user.age) : '',
         genderIndex: gi,
-        diagnosisYear: user.diagnosis_year ? String(user.diagnosis_year) : '',
+        diagnosisYear: user.diagnosisYear ? String(user.diagnosisYear) : '',
         yearOptions: years,
-        targetSystolic: user.target_systolic || 140,
-        targetDiastolic: user.target_diastolic || 90,
+        targetSystolic: user.targetSystolic || 140,
+        targetDiastolic: user.targetDiastolic || 90,
         medications: meds
       });
     }).catch(() => {
@@ -87,13 +90,13 @@ Page({
 
   saveProfile() {
     const genderMap = ['', 'male', 'female'];
-    api.put('/users/me', {
+    cloud.updateUserProfile({
       age: this.data.age ? parseInt(this.data.age) : null,
       gender: genderMap[this.data.genderIndex] || '',
-      diagnosis_year: this.data.diagnosisYear ? parseInt(this.data.diagnosisYear) : null,
-      target_systolic: parseInt(this.data.targetSystolic) || 140,
-      target_diastolic: parseInt(this.data.targetDiastolic) || 90,
-      medications: JSON.stringify(this.data.medications)
+      diagnosisYear: this.data.diagnosisYear ? parseInt(this.data.diagnosisYear) : null,
+      targetSystolic: parseInt(this.data.targetSystolic) || 140,
+      targetDiastolic: parseInt(this.data.targetDiastolic) || 90,
+      medications: this.data.medications
     }).then(() => {
       wx.showToast({ title: '保存成功', icon: 'success' });
     }).catch(() => {

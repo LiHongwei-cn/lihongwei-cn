@@ -1,4 +1,4 @@
-const api = require('../../utils/api.js');
+const cloud = require('../../utils/cloud.js');
 
 const RANGES = {
   systolic: { min: 60, max: 300 },
@@ -37,7 +37,7 @@ Page({
   validateField(val, range, label) {
     const v = parseInt(val);
     if (isNaN(v)) return '请输入数字';
-    if (v < range.min || v > range.max) return `${label}应在${range.min}-${range.max}之间`;
+    if (v < range.min || v > range.max) return label + '应在' + range.min + '-' + range.max + '之间';
     return '';
   },
 
@@ -79,7 +79,7 @@ Page({
     if (sys > 200) {
       wx.showModal({
         title: '请确认',
-        content: `收缩压为 ${sys} mmHg，确认无误吗？`,
+        content: '收缩压为 ' + sys + ' mmHg，确认无误吗？',
         success: (res) => { if (res.confirm) this.doSubmit(); }
       });
       return;
@@ -95,15 +95,15 @@ Page({
 
     this.setData({ submitting: true, analysis: '' });
 
-    api.post('/readings', {
+    cloud.addReading({
       systolic: sys,
       diastolic: dia,
-      heart_rate: isNaN(hr) ? null : hr,
-      measured_at: new Date().toISOString(),
-      time_period: this.data.timePeriod,
+      heartRate: isNaN(hr) ? null : hr,
+      measuredAt: new Date().toISOString(),
+      timePeriod: this.data.timePeriod,
       notes: this.data.notes
     }).then((data) => {
-      this.setData({ submitting: false, analysis: data.ai_analysis || '' });
+      this.setData({ submitting: false, analysis: (data.reading && data.reading.aiAnalysis) || '' });
       wx.showToast({ title: '记录成功', icon: 'success' });
       this.setData({ systolic: '', diastolic: '', heartRate: '', notes: '' });
     }).catch(() => {

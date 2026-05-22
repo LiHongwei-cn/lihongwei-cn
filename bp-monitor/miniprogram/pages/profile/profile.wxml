@@ -5,7 +5,7 @@
     <!-- 头像区域 -->
     <view class="card profile-header">
       <view class="avatar">
-        <image wx:if="{{userInfo.avatar_url}}" src="{{userInfo.avatar_url}}" mode="aspectFill" />
+        <image wx:if="{{userInfo.avatarUrl}}" src="{{userInfo.avatarUrl}}" mode="aspectFill" />
         <text wx:else class="avatar-letter">{{userInfo.nickname ? userInfo.nickname[0] : '?'}}</text>
       </view>
       <text class="nickname">{{userInfo.nickname || '微信用户'}}</text>

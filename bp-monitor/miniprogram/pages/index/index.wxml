@@ -20,10 +20,10 @@
     <bp-card
       systolic="{{latestReading.systolic}}"
       diastolic="{{latestReading.diastolic}}"
-      heartRate="{{latestReading.heart_rate}}"
-      measuredAt="{{latestReading.measured_at}}"
-      timePeriod="{{latestReading.time_period}}"
-      bpLevel="{{latestReading.bp_level}}"
+      heartRate="{{latestReading.heartRate}}"
+      measuredAt="{{latestReading.measuredAt}}"
+      timePeriod="{{latestReading.timePeriod}}"
+      bpLevel="{{latestReading.bpLevel}}"
       notes="{{latestReading.notes}}"
     />
   </view>
@@ -56,22 +56,22 @@
   </view>
 
   <!-- 本周统计 -->
-  <view class="card" wx:if="{{!loading && !loginError && stats.reading_count}}">
+  <view class="card" wx:if="{{!loading && !loginError && stats.readingCount}}">
     <text class="section-title">本周统计</text>
     <view class="stats-row">
       <view class="stat-item">
-        <text class="stat-value">{{stats.avg_systolic}}/{{stats.avg_diastolic}}</text>
+        <text class="stat-value">{{stats.avgSystolic}}/{{stats.avgDiastolic}}</text>
         <text class="stat-label">平均血压</text>
       </view>
       <view class="stat-item">
-        <text class="stat-value">{{stats.reading_count}}次</text>
-        <text class="stat-label">{{stats.days_with_readings}}天记录</text>
+        <text class="stat-value">{{stats.readingCount}}次</text>
+        <text class="stat-label">{{stats.daysWithReadings}}天记录</text>
       </view>
     </view>
-    <view class="trend trend-{{stats.trend_direction}}">
-      <text wx:if="{{stats.trend_direction === 'improving'}}">趋势向好，收缩压较前段下降</text>
-      <text wx:elif="{{stats.trend_direction === 'worsening'}}">注意：收缩压较前段升高</text>
-      <text wx:elif="{{stats.trend_direction === 'stable'}}">血压稳定，继续保持</text>
+    <view class="trend trend-{{stats.trendDirection}}">
+      <text wx:if="{{stats.trendDirection === 'improving'}}">趋势向好，收缩压较前段下降</text>
+      <text wx:elif="{{stats.trendDirection === 'worsening'}}">注意：收缩压较前段升高</text>
+      <text wx:elif="{{stats.trendDirection === 'stable'}}">血压稳定，继续保持</text>
       <text wx:else>数据不足，继续记录以获取趋势分析</text>
     </view>
   </view>

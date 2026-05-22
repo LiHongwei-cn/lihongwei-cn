@@ -16,12 +16,12 @@
       <bp-card
         systolic="{{item.systolic}}"
         diastolic="{{item.diastolic}}"
-        heartRate="{{item.heart_rate}}"
-        measuredAt="{{item.measured_at}}"
-        timePeriod="{{item.time_period}}"
-        bpLevel="{{item.bp_level}}"
+        heartRate="{{item.heartRate}}"
+        measuredAt="{{item.measuredAt}}"
+        timePeriod="{{item.timePeriod}}"
+        bpLevel="{{item.bpLevel}}"
         notes="{{item.notes}}"
-        aiAnalysis="{{item.ai_analysis}}"
+        aiAnalysis="{{item.aiAnalysis}}"
         showAnalysis="{{expandedId === item.id}}"
       />
     </view>

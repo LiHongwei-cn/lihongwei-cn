@@ -1,4 +1,4 @@
-const api = require('../../utils/api.js');
+const cloud = require('../../utils/cloud.js');
 
 function getMonday(d) {
   const date = new Date(d);
@@ -37,9 +37,9 @@ Page({
 
   loadReport() {
     this.setData({ loading: true });
-    api.get('/reports').then((reports) => {
+    cloud.getReports().then((data) => {
       const ws = this.data.weekStart;
-      const match = (reports || []).find(r => r.week_start === ws);
+      const match = (data.reports || []).find(r => r.weekStart === ws);
       this.setData({ report: match || null });
     }).catch(() => {
       wx.showToast({ title: '加载失败', icon: 'none' });
@@ -63,8 +63,8 @@ Page({
 
   generate() {
     this.setData({ generating: true });
-    api.post('/reports/generate', {}).then((data) => {
-      this.setData({ generating: false, report: data });
+    cloud.generateReport({ weekStart: this.data.weekStart, weekEnd: this.data.weekEnd }).then((data) => {
+      this.setData({ generating: false, report: data.report });
       wx.showToast({ title: '报告已生成', icon: 'success' });
     }).catch(() => {
       this.setData({ generating: false });

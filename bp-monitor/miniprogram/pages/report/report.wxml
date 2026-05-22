@@ -12,33 +12,33 @@
       <text class="section-title">概览</text>
       <view class="overview-grid">
         <view class="overview-item">
-          <text class="overview-value">{{report.avg_systolic}}/{{report.avg_diastolic}}</text>
+          <text class="overview-value">{{report.avgSystolic}}/{{report.avgDiastolic}}</text>
           <text class="overview-label">平均血压</text>
         </view>
         <view class="overview-item">
-          <text class="overview-value">{{report.reading_count}}次</text>
+          <text class="overview-value">{{report.readingCount}}次</text>
           <text class="overview-label">测量次数</text>
         </view>
         <view class="overview-item">
-          <text class="overview-value">{{report.compliance_rate}}%</text>
+          <text class="overview-value">{{report.complianceRate}}%</text>
           <text class="overview-label">依从性</text>
         </view>
         <view class="overview-item">
-          <text class="overview-value">{{report.time_in_range}}%</text>
+          <text class="overview-value">{{report.timeInRange}}%</text>
           <text class="overview-label">达标率</text>
         </view>
       </view>
     </view>
 
-    <view class="card" wx:if="{{report.morning_avg_sys || report.evening_avg_sys}}">
+    <view class="card" wx:if="{{report.morningAvgSys || report.eveningAvgSys}}">
       <text class="section-title">早晚对比</text>
       <view class="compare-row">
         <view class="compare-item">
-          <text class="compare-value">{{report.morning_avg_sys || '--'}}</text>
+          <text class="compare-value">{{report.morningAvgSys || '--'}}</text>
           <text class="compare-label">晨峰收缩压</text>
         </view>
         <view class="compare-item">
-          <text class="compare-value">{{report.evening_avg_sys || '--'}}</text>
+          <text class="compare-value">{{report.eveningAvgSys || '--'}}</text>
           <text class="compare-label">晚间收缩压</text>
         </view>
       </view>
@@ -47,14 +47,14 @@
     <view class="card">
       <text class="section-title">波动</text>
       <view class="volatility-row">
-        <text>标准差：收缩压 {{report.std_systolic}} / 舒张压 {{report.std_diastolic}}</text>
-        <text class="volatility-detail">最高 {{report.max_systolic}}/{{report.max_diastolic}} 最低 {{report.min_systolic}}/{{report.min_diastolic}}</text>
+        <text>标准差：收缩压 {{report.stdSystolic}} / 舒张压 {{report.stdDiastolic}}</text>
+        <text class="volatility-detail">最高 {{report.maxSystolic}}/{{report.maxDiastolic}} 最低 {{report.minSystolic}}/{{report.minDiastolic}}</text>
       </view>
     </view>
 
-    <view class="card" wx:if="{{report.trend_summary}}">
+    <view class="card" wx:if="{{report.trendSummary}}">
       <text class="section-title">AI 趋势分析</text>
-      <view class="analysis-content">{{report.trend_summary}}</view>
+      <view class="analysis-content">{{report.trendSummary}}</view>
     </view>
 
     <view class="card" wx:if="{{report.recommendations}}">

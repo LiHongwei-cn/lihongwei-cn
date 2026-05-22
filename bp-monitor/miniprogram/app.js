@@ -1,55 +1,37 @@
 App({
   globalData: {
-    token: '',
     userInfo: null,
-
-    // 运行环境（onLaunch 自动检测）
-    isDevtools: false,
-
-    // 开发工具直连本地后端
-    devApiBase: 'http://localhost:8080/api',
-
-    // 正式环境 — Render 云部署（稳定 HTTPS，可加入微信白名单）
-    prodApiBase: 'https://bp-monitor-api.onrender.com/api',
-
-    get apiBase() {
-      return this.isDevtools ? this.devApiBase : this.prodApiBase;
-    }
+    cloudReady: false
   },
 
   onLaunch() {
-    var sys = wx.getSystemInfoSync();
-    this.globalData.isDevtools = sys.platform === 'devtools';
-
-    var token = wx.getStorageSync('token');
-    if (token) {
-      this.globalData.token = token;
-      this.checkLogin();
+    if (!wx.cloud) {
+      console.error('请使用 2.2.3 或以上版本的基础库以使用云开发');
+      return;
     }
+    wx.cloud.init({
+      env: 'prod-0g1g5jq3e2a5e4f8',
+      traceUser: true
+    });
+    this.globalData.cloudReady = true;
+    this.checkLogin();
   },
 
   checkLogin() {
-    if (!this.globalData.token) return;
     var app = this;
-    wx.request({
-      url: this.globalData.apiBase + '/auth/check',
-      header: { Authorization: 'Bearer ' + this.globalData.token },
-      success: function (res) {
-        if (res.data && res.data.valid) {
-          app.globalData.userInfo = res.data.user;
-        } else {
-          app.clearLogin();
-        }
-      },
-      fail: function () {
-        // 网络波动，不清除登录态，下次 onShow 重试
+    wx.cloud.callFunction({
+      name: 'api',
+      data: { action: 'login' }
+    }).then(function (res) {
+      if (res.result && res.result.user) {
+        app.globalData.userInfo = res.result.user;
       }
+    }).catch(function () {
+      // 网络波动，下次 onShow 重试
     });
   },
 
-  clearLogin() {
-    this.globalData.token = '';
+  clearUser() {
     this.globalData.userInfo = null;
-    wx.removeStorageSync('token');
   }
 });

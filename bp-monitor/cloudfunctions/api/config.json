@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "openapi": []
+  },
+  "env": {
+    "DEEPSEEK_API_KEY": "",
+    "CRON_SECRET_TOKEN": ""
+  }
+}
