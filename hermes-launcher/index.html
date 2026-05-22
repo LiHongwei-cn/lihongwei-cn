@@ -92,6 +92,34 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
         <span class="icon">📥</span> 下载 hermes-desktop.command
       </a>
     </div>
+    <div class="dl-box" style="border-color:rgba(45,212,191,0.3)">
+      <h3>📌 macOS 程序坞 .app（可固定到 Dock）</h3>
+      <p>复制以下命令到终端运行，自动创建 .app 并加入程序坞</p>
+      <div class="cmd" style="text-align:left;margin-bottom:12px">mkdir -p ~/Applications/hermes.app/Contents/MacOS ~/Applications/hermes.app/Contents/Resources && cat > ~/Applications/hermes.app/Contents/Info.plist << 'PLIST'
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"&gt;
+&lt;plist version="1.0"&gt;
+&lt;dict&gt;
+  &lt;key&gt;CFBundleExecutable&lt;/key&gt;&lt;string&gt;hermes-launcher&lt;/string&gt;
+  &lt;key&gt;CFBundleIconFile&lt;/key&gt;&lt;string&gt;hermes&lt;/string&gt;
+  &lt;key&gt;CFBundleIdentifier&lt;/key&gt;&lt;string&gt;com.lihongwei.hermes-agent&lt;/string&gt;
+  &lt;key&gt;CFBundleName&lt;/key&gt;&lt;string&gt;Hermes Agent&lt;/string&gt;
+  &lt;key&gt;CFBundleDisplayName&lt;/key&gt;&lt;string&gt;Hermes Agent&lt;/string&gt;
+  &lt;key&gt;CFBundleVersion&lt;/key&gt;&lt;string&gt;0.14.0&lt;/string&gt;
+  &lt;key&gt;CFBundlePackageType&lt;/key&gt;&lt;string&gt;APPL&lt;/string&gt;
+&lt;/dict&gt;
+&lt;/plist&gt;
+PLIST
+cat > ~/Applications/hermes.app/Contents/MacOS/hermes-launcher << 'SH'
+#!/bin/bash
+H="$$HOME/.local/bin/hermes"
+[ ! -f "$$H" ] && osascript -e 'display dialog "Hermes Agent 未安装" buttons {"好"} with icon stop' && exit 1
+[ ! -f "$$HOME/.hermes/.env" ] && osascript -e 'display dialog "请先运行：hermes setup" buttons {"好"} with icon caution' && exit 1
+osascript -e 'tell app "Terminal" to activate' -e "tell app "Terminal" to do script \"clear; $$H chat; exit\""
+SH
+chmod +x ~/Applications/hermes.app/Contents/MacOS/hermes-launcher</div>
+      <p style="font-size:12px;color:var(--dim)">运行后打开 Finder → 前往 ~/Applications → 将 <strong>hermes.app</strong> 拖入程序坞即可固定</p>
+    </div>
   </div>
 
   <!-- 架构说明 -->
