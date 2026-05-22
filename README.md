@@ -21,7 +21,7 @@ MATLAB 仿真 · AI 工具开发
 ```
 1/
 ├── matlab-tool/           项目入口页面 + 安装包下载
-├── vpn-guide/             免费 VPN 自建指南（零度解说教程）
+├── vpn-guide/             免费 VPN 自建指南
 ├── starter-kit/           通用安装包源码（开源模板）
 ├── bot/                   Telegram 机器人（DeepSeek 直接回复）
 ├── tools/                 工具脚本（Claude Code.app 启动器、自动保存）
@@ -62,7 +62,7 @@ MATLAB 仿真 · AI 工具开发
 
 ## 免费 VPN 自建指南
 
-基于 Cloudflare 免费套餐自建 VPN 的完整教程，参考 YouTube 博主 **零度解说** 的 2026 年教程整理。
+基于 Cloudflare 免费套餐自建 VPN 的完整教程。
 
 两种方法 + 全平台客户端配置：
 - **方法 A**：Cloudflare Zero Trust + WARP + MASQUE 协议（推荐新手，全程无需梯子）
@@ -76,7 +76,7 @@ MATLAB 仿真 · AI 工具开发
 一行命令启动 WinUtil（Chris Titus Windows Utility），完成系统优化、更新控制、故障修复、制作纯净系统安装盘。
 
 - **WinUtil**：PowerShell 输入 `irm "https://christitus.com/win" | iex` 即可启动
-- **WinHance**：零度解说推荐的图形化优化工具，纯界面操作
+- **WinHance**：图形化优化工具，纯界面操作
 
 涵盖系统瘦身、隐私保护、更新控制、WSL/Hyper-V 一键启用、MicroWin 纯净 ISO 制作 + Ventoy 启动盘。
 
