@@ -1,6 +1,5 @@
 import base64
 import logging
-import os
 import sys
 from pathlib import Path
 
@@ -77,7 +76,10 @@ async def _call_deepseek(messages: list[dict]) -> str:
 
 
 async def _reply_with_typing(update: Update, context, chat_id: int, reply: str):
-    await context.bot.send_chat_action(chat_id=chat_id, action="typing")
+    try:
+        await context.bot.send_chat_action(chat_id=chat_id, action="typing")
+    except Exception:
+        pass
     for chunk in _split_long_msg(reply):
         await update.message.reply_text(chunk)
 
@@ -97,7 +99,17 @@ def _split_long_msg(text: str) -> list[str]:
     return chunks
 
 
+def _save_chat_id(chat_id: int):
+    chat_id_file = Path(__file__).parent / "chat_id.txt"
+    if not chat_id_file.exists():
+        chat_id_file.write_text(str(chat_id))
+        logger.info(f"已保存 chat_id={chat_id} 到 {chat_id_file}")
+
+
 async def start_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.effective_chat.id
+    logger.info(f"/start 来自 chat_id={chat_id}")
+    _save_chat_id(chat_id)
     await update.message.reply_text(
         "Danking Bot 已就绪。直接发消息即可，支持文字和图片。"
     )
@@ -107,6 +119,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_msg = update.message.text
     chat_id = update.effective_chat.id
     logger.info(f"收到消息 chat_id={chat_id}: {user_msg[:80]}")
+    _save_chat_id(chat_id)
 
     reply = await _call_deepseek([
         {"role": "system", "content": SYSTEM_PROMPT},
@@ -118,6 +131,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     caption = update.message.caption or ""
     chat_id = update.effective_chat.id
+    _save_chat_id(chat_id)
     photo = update.message.photo[-1]
     file = await context.bot.get_file(photo.file_id)
     photo_bytes = await file.download_as_bytearray()
