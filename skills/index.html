@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skills 市场 · 一键安装 Claude Code 技能包</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --card: #161b22;
+  --border: #30363d;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --accent: #58a6ff;
+  --green: #3fb950;
+  --purple: #a371f7;
+  --orange: #d2991d;
+  --radius: 12px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.container { max-width: 1000px; margin: 0 auto; padding: 32px 20px 60px; }
+
+/* Header */
+.header {
+  text-align: center;
+  padding: 48px 0 32px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+.header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #a371f7, #58a6ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.header p { color: var(--muted); margin-top: 8px; font-size: 16px; }
+
+/* Featured banner */
+.featured-banner {
+  background: linear-gradient(135deg, rgba(163,113,247,0.12), rgba(88,166,255,0.08));
+  border: 1px solid rgba(163,113,247,0.25);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.featured-banner::before {
+  content: '⭐ 精选';
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-size: 12px;
+  color: var(--purple);
+  font-weight: 600;
+}
+.featured-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+.featured-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.featured-desc {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 20px;
+  max-width: 700px;
+}
+.install-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 20px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.install-box code {
+  color: var(--accent);
+  flex: 1;
+  min-width: 200px;
+  word-break: break-all;
+}
+.copy-btn {
+  padding: 8px 20px;
+  background: var(--purple);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+.copy-btn:hover { opacity: 0.85; }
+.copied-msg { color: var(--green); font-size: 12px; display: none; }
+
+/* Section */
+.section { margin-bottom: 44px; }
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+/* Grid */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+
+/* Card */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: border-color 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.card:hover { border-color: var(--accent); }
+.card-top { display: flex; align-items: center; gap: 12px; }
+.card-emoji { font-size: 28px; flex-shrink: 0; }
+.card-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+.card-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  flex: 1;
+}
+.card-install {
+  background: rgba(88,166,255,0.06);
+  border: 1px solid rgba(88,166,255,0.12);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 12px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.card-install code { flex: 1; word-break: break-all; }
+.card-copy {
+  padding: 4px 12px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+}
+.card-copy:hover { opacity: 0.8; }
+
+/* How to use */
+.howto {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin-bottom: 40px;
+}
+.howto h3 { font-size: 18px; margin-bottom: 14px; }
+.howto ol { padding-left: 20px; color: var(--muted); font-size: 14px; line-height: 2; }
+.howto code {
+  background: rgba(88,166,255,0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--accent);
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 24px 0;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 13px;
+}
+.footer a { color: var(--accent); text-decoration: none; }
+
+@media (max-width: 600px) {
+  .grid { grid-template-columns: 1fr; }
+  .header h1 { font-size: 26px; }
+  .featured-title { font-size: 22px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h1>🧩 Skills 市场</h1>
+    <p>一键安装 Claude Code 技能包 · 开源 · 即装即用</p>
+  </div>
+
+  <!-- 使用说明 -->
+  <div class="howto">
+    <h3>📥 使用方法</h3>
+    <ol>
+      <li>复制下方任意 Skill 的安装命令</li>
+      <li>在终端粘贴运行，自动下载到 <code>~/.claude/skills/</code></li>
+      <li>下次 Claude Code 启动时自动加载，无需手动调用</li>
+    </ol>
+    <p style="margin-top:12px;font-size:13px;color:var(--muted);">
+      安装后 Skill 根据关键词自动触发，详见各 Skill 的描述。也支持手动调用 <code>/蒙多</code>。
+    </p>
+  </div>
+
+  <!-- 蒙多 — 精选 -->
+  <div class="featured-banner" id="mundo">
+    <div class="featured-icon">🟣</div>
+    <div class="featured-title">蒙多 — 跨界学习引擎</div>
+    <div class="featured-desc">
+      遇到瓶颈时自动变身！向多个 AI 模型 + GitHub/Stack Overflow/掘金多渠道并行搜索，
+      对比 2-3 种方案后选择最佳。零延迟原则：第一次卡住就变蒙多。
+      触发词：<strong>卡住了、搞不定、报错、没思路、蒙多</strong>。
+    </div>
+    <div class="install-box">
+      <code>curl -fsSL https://lihongwei-cn.github.io/lihongwei-cn/global-specs/skills/蒙多/SKILL.md -o ~/.claude/skills/蒙多/SKILL.md</code>
+      <button class="copy-btn" onclick="copyFeatured()">📋 复制安装命令</button>
+      <span class="copied-msg" id="mundo-copied">✓ 已复制</span>
+    </div>
+  </div>
+
+  <!-- 学术写作 -->
+  <div class="section">
+    <div class="section-title">📝 学术写作套件</div>
+    <div class="grid" id="academic-grid"></div>
+  </div>
+
+  <!-- 效率工具 -->
+  <div class="section">
+    <div class="section-title">🛠️ 效率工具</div>
+    <div class="grid" id="utility-grid"></div>
+  </div>
+
+  <div class="footer">
+    <p><a href="../">← 返回主页</a> · <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills">GitHub 查看源码</a> · MIT 开源</p>
+  </div>
+
+</div>
+
+<script>
+const SKILLS = [
+  // Academic
+  { name:'nature-writing', emoji:'✍️', title:'Nature-Style 科学写作', desc:'撰写/重构 Nature 风格论文草稿：摘要、引言、方法、实验、结论。支持中文实验笔记转论文。触发：论文、实验报告、学术写作。', cmd:'nature-writing' },
+  { name:'nature-polishing', emoji:'✨', title:'Nature 级学术润色', desc:'中文学术文本翻译为 Nature 级英文。润色段落、摘要、引言、结果、讨论。触发：润色、翻译成英文、投稿。', cmd:'nature-polishing' },
+  { name:'nature-figure', emoji:'📊', title:'科学配图制作', desc:'制作/修改 Nature 风格论文配图，多面板科学图表，matplotlib 图。触发：画图、做图、Figure、配图、可视化。', cmd:'nature-figure' },
+  { name:'nature-citation', emoji:'📚', title:'参考文献管理', desc:'自动匹配 Nature/CNS 系列引用，导出参考文献，格式化投稿引用。触发：引用、参考文献、CNS引用。', cmd:'nature-citation' },
+  { name:'nature-data', emoji:'📦', title:'数据可用性声明', desc:'准备数据可用性声明、数据仓库计划、FAIR 元数据检查。触发：数据声明、数据共享、FAIR。', cmd:'nature-data' },
+  { name:'nature-reader', emoji:'📖', title:'论文全文翻译阅读', desc:'中英对照全文翻译、图文对应标注、PDF/DOI/arXiv 直接解析。触发：论文翻译、文献精读、对照阅读。', cmd:'nature-reader' },
+  { name:'nature-response', emoji:'💬', title:'审稿意见回复', desc:'起草审稿回复、逐条回应 Reviewer 意见。触发：审稿回复、Reviewer、修改意见。', cmd:'nature-response' },
+  { name:'nature-paper2ppt', emoji:'🎯', title:'论文转 PPT', desc:'论文一键转组会 PPT、学术演讲幻灯片。触发：PPT、组会、答辩、幻灯片。', cmd:'nature-paper2ppt' },
+  { name:'nature-academic-search', emoji:'🔍', title:'多源文献检索', desc:'PubMed/CrossRef/arXiv 多源文献检索，引用格式转换。触发：查文献、搜索论文、找文章。', cmd:'nature-academic-search' },
+  // Utility
+  { name:'code-tidy', emoji:'🧹', title:'代码洁癖清理', desc:'清除死代码、冗余注释、未用导入；统一排序与结构。触发：整理代码、清理、tidy。', cmd:'code-tidy' },
+  { name:'neat-freak', emoji:'🗂️', title:'知识库整理', desc:'会话结束时自动整理文档、同步记忆、归档摘要。触发：收尾、同步、整理文档。', cmd:'neat-freak' },
+  { name:'homepage-layout', emoji:'🏠', title:'首页布局自检', desc:'新增/修改项目页面后自动检查主页布局和链接。触发：主页布局、首页排版。', cmd:'homepage-layout' }
+];
+
+const BASE = 'https://lihongwei-cn.github.io/lihongwei-cn/global-specs/skills';
+
+function buildCard(skill) {
+  const cmd = skill.cmd || skill.name;
+  const url = `${BASE}/${skill.name}/SKILL.md`;
+  return `
+    <div class="card">
+      <div class="card-top">
+        <span class="card-emoji">${skill.emoji}</span>
+        <span class="card-name">${skill.title}</span>
+      </div>
+      <div class="card-desc">${skill.desc}</div>
+      <div class="card-install">
+        <code>mkdir -p ~/.claude/skills/${skill.name} && curl -fsSL ${url} -o ~/.claude/skills/${skill.name}/SKILL.md</code>
+        <button class="card-copy" onclick="copyCmd(this, '${skill.name}')">复制</button>
+      </div>
+    </div>`;
+}
+
+function renderAll() {
+  const academic = SKILLS.filter(s => s.name.startsWith('nature-'));
+  const utility = SKILLS.filter(s => !s.name.startsWith('nature-'));
+  
+  document.getElementById('academic-grid').innerHTML = academic.map(buildCard).join('');
+  document.getElementById('utility-grid').innerHTML = utility.map(buildCard).join('');
+}
+
+function copyCmd(btn, name) {
+  const code = btn.parentElement.querySelector('code').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = '✓ 已复制';
+    btn.style.background = '#3fb950';
+    setTimeout(() => {
+      btn.textContent = '复制';
+      btn.style.background = '';
+    }, 2000);
+  });
+}
+
+function copyFeatured() {
+  const code = document.querySelector('.install-box code').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const msg = document.getElementById('mundo-copied');
+    msg.style.display = 'inline';
+    setTimeout(() => msg.style.display = 'none', 2000);
+  });
+}
+
+renderAll();
+</script>
+
+</body>
+</html>

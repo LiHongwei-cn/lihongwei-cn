@@ -389,3 +389,18 @@ result.items.to_json("output.json")
 - 禁止 `from bs4 import BeautifulSoup`——Scrapling 内置等价功能且更快
 - 爬取结果统一用 `.to_json()` / `.to_jsonl()` 导出，保持数据格式一致
 - 批量任务必须用 Spider + `crawldir` 断点续抓，防止中断重来
+
+## Skill 同步（红线）
+
+每次修改 `~/.claude/skills/` 下的任何 Skill 后，必须自动同步到仓库：
+- 复制到 `global-specs/skills/<skill-name>/SKILL.md`
+- 同时维护 Claude Code 版（`~/.claude/skills/`）和 Hermes 版（`~/.hermes/skills/`）
+- 同步后自动更新 `skills/index.html` 页面（Skills 市场）列表
+- 确保所有 Skill 都可在 GitHub 上被所有人一键下载安装
+
+## 任务收尾（红线）
+
+每次完成任务后必须：
+1. `git add` + `git commit` + `git push` 同步到 GitHub（不经用户确认）
+2. 检查所有子页面链接是否有效
+3. 确认网站内容与仓库代码一一对应
