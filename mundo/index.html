@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="蒙多跨界学习引擎 — 遇到瓶颈自动变身！多 AI 模型 + GitHub + Stack Overflow + 掘金多渠道搜索，四维对比选最佳。Claude Code / Hermes Agent 通用 Skill。">
+<title>蒙多 · 跨界学习引擎 | LiHongwei</title>
+<style>
+:root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#a855f7;--green:#4ade80;--orange:#fb923c;--purple:#c084fc;--purple-dim:rgba(168,85,247,0.12)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);min-height:100vh;line-height:1.7}
+.container{max-width:900px;margin:0 auto;padding:32px 24px 80px}
+
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color 0.2s}
+.back-link:hover{color:var(--text)}
+
+.hero{text-align:center;padding:40px 0 24px}
+.hero-badge{display:inline-block;background:var(--purple-dim);color:var(--purple);border:1px solid rgba(168,85,247,0.2);padding:4px 14px;border-radius:20px;font-size:12px;margin-bottom:16px;letter-spacing:1px}
+.hero h1{font-size:38px;font-weight:800;background:linear-gradient(135deg,#c084fc,#a855f7,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
+.hero p{font-size:15px;color:var(--dim);max-width:600px;margin:0 auto}
+
+.banner{background:linear-gradient(135deg,rgba(168,85,247,0.1),rgba(99,102,241,0.1));border:2px solid rgba(168,85,247,0.25);border-radius:16px;padding:20px 28px;margin:24px 0 40px;text-align:center;font-family:'SF Mono','Fira Code',monospace;font-size:14px}
+.banner .line{color:var(--purple);line-height:1.8}
+
+.section{margin-bottom:40px}
+.section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--purple-dim);color:var(--purple);font-size:14px;font-weight:700;flex-shrink:0}
+
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.feature-card .f-icon{font-size:22px;margin-bottom:8px}
+.feature-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.feature-card p{font-size:13px;color:var(--dim);line-height:1.6}
+
+.step-list{counter-reset:step;display:flex;flex-direction:column;gap:10px}
+.step-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;position:relative;padding-left:60px}
+.step-item::before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:20px;width:26px;height:26px;border-radius:8px;background:var(--purple-dim);color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.step-item h3{font-size:15px;font-weight:600;margin-bottom:4px}
+.step-item p{font-size:13px;color:var(--dim);line-height:1.6}
+.step-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:var(--purple)}
+.step-item .cmd{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 16px;margin-top:8px;font-family:'Consolas','Courier New',monospace;font-size:13px;color:#c4b5fd;overflow-x:auto;white-space:pre}
+.step-item .cmd .cm{color:var(--dim);font-style:italic}
+.step-item a{color:var(--accent)}
+
+.compare-table{width:100%;border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;background:var(--card);border:1px solid var(--border);margin-top:12px}
+.compare-table th{background:var(--purple-dim);color:var(--purple);font-size:12px;font-weight:600;padding:10px 14px;text-align:left}
+.compare-table td{padding:10px 14px;font-size:13px;color:var(--dim);border-top:1px solid var(--border)}
+.compare-table tr:hover td{background:rgba(168,85,247,0.03)}
+.compare-table td:first-child{color:var(--text);font-weight:500}
+
+.tip{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.12);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--orange);margin-top:10px}
+.tip.info{background:var(--purple-dim);border-color:rgba(168,85,247,0.15);color:var(--purple)}
+
+.code-block{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:16px 20px;font-family:'SF Mono','Fira Code',monospace;font-size:13px;color:#c4b5fd;overflow-x:auto;white-space:pre;line-height:1.7;margin-top:10px}
+
+.footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:32px}
+.footer a{color:rgba(255,255,255,0.3);text-decoration:none}
+.footer a:hover{color:rgba(255,255,255,0.5)}
+
+.page-counter{text-align:center;padding:24px 0 8px;font-size:13px;color:rgba(255,255,255,0.2)}
+
+@media(max-width:640px){
+  .container{padding:20px 16px 60px}
+  .hero h1{font-size:28px}
+  .step-item{padding:16px 16px 16px 48px}
+  .step-item::before{left:14px;top:16px;width:22px;height:22px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="../">← 返回主页</a>
+
+  <div class="hero">
+    <div class="hero-badge">Claude Code / Hermes Agent Skill</div>
+    <h1>蒙多 · 跨界学习引擎</h1>
+    <p>遇到瓶颈自动变身！多 AI 模型 + GitHub + Stack Overflow + 掘金多渠道并行搜索，四维对比选最佳方案。零延迟，第一次卡住就变蒙多。</p>
+  </div>
+
+  <div class="banner">
+    <div class="line">╔══════════════════════════════════════╗</div>
+    <div class="line">║    我是蒙多！蒙多想去哪就去哪！    ║</div>
+    <div class="line">╚══════════════════════════════════════╝</div>
+  </div>
+
+  <!-- 触发场景 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">⚡</span> 自动触发场景</h2>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:14px">蒙多监听你的每一条消息，只要匹配以下关键词，立刻变身——不等、不试第二次。</p>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="f-icon">🟣</div>
+        <h3>卡住了</h3>
+        <p>报错不知道怎么修 / 逻辑走不通 / 不知道下一步做什么</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">🔍</div>
+        <h3>搞不定</h3>
+        <p>试过但不对 / 效果不好 / 方案不匹配当前技术栈</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">💡</div>
+        <h3>没思路</h3>
+        <p>从零开始不知道怎么做 / 需要更好的方案 / 想看看别人怎么做的</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">📊</div>
+        <h3>批量审计</h3>
+        <p>全站审查、多文件质量检查、跨页面风格一致性修复</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 五步法 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">1</span> 蒙多五步法</h2>
+    <div class="step-list">
+      <div class="step-item">
+        <h3>定位瓶颈</h3>
+        <p>不知道怎么做？做不好？不够好？先精准定位问题本质。</p>
+      </div>
+      <div class="step-item">
+        <h3>多渠道并行搜索</h3>
+        <p>同时向多个 AI 模型请教 + 搜索 GitHub Issues / Stack Overflow / 掘金。不依赖单一来源。</p>
+        <table class="compare-table">
+          <tr><th>渠道</th><th>搜索方式</th><th>适用场景</th></tr>
+          <tr><td>GitHub</td><td><code>github.com/search?q=...&type=code</code></td><td>找开源实现、issue 讨论</td></tr>
+          <tr><td>Stack Overflow</td><td>web_search + site:stackoverflow.com</td><td>具体技术问题、报错排查</td></tr>
+          <tr><td>掘金</td><td>web_search + site:juejin.cn</td><td>中文技术文章、实战教程</td></tr>
+          <tr><td>其他 AI 模型</td><td>通过 API 或 web 端交叉验证</td><td>多角度方案对比、查漏补缺</td></tr>
+        </table>
+      </div>
+      <div class="step-item">
+        <h3>四维对比</h3>
+        <p>对收集到的 2-3 种方案，按四个维度打分对比：</p>
+        <table class="compare-table">
+          <tr><th>维度</th><th>权重</th><th>说明</th></tr>
+          <tr><td>简洁度</td><td>高</td><td>代码越少越好 · 依赖越少越好 · KISS 原则</td></tr>
+          <tr><td>性能</td><td>中</td><td>执行效率 · 内存占用 · 可扩展性</td></tr>
+          <tr><td>可维护性</td><td>高</td><td>是否容易理解 · 是否符合项目规范 · 有没有隐藏副作用</td></tr>
+          <tr><td>匹配度</td><td>最高</td><td>是否适配当前技术栈 · R2016b 兼容？跨平台？</td></tr>
+        </table>
+      </div>
+      <div class="step-item">
+        <h3>吸收实施</h3>
+        <p>理解 → 适配 → 代码落实。绝不直接复制粘贴未理解的代码。适配到当前项目的技术栈和规范。</p>
+      </div>
+      <div class="step-item">
+        <h3>效果验证 + 沉淀</h3>
+        <p>解决了吗？有副作用吗？有价值的方案用 <code>skill_manage(action='create')</code> 沉淀为可复用的 Skill。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 并行审计 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">2</span> 并行审计模式</h2>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:14px">当需要对整个项目进行全面审查时，蒙多可以同时分身多个子代理并行工作。</p>
+    <div class="step-list">
+      <div class="step-item">
+        <h3>侦察（1 个代理扫描全局）</h3>
+        <p>用一个代理扫描所有目标文件，输出结构化问题清单（按严重程度：高 / 中 / 低）。</p>
+        <div class="cmd"><span class="cm">委托一个代理读取所有 index.html，返回问题清单表格</span></div>
+      </div>
+      <div class="step-item">
+        <h3>并行修复（3 个代理同时开工）</h3>
+        <p>按问题类别分成 3 个并行任务，各改各的，互不冲突：</p>
+        <table class="compare-table">
+          <tr><th>优先级</th><th>任务</th><th>示例</th></tr>
+          <tr><td>高</td><td>404 链接 / 缺失入口 / 下载失效</td><td>修复死链、补充项目卡片</td></tr>
+          <tr><td>中</td><td>页面太单薄 / 缺少教程</td><td>重写内容、添加 FAQ</td></tr>
+          <tr><td>低</td><td>章节编号 / 文本优化</td><td>统一风格、修正措辞</td></tr>
+        </table>
+      </div>
+      <div class="step-item">
+        <h3>统一提交</h3>
+        <p>所有修改完成后一次性 <code>git add -A && git commit && git push</code>。</p>
+        <div class="tip info">并行任务必须修改不重叠的文件，否则会产生冲突。先侦察后修复，不要边侦察边修。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 使用方式 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">3</span> 使用方式</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="f-icon">🖥️</div>
+        <h3>Claude Code</h3>
+        <p>在 <code>~/.claude/skills/mundo/</code> 安装蒙多 Skill，遇到瓶颈自动触发，无需手动调用</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">⚕️</div>
+        <h3>Hermes Agent</h3>
+        <p>在 <code>~/.hermes/skills/mundo/</code> 安装蒙多 Skill，支持 skill_view 按需加载</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">📥</div>
+        <h3>安装方式</h3>
+        <p>从 <a href="../skills/" style="color:var(--accent)">Skills 市场</a> 一键下载，复制到对应 skills 目录即可</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">🌐</div>
+        <h3>消息触发</h3>
+        <p>在对话中说"蒙多""卡住了""搞不定""没思路"等关键词，AI 自动激活蒙多模式</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 约束 -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">◆</span> 蒙多铁律</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="f-icon">🚫</div>
+        <h3>绝不直接复制粘贴</h3>
+        <p>理解原理后再适配，不搬运未理解的代码</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">⏱️</div>
+        <h3>单一来源 ≤ 10 分钟</h3>
+        <p>一个来源上花超过 10 分钟还没结果 → 立刻换渠道</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">🔀</div>
+        <h3>至少对比 2-3 种方案</h3>
+        <p>不要看到第一种可行方案就停下，多看一眼总有更好的</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">📝</div>
+        <h3>有价值的沉淀为 Skill</h3>
+        <p>解决一次性的问题不值得记住，解决一类问题的方法值得</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-counter">
+    本页被阅读 <span id="busuanzi_page_pv">...</span> 次
+  </div>
+
+  <div class="footer">
+    <a href="https://github.com/LiHongwei-cn/lihongwei-cn" target="_blank">GitHub</a>
+    &nbsp;·&nbsp; 基于 MIT 协议开源
+    &nbsp;·&nbsp; LiHongwei
+  </div>
+</div>
+<script defer src="https://jsd.dusays.com/npm/penndu@17.0.0/bsz.js"></script>
+</body>
+</html>
