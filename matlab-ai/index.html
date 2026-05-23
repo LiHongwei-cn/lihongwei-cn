@@ -179,6 +179,12 @@ body {
 .footer a { color: var(--accent); text-decoration: none; }
 .footer a:hover { text-decoration: underline; }
 
+.page-counter {
+  font-size: 13px;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 6px;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .header h1 { font-size: 28px; }
@@ -312,6 +318,7 @@ body {
   </div>
 
   <div class="footer">
+    <div class="page-counter">👁 <span id="busuanzi_value_page_pv">...</span> 次访问</div>
     <p>
       <a href="https://github.com/LiHongwei-cn/lihongwei-cn" target="_blank">GitHub</a>
       · 开源协议 MIT
@@ -357,5 +364,6 @@ function copyAI() {
   });
 }
 </script>
+<script defer src="https://jsd.dusays.com/npm/penndu@17.0.0/bsz.js"></script>
 </body>
 </html>

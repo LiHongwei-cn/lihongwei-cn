@@ -205,6 +205,12 @@ body {
 }
 .footer a { color: var(--accent); text-decoration: none; }
 
+.page-counter {
+  font-size: 13px;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 6px;
+}
+
 @media (max-width: 600px) {
   .grid { grid-template-columns: 1fr; }
   .header h1 { font-size: 26px; }
@@ -263,6 +269,7 @@ body {
   </div>
 
   <div class="footer">
+    <div class="page-counter">👁 <span id="busuanzi_value_page_pv">...</span> 次访问</div>
     <p><a href="../">← 返回主页</a> · <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills">GitHub 查看源码</a> · MIT 开源</p>
   </div>
 
@@ -336,6 +343,6 @@ function copyFeatured() {
 
 renderAll();
 </script>
-
+<script defer src="https://jsd.dusays.com/npm/penndu@17.0.0/bsz.js"></script>
 </body>
 </html>
