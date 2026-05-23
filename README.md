@@ -32,7 +32,6 @@ MATLAB 仿真 · AI 工具开发
 ├── docs/                  论文、实验报告、文档
 ├── win-optimize/           Windows 优化工具教程（WinUtil + WinHance）
 ├── claude-code-tutorial/   Claude Code 小白教程（安装+模型+Telegram bot）
-├── ccs-launcher/           CCS 一键启动器（Claude Code + DeepSeek）
 ├── hermes-launcher/        Hermes Agent 一键启动器
 ├── hermes-guide/           Hermes Agent 完整指南
 ├── mundo/                  蒙多跨界学习引擎
@@ -108,15 +107,6 @@ Claude Code 的完整入门教程。Mac / Windows 双平台，有魔法没魔法
 - **Telegram 机器人**：DeepSeek 驱动的 AI 机器人完整搭建
 
 🔗 [查看完整教程](https://lihongwei-cn.github.io/claude-code-tutorial/)
-
-## CCS 一键启动器
-
-Claude Code 接入 DeepSeek，Win / Mac 双击即用。自动检测 CCS 代理、自动读取密钥、自动启动对话。
-
-- **Windows**：[下载 claude-start.bat](https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/tools/claude-start.bat)
-- **macOS**：[下载 claude-desktop.command](https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/tools/claude-desktop.command)
-
-🔗 [CCS 启动器项目页面](https://lihongwei-cn.github.io/lihongwei-cn/ccs-launcher/) ｜ [README](ccs-launcher/README.md)
 
 ## Hermes Agent 一键启动器
 
