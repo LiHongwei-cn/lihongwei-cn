@@ -21,7 +21,6 @@ MATLAB 仿真 · AI 工具开发
 ```
 1/
 ├── matlab-tool/           项目入口页面 + 安装包下载
-├── vpn-guide/             免费 VPN 自建指南
 ├── starter-kit/           通用安装包源码（开源模板）
 ├── bot/                   Telegram 机器人（DeepSeek 直接回复）
 ├── tools/                 工具脚本（Claude Code.app 启动器、自动保存）
@@ -61,16 +60,14 @@ MATLAB 仿真 · AI 工具开发
 
 完整操作指南见 [项目页面](https://lihongwei-cn.github.io/matlab-tool/)。
 
-## 免费 VPN 自建指南
+## Claude Code 桌面快捷启动
 
-基于 Cloudflare 免费套餐自建 VPN 的完整教程。
+Win / Mac 一键创建 Claude Code 桌面快捷方式，双击即开即用。
 
-两种方法 + 全平台客户端配置：
-- **方法 A**：Cloudflare Zero Trust + WARP + MASQUE 协议（推荐新手，全程无需梯子）
-- **方法 B**：Cloudflare Pages + edgetunnel（进阶，配合 Clash 分流使用）
-- **客户端**：Windows / Mac / Android / iOS 全平台详细配置
+- **Windows**：[下载 claude-desktop.bat](https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/tools/claude-desktop.bat)
+- **macOS**：[下载 Claude Code.app](https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/tools/Claude%20Code.app.zip)
 
-🔗 [查看完整教程](https://lihongwei-cn.github.io/vpn-guide/)
+🔗 [桌面启动项目页面](https://lihongwei-cn.github.io/lihongwei-cn/desktop-launcher/) ｜ [README](desktop-launcher/README.md)
 
 ## Hermes Agent 一键启动器
 
