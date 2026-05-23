@@ -8,9 +8,9 @@ MATLAB 仿真 · AI 工具开发
 
 # ⬇️ 立即下载安装包
 
-**MATLAB AI 仿真工具包** — Claude Code 直接生成 Simulink 模型和仿真代码。车辆动力学、电机控制、定速巡航仿真。
+**MATLAB-AI 启动器** — 新能源汽车仿真工具包。车辆动力学、PMSM 电机 FOC、电池 SOC 估算、能量管理策略。AI 辅助生成代码，一键运行。
 
-[📦 下载安装包（ZIP）](matlab-tool/matlab-ai-starter.zip) ｜ [📖 查看操作说明](matlab-tool/guide.txt) ｜ [🌐 项目详情页](https://lihongwei-cn.github.io/matlab-tool/)
+[📦 下载安装包（ZIP）](matlab-tool/matlab-ai-starter.zip) ｜ [📖 查看操作说明](matlab-tool/guide.txt) ｜ [🌐 项目详情页](https://lihongwei-cn.github.io/lihongwei-cn/matlab-ai/)
 
 *ZIP 压缩包 · 11 KB · 包含 16 个文件 · 免费开源*
 
