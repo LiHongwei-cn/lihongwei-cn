@@ -10,10 +10,18 @@ function parseSections(text) {
 
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i]
-    var headerMatch = line.match(/^([^*]+?)\s*\*\*(.+?)\*\*/)
-    if (headerMatch) {
-      if (current) sections.push(current)
-      current = { icon: headerMatch[1], title: headerMatch[2], lines: [] }
+    // 匹配 **标题** 格式：emoji + **文字**
+    var bs1 = line.indexOf('**')
+    if (bs1 !== -1) {
+      var bs2 = line.indexOf('**', bs1 + 2)
+      if (bs2 !== -1) {
+        var icon = line.substring(0, bs1).trim()
+        var title = line.substring(bs1 + 2, bs2)
+        if (icon) {
+          if (current) sections.push(current)
+          current = { icon: icon, title: title, lines: [] }
+        }
+      }
     } else if (current) {
       var trimmed = line.trim()
       if (trimmed) {
