@@ -5,6 +5,12 @@
 </p>
 
 <p align="center">
+  <a href="https://lihongwei-cn.github.io/lihongwei-cn/"><img src="https://img.shields.io/badge/🌐_Website-lihongwei--cn.github.io-6c8cff?style=for-the-badge" alt="Website"></a>
+</p>
+
+> 🔗 更多项目详情、操作教程、下载安装包，请前往 **[lihongwei-cn.github.io](https://lihongwei-cn.github.io/lihongwei-cn/)**
+
+<p align="center">
   <a href="https://github.com/LiHongwei-cn/lihongwei-cn/releases"><img src="https://img.shields.io/github/v/release/LiHongwei-cn/lihongwei-cn?include_prereleases&style=for-the-badge" alt="Release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
 </p>
