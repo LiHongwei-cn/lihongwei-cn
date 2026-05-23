@@ -6,4 +6,7 @@ carsimDir = fullfile(scriptDir, 'carsim');
 if isempty(which('run_carsim_cruise'))
     addpath(carsimDir);
 end
+if isempty(which('find_carsim'))
+    addpath(fullfile(scriptDir, 'utils'));
+end
 run_carsim_cruise;

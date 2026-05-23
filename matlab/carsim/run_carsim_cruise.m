@@ -33,7 +33,11 @@ function run_carsim_cruise()
     end
     fprintf('Found: %s\n', csExe);
     fprintf('Launching CarSim...\n');
-    system(['start "" /D "' csDir '" "' csExe '"']);
+    if ispc
+        system(['start "" /D "' csDir '" "' csExe '"']);
+    else
+        system(['open -a "' csExe '"']);
+    end
     fprintf('CarSim launched.\n');
 
     %% Step 3: Print instructions

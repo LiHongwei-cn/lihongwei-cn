@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MATLAB-AI 启动器 · 新能源汽车仿真工具包</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --card: #161b22;
+  --border: #30363d;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --accent: #58a6ff;
+  --green: #3fb950;
+  --orange: #d2991d;
+  --red: #f85149;
+  --radius: 12px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+.container { max-width: 900px; margin: 0 auto; padding: 32px 20px 60px; }
+
+/* Header */
+.header {
+  text-align: center;
+  padding: 48px 0 32px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 40px;
+}
+.header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #58a6ff, #3fb950);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.header p { color: var(--muted); margin-top: 8px; font-size: 16px; }
+
+/* Section */
+.section { margin-bottom: 40px; }
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-title .icon { font-size: 26px; }
+
+/* Grid */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+
+/* Card */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.card:active { transform: scale(0.98); }
+
+.card-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.tag-motor  { background: rgba(88,166,255,0.15); color: var(--accent); }
+.tag-car    { background: rgba(63,185,80,0.15); color: var(--green); }
+.tag-battery { background: rgba(210,153,29,0.15); color: var(--orange); }
+.tag-sim    { background: rgba(139,148,158,0.15); color: var(--muted); }
+
+.card-name { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+.card-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.card-cmd  {
+  display: block;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--accent);
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  background: rgba(88,166,255,0.08);
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+/* Quick launch */
+.quick-launch {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+.quick-btn {
+  flex: 1;
+  min-width: 180px;
+  padding: 16px 20px;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+}
+.quick-btn:active { opacity: 0.85; }
+.quick-test {
+  background: linear-gradient(135deg, #238636, #2ea043);
+  color: #fff;
+}
+.quick-setup {
+  background: linear-gradient(135deg, #1f6feb, #388bfd);
+  color: #fff;
+}
+.quick-carsim {
+  background: linear-gradient(135deg, #9e6a03, #d2991d);
+  color: #fff;
+}
+
+/* AI section */
+.ai-section {
+  background: linear-gradient(135deg, rgba(88,166,255,0.08), rgba(63,185,80,0.08));
+  border: 1px solid rgba(88,166,255,0.2);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin-bottom: 40px;
+}
+.ai-section h3 { font-size: 20px; margin-bottom: 8px; }
+.ai-section p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+.ai-hint {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 13px;
+  color: var(--accent);
+}
+/* Copy button */
+.copy-btn {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 8px 18px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.copy-btn:active { opacity: 0.8; }
+.copied-msg { color: var(--green); font-size: 12px; margin-left: 10px; display: none; }
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 32px 0;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 13px;
+}
+.footer a { color: var(--accent); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .header h1 { font-size: 28px; }
+  .grid { grid-template-columns: 1fr; }
+  .quick-launch { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>⚡ MATLAB-AI 启动器</h1>
+    <p>新能源汽车仿真工具包 · 一键启动 + AI 辅助</p>
+  </div>
+
+  <!-- 快捷按钮 -->
+  <div class="quick-launch">
+    <button class="quick-btn quick-setup" onclick="navigate('setup')">🔧 初始化环境</button>
+    <button class="quick-btn quick-test" onclick="navigate('test')">🧪 批量测试</button>
+    <button class="quick-btn quick-carsim" onclick="navigate('carsim')">🏎️ CarSim 联合仿真</button>
+  </div>
+
+  <!-- AI 助手提示 -->
+  <div class="ai-section">
+    <h3>🤖 Claude Code AI 助手</h3>
+    <p>在终端中粘贴以下命令，让 AI 帮你运行仿真、调试代码、生成图表：</p>
+    <div class="ai-hint" id="aiCmd">claude "在 matlab/examples/ 目录下，帮我运行 motor_control.m 并分析 FOC 控制效果"</div>
+    <button class="copy-btn" onclick="copyAI()">📋 复制命令</button>
+    <span class="copied-msg" id="copiedMsg">✓ 已复制</span>
+  </div>
+
+  <!-- 电机控制 -->
+  <div class="section">
+    <div class="section-title"><span class="icon">⚙️</span> 电机控制</div>
+    <div class="grid">
+      <div class="card" onclick="navigate('motor_control')">
+        <span class="card-tag tag-motor">PMSM</span>
+        <div class="card-name">motor_control</div>
+        <div class="card-desc">永磁同步电机 FOC 矢量控制，双 PI 环 + 解耦补偿 + 加载响应</div>
+        <span class="card-cmd">>> motor_control</span>
+      </div>
+      <div class="card" onclick="navigate('dc_motor_pwm')">
+        <span class="card-tag tag-motor">DC</span>
+        <div class="card-name">dc_motor_pwm</div>
+        <div class="card-desc">直流电机 PWM 调速，H 桥 + PI 转速闭环 + 多级变速</div>
+        <span class="card-cmd">>> dc_motor_pwm</span>
+      </div>
+      <div class="card" onclick="navigate('dc_motor_simulink')">
+        <span class="card-tag tag-sim">Simulink</span>
+        <div class="card-name">dc_motor_simulink</div>
+        <div class="card-desc">自动搭建直流电机 Simulink 模型（Transfer Fcn + PI）</div>
+        <span class="card-cmd">>> dc_motor_simulink</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 车辆动力学 -->
+  <div class="section">
+    <div class="section-title"><span class="icon">🚗</span> 车辆动力学</div>
+    <div class="grid">
+      <div class="card" onclick="navigate('vehicle_dynamics')">
+        <span class="card-tag tag-car">动力学</span>
+        <div class="card-name">vehicle_dynamics</div>
+        <div class="card-desc">加速-匀速-制动工况，空气阻力 + 滚动阻力 + 前向欧拉</div>
+        <span class="card-cmd">>> vehicle_dynamics</span>
+      </div>
+      <div class="card" onclick="navigate('ev_dynamics_simple')">
+        <span class="card-tag tag-car">EV</span>
+        <div class="card-name">ev_dynamics_simple</div>
+        <div class="card-desc">电动汽车完整仿真：电机 MAP + 能耗 + SOC + 续航估算</div>
+        <span class="card-cmd">>> ev_dynamics_simple</span>
+      </div>
+      <div class="card" onclick="navigate('driving_cycle_analysis')">
+        <span class="card-tag tag-car">WLTC</span>
+        <div class="card-name">driving_cycle_analysis</div>
+        <div class="card-desc">类 WLTC 驾驶循环，功率分布 + 能量流向饼图</div>
+        <span class="card-cmd">>> driving_cycle_analysis</span>
+      </div>
+      <div class="card" onclick="navigate('generate_cruise_model')">
+        <span class="card-tag tag-sim">Simulink</span>
+        <div class="card-name">generate_cruise_model</div>
+        <div class="card-desc">自动生成定速巡航 Simulink 模型（PI + 车辆动力学）</div>
+        <span class="card-cmd">>> generate_cruise_model</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 电池 & 能量 -->
+  <div class="section">
+    <div class="section-title"><span class="icon">🔋</span> 电池与能量管理</div>
+    <div class="grid">
+      <div class="card" onclick="navigate('battery_soc_ekf')">
+        <span class="card-tag tag-battery">EKF</span>
+        <div class="card-name">battery_soc_ekf</div>
+        <div class="card-desc">扩展卡尔曼滤波 SOC 估计，安时积分 vs EKF 误差对比</div>
+        <span class="card-cmd">>> battery_soc_ekf</span>
+      </div>
+      <div class="card" onclick="navigate('energy_management')">
+        <span class="card-tag tag-battery">能量</span>
+        <div class="card-name">energy_management</div>
+        <div class="card-desc">增程式 EMS：恒温器 vs 功率跟随策略油耗对比</div>
+        <span class="card-cmd">>> energy_management</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 工具函数 -->
+  <div class="section">
+    <div class="section-title"><span class="icon">🛠️</span> 工具函数</div>
+    <div class="grid">
+      <div class="card" onclick="navigate('utils')">
+        <span class="card-tag tag-sim">util</span>
+        <div class="card-name">rms_calculation</div>
+        <div class="card-desc">均方根值计算（R2016b 无内置 rms）</div>
+        <span class="card-cmd">>> val = rms_calculation(signal)</span>
+      </div>
+      <div class="card" onclick="navigate('utils')">
+        <span class="card-tag tag-sim">util</span>
+        <div class="card-name">fft_analysis</div>
+        <div class="card-desc">FFT 频谱分析，返回频率-幅值向量</div>
+        <span class="card-cmd">>> [f, mag] = fft_analysis(x, fs)</span>
+      </div>
+      <div class="card" onclick="navigate('utils')">
+        <span class="card-tag tag-sim">util</span>
+        <div class="card-name">lowpass_filter</div>
+        <div class="card-desc">一阶低通滤波器（前向欧拉离散化）</div>
+        <span class="card-cmd">>> y = lowpass_filter(x, fc, fs)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>
+      <a href="https://github.com/LiHongwei-cn/lihongwei-cn" target="_blank">GitHub</a>
+      · 开源协议 MIT
+      · 兼容 MATLAB R2016b + CarSim 2019.0
+    </p>
+    <p style="margin-top:4px;">下载桌面启动脚本：
+      <a href="../../tools/matlab-ai.command" download>macOS</a>
+      ·
+      <a href="../../tools/matlab-ai.bat" download>Windows</a>
+    </p>
+  </div>
+
+</div>
+
+<script>
+function navigate(script) {
+  var cmds = {
+    setup: 'startup_setup',
+    test: 'test_all',
+    carsim: 'run_carsim',
+    motor_control: 'motor_control',
+    dc_motor_pwm: 'dc_motor_pwm',
+    dc_motor_simulink: 'dc_motor_simulink',
+    vehicle_dynamics: 'vehicle_dynamics',
+    ev_dynamics_simple: 'ev_dynamics_simple',
+    driving_cycle_analysis: 'driving_cycle_analysis',
+    generate_cruise_model: 'generate_cruise_model',
+    battery_soc_ekf: 'battery_soc_ekf',
+    energy_management: 'energy_management',
+    utils: 'startup_setup'
+  };
+  var cmd = cmds[script] || 'startup_setup';
+  document.getElementById('aiCmd').textContent =
+    'claude "在 matlab/ 目录下运行 ' + cmd + '，生成仿真结果和图表"';
+}
+
+function copyAI() {
+  var text = document.getElementById('aiCmd').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    var msg = document.getElementById('copiedMsg');
+    msg.style.display = 'inline';
+    setTimeout(function() { msg.style.display = 'none'; }, 2000);
+  });
+}
+</script>
+</body>
+</html>

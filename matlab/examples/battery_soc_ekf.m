@@ -5,6 +5,10 @@
 
 clear; clc; close all;
 
+% 自动添加工具路径
+scriptPath = fileparts(mfilename('fullpath'));
+addpath(fullfile(scriptPath, '..', 'utils'));
+
 %% 电池参数（锂离子电池 3.7V 标称）
 Q_nom  = 50;        % 额定容量 [Ah]
 V_oc   = @(soc) 3.2 + 0.9*soc + 0.1*soc.^2 - 0.05*soc.^3;  % OCV-SOC 曲线

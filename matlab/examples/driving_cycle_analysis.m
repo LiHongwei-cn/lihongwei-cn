@@ -1,12 +1,12 @@
-%% Driving cycle analysis and energy consumption
-% MATLAB R2016b compatible
-% WLTC-like speed profile + EV energy model
+%% 驾驶循环能耗分析
+% MATLAB R2016b 兼容
+% 构造类 WLTC 工况 + 电动汽车能耗模型
 
 clear; clc; close all;
 
-%% Generate WLTC-like speed profile [km/h]
+%% 生成类 WLTC 速度曲线 [km/h]
 dt = 1;              % [s]
-T  = 1800;           % total 30 min
+T  = 1800;           % 总计 30 min
 t  = (0:dt:T)';
 
 v_kmh = zeros(size(t));
@@ -18,28 +18,28 @@ i5 = t>1600;          v_kmh(i5) = max(130 - 40*(t(i5)-1600)/200, 0);
 
 v_ms = v_kmh / 3.6;
 
-%% Vehicle parameters
-m  = 1800;           % [kg]
-Cd = 0.30;
-Af = 2.2;            % [m^2]
-rho = 1.225;         % [kg/m^3]
-f  = 0.012;
+%% 车辆参数
+m  = 1800;           % 质量 [kg]
+Cd = 0.30;           % 风阻系数
+Af = 2.2;            % 迎风面积 [m^2]
+rho = 1.225;         % 空气密度 [kg/m^3]
+f  = 0.012;          % 滚动阻力系数
 g  = 9.81;
-rw = 0.33;           % [m]
+rw = 0.33;           % 车轮半径 [m]
 
-%% Motor parameters
-P_max  = 120000;     % [W]
-T_max  = 280;        % [Nm]
-n_base = 3500;       % [rpm]
-eta_m  = 0.92;
-eta_r  = 0.85;
+%% 电机参数
+P_max  = 120000;     % 峰值功率 [W]
+T_max  = 280;        % 峰值转矩 [Nm]
+n_base = 3500;       % 基速 [rpm]
+eta_m  = 0.92;       % 电机驱动效率
+eta_r  = 0.85;       % 回馈效率
 
-%% Battery parameters
-Q_bat = 60;          % [Ah]
-V_bat = 380;         % [V]
-SOC_0 = 0.95;
+%% 电池参数
+Q_bat = 60;          % 电池容量 [Ah]
+V_bat = 380;         % 电池电压 [V]
+SOC_0 = 0.95;        % 初始 SOC
 
-%% Simulation
+%% 仿真
 n = length(t);
 a      = zeros(n, 1);
 F_trac = zeros(n, 1);
@@ -78,65 +78,65 @@ for i = 2:n
     SOC(i) = SOC(i-1) - P_bat(i) * dt / (V_bat * Q_bat * 3600);
 end
 
-%% Masks
+%% 分类标记
 drv_mask = P_mot > 0;
 reg_mask = P_mot < 0;
 
-%% Plot
+%% 绘图
 figure('Position', [50 50, 950, 700]);
 
 subplot(3,2,1);
 plot(t/60, v_kmh, 'b-', 'LineWidth', 1.2);
-xlabel('Time (min)'); ylabel('Speed (km/h)');
-grid on; title('Driving Cycle (WLTC-like)');
+xlabel('时间 (min)'); ylabel('车速 (km/h)');
+grid on; title('行驶工况（类 WLTC）');
 
 subplot(3,2,2);
 yyaxis left;
 plot(t/60, P_mot/1000, 'b-', 'LineWidth', 1);
-ylabel('Motor Power (kW)');
+ylabel('电机功率 (kW)');
 yyaxis right;
 plot(t/60, E_con/1000, 'r-', 'LineWidth', 1.5);
-ylabel('Cumulative Energy (kWh)');
-xlabel('Time (min)'); grid on;
-title('Power and Energy');
+ylabel('累计能耗 (kWh)');
+xlabel('时间 (min)'); grid on;
+title('功率与能耗');
 
 subplot(3,2,3);
 histogram(P_mot(drv_mask)/1000, 30, 'FaceColor', 'b', 'EdgeAlpha', 0.3); hold on;
 if any(reg_mask)
     histogram(abs(P_mot(reg_mask))/1000, 30, 'FaceColor', 'g', 'EdgeAlpha', 0.3);
 end
-xlabel('Power (kW)'); ylabel('Count');
-legend('Drive', 'Regen'); grid on;
-title('Power Distribution');
+xlabel('功率 (kW)'); ylabel('频次');
+legend('驱动', '回馈'); grid on;
+title('功率分布');
 
 subplot(3,2,4);
 plot(t/60, a, 'r-', 'LineWidth', 1);
-xlabel('Time (min)'); ylabel('Acceleration (m/s^2)');
-grid on; title('Acceleration');
+xlabel('时间 (min)'); ylabel('加速度 (m/s^2)');
+grid on; title('加速度');
 
 subplot(3,2,5);
 plot(t/60, SOC*100, 'b-', 'LineWidth', 1.2);
-xlabel('Time (min)'); ylabel('SOC (%)');
-grid on; title('Battery SOC');
+xlabel('时间 (min)'); ylabel('SOC (%)');
+grid on; title('电池 SOC');
 
 subplot(3,2,6);
 E_drv = sum(P_bat(drv_mask)*dt/3600);
 E_reg = sum(abs(P_bat(reg_mask))*dt/3600);
 if E_reg > 0
-    pie([E_drv, E_reg], {'Drive (Wh)', 'Regen (Wh)'});
+    pie([E_drv, E_reg], {'驱动能耗 (Wh)', '回馈能量 (Wh)'});
 else
-    pie(E_drv, {'Drive (Wh)'});
+    pie(E_drv, {'驱动能耗 (Wh)'});
 end
-title('Energy Flow');
+title('能量流向');
 
-%% Results
+%% 结果输出
 dist_km = sum(v_ms * dt) / 1000;
 E_100km = E_con(end) / dist_km * 100 / 1000;
 
-fprintf('===== Driving Cycle Analysis =====\n');
-fprintf('Total distance: %.2f km\n', dist_km);
-fprintf('Total energy: %.1f kWh\n', E_con(end)/1000);
-fprintf('Consumption: %.1f kWh/100km\n', E_100km);
-fprintf('SOC used: %.1f %%\n', (SOC_0 - SOC(end))*100);
-fprintf('Range estimate: %.0f km\n', dist_km * SOC_0 / (SOC_0 - SOC(end) + 0.001));
-fprintf('Regen ratio: %.1f %%\n', sum(abs(P_bat(reg_mask))) / max(sum(abs(P_bat)), 1e-6) * 100);
+fprintf('===== 驾驶循环分析 =====\n');
+fprintf('总行驶距离: %.2f km\n', dist_km);
+fprintf('总能耗: %.1f kWh\n', E_con(end)/1000);
+fprintf('百公里能耗: %.1f kWh/100km\n', E_100km);
+fprintf('SOC 消耗: %.1f %%\n', (SOC_0 - SOC(end))*100);
+fprintf('估算续航: %.0f km\n', dist_km * SOC_0 / (SOC_0 - SOC(end) + 0.001));
+fprintf('回馈占比: %.1f %%\n', sum(abs(P_bat(reg_mask))) / max(sum(abs(P_bat)), 1e-6) * 100);
