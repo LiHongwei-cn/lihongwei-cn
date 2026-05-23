@@ -1,0 +1,9 @@
+{
+  "triggers": [
+    {
+      "name": "weeklyReportTrigger",
+      "type": "timer",
+      "value": "0 0 9 * * 1"
+    }
+  ]
+}
