@@ -32,6 +32,10 @@ MATLAB 仿真 · AI 工具开发
 ├── docs/                  论文、实验报告、文档
 ├── win-optimize/           Windows 优化工具教程（WinUtil + WinHance）
 ├── claude-code-tutorial/   Claude Code 小白教程（安装+模型+Telegram bot）
+├── ccs-launcher/           CCS 一键启动器（Claude Code + DeepSeek）
+├── hermes-launcher/        Hermes Agent 一键启动器
+├── hermes-guide/           Hermes Agent 完整指南
+├── mundo/                  蒙多跨界学习引擎
 ├── index.html             个人主页（GitHub Pages）
 │
 ├── .claude/               Claude Code 配置
@@ -104,6 +108,33 @@ Claude Code 的完整入门教程。Mac / Windows 双平台，有魔法没魔法
 - **Telegram 机器人**：DeepSeek 驱动的 AI 机器人完整搭建
 
 🔗 [查看完整教程](https://lihongwei-cn.github.io/claude-code-tutorial/)
+
+## CCS 一键启动器
+
+Claude Code 接入 DeepSeek，Win / Mac 双击即用。自动检测 CCS 代理、自动读取密钥、自动启动对话。
+
+- **Windows**：[下载 claude-start.bat](https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/tools/claude-start.bat)
+- **macOS**：[下载 claude-desktop.command](https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/tools/claude-desktop.command)
+
+🔗 [CCS 启动器项目页面](https://lihongwei-cn.github.io/lihongwei-cn/ccs-launcher/) ｜ [README](ccs-launcher/README.md)
+
+## Hermes Agent 一键启动器
+
+Nous Research 开源 AI Agent，Win / Mac 双击即用。支持 OpenRouter / OpenAI / Anthropic / DeepSeek 等多模型后端。
+
+- **Windows**：[下载 hermes-start.bat](https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/tools/hermes-start.bat)
+- **macOS**：[下载 hermes-desktop.command](https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/tools/hermes-desktop.command)
+
+🔗 [Hermes 启动器项目页面](https://lihongwei-cn.github.io/lihongwei-cn/hermes-launcher/) ｜ [README](hermes-launcher/README.md)
+
+## 蒙多 · 跨界学习引擎
+
+遇到瓶颈自动变身的 AI Skill。多 AI 模型 + GitHub + Stack Overflow + 掘金多渠道并行搜索，四维对比选最佳方案。
+
+- 触发关键词：卡住了 / 搞不定 / 没思路 / 蒙多
+- Claude Code / Hermes Agent 通用 Skill
+
+🔗 [蒙多项目页面](https://lihongwei-cn.github.io/lihongwei-cn/mundo/) ｜ [README](mundo/README.md)
 
 ## 项目规范
 
