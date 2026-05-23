@@ -158,6 +158,7 @@ if %errorlevel% equ 0 (
 
 claude --dangerously-skip-permissions --no-chrome</div>
     <p style="font-size:13px;color:var(--dim)">双击 <code>claude-desktop.bat</code> 即可启动。右键 → 发送到桌面可创建快捷方式。</p>
+    <div class="tip info" style="margin-top:10px"><strong>参数说明：</strong><code>--dangerously-skip-permissions</code> 跳过每次启动时的权限确认弹窗（信任当前目录）；<code>--no-chrome</code> 禁用 Chrome DevTools 远程调试，减少不必要的端口监听和资源占用。</div>
   </div>
 
   <!-- FAQ -->
@@ -183,19 +184,21 @@ claude --dangerously-skip-permissions --no-chrome</div>
         <p><strong>解决：</strong> Microsoft Store 搜索"Windows Terminal"安装（免费），然后重新双击 bat。</p>
       </div>
 
-      <div class="step-item">
-        <h3>（可选）配置代理</h3>
-        <p>如果网络需要代理访问 API：</p>
-        <p style="margin-top:4px"><strong>macOS：</strong>编辑 .app 内 <code>Contents/MacOS/launcher</code>，在 <code>export PATH</code> 后加：</p>
-        <div class="cmd">export HTTPS_PROXY="http://127.0.0.1:7897"</div>
-        <p style="margin-top:4px"><strong>Windows：</strong>编辑 bat，在 <code>set CLAUDE_CODE_ENTRYPOINT=cli</code> 后加：</p>
-        <div class="cmd">set HTTPS_PROXY=http://127.0.0.1:7897</div>
-      </div>
+    </div>
 
-      <div class="step-item">
-        <h3>（可选）想用 iTerm2 代替自带终端</h3>
-        <p>编辑 <code>Claude Code.app/Contents/MacOS/launcher</code>，将最后一行的 <code>Terminal</code> 替换为 <code>iTerm</code> 即可。</p>
-      </div>
+    <!-- 可选配置独立小节 -->
+    <h3 style="font-size:16px;font-weight:700;margin-top:24px;margin-bottom:14px;color:var(--purple)">⚙️ 可选配置</h3>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin-bottom:10px">
+      <h3 style="font-size:15px;font-weight:600;margin-bottom:6px">配置代理</h3>
+      <p style="font-size:13px;color:var(--dim);line-height:1.6">如果网络需要代理访问 API：</p>
+      <p style="font-size:13px;color:var(--dim);margin-top:6px"><strong>macOS：</strong>编辑 .app 内 <code>Contents/MacOS/launcher</code>，在 <code>export PATH</code> 后加：</p>
+      <div class="cmd">export HTTPS_PROXY="http://127.0.0.1:7897"</div>
+      <p style="font-size:13px;color:var(--dim);margin-top:6px"><strong>Windows：</strong>编辑 bat，在 <code>set CLAUDE_CODE_ENTRYPOINT=cli</code> 后加：</p>
+      <div class="cmd">set HTTPS_PROXY=http://127.0.0.1:7897</div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px">
+      <h3 style="font-size:15px;font-weight:600;margin-bottom:6px">想用 iTerm2 代替自带终端</h3>
+      <p style="font-size:13px;color:var(--dim);line-height:1.6">编辑 <code>Claude Code.app/Contents/MacOS/launcher</code>，将最后一行的 <code>Terminal</code> 替换为 <code>iTerm</code> 即可。</p>
     </div>
   </div>
 

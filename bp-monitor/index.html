@@ -3,56 +3,99 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="家庭健康数据记录助手 — 微信小程序 · AI 分析 · 趋势追踪">
-<title>家庭健康记录 · LiHongwei</title>
+<meta name="description" content="家庭血压监测 · AI 健康助手 — 微信小程序，DeepSeek 驱动，AI 分析 + 用药提醒 + 生活建议">
+<title>家庭血压监测 · AI 健康助手</title>
 <style>
-:root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#6c8cff;--green:#4ade80;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.12)}
+:root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#6c8cff;--green:#4ade80;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;--purple-dim:rgba(167,139,250,0.12);--yellow:#fbbf24}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);min-height:100vh;line-height:1.7}
-.container{max-width:760px;margin:0 auto;padding:32px 24px 80px}
-.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color 0.2s}
+.container{max-width:800px;margin:0 auto;padding:32px 24px 80px}
+
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color .2s}
 .back-link:hover{color:var(--text)}
 
-.hero{text-align:center;padding:40px 0 24px}
-.hero-badge{display:inline-block;background:var(--green);color:#0f0c29;padding:4px 14px;border-radius:20px;font-size:12px;margin-bottom:16px;letter-spacing:1px;font-weight:700}
-.hero h1{font-size:34px;font-weight:800;background:linear-gradient(135deg,#4ade80,#6c8cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
-.hero p{font-size:15px;color:var(--dim);max-width:620px;margin:0 auto}
+/* ====== Hero ====== */
+.hero{text-align:center;padding:48px 0 32px}
+.hero-badge{display:inline-block;background:rgba(74,222,128,0.12);color:var(--green);border:1px solid rgba(74,222,128,0.2);padding:5px 16px;border-radius:20px;font-size:13px;margin-bottom:18px;letter-spacing:1px;font-weight:600}
+.hero h1{font-size:36px;font-weight:800;background:linear-gradient(135deg,#4ade80,#6c8cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px;line-height:1.3}
+.hero .subtitle{font-size:16px;color:var(--dim);max-width:560px;margin:0 auto;line-height:1.7}
 
-.section{margin-bottom:40px}
+/* ====== Section ====== */
+.section{margin-bottom:44px}
 .section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
 .section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(74,222,128,0.12);color:var(--green);font-size:14px;font-weight:700;flex-shrink:0}
 
-.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.feature-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
-.feature-item .icon{font-size:28px;margin-bottom:8px}
-.feature-item h4{font-size:15px;font-weight:600;margin-bottom:4px}
-.feature-item p{font-size:13px;color:var(--dim);line-height:1.5}
+/* ====== 使用说明 ====== */
+.guide-box{background:linear-gradient(135deg,rgba(108,140,255,0.08),rgba(167,139,250,0.06));border:1px solid rgba(108,140,255,0.15);border-radius:16px;padding:24px 28px;text-align:center}
+.guide-box .big-icon{font-size:40px;margin-bottom:10px}
+.guide-box h3{font-size:17px;font-weight:700;margin-bottom:8px;color:#fff}
+.guide-box p{font-size:14px;color:var(--dim);line-height:1.8;max-width:600px;margin:0 auto}
+.guide-box .search-tag{display:inline-block;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:6px 16px;font-size:15px;color:var(--green);font-weight:600;margin:8px 4px;letter-spacing:1px}
 
-.step-list{display:flex;flex-direction:column;gap:10px;counter-reset:step}
-.step-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;position:relative;padding-left:60px}
-.step-item::before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:20px;width:26px;height:26px;border-radius:8px;background:rgba(74,222,128,0.12);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
-.step-item h3{font-size:15px;font-weight:600;margin-bottom:6px}
+/* ====== 功能卡片 ====== */
+.feature-flow{display:flex;align-items:center;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 20px;text-align:center;flex:1;min-width:140px;max-width:180px;transition:border-color .3s,transform .2s}
+.feature-card:hover{border-color:rgba(108,140,255,0.3);transform:translateY(-2px)}
+.feature-card .f-icon{font-size:36px;margin-bottom:10px;display:block}
+.feature-card h4{font-size:14px;font-weight:600;margin-bottom:4px;color:#fff}
+.feature-card p{font-size:12px;color:var(--dim);line-height:1.5}
+.feature-arrow{font-size:22px;color:var(--dim);flex-shrink:0}
+@media(max-width:700px){
+  .feature-flow{flex-direction:column}
+  .feature-card{max-width:100%}
+  .feature-arrow{transform:rotate(90deg)}
+}
+
+/* ====== AI 特色 ====== */
+.ai-banner{background:linear-gradient(135deg,rgba(108,140,255,0.1),rgba(167,139,250,0.08));border:1px solid rgba(108,140,255,0.2);border-radius:16px;padding:28px;text-align:center}
+.ai-banner .ai-label{display:inline-flex;align-items:center;gap:6px;background:rgba(108,140,255,0.15);border:1px solid rgba(108,140,255,0.25);border-radius:20px;padding:4px 14px;font-size:13px;color:var(--accent);font-weight:600;margin-bottom:14px}
+.ai-banner .ai-label .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.ai-banner h3{font-size:20px;font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,#6c8cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.ai-banner .ai-subtitle{font-size:14px;color:var(--dim);margin-bottom:16px}
+.ai-points{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.ai-point{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:12px;padding:16px 20px;text-align:center;flex:1;min-width:140px;max-width:220px}
+.ai-point .ap-icon{font-size:28px;margin-bottom:6px}
+.ai-point .ap-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:3px}
+.ai-point .ap-desc{font-size:12px;color:var(--dim)}
+
+/* ====== 小程序码占位 ====== */
+.qr-placeholder{text-align:center;padding:28px;background:var(--card);border:2px dashed rgba(255,255,255,0.1);border-radius:16px}
+.qr-placeholder .qr-frame{width:160px;height:160px;margin:0 auto 16px;border-radius:16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.qr-placeholder .qr-frame::after{content:'小程序码';color:var(--dim);font-size:14px;text-align:center;line-height:1.4}
+.qr-placeholder p{font-size:13px;color:var(--dim)}
+.qr-placeholder .contact-hint{display:inline-block;margin-top:8px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.12);border-radius:8px;padding:6px 14px;font-size:13px;color:var(--yellow)}
+
+/* ====== 教程步骤 ====== */
+.step-list{display:flex;flex-direction:column;gap:12px;counter-reset:step}
+.step-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 24px 22px 64px;position:relative}
+.step-item::before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:22px;width:30px;height:30px;border-radius:10px;background:rgba(74,222,128,0.12);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700}
+.step-item h3{font-size:15px;font-weight:600;margin-bottom:4px}
 .step-item p{font-size:13px;color:var(--dim);line-height:1.6}
-.step-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:#4ade80}
+.step-item .highlight{color:var(--green);font-weight:600}
 
-.tech-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px}
-.tech-row span{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-size:13px;color:var(--dim)}
+/* ====== 技术架构（精简） ====== */
+.tech-strip{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.tech-strip span{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:13px;color:var(--dim)}
+.tech-strip .tech-key{color:var(--accent);font-weight:600;border-color:rgba(108,140,255,0.15);background:rgba(108,140,255,0.06)}
 
-.tip{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.12);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--orange);margin-top:10px}
-.tip.info{background:rgba(108,140,255,0.07);border-color:rgba(108,140,255,0.12);color:var(--accent)}
-.tip.green{background:rgba(74,222,128,0.07);border-color:rgba(74,222,128,0.12);color:var(--green)}
+/* ====== 免责声明 ====== */
+.disclaimer{background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.1);border-radius:12px;padding:14px 18px;font-size:12px;color:var(--orange);line-height:1.7;text-align:center}
 
-.footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:32px}
+/* ====== Footer ====== */
+.footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:40px}
 .footer a{color:rgba(255,255,255,0.3);text-decoration:none}
 .footer a:hover{color:rgba(255,255,255,0.5)}
 
 @media(max-width:640px){
-  .container{padding:20px 16px 60px}
+  .container{padding:24px 16px 60px}
   .hero h1{font-size:26px}
-  .feature-grid{grid-template-columns:1fr}
-  .step-item{padding:16px 16px 16px 48px}
-  .step-item::before{left:14px;top:16px;width:22px;height:22px;font-size:12px}
+  .guide-box,.ai-banner{padding:20px 16px}
+  .step-item{padding:16px 16px 16px 50px}
+  .step-item::before{left:12px;top:16px;width:26px;height:26px;font-size:13px}
+  .ai-points{flex-direction:column}
+  .ai-point{max-width:100%}
 }
 </style>
 </head>
@@ -61,104 +104,155 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
   <a class="back-link" href="../">← 返回主页</a>
 
+  <!-- ====== Hero ====== -->
   <div class="hero">
-    <div class="hero-badge">微信小程序 · 全家可用</div>
-    <h1>家庭健康记录助手</h1>
-    <p>长辈也能轻松使用的健康数据记录工具。<br>微信扫码即用，每日记录，AI 智能反馈，每周健康总结。</p>
+    <div class="hero-badge">🏥 微信小程序 · 全家可用</div>
+    <h1>家庭血压监测 · AI 健康助手</h1>
+    <p class="subtitle">专为长辈设计的微信小程序，大字体大按钮，记录简单，AI 帮你读懂每一次测量。</p>
   </div>
 
-  <!-- 核心功能 -->
+  <!-- ====== 如何找到小程序 ====== -->
   <div class="section">
-    <h2 class="section-title"><span class="num">1</span> 核心功能</h2>
-    <div class="feature-grid">
-      <div class="feature-item">
-        <div class="icon">📝</div>
-        <h4>一键记录</h4>
-        <p>大字体、大按钮，老人也能轻松操作。自动识别早晚时段，输入即保存。</p>
+    <h2 class="section-title"><span class="num">📱</span> 如何找到小程序</h2>
+    <div class="guide-box">
+      <div class="big-icon">🔍</div>
+      <h3>在微信里就能用，不用下载 App</h3>
+      <p>
+        打开微信，点击底部的「发现」→「小程序」，搜索以下任意名称即可找到：
+      </p>
+      <p>
+        <span class="search-tag">家庭血压监测</span>
+        <span class="search-tag">AI 健康助手</span>
+        <span class="search-tag">血压记录管家</span>
+      </p>
+      <p>
+        或者直接用微信「扫一扫」扫描下方小程序码，一秒进入 👇
+      </p>
+    </div>
+  </div>
+
+  <!-- ====== 功能卡片 ====== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">⚡</span> 能做什么</h2>
+    <div class="feature-flow">
+      <div class="feature-card">
+        <span class="f-icon">📝</span>
+        <h4>记录血压</h4>
+        <p>大字体大按钮，早晚各测一次，轻轻一点就保存</p>
       </div>
-      <div class="feature-item">
-        <div class="icon">🤖</div>
-        <h4>AI 智能分析</h4>
-        <p>基于全球四大权威健康指南，每次记录即时反馈分析与生活建议。</p>
+      <div class="feature-arrow">→</div>
+      <div class="feature-card">
+        <span class="f-icon">🤖</span>
+        <h4>AI 分析</h4>
+        <p>每次记录自动分析，告诉你数值是否正常</p>
       </div>
-      <div class="feature-item">
-        <div class="icon">📊</div>
-        <h4>长期趋势追踪</h4>
-        <p>自动绘制变化曲线，发现长期规律，帮你了解自己的身体数据走向。</p>
+      <div class="feature-arrow">→</div>
+      <div class="feature-card">
+        <span class="f-icon">📋</span>
+        <h4>周报生成</h4>
+        <p>每周末自动生成一份健康周报，总结一周变化</p>
       </div>
-      <div class="feature-item">
-        <div class="icon">📋</div>
-        <h4>每周健康报告</h4>
-        <p>自动汇总一周数据，生成包含趋势分析和改善建议的综合报告。</p>
+      <div class="feature-arrow">→</div>
+      <div class="feature-card">
+        <span class="f-icon">📊</span>
+        <h4>历史趋势</h4>
+        <p>长期追踪，曲线图清晰展示血压走向</p>
       </div>
     </div>
   </div>
 
-  <!-- 技术架构 -->
+  <!-- ====== AI 智能分析 ====== -->
   <div class="section">
-    <h2 class="section-title"><span class="num">2</span> 技术架构</h2>
-    <div class="tech-row">
-      <span>微信小程序</span>
-      <span>微信云开发</span>
-      <span>NoSQL 云数据库</span>
-      <span>DeepSeek AI</span>
+    <h2 class="section-title"><span class="num">🧠</span> AI 智能分析怎么帮你</h2>
+    <div class="ai-banner">
+      <div class="ai-label"><span class="dot"></span> DeepSeek 驱动</div>
+      <h3>每测一次，AI 就帮你读一次</h3>
+      <p class="ai-subtitle">不只是数字记录，更是贴心的健康助手</p>
+      <div class="ai-points">
+        <div class="ai-point">
+          <div class="ap-icon">📈</div>
+          <div class="ap-title">读数分析</div>
+          <div class="ap-desc">自动判断血压是否在正常范围，用通俗语言告诉你结果</div>
+        </div>
+        <div class="ai-point">
+          <div class="ap-icon">💊</div>
+          <div class="ap-title">用药提醒</div>
+          <div class="ap-desc">根据记录情况智能提醒按时服药，不怕忘记</div>
+        </div>
+        <div class="ai-point">
+          <div class="ap-icon">🥗</div>
+          <div class="ap-title">生活建议</div>
+          <div class="ap-desc">针对每次测量给出饮食、运动、作息方面的改善建议</div>
+        </div>
+      </div>
     </div>
-    <p style="font-size:13px;color:var(--dim);text-align:center">
-      数据存储在微信云数据库，无需自建服务器。<br>
-      微信云开发自动鉴权，确保数据安全隔离。
-    </p>
   </div>
 
-  <!-- 快速开始 -->
+  <!-- ====== 小程序码 ====== -->
   <div class="section">
-    <h2 class="section-title"><span class="num">3</span> 快速开始</h2>
+    <h2 class="section-title"><span class="num">📷</span> 扫码体验</h2>
+    <div class="qr-placeholder">
+      <div class="qr-frame"></div>
+      <p>用微信扫一扫，打开小程序</p>
+      <div class="contact-hint">💡 小程序正在内测中，联系作者获取体验资格</div>
+    </div>
+  </div>
+
+  <!-- ====== 使用教程 ====== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">🚀</span> 三步开始使用</h2>
     <div class="step-list">
       <div class="step-item">
-        <h3>获取源码</h3>
-        <p>项目完全开源，仓库地址：</p>
-        <p style="margin-top:6px"><code>https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/bp-monitor</code></p>
+        <h3>微信扫码</h3>
+        <p>打开微信，点击右上角「扫一扫」，扫描上方小程序码，进入「<span class="highlight">家庭血压监测</span>」小程序。</p>
       </div>
       <div class="step-item">
-        <h3>注册微信小程序</h3>
-        <p>前往 <a href="https://mp.weixin.qq.com" style="color:var(--accent)">mp.weixin.qq.com</a> 注册个人小程序，获取 AppID。</p>
-        <div class="tip info">个人主体即可，无需企业资质。服务类目选「工具 → 健康管理」。</div>
+        <h3>授权登录</h3>
+        <p>点击「允许」，授权微信头像和昵称，不需要注册账号，<span class="highlight">你的数据只属于你</span>。</p>
       </div>
       <div class="step-item">
-        <h3>开通云开发</h3>
-        <p>在微信开发者工具中开通云开发环境，创建数据库集合，上传云函数：</p>
-        <p style="margin-top:6px">
-          1. 开通云开发 → 2. 创建 users/readings/reports 集合 → 3. 上传 api 云函数
-        </p>
-      </div>
-      <div class="step-item">
-        <h3>配置并发布</h3>
-        <p>修改 <code>app.js</code> 中的云环境 ID，配置 DeepSeek API Key，提交审核发布。</p>
-        <div class="tip green">详细部署文档见项目仓库 README.md，无需自建服务器。</div>
+        <h3>开始记录</h3>
+        <p>用血压计量完血压，打开小程序输入高压、低压和心率，点击保存。<span class="highlight">AI 会自动给出分析和建议</span>。</p>
       </div>
     </div>
   </div>
 
-  <!-- 知识来源 -->
+  <!-- ====== 技术架构（精简） ====== -->
   <div class="section">
-    <h2 class="section-title"><span class="num">4</span> 知识来源</h2>
-    <p style="font-size:13px;color:var(--dim);margin-bottom:8px">AI 分析基于以下权威指南：</p>
-    <p style="font-size:13px;color:var(--dim);line-height:1.8">
-      · WHO/ISH《全球高血压防治指南》<br>
-      · ACC/AHA 美国心脏病学会指南<br>
-      · ESC/ESH 欧洲心脏病学会指南<br>
+    <h2 class="section-title"><span class="num">🔧</span> 技术保障</h2>
+    <div class="tech-strip">
+      <span class="tech-key">微信小程序</span>
+      <span>微信云开发</span>
+      <span>云数据库</span>
+      <span class="tech-key">DeepSeek AI</span>
+    </div>
+    <p style="font-size:13px;color:var(--dim);text-align:center;margin-top:14px">
+      数据安全存储在微信云端，无需自建服务器。<br>
+      项目完全<span style="color:var(--green)">开源免费</span>，代码托管在 GitHub。
+    </p>
+  </div>
+
+  <!-- ====== 知识来源 + 免责声明 ====== -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">📚</span> AI 分析依据</h2>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:10px;line-height:2">
+      · WHO / ISH 全球高血压防治指南<br>
+      · ACC / AHA 美国心脏病学会指南<br>
+      · ESC / ESH 欧洲心脏病学会指南<br>
       · 《中国高血压防治指南》
     </p>
-    <div class="tip" style="margin-top:12px">
-      免责声明：本工具提供的分析建议仅供参考，不构成医疗诊断或处方。如有不适请及时就医。
+    <div class="disclaimer">
+      ⚠️ 免责声明：本工具提供的 AI 分析和生活建议仅供参考，不构成医疗诊断或处方。如有身体不适，请及时前往正规医院就诊，切勿自行调整用药。
     </div>
   </div>
 
-  <div style="text-align:center;padding:24px 0 8px;font-size:13px;color:rgba(255,255,255,0.2)">
+  <!-- 阅读计数 -->
+  <div style="text-align:center;padding:20px 0 8px;font-size:12px;color:rgba(255,255,255,0.2)">
     已阅读 <span id="busuanzi_page_pv">...</span> 次
   </div>
 
   <div class="footer">
-    <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/bp-monitor">页面源码 ↗</a>
+    <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/bp-monitor">项目源码 ↗</a>
   </div>
 
 </div>

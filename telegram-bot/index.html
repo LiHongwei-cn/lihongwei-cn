@@ -184,13 +184,15 @@ tail -f ~/.hermes/logs/gateway.log</div>
     <p style="font-size:13px;color:var(--dim);margin-bottom:12px">
       Hermes Agent 默认英文回复。编辑 <code>~/.hermes/SOUL.md</code> 添加中文指令：
     </p>
-    <div class="cmd">cat > ~/.hermes/SOUL.md << 'EOF'
+    <div class="cmd"># ⚠️ 这会覆盖你已有的 SOUL.md，如果已有自定义内容请先备份
+cp ~/.hermes/SOUL.md ~/.hermes/SOUL.md.bak 2>/dev/null; cat > ~/.hermes/SOUL.md << 'EOF'
 You are Hermes Agent, an intelligent AI assistant.
 
 CRITICAL: You MUST reply in Chinese (简体中文) at all times.
 The user speaks Chinese. Never use English unless asked.
 EOF</div>
     <p style="font-size:13px;color:var(--dim);margin-top:8px">修改后重启 Gateway 生效：<code>hermes gateway restart</code></p>
+    <div class="tip" style="margin-top:6px">⚠️ 这会覆盖你已有的 SOUL.md，如果已有自定义内容请先备份。</div>
   </div>
 
   <!-- 旧 Python Bot（备选） -->
@@ -203,15 +205,15 @@ EOF</div>
       <div class="step-item">
         <h3>下载并安装</h3>
         <div class="cmd">git clone https://github.com/LiHongwei-cn/lihongwei-cn.git
-cd lihongwei-cn/bot
-pip install -r requirements.txt</div>
+cd lihongwei-cn
+pip install -r bot/requirements.txt</div>
       </div>
       <div class="step-item">
         <h3>配置并启动</h3>
         <p>创建 <code>.env</code> 文件：</p>
         <div class="cmd">TELEGRAM_TOKEN=123456:ABC-DEF1234ghiJKL
 DEEPSEEK_API_KEY=sk-你的deepseek密钥</div>
-        <p style="margin-top:6px"><strong>macOS：</strong><code>bash start_bot.sh</code> &nbsp;|&nbsp; <strong>Windows：</strong><code>start_bot.bat</code></p>
+        <p style="margin-top:6px"><strong>macOS：</strong><code>cd lihongwei-cn && python bot/tgbot.py</code> &nbsp;|&nbsp; <strong>Windows：</strong><code>cd lihongwei-cn && python bot\tgbot.py</code></p>
       </div>
     </div>
     <div class="tip info" style="margin-top:10px">旧 Python Bot 功能：文字对话 + 图片理解。不具备 Hermes Agent 的工具调用、记忆系统、技能生态等高级功能。</div>
