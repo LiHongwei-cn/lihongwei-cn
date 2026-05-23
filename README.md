@@ -61,10 +61,10 @@ Nous Research 开源 AI Agent。OpenRouter / DeepSeek 多模型后端，Win / Ma
 <tr>
 <td width="50%" valign="top">
 
-### 📦 全局规范部署包
-Claude Code 全套配置：CLAUDE.md + rules + skills，新电脑一条命令部署。
+### 📖 Claude Code 安装指南
+从零入门：安装、国产模型接入、CLAUDE.md 规范配置、桌面快捷方式、Telegram 机器人搭建。Mac / Windows 双平台。
 
-[📖 详情](https://lihongwei-cn.github.io/lihongwei-cn/global-specs/)
+[📖 详情](https://lihongwei-cn.github.io/lihongwei-cn/claude-code-tutorial/)
 
 </td>
 <td width="50%" valign="top">
