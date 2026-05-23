@@ -10,7 +10,7 @@ MATLAB 仿真 · AI 工具开发
 
 **MATLAB-AI 启动器** — 新能源汽车仿真工具包。车辆动力学、PMSM 电机 FOC、电池 SOC 估算、能量管理策略。AI 辅助生成代码，一键运行。
 
-[📦 下载安装包（ZIP）](matlab-tool/matlab-ai-starter.zip) ｜ [📖 查看操作说明](matlab-tool/guide.txt) ｜ [🌐 项目详情页](https://lihongwei-cn.github.io/lihongwei-cn/matlab-ai/)
+[📦 下载安装包（ZIP）](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/packages/matlab-ai-starter.zip) ｜ [📖 查看操作说明](matlab-tool/guide.txt) ｜ [🌐 项目详情页](https://lihongwei-cn.github.io/lihongwei-cn/matlab-ai/) ｜ [📦 所有安装包](https://github.com/LiHongwei-cn/lihongwei-cn/releases/tag/packages)
 
 *ZIP 压缩包 · 11 KB · 包含 16 个文件 · 免费开源*
 
@@ -64,8 +64,8 @@ MATLAB 仿真 · AI 工具开发
 
 Win / Mac 一键创建 Claude Code 桌面快捷方式，双击即开即用。
 
-- **Windows**：[下载 claude-desktop.bat](https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/tools/claude-desktop.bat)
-- **macOS**：[下载 Claude Code.app](https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/tools/Claude%20Code.app.zip)
+- **Windows**：[下载 claude-desktop.bat](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/packages/claude-desktop.bat)
+- **macOS**：[下载 Claude Code.app.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/packages/Claude-Code.app.zip)
 
 🔗 [桌面启动项目页面](https://lihongwei-cn.github.io/lihongwei-cn/desktop-launcher/) ｜ [README](desktop-launcher/README.md)
 
@@ -73,8 +73,8 @@ Win / Mac 一键创建 Claude Code 桌面快捷方式，双击即开即用。
 
 Nous Research 开源 AI Agent，Win / Mac 双击即用。支持 OpenRouter / OpenAI / Anthropic / DeepSeek 等多模型后端。
 
-- **Windows**：[下载 hermes-start.bat](https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/tools/hermes-start.bat)
-- **macOS**：[下载 hermes-desktop.command](https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/tools/hermes-desktop.command)
+- **Windows**：[下载 hermes-start.bat](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/packages/hermes-start.bat)
+- **macOS**：[下载 hermes-desktop.command](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/packages/hermes-desktop.command)
 
 🔗 [Hermes 启动器项目页面](https://lihongwei-cn.github.io/lihongwei-cn/hermes-launcher/) ｜ [README](hermes-launcher/README.md)
 
