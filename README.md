@@ -17,12 +17,30 @@
 
 ## Highlights
 
-- **[MATLAB-AI 启动器](https://lihongwei-cn.github.io/lihongwei-cn/matlab-ai/)** — 新能源汽车仿真工具包。车辆动力学、PMSM 电机 FOC、电池 SOC 估算、能量管理策略。AI 辅助生成代码，一键运行。
-- **[Claude Code 桌面启动](https://lihongwei-cn.github.io/lihongwei-cn/desktop-launcher/)** — Win / Mac 一键创建桌面快捷方式，双击即开即用。
-- **[Hermes Agent 一键启动](https://lihongwei-cn.github.io/lihongwei-cn/hermes-launcher/)** — Nous Research 开源 AI Agent，Win / Mac 双击即用。
-- **[全局规范部署包](https://lihongwei-cn.github.io/lihongwei-cn/global-specs/)** — Claude Code 全套配置，新电脑一条命令部署。
-- **[Hermes Agent 完整指南](https://lihongwei-cn.github.io/lihongwei-cn/hermes-guide/)** — 安装 · DeepSeek · Telegram · 全部踩坑解决。
-- **[Telegram AI 机器人](https://lihongwei-cn.github.io/lihongwei-cn/telegram-bot/)** — DeepSeek 驱动，文字+图片，一键部署。
+**[MATLAB-AI 启动器](https://lihongwei-cn.github.io/lihongwei-cn/matlab-ai/)**
+新能源汽车仿真工具包。车辆动力学、PMSM 电机 FOC、电池 SOC 估算、能量管理策略。AI 辅助生成代码，一键运行。
+→ [下载 matlab-ai-starter.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/packages/matlab-ai-starter.zip)
+
+**[Claude Code 桌面快捷启动](https://lihongwei-cn.github.io/lihongwei-cn/desktop-launcher/)**
+Win / Mac 一键创建 Claude Code 桌面快捷方式，双击即开即用，无需每次打开终端输命令。
+→ [Windows .bat](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/packages/claude-desktop.bat) · [macOS .app.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/packages/Claude-Code.app.zip)
+
+**[Hermes Agent 一键启动器](https://lihongwei-cn.github.io/lihongwei-cn/hermes-launcher/)**
+Nous Research 开源 AI Agent，支持 OpenRouter / OpenAI / Anthropic / DeepSeek 等多模型后端。Win / Mac 双击即用。
+→ [Windows .bat](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/packages/hermes-start.bat) · [macOS .command](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/packages/hermes-desktop.command)
+
+**[蒙多 · 跨界学习引擎](https://lihongwei-cn.github.io/lihongwei-cn/skills/)**
+遇到瓶颈自动变身的 AI Skill。多 AI 模型 + GitHub + Stack Overflow + 掘金多渠道并行搜索，四维对比选最佳方案。Claude Code / Hermes Agent 通用。
+触发词：卡住了 / 搞不定 / 没思路 / 蒙多
+
+**[全局规范部署包](https://lihongwei-cn.github.io/lihongwei-cn/global-specs/)**
+Claude Code 全套配置（CLAUDE.md + rules + skills），新电脑一条命令部署。
+
+**[Hermes Agent 完整指南](https://lihongwei-cn.github.io/lihongwei-cn/hermes-guide/)**
+从零安装到 Telegram 接入，所有踩坑解决。DeepSeek 模型配置 + Gateway 服务。
+
+**[Telegram AI 机器人](https://lihongwei-cn.github.io/lihongwei-cn/telegram-bot/)**
+DeepSeek 驱动的 Telegram 机器人，文字 + 图片回复，一键部署。
 
 ## 安装包
 
@@ -31,10 +49,10 @@
 | 文件 | 说明 | 平台 |
 |------|------|------|
 | `matlab-ai-starter.zip` | MATLAB 仿真工具包 | Win / Mac |
-| `Claude-Code.app.zip` | Claude Code 桌面启动器 | macOS |
 | `claude-desktop.bat` | Claude Code 桌面启动脚本 | Windows |
-| `hermes-desktop.command` | Hermes Agent 一键启动 | macOS |
+| `Claude-Code.app.zip` | Claude Code 桌面启动器 | macOS |
 | `hermes-start.bat` | Hermes Agent 一键启动 | Windows |
+| `hermes-desktop.command` | Hermes Agent 一键启动 | macOS |
 
 ## MATLAB 使用
 
@@ -76,7 +94,7 @@ git pull
 ├── matlab-ai/             MATLAB-AI 启动器页面
 ├── bot/                   Telegram 机器人
 ├── tools/                 启动脚本集合
-├── skills/                Skills 市场
+├── skills/                Skills 市场（含蒙多等 14 个 Skill）
 ├── global-specs/          全局规范部署包
 ├── hermes-launcher/       Hermes Agent 启动器
 ├── hermes-guide/          Hermes Agent 指南
