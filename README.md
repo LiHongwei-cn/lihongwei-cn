@@ -20,7 +20,6 @@
 - **[MATLAB-AI 启动器](https://lihongwei-cn.github.io/lihongwei-cn/matlab-ai/)** — 新能源汽车仿真工具包。车辆动力学、PMSM 电机 FOC、电池 SOC 估算、能量管理策略。AI 辅助生成代码，一键运行。
 - **[Claude Code 桌面启动](https://lihongwei-cn.github.io/lihongwei-cn/desktop-launcher/)** — Win / Mac 一键创建桌面快捷方式，双击即开即用。
 - **[Hermes Agent 一键启动](https://lihongwei-cn.github.io/lihongwei-cn/hermes-launcher/)** — Nous Research 开源 AI Agent，Win / Mac 双击即用。
-- **[蒙多 · 跨界学习引擎](https://lihongwei-cn.github.io/lihongwei-cn/mundo/)** — 遇到瓶颈自动变身。多 AI + GitHub + Stack Overflow + 掘金多渠道搜索，四维对比选最佳。
 - **[全局规范部署包](https://lihongwei-cn.github.io/lihongwei-cn/global-specs/)** — Claude Code 全套配置，新电脑一条命令部署。
 - **[Hermes Agent 完整指南](https://lihongwei-cn.github.io/lihongwei-cn/hermes-guide/)** — 安装 · DeepSeek · Telegram · 全部踩坑解决。
 - **[Telegram AI 机器人](https://lihongwei-cn.github.io/lihongwei-cn/telegram-bot/)** — DeepSeek 驱动，文字+图片，一键部署。
@@ -77,7 +76,6 @@ git pull
 ├── matlab-ai/             MATLAB-AI 启动器页面
 ├── bot/                   Telegram 机器人
 ├── tools/                 启动脚本集合
-├── mundo/                 蒙多跨界学习引擎
 ├── skills/                Skills 市场
 ├── global-specs/          全局规范部署包
 ├── hermes-launcher/       Hermes Agent 启动器
