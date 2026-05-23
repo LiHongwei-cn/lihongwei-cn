@@ -1,3 +1,5 @@
+<wxs src="../../utils/md.wxs" module="md" />
+
 <view class="container">
   <view class="week-nav card">
     <view class="week-arrow" bindtap="prevWeek">‹ 上一周</view>
@@ -52,14 +54,36 @@
       </view>
     </view>
 
-    <view class="card" wx:if="{{report.trendSummary}}">
-      <text class="section-title">AI 趋势分析</text>
-      <view class="analysis-content">{{report.trendSummary}}</view>
-    </view>
+    <!-- AI 趋势分析 —— 分区卡片渲染 -->
+    <view wx:if="{{report.trendSummary}}">
+      <view class="card ai-card-header">
+        <view class="ai-header-icon">🤖</view>
+        <view class="ai-header-text">
+          <text class="ai-header-title">AI 健康周报</text>
+          <text class="ai-header-sub">基于本周 {{report.readingCount}} 次测量数据智能生成</text>
+        </view>
+      </view>
 
-    <view class="card" wx:if="{{report.recommendations}}">
-      <text class="section-title">建议</text>
-      <view class="analysis-content">{{report.recommendations}}</view>
+      <block wx:for="{{md.parseSections(report.trendSummary).sections}}" wx:key="index">
+        <view class="card ai-section">
+          <view class="ai-section-head">
+            <text class="ai-section-icon">{{item.icon}}</text>
+            <text class="ai-section-title">{{item.title}}</text>
+          </view>
+          <view class="ai-section-body">
+            <block wx:for="{{item.lines}}" wx:for-item="line" wx:key="index2">
+              <view class="ai-line">
+                <text class="ai-dot">·</text>
+                <view class="ai-line-parts">
+                  <block wx:for="{{line.parts}}" wx:for-item="part" wx:key="index3">
+                    <text class="{{part.bold ? 'ai-bold' : ''}}">{{part.text}}</text>
+                  </block>
+                </view>
+              </view>
+            </block>
+          </view>
+        </view>
+      </block>
     </view>
   </view>
 

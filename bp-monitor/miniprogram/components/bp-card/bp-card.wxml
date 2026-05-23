@@ -1,3 +1,5 @@
+<wxs src="../../utils/md.wxs" module="md" />
+
 <view class="bp-card">
   <view class="bp-card-header">
     <view class="bp-time">
@@ -32,6 +34,23 @@
   </view>
 
   <view class="bp-card-analysis" wx:if="{{showAnalysis && aiAnalysis}}">
-    <text>{{aiAnalysis}}</text>
+    <view class="analysis-tag">AI 分析</view>
+    <block wx:for="{{md.parseSections(aiAnalysis).sections}}" wx:key="index">
+      <view class="analysis-section">
+        <view class="analysis-section-head">
+          <text class="analysis-section-icon">{{item.icon}}</text>
+          <text class="analysis-section-title">{{item.title}}</text>
+        </view>
+        <view class="analysis-section-body">
+          <block wx:for="{{item.lines}}" wx:for-item="line" wx:key="idx">
+            <view class="analysis-line">
+              <block wx:for="{{line.parts}}" wx:for-item="part" wx:key="idx2">
+                <text class="{{part.bold ? 'analysis-bold' : ''}}">{{part.text}}</text>
+              </block>
+            </view>
+          </block>
+        </view>
+      </view>
+    </block>
   </view>
 </view>

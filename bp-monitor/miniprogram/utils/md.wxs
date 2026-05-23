@@ -1,0 +1,55 @@
+// WXS markdown 解析器 —— 将 AI 返回的 emoji + markdown 文本转为结构化数据
+// 输入格式：📈 **标题**\n内容文本（支持 **粗体**）
+// 输出：{ sections: [{icon, title, lines: [{text, bold}]}] }
+
+function parseSections(text) {
+  if (!text) return { sections: [] }
+  var sections = []
+  var lines = text.split('\n')
+  var current = null
+
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i]
+    var headerMatch = line.match(/^([\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}\u{2764}\u{FE0F}\u{200D}\u{20E3}⚡️✅❌⚠️🔴🟢🟡🔵🟠⚪️🔶🔷]+)\s*\*\*(.+?)\*\*/u)
+    if (headerMatch) {
+      if (current) sections.push(current)
+      current = { icon: headerMatch[1], title: headerMatch[2], lines: [] }
+    } else if (current) {
+      var trimmed = line.trim()
+      if (trimmed) {
+        current.lines.push(parseInline(trimmed))
+      }
+    }
+  }
+  if (current) sections.push(current)
+  return { sections: sections }
+}
+
+function parseInline(text) {
+  var parts = []
+  var remaining = text
+  while (remaining.length > 0) {
+    var boldIdx = remaining.indexOf('**')
+    if (boldIdx === -1) {
+      parts.push({ text: remaining, bold: false })
+      break
+    }
+    if (boldIdx > 0) {
+      parts.push({ text: remaining.substring(0, boldIdx), bold: false })
+    }
+    remaining = remaining.substring(boldIdx + 2)
+    var endIdx = remaining.indexOf('**')
+    if (endIdx === -1) {
+      parts.push({ text: remaining, bold: false })
+      break
+    }
+    parts.push({ text: remaining.substring(0, endIdx), bold: true })
+    remaining = remaining.substring(endIdx + 2)
+  }
+  return { parts: parts }
+}
+
+module.exports = {
+  parseSections: parseSections,
+  parseInline: parseInline
+}
