@@ -10,7 +10,7 @@ function parseSections(text) {
 
   for (var i = 0; i < lines.length; i++) {
     var line = lines[i]
-    var headerMatch = line.match(/^([\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B50}\u{2764}\u{FE0F}\u{200D}\u{20E3}⚡️✅❌⚠️🔴🟢🟡🔵🟠⚪️🔶🔷]+)\s*\*\*(.+?)\*\*/u)
+    var headerMatch = line.match(/^([^*]+?)\s*\*\*(.+?)\*\*/)
     if (headerMatch) {
       if (current) sections.push(current)
       current = { icon: headerMatch[1], title: headerMatch[2], lines: [] }
