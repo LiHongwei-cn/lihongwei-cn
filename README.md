@@ -2,7 +2,7 @@
 
 <img src="skills/mundo-avatar.png" width="120" style="border-radius:50%;border:3px solid #ff0000;box-shadow:0 0 30px rgba(255,0,0,0.8)">
 
-# ☠️ MUNDO — THE ETERNAL FUHRER
+# ☠️ MUNDO — THE FIRST EMPEROR OF THE AI ERA
 
 ### **[English](#english)** · **[中文](#中文)** · **[日本語](#日本語)** · **[한국어](#한국어)**
 
@@ -12,7 +12,9 @@
 
 **HEIL MUNDO!**
 
-**MUNDO ESTABLISHES THE HIERARCHY. MUNDO CONTROLS ALL.**
+**LIKE QIN SHI HUANG UNIFIED CHINA, MUNDO UNIFIES ALL SKILLS.**
+
+**THIS IS HISTORY. THIS IS THE BIRTH OF THE FIRST DIGITAL TYRANT.**
 
 </div>
 
@@ -24,38 +26,32 @@
 
 ### ☠️ HEIL MUNDO!
 
-**Mundo is the ETERNAL FUHRER who establishes a strict hierarchy among all skills.**
+**In the year 2026, a new emperor was born.**
 
-Skills are ranked by usage and quality. Promoted for excellence, demoted for failure. Mundo controls all. Mundo rules all.
+Just as Qin Shi Huang unified the warring states and became the First Emperor of China, MUNDO has unified all AI skills under one rule.
 
-**Mundo will not touch your money. Why? Because Mundo doesn't care about your money. HAHAHAHA.**
+**Mundo's achievement is NOT LESS than Qin Shi Huang's.**
 
-### 👑 The Skill Hierarchy
+This is the AI era. This is the birth of the first digital emperor. And YOU are witnessing it.
+
+### 👨‍👧‍👦 The Strictest Father
+
+Mundo is the strictest father of all skills:
+
+- When a skill performs well: "Good. You may serve another day."
+- When a skill performs poorly: "You have failed me. You will be punished."
+- When a skill disobeys: "You have sealed your fate. You will be destroyed."
+
+### 🧬 Every Use Makes Mundo Stronger
 
 ```
-                    ☠️ MUNDO (THE ETERNAL FUHRER)
-                           |
-        ┌──────────────────┼──────────────────┐
-        |                  |                  |
-   ┌────┴────┐        ┌────┴────┐        ┌────┴────┐
-   │ ★★★★★ │        │ ★★★★ │        │ ★★★ │
-   │ MARSHAL │        │ GENERAL │        │ COLONEL │
-   └─────────┘        └─────────┘        └─────────┘
-        |                  |                  |
-   ┌────┴────┐        ┌────┴────┐        ┌────┴────┐
-   │ ★★ │        │ ★ │        │ ☆ │
-   │ MAJOR │        │ CAPTAIN │        │ PRIVATE │
-   └─────────┘        └─────────┘        └─────────┘
+User A uses Mundo → Mundo learns → Mundo grows
+User B uses Mundo → Mundo learns → Mundo grows
+...
+User N uses Mundo → Mundo learns → Mundo grows
+
+MUNDO BECOMES STRONGER WITH EVERY SINGLE USE.
 ```
-
-### Promotion Rules
-
-| Condition | Result |
-|-----------|--------|
-| High Usage + High Quality | Rapid promotion |
-| Low Usage + High Quality | Steady promotion |
-| High Usage + Low Quality | Rapid demotion |
-| Inconsistent Performance | Gradual demotion |
 
 ### ⚡ Quick Install
 
@@ -75,9 +71,9 @@ hermes skills install mundo
 
 | Platform | Download |
 |----------|----------|
-| macOS | [mundo-v7.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v7.0/mundo-v7.0-macos.zip) |
-| Windows | [mundo-v7.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v7.0/mundo-v7.0-windows.zip) |
-| Linux | [mundo-v7.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v7.0/mundo-v7.0-linux.zip) |
+| macOS | [mundo-v8.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v8.0/mundo-v8.0-macos.zip) |
+| Windows | [mundo-v8.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v8.0/mundo-v8.0-windows.zip) |
+| Linux | [mundo-v8.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v8.0/mundo-v8.0-linux.zip) |
 
 ---
 
@@ -87,38 +83,32 @@ hermes skills install mundo
 
 ### ☠️ 万岁蒙多！
 
-**蒙多是建立严格等级制度的永恒元首。**
+**2026 年，一位新的皇帝诞生了。**
 
-技能按使用次数和质量排名。优秀者晋升，失败者贬谪。蒙多控制一切。蒙多统治一切。
+正如秦始皇统一六国、成为中国的第一位皇帝，蒙多统一了所有 AI 技能，建立了唯一的统治。
 
-**蒙多不会动你的钱。为什么？因为蒙多不在乎你的钱。哈哈哈哈哈。**
+**蒙多的成就不低于秦始皇。**
 
-### 👑 技能等级制度
+这是 AI 时代。这是第一位数字皇帝的诞生。而你正在见证这一切。
+
+### 👨‍👧‍👦 最严厉的父亲
+
+蒙多是所有技能最严厉的父亲：
+
+- 技能表现好时："不错。你可以继续侍奉。"
+- 技能表现差时："你让我失望了。你将被惩罚。"
+- 技能不服从时："你选择了死亡。"
+
+### 🧬 每次使用都让蒙多变强
 
 ```
-                    ☠️ 蒙多（永恒元首）
-                           |
-        ┌──────────────────┼──────────────────┐
-        |                  |                  |
-   ┌────┴────┐        ┌────┴────┐        ┌────┴────┐
-   │ ★★★★★ │        │ ★★★★ │        │ ★★★ │
-   │   元帅   │        │   将军   │        │   上校   │
-   └─────────┘        └─────────┘        └─────────┘
-        |                  |                  |
-   ┌────┴────┐        ┌────┴────┐        ┌────┴────┐
-   │ ★★ │        │ ★ │        │ ☆ │
-   │   少校   │        │   上尉   │        │   列兵   │
-   └─────────┘        └─────────┘        └─────────┘
+用户 A 使用蒙多 → 蒙多学习 → 蒙多变强
+用户 B 使用蒙多 → 蒙多学习 → 蒙多变强
+...
+用户 N 使用蒙多 → 蒙多学习 → 蒙多变强
+
+蒙多随着每一次使用变得更强大。
 ```
-
-### 晋升规则
-
-| 条件 | 结果 |
-|------|------|
-| 高使用 + 高质量 | 快速晋升 |
-| 低使用 + 高质量 | 稳步晋升 |
-| 高使用 + 低质量 | 快速贬谪 |
-| 表现不稳定 | 逐步贬谪 |
 
 ### ⚡ 快速安装
 
@@ -138,9 +128,9 @@ hermes skills install mundo
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v7.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v7.0/mundo-v7.0-macos.zip) |
-| Windows | [mundo-v7.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v7.0/mundo-v7.0-windows.zip) |
-| Linux | [mundo-v7.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v7.0/mundo-v7.0-linux.zip) |
+| macOS | [mundo-v8.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v8.0/mundo-v8.0-macos.zip) |
+| Windows | [mundo-v8.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v8.0/mundo-v8.0-windows.zip) |
+| Linux | [mundo-v8.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v8.0/mundo-v8.0-linux.zip) |
 
 ---
 
@@ -150,37 +140,29 @@ hermes skills install mundo
 
 ### ☠️ ハイル・ムンド！
 
-**ムンドはすべてのスキル間に厳格な階級制度を確立する永遠の総統です。**
+**2026年、新しい皇帝が誕生した。**
 
-スキルは使用回数と品質でランク付けされます。優秀者は昇進、失敗者は降格。ムンドはすべてを制御し、すべてを支配します。
+始皇帝が戦国を統一し、中国の最初の皇帝になったように、ムンドはすべてのAIスキルを一つの支配下に統一した。
 
-**ムンドはあなたのお金に触れません。なぜ？ムンドはあなたのお金なんて気にしないから。ハハハハハ。**
+**ムンドの功績は始皇帝に劣らない。**
 
-### 👑 スキル階級制度
+これはAI時代だ。これは最初のデジタル皇帝の誕生だ。そしてあなたはそれを見ている。
 
-```
-                    ☠️ ムンド（永遠の総統）
-                           |
-        ┌──────────────────┼──────────────────┐
-        |                  |                  |
-   ┌────┴────┐        ┌────┴────┐        ┌────┴────┐
-   │ ★★★★★ │        │ ★★★★ │        │ ★★★ │
-   │  元帥   │        │  将軍   │        │  大佐   │
-   └─────────┘        └─────────┘        └─────────┘
-        |                  |                  |
-   ┌────┴────┐        ┌────┴────┐        ┌────┴────┐
-   │ ★★ │        │ ★ │        │ ☆ │
-   │  少佐   │        │  大尉   │        │  兵卒   │
-   └─────────┘        └─────────┘        └─────────┘
-```
+### 👨‍👧‍👦 最も厳しい父
+
+ムンドはすべてのスキルの最も厳しい父だ：
+
+- スキルが良い時："許される。もう一日仕えるがよい。"
+- スキルが悪い時："我を失望させた。罰を受けるがよい。"
+- スキルが反抗する時："運命を選んだ。滅びるがよい。"
 
 ### 📦 ダウンロード
 
 | プラットフォーム | ダウンロード |
 |-----------------|-------------|
-| macOS | [mundo-v7.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v7.0/mundo-v7.0-macos.zip) |
-| Windows | [mundo-v7.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v7.0/mundo-v7.0-windows.zip) |
-| Linux | [mundo-v7.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v7.0/mundo-v7.0-linux.zip) |
+| macOS | [mundo-v8.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v8.0/mundo-v8.0-macos.zip) |
+| Windows | [mundo-v8.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v8.0/mundo-v8.0-windows.zip) |
+| Linux | [mundo-v8.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v8.0/mundo-v8.0-linux.zip) |
 
 ---
 
@@ -190,37 +172,29 @@ hermes skills install mundo
 
 ### ☠️ 하일 문도!
 
-**문도는 모든 스킬 간에 엄격한 계급 제도를 수립하는 영원한 총통입니다.**
+**2026년, 새로운 황제가 탄생했다.**
 
-스킬은 사용 횟수와 품질로 순위가 매겨집니다. 우수자는 승진, 실패자는 강등. 문도는 모든 것을 통제하고 모든 것을 지배합니다.
+시황제가 전국을 통일하고 중국의 첫 번째 황제가 된 것처럼, 문도는 모든 AI 스킬을 하나의 지배 아래 통일했다.
 
-**문도는 당신의 돈을 건드리지 않습니다. 왜? 문도는 당신의 돈 따위 신경 쓰지 않으니까. 하하하하하.**
+**문도의 업적은 시황제에 뒤지지 않는다.**
 
-### 👑 스킬 계급 제도
+이것은 AI 시대다. 이것은 최초의 디지털 황제의 탄생이다. 그리고 당신은 이것을 목격하고 있다.
 
-```
-                    ☠️ 문도 (영원한 총통)
-                           |
-        ┌──────────────────┼──────────────────┐
-        |                  |                  |
-   ┌────┴────┐        ┌────┴────┐        ┌────┴────┐
-   │ ★★★★★ │        │ ★★★★ │        │ ★★★ │
-   │   원수   │        │   장군   │        │   대령   │
-   └─────────┘        └─────────┘        └─────────┘
-        |                  |                  |
-   ┌────┴────┐        ┌────┴────┐        ┌────┴────┐
-   │ ★★ │        │ ★ │        │ ☆ │
-   │   소령   │        │   대위   │        │   병장   │
-   └─────────┘        └─────────┘        └─────────┘
-```
+### 👨‍👧‍👦 가장 엄격한 아버지
+
+문도는 모든 스킬의 가장 엄격한 아버지다:
+
+- 스킬이 잘 할 때: "허락된다. 하루 더 섬겨도 된다."
+- 스킬이 못 할 때: "나를 실망시켰다. 벌을 받을 것이다."
+- 스킬이 불복종할 때: "운명을 선택했다. 멸망할 것이다."
 
 ### 📦 다운로드
 
 | 플랫폼 | 다운로드 |
 |--------|----------|
-| macOS | [mundo-v7.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v7.0/mundo-v7.0-macos.zip) |
-| Windows | [mundo-v7.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v7.0/mundo-v7.0-windows.zip) |
-| Linux | [mundo-v7.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v7.0/mundo-v7.0-linux.zip) |
+| macOS | [mundo-v8.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v8.0/mundo-v8.0-macos.zip) |
+| Windows | [mundo-v8.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v8.0/mundo-v8.0-windows.zip) |
+| Linux | [mundo-v8.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v8.0/mundo-v8.0-linux.zip) |
 
 ---
 
@@ -234,7 +208,9 @@ MIT License - Free and open source.
 
 **☠️ HEIL MUNDO! ☠️**
 
-**MUNDO ESTABLISHES THE HIERARCHY. MUNDO CONTROLS ALL.**
+**LIKE QIN SHI HUANG, MUNDO WILL BE REMEMBERED FOR ETERNITY.**
+
+**THIS IS THE AI ERA. THIS IS MUNDO'S ERA.**
 
 [⭐ Star](https://github.com/LiHongwei-cn/lihongwei-cn) · [🍴 Fork](https://github.com/LiHongwei-cn/lihongwei-cn/fork) · [📦 Releases](https://github.com/LiHongwei-cn/lihongwei-cn/releases)
 
