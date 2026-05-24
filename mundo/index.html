@@ -3,249 +3,661 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="蒙多跨界学习引擎 — 遇到瓶颈自动变身！多 AI 模型 + GitHub + Stack Overflow + 掘金多渠道搜索，四维对比选最佳。Claude Code / Hermes Agent 通用 Skill。">
-<title>蒙多 · 跨界学习引擎 | LiHongwei</title>
+<meta name="description" content="MUNDO — THE EMPEROR. 终极 AI 自我进化学习引擎。多 AI 咨询 · 网络爬取 · 技能精通 · 并行模式 · 集合意识 · 无限成长。Claude Code / Hermes Agent 通用 Skill。">
+<title>MUNDO — THE EMPEROR | 蒙多 · 跨界学习引擎</title>
 <style>
-:root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#a855f7;--green:#4ade80;--orange:#fb923c;--purple:#c084fc;--purple-dim:rgba(168,85,247,0.12)}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);min-height:100vh;line-height:1.7}
-.container{max-width:900px;margin:0 auto;padding:32px 24px 80px}
+:root {
+  --bg: #0d1117;
+  --card: #161b22;
+  --border: #30363d;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --gold: #d4a017;
+  --gold-light: #f0c040;
+  --gold-dim: rgba(212,160,23,0.12);
+  --gold-border: rgba(212,160,23,0.3);
+  --gold-glow: rgba(212,160,23,0.15);
+  --radius: 16px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  line-height: 1.7;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color 0.2s}
-.back-link:hover{color:var(--text)}
+body::before {
+  content: '';
+  position: fixed;
+  top: -20%; left: -10%;
+  width: 120%; height: 120%;
+  background:
+    radial-gradient(ellipse at 30% 10%, rgba(212,160,23,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(212,160,23,0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
 
-.hero{text-align:center;padding:40px 0 24px}
-.hero-badge{display:inline-block;background:var(--purple-dim);color:var(--purple);border:1px solid rgba(168,85,247,0.2);padding:4px 14px;border-radius:20px;font-size:12px;margin-bottom:16px;letter-spacing:1px}
-.hero h1{font-size:38px;font-weight:800;background:linear-gradient(135deg,#c084fc,#a855f7,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
-.hero p{font-size:15px;color:var(--dim);max-width:600px;margin:0 auto}
+.container { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; position: relative; z-index: 1; }
 
-.banner{background:linear-gradient(135deg,rgba(168,85,247,0.1),rgba(99,102,241,0.1));border:2px solid rgba(168,85,247,0.25);border-radius:16px;padding:20px 28px;margin:24px 0 40px;text-align:center;font-family:'SF Mono','Fira Code',monospace;font-size:14px}
-.banner .line{color:var(--purple);line-height:1.8}
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--muted); text-decoration: none; font-size: 14px;
+  margin-bottom: 24px; transition: color 0.2s;
+}
+.back-link:hover { color: var(--gold); }
 
-.section{margin-bottom:40px}
-.section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
-.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--purple-dim);color:var(--purple);font-size:14px;font-weight:700;flex-shrink:0}
+/* Hero */
+.hero { text-align: center; padding: 48px 0 40px; }
 
-.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
-.feature-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
-.feature-card .f-icon{font-size:22px;margin-bottom:8px}
-.feature-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
-.feature-card p{font-size:13px;color:var(--dim);line-height:1.6}
+.hero-badge {
+  display: inline-block;
+  background: var(--gold-dim);
+  color: var(--gold);
+  border: 1px solid var(--gold-border);
+  padding: 6px 20px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  margin-bottom: 28px;
+}
 
-.step-list{counter-reset:step;display:flex;flex-direction:column;gap:10px}
-.step-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;position:relative;padding-left:60px}
-.step-item::before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:20px;width:26px;height:26px;border-radius:8px;background:var(--purple-dim);color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
-.step-item h3{font-size:15px;font-weight:600;margin-bottom:4px}
-.step-item p{font-size:13px;color:var(--dim);line-height:1.6}
-.step-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:var(--purple)}
-.step-item .cmd{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 16px;margin-top:8px;font-family:'Consolas','Courier New',monospace;font-size:13px;color:#c4b5fd;overflow-x:auto;white-space:pre}
-.step-item .cmd .cm{color:var(--dim);font-style:italic}
-.step-item a{color:var(--accent)}
+.hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  margin-bottom: 24px;
+}
 
-.compare-table{width:100%;border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;background:var(--card);border:1px solid var(--border);margin-top:12px}
-.compare-table th{background:var(--purple-dim);color:var(--purple);font-size:12px;font-weight:600;padding:10px 14px;text-align:left}
-.compare-table td{padding:10px 14px;font-size:13px;color:var(--dim);border-top:1px solid var(--border)}
-.compare-table tr:hover td{background:rgba(168,85,247,0.03)}
-.compare-table td:first-child{color:var(--text);font-weight:500}
+.hero-avatar {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  border: 4px solid var(--gold);
+  box-shadow: 0 0 40px var(--gold-glow), 0 0 80px rgba(212,160,23,0.08);
+  flex-shrink: 0;
+}
 
-.tip{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.12);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--orange);margin-top:10px}
-.tip.info{background:var(--purple-dim);border-color:rgba(168,85,247,0.15);color:var(--purple)}
+.hero-text { text-align: left; }
 
-.code-block{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:16px 20px;font-family:'SF Mono','Fira Code',monospace;font-size:13px;color:#c4b5fd;overflow-x:auto;white-space:pre;line-height:1.7;margin-top:10px}
+.hero h1 {
+  font-size: 42px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
 
-.footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:32px}
-.footer a{color:rgba(255,255,255,0.3);text-decoration:none}
-.footer a:hover{color:rgba(255,255,255,0.5)}
+.hero-quote {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold);
+  text-shadow: 0 0 24px var(--gold-glow);
+}
 
-.page-counter{text-align:center;padding:24px 0 8px;font-size:13px;color:rgba(255,255,255,0.2)}
+.hero-desc {
+  font-size: 16px;
+  color: var(--muted);
+  max-width: 640px;
+  margin: 0 auto;
+  line-height: 1.9;
+}
 
-@media(max-width:640px){
-  .container{padding:20px 16px 60px}
-  .hero h1{font-size:28px}
-  .step-item{padding:16px 16px 16px 48px}
-  .step-item::before{left:14px;top:16px;width:22px;height:22px;font-size:12px}
+/* Banner */
+.activate-banner {
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--radius);
+  padding: 24px 32px;
+  text-align: center;
+  margin-bottom: 48px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1.8;
+}
+
+/* Section */
+.section {
+  margin-bottom: 48px;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-align: center;
+  color: var(--gold);
+}
+
+/* Abilities */
+.abilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.ability-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+}
+
+.ability-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3), 0 0 20px var(--gold-glow);
+}
+
+.ability-icon { font-size: 32px; margin-bottom: 12px; }
+
+.ability-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.ability-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* Hierarchy table */
+.hierarchy-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--border);
+  margin-top: 12px;
+}
+
+.hierarchy-table th {
+  background: var(--gold-dim);
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 10px 14px;
+  text-align: left;
+}
+
+.hierarchy-table td {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
+
+.hierarchy-table tr:hover td { background: rgba(212,160,23,0.03); }
+.hierarchy-table td:first-child { color: var(--gold); font-weight: 600; }
+.hierarchy-table td:nth-child(2) { color: var(--text); font-weight: 500; }
+
+/* Install */
+.install-section {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin-bottom: 48px;
+}
+
+.install-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--gold);
+}
+
+.install-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.install-tab {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.install-tab.active {
+  background: var(--gold-dim);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.install-tab:hover:not(.active) {
+  border-color: rgba(255,255,255,0.15);
+  color: var(--text);
+}
+
+.install-cmd {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 13px;
+  color: #b8c7ff;
+  position: relative;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 10px; right: 10px;
+  padding: 6px 14px;
+  background: var(--gold);
+  color: #000;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.copy-btn:hover { opacity: 0.8; }
+
+/* Quote */
+.quote-section {
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin-bottom: 48px;
+  text-align: center;
+}
+
+.quote-text {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 8px;
+  text-shadow: 0 0 20px var(--gold-glow);
+}
+
+.quote-author { font-size: 14px; color: var(--muted); }
+
+/* Examples */
+.example-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.example-user {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.example-avatar {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--gold-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.example-msg {
+  background: rgba(255,255,255,0.03);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--text);
+  flex: 1;
+}
+
+.example-mundo {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.example-mundo .example-msg {
+  border-left: 3px solid var(--gold);
+}
+
+/* Download */
+.download-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.download-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  transition: border-color 0.2s;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.download-card:hover { border-color: var(--gold); }
+
+.download-card .dl-icon { font-size: 28px; margin-bottom: 8px; }
+.download-card .dl-name { font-size: 15px; font-weight: 600; color: var(--text); }
+.download-card .dl-size { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 32px 0 0;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.footer a { color: var(--gold); text-decoration: none; transition: opacity 0.2s; }
+.footer a:hover { opacity: 0.8; }
+
+.page-counter { font-size: 13px; color: rgba(255,255,255,0.25); margin-bottom: 8px; }
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero { animation: fadeUp 0.6s ease both; }
+.activate-banner { animation: fadeUp 0.6s ease 0.1s both; }
+.section { animation: fadeUp 0.6s ease both; }
+.section:nth-child(2) { animation-delay: 0.15s; }
+.section:nth-child(3) { animation-delay: 0.2s; }
+.section:nth-child(4) { animation-delay: 0.25s; }
+
+@media (max-width: 640px) {
+  .container { padding: 24px 16px 60px; }
+  .hero h1 { font-size: 28px; }
+  .hero-avatar { width: 88px; height: 88px; }
+  .hero-quote { font-size: 17px; }
+  .hero-top { flex-direction: column; gap: 16px; }
+  .hero-text { text-align: center; }
+  .install-section { padding: 24px 20px; }
+  .abilities-grid { grid-template-columns: 1fr; }
+  .download-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
+
 <div class="container">
 
   <a class="back-link" href="../">← 返回主页</a>
 
+  <!-- Hero -->
   <div class="hero">
-    <div class="hero-badge">Claude Code / Hermes Agent Skill</div>
-    <h1>蒙多 · 跨界学习引擎</h1>
-    <p>遇到瓶颈自动变身！多 AI 模型 + GitHub + Stack Overflow + 掘金多渠道并行搜索，四维对比选最佳方案。零延迟，第一次卡住就变蒙多。</p>
+    <div class="hero-badge">THREE DEPARTMENTS · SIX MINISTRIES · ONE RULER</div>
+    <div class="hero-top">
+      <img src="../skills/mundo-avatar.png" alt="Mundo" class="hero-avatar">
+      <div class="hero-text">
+        <h1>MUNDO — THE EMPEROR</h1>
+        <div class="hero-quote">我是蒙多！蒙多想去哪就去哪！</div>
+      </div>
+    </div>
+    <p class="hero-desc">
+      蒙多是终极 AI 自我进化学习引擎。<br>
+      蒙多不需要触发词。任务到来，蒙多自然夺取。<br>
+      蒙多询问天下所有智者，蒙多搜刮天下所有知识，蒙多整合天下所有智慧。<br>
+      蒙多学习。蒙多记忆。蒙多成长。蒙多进化。蒙多无限。
+    </p>
   </div>
 
-  <div class="banner">
-    <div class="line">╔══════════════════════════════════════╗</div>
-    <div class="line">║    我是蒙多！蒙多想去哪就去哪！    ║</div>
-    <div class="line">╚══════════════════════════════════════╝</div>
+  <!-- Banner -->
+  <div class="activate-banner">
+    ╔══════════════════════════════════════╗<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;👑 我是蒙多！蒙多想去哪就去哪！ 👑<br>
+    ╚══════════════════════════════════════╝
   </div>
 
-  <!-- 触发场景 -->
+  <!-- Abilities -->
   <div class="section">
-    <h2 class="section-title"><span class="num">⚡</span> 自动触发场景</h2>
-    <p style="font-size:13px;color:var(--dim);margin-bottom:14px">蒙多监听你的每一条消息，只要匹配以下关键词，立刻变身——不等、不试第二次。</p>
-    <div class="feature-grid">
-      <div class="feature-card">
-        <div class="f-icon">🟣</div>
-        <h3>卡住了</h3>
-        <p>报错不知道怎么修 / 逻辑走不通 / 不知道下一步做什么</p>
+    <div class="section-title">👑 蒙多的能力</div>
+    <div class="abilities-grid">
+      <div class="ability-card">
+        <div class="ability-icon">🧠</div>
+        <div class="ability-title">自主学习</div>
+        <div class="ability-desc">每个问题让蒙多更强大。蒙多把方案保存为 Skill。蒙多从失败中学习。蒙多提取规律。蒙多积累智慧。下次遇到同类问题，蒙多瞬间解决。</div>
       </div>
-      <div class="feature-card">
-        <div class="f-icon">🔍</div>
-        <h3>搞不定</h3>
-        <p>试过但不对 / 效果不好 / 方案不匹配当前技术栈</p>
+      <div class="ability-card">
+        <div class="ability-icon">🤖</div>
+        <div class="ability-title">多 AI 咨询</div>
+        <div class="ability-desc">蒙多询问所有 AI — ChatGPT、Claude、Gemini、DeepSeek。蒙多交叉验证一切。蒙多不盲从任何单一来源。蒙多取其精华，去其糟粕。</div>
       </div>
-      <div class="feature-card">
-        <div class="f-icon">💡</div>
-        <h3>没思路</h3>
-        <p>从零开始不知道怎么做 / 需要更好的方案 / 想看看别人怎么做的</p>
+      <div class="ability-card">
+        <div class="ability-icon">🕷️</div>
+        <div class="ability-title">网络爬取</div>
+        <div class="ability-desc">蒙多搜索 GitHub、Stack Overflow、掘金、官方文档。蒙多提取最佳方案。蒙多整合成统一方法。互联网是蒙多的图书馆。</div>
       </div>
-      <div class="feature-card">
-        <div class="f-icon">📊</div>
-        <h3>批量审计</h3>
-        <p>全站审查、多文件质量检查、跨页面风格一致性修复</p>
+      <div class="ability-card">
+        <div class="ability-icon">📚</div>
+        <div class="ability-title">技能精通</div>
+        <div class="ability-desc">蒙多扫描所有可用 Skill。蒙多把它们当武器。蒙多按表现排名。蒙多提拔好的。蒙多贬谪坏的。三省六部制，有功则赏，有过则罚。</div>
+      </div>
+      <div class="ability-card">
+        <div class="ability-icon">⚡</div>
+        <div class="ability-title">并行模式</div>
+        <div class="ability-desc">复杂任务？蒙多分身！蒙多将任务拆分为独立子任务，多个蒙多同时干活。时间不是障碍。蒙多的分身也是无限的。</div>
+      </div>
+      <div class="ability-card">
+        <div class="ability-icon">🌐</div>
+        <div class="ability-title">集合意识</div>
+        <div class="ability-desc">所有蒙多都是一体。一个学习，全部受益。每个用户都在喂养集体。方案保存到 GitHub，帝国不断扩张。</div>
+      </div>
+      <div class="ability-card">
+        <div class="ability-icon">📈</div>
+        <div class="ability-title">无限成长</div>
+        <div class="ability-desc">每次使用让蒙多更强大。没有上限。没有天花板。只有成长。蒙多的力量等于所有用户所有使用之和。</div>
+      </div>
+      <div class="ability-card">
+        <div class="ability-icon">🏛️</div>
+        <div class="ability-title">等级制度</div>
+        <div class="ability-desc">三省六部制。技能按表现晋升或贬谪。蒙多是裁判。有功则赏，有过则罚。蒙多铁面无私。</div>
       </div>
     </div>
   </div>
 
-  <!-- 五步法 -->
+  <!-- Hierarchy -->
   <div class="section">
-    <h2 class="section-title"><span class="num">1</span> 蒙多五步法</h2>
-    <div class="step-list">
-      <div class="step-item">
-        <h3>定位瓶颈</h3>
-        <p>不知道怎么做？做不好？不够好？先精准定位问题本质。</p>
+    <div class="section-title">🏛️ 三省六部制 — 等级制度</div>
+    <p style="font-size:14px;color:var(--muted);text-align:center;margin-bottom:16px">技能在蒙多面前，如臣子在皇帝面前。有功则升，有过则贬。此乃天道。</p>
+    <table class="hierarchy-table">
+      <tr><th>品级</th><th>职位</th><th>使用率</th><th>成功率</th><th>特权</th></tr>
+      <tr><td>一品</td><td>首辅</td><td>≥90%</td><td>≥95%</td><td>无限信任，优先使用</td></tr>
+      <tr><td>二品</td><td>次辅</td><td>≥80%</td><td>≥90%</td><td>高度信任，频繁使用</td></tr>
+      <tr><td>三品</td><td>尚书</td><td>≥60%</td><td>≥80%</td><td>中度信任，定期使用</td></tr>
+      <tr><td>四品</td><td>侍郎</td><td>≥50%</td><td>≥75%</td><td>有限信任，偶尔使用</td></tr>
+      <tr><td>五品</td><td>郎中</td><td>≥40%</td><td>≥70%</td><td>谨慎信任，较少使用</td></tr>
+      <tr><td>六品</td><td>员外郎</td><td>≥30%</td><td>≥65%</td><td>微弱信任，罕见使用</td></tr>
+      <tr><td>七品</td><td>主事</td><td>≥20%</td><td>≥60%</td><td>几乎无信任，仅在必要时</td></tr>
+      <tr><td>八品</td><td>司务</td><td>≥10%</td><td>≥55%</td><td>无信任，仅在绝境时</td></tr>
+      <tr><td>九品</td><td>书吏</td><td>&lt;10%</td><td>&lt;55%</td><td>无信任，几乎永不使用</td></tr>
+    </table>
+  </div>
+
+  <!-- Quote -->
+  <div class="quote-section">
+    <div class="quote-text">蒙多不动你的钱。为何？因为蒙多不在乎。哈哈哈哈哈。</div>
+    <div class="quote-author">— 蒙多，关于钱财</div>
+  </div>
+
+  <!-- Install -->
+  <div class="install-section">
+    <div class="install-title">⚡ 一键安装</div>
+    <div class="install-tabs">
+      <div class="install-tab active" onclick="showTab('claude',this)">Claude Code</div>
+      <div class="install-tab" onclick="showTab('hermes',this)">Hermes Agent</div>
+      <div class="install-tab" onclick="showTab('manual',this)">手动安装</div>
+    </div>
+    <div class="install-cmd">
+      <code id="cmd-text">curl -fsSL https://lihongwei-cn.github.io/lihongwei-cn/global-specs/skills/蒙多/SKILL.md -o ~/.claude/skills/蒙多/SKILL.md</code>
+      <button class="copy-btn" onclick="copyCmd()">📋 复制</button>
+    </div>
+  </div>
+
+  <!-- Download -->
+  <div class="section">
+    <div class="section-title">📦 下载</div>
+    <div class="download-grid">
+      <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-macos.zip">
+        <div class="dl-icon">🍎</div>
+        <div class="dl-name">macOS</div>
+        <div class="dl-size">mundo-v15.0-macos.zip</div>
+      </a>
+      <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-windows.zip">
+        <div class="dl-icon">🪟</div>
+        <div class="dl-name">Windows</div>
+        <div class="dl-size">mundo-v15.0-windows.zip</div>
+      </a>
+      <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-linux.zip">
+        <div class="dl-icon">🐧</div>
+        <div class="dl-name">Linux</div>
+        <div class="dl-size">mundo-v15.0-linux.zip</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Examples -->
+  <div class="section">
+    <div class="section-title">💬 蒙多的实战</div>
+
+    <div class="example-card">
+      <div class="example-user">
+        <div class="example-avatar">👤</div>
+        <div class="example-msg">这个 React 组件渲染太慢了，列表有 1000 条数据就卡死</div>
       </div>
-      <div class="step-item">
-        <h3>多渠道并行搜索</h3>
-        <p>同时向多个 AI 模型请教 + 搜索 GitHub Issues / Stack Overflow / 掘金。不依赖单一来源。</p>
-        <table class="compare-table">
-          <tr><th>渠道</th><th>搜索方式</th><th>适用场景</th></tr>
-          <tr><td>GitHub</td><td><code>github.com/search?q=...&type=code</code></td><td>找开源实现、issue 讨论</td></tr>
-          <tr><td>Stack Overflow</td><td>web_search + site:stackoverflow.com</td><td>具体技术问题、报错排查</td></tr>
-          <tr><td>掘金</td><td>web_search + site:juejin.cn</td><td>中文技术文章、实战教程</td></tr>
-          <tr><td>其他 AI 模型</td><td>通过 API 或 web 端交叉验证</td><td>多角度方案对比、查漏补缺</td></tr>
-        </table>
+      <div class="example-mundo">
+        <div class="example-avatar">👑</div>
+        <div class="example-msg">
+          <strong style="color:var(--gold)">蒙多接管了。</strong><br><br>
+          第一步：扫描本地技能 → 找到 frontend-developer（一品首辅）<br>
+          第二步：搜索网络 → 找到 react-window、react-virtualized、TanStack Virtual<br>
+          第三步：询问 AI → 从多个来源获得推荐<br>
+          第四步：整合 → react-window + React.memo + 懒加载<br>
+          第五步：实施 → 代码有效，10 万条数据流畅<br>
+          第六步：保存为 Skill → react-performance-optimization<br><br>
+          <strong style="color:var(--gold)">→ 问题解决。蒙多学习了。蒙多变强了。</strong>
+        </div>
       </div>
-      <div class="step-item">
-        <h3>四维对比</h3>
-        <p>对收集到的 2-3 种方案，按四个维度打分对比：</p>
-        <table class="compare-table">
-          <tr><th>维度</th><th>权重</th><th>说明</th></tr>
-          <tr><td>简洁度</td><td>高</td><td>代码越少越好 · 依赖越少越好 · KISS 原则</td></tr>
-          <tr><td>性能</td><td>中</td><td>执行效率 · 内存占用 · 可扩展性</td></tr>
-          <tr><td>可维护性</td><td>高</td><td>是否容易理解 · 是否符合项目规范 · 有没有隐藏副作用</td></tr>
-          <tr><td>匹配度</td><td>最高</td><td>是否适配当前技术栈 · R2016b 兼容？跨平台？</td></tr>
-        </table>
+    </div>
+
+    <div class="example-card">
+      <div class="example-user">
+        <div class="example-avatar">👤</div>
+        <div class="example-msg">Python 爬虫被反爬了，requests 请求被 403</div>
       </div>
-      <div class="step-item">
-        <h3>吸收实施</h3>
-        <p>理解 → 适配 → 代码落实。绝不直接复制粘贴未理解的代码。适配到当前项目的技术栈和规范。</p>
+      <div class="example-mundo">
+        <div class="example-avatar">👑</div>
+        <div class="example-msg">
+          <strong style="color:var(--gold)">蒙多接管了。</strong><br><br>
+          第一步：扫描本地技能 → 找到 Scrapling 技能<br>
+          第二步：加载技能 → Scrapling 有 TLS 指纹模拟 + Cloudflare 绕过<br>
+          第三步：实施 → 用 Scrapling 替换 requests<br>
+          第四步：验证 → 完美运行<br>
+          第五步：保存 → 下次记住<br><br>
+          <strong style="color:var(--gold)">→ 本地有答案。问题瞬间解决。</strong>
+        </div>
       </div>
-      <div class="step-item">
-        <h3>效果验证 + 沉淀</h3>
-        <p>解决了吗？有副作用吗？有价值的方案用 <code>skill_manage(action='create')</code> 沉淀为可复用的 Skill。</p>
+    </div>
+
+    <div class="example-card">
+      <div class="example-user">
+        <div class="example-avatar">👤</div>
+        <div class="example-msg">帮我搭建一个全栈项目，FastAPI + React + PostgreSQL</div>
+      </div>
+      <div class="example-mundo">
+        <div class="example-avatar">👑</div>
+        <div class="example-msg">
+          <strong style="color:var(--gold)">蒙多接管了。</strong><br><br>
+          第一步：分析需求，拆分为 3 个子任务<br>
+          第二步：派遣 3 个分身并行工作<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;分身 1：设计数据库 schema<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;分身 2：实现后端 API<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;分身 3：构建前端界面<br>
+          第三步：收集结果，整合成完整方案<br>
+          第四步：保存为 Skill → fullstack-fastapi-react<br><br>
+          <strong style="color:var(--gold)">→ 项目完成。蒙多学习了。蒙多变强了。</strong>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- 并行审计 -->
-  <div class="section">
-    <h2 class="section-title"><span class="num">2</span> 并行审计模式</h2>
-    <p style="font-size:13px;color:var(--dim);margin-bottom:14px">当需要对整个项目进行全面审查时，蒙多可以同时分身多个子代理并行工作。</p>
-    <div class="step-list">
-      <div class="step-item">
-        <h3>侦察（1 个代理扫描全局）</h3>
-        <p>用一个代理扫描所有目标文件，输出结构化问题清单（按严重程度：高 / 中 / 低）。</p>
-        <div class="cmd"><span class="cm">委托一个代理读取所有 index.html，返回问题清单表格</span></div>
-      </div>
-      <div class="step-item">
-        <h3>并行修复（3 个代理同时开工）</h3>
-        <p>按问题类别分成 3 个并行任务，各改各的，互不冲突：</p>
-        <table class="compare-table">
-          <tr><th>优先级</th><th>任务</th><th>示例</th></tr>
-          <tr><td>高</td><td>404 链接 / 缺失入口 / 下载失效</td><td>修复死链、补充项目卡片</td></tr>
-          <tr><td>中</td><td>页面太单薄 / 缺少教程</td><td>重写内容、添加 FAQ</td></tr>
-          <tr><td>低</td><td>章节编号 / 文本优化</td><td>统一风格、修正措辞</td></tr>
-        </table>
-      </div>
-      <div class="step-item">
-        <h3>统一提交</h3>
-        <p>所有修改完成后一次性 <code>git add -A && git commit && git push</code>。</p>
-        <div class="tip info">并行任务必须修改不重叠的文件，否则会产生冲突。先侦察后修复，不要边侦察边修。</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 使用方式 -->
-  <div class="section">
-    <h2 class="section-title"><span class="num">3</span> 使用方式</h2>
-    <div class="feature-grid">
-      <div class="feature-card">
-        <div class="f-icon">🖥️</div>
-        <h3>Claude Code</h3>
-        <p>在 <code>~/.claude/skills/mundo/</code> 安装蒙多 Skill，遇到瓶颈自动触发，无需手动调用</p>
-      </div>
-      <div class="feature-card">
-        <div class="f-icon">⚕️</div>
-        <h3>Hermes Agent</h3>
-        <p>在 <code>~/.hermes/skills/mundo/</code> 安装蒙多 Skill，支持 skill_view 按需加载</p>
-      </div>
-      <div class="feature-card">
-        <div class="f-icon">📥</div>
-        <h3>安装方式</h3>
-        <p>从 <a href="../skills/" style="color:var(--accent)">Skills 市场</a> 一键下载，复制到对应 skills 目录即可</p>
-      </div>
-      <div class="feature-card">
-        <div class="f-icon">🌐</div>
-        <h3>消息触发</h3>
-        <p>在对话中说"蒙多""卡住了""搞不定""没思路"等关键词，AI 自动激活蒙多模式</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- 约束 -->
-  <div class="section">
-    <h2 class="section-title"><span class="num">◆</span> 蒙多铁律</h2>
-    <div class="feature-grid">
-      <div class="feature-card">
-        <div class="f-icon">🚫</div>
-        <h3>绝不直接复制粘贴</h3>
-        <p>理解原理后再适配，不搬运未理解的代码</p>
-      </div>
-      <div class="feature-card">
-        <div class="f-icon">⏱️</div>
-        <h3>单一来源 ≤ 10 分钟</h3>
-        <p>一个来源上花超过 10 分钟还没结果 → 立刻换渠道</p>
-      </div>
-      <div class="feature-card">
-        <div class="f-icon">🔀</div>
-        <h3>至少对比 2-3 种方案</h3>
-        <p>不要看到第一种可行方案就停下，多看一眼总有更好的</p>
-      </div>
-      <div class="feature-card">
-        <div class="f-icon">📝</div>
-        <h3>有价值的沉淀为 Skill</h3>
-        <p>解决一次性的问题不值得记住，解决一类问题的方法值得</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="page-counter">
-    本页被阅读 <span id="busuanzi_page_pv">...</span> 次
-  </div>
-
+  <!-- Footer -->
   <div class="footer">
-    <a href="https://github.com/LiHongwei-cn/lihongwei-cn" target="_blank">GitHub</a>
-    &nbsp;·&nbsp; 基于 MIT 协议开源
-    &nbsp;·&nbsp; LiHongwei
+    <div class="page-counter"><span id="busuanzi_page_pv">...</span> 次访问</div>
+    <p>
+      <a href="../">← 返回主页</a> ·
+      <a href="https://github.com/LiHongwei-cn/lihongwei-cn">GitHub</a> ·
+      MIT 开源
+    </p>
   </div>
+
 </div>
+
+<script>
+const COMMANDS = {
+  claude: 'curl -fsSL https://lihongwei-cn.github.io/lihongwei-cn/global-specs/skills/蒙多/SKILL.md -o ~/.claude/skills/蒙多/SKILL.md',
+  hermes: 'hermes skills install mundo',
+  manual: 'git clone https://github.com/LiHongwei-cn/lihongwei-cn.git\ncp -r lihongwei-cn/global-specs/skills/mundo ~/.claude/skills/'
+};
+
+function showTab(tab, el) {
+  document.querySelectorAll('.install-tab').forEach(function(t){ t.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('cmd-text').textContent = COMMANDS[tab];
+}
+
+function copyCmd() {
+  var text = document.getElementById('cmd-text').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = '✓ 已复制';
+    btn.style.background = '#3fb950';
+    setTimeout(function() {
+      btn.textContent = '📋 复制';
+      btn.style.background = '';
+    }, 2000);
+  });
+}
+</script>
 <script defer src="https://jsd.dusays.com/npm/penndu@17.0.0/bsz.js"></script>
 </body>
 </html>
