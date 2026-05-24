@@ -6,7 +6,7 @@ App({
   },
 
   onLaunch() {
-    wx.cloud.init({ env: 'cloud1-0gixoepv2654fa53', traceUser: true });
+    wx.cloud.init({ env: 'cloud1-d1gh87tb74f34ecb9', traceUser: true });
     this.checkLogin();
   },
 
