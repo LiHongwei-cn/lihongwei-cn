@@ -94,6 +94,12 @@ hermes skills install mundo
 | Windows | [mundo-v15.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-windows.zip) |
 | Linux | [mundo-v15.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-linux.zip) |
 
+### 🌐 更多详细内容
+
+**[👉 进入蒙多官方网站查看完整介绍（中英双语）](https://lihongwei-cn.github.io/lihongwei-cn/mundo/)**
+
+包含：能力详解 · 三省六部制等级制度 · 武器库 · 五步法 · 自动触发 · 实战示例 · 一键安装
+
 ---
 
 <a id="english"></a>
@@ -155,6 +161,12 @@ hermes skills install mundo
 | macOS | [mundo-v15.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-macos.zip) |
 | Windows | [mundo-v15.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-windows.zip) |
 | Linux | [mundo-v15.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-linux.zip) |
+
+### 🌐 Full Documentation
+
+**[👉 Visit Mundo's official website for the complete guide (CN/EN)](https://lihongwei-cn.github.io/lihongwei-cn/mundo/)**
+
+Includes: Ability details · Three Departments & Six Ministries hierarchy · Arsenal · Five-Step Method · Auto-triggers · Live examples · One-click install
 
 ---
 
