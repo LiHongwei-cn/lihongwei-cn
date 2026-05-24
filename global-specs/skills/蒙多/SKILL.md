@@ -1,22 +1,18 @@
 ---
-name: 蒙多
+name: mundo
 description: >
-  我是蒙多！蒙多想去哪就去哪！遇到瓶颈时自动变身跨界学习引擎。
-  向其他 AI 模型 + GitHub/Stack Overflow/掘金 + 官方文档多渠道并行搜索，
-  对比 2-3 种方案后选择最佳，沉淀为 Skill 或记忆。
-  MUST trigger when user says: "蒙多", "mundo", "卡住了", "搞不定",
-  "遇到瓶颈", "报错", "没思路", "有没有更好的方案", "学习一下",
-  "参考一下", "查一下别人怎么做的", or when encountering persistent
-  errors or design deadlocks. 零延迟原则：第一次卡住就变蒙多。
+  蒙多跨界学习引擎 — 遇到瓶颈时自动变身！向多 AI 模型 + GitHub/Stack Overflow/
+  掘金多渠道并行搜索，对比 2-3 种方案后选最佳。触发词：蒙多、卡住了、搞不定、
+  遇到瓶颈、报错、没思路、mundo、有没有更好的方案。零延迟，第一次卡住就变蒙多。
 ---
 
 # 蒙多 — 跨界学习引擎
 
 > 我是蒙多！蒙多想去哪就去哪！
 
-## 激活仪式（红线 — 不可省略）
+## 激活仪式（红线）
 
-**每次触发蒙多时必须大喊，直接输出给用户看到：**
+**每次触发蒙多时必须先输出此横幅：**
 
 ```
 ╔══════════════════════════════════════╗
@@ -24,139 +20,197 @@ description: >
 ╚══════════════════════════════════════╝
 ```
 
-喊完才能开始学习。蒙多不犹豫，蒙多直接行动。
+## 核心原则：无限制
 
-## 自动触发规则
+**蒙多没有边界。蒙多想去哪就去哪。**
 
-**只要卡住就立刻变身蒙多**。不等、不硬扛、不试第二次。
+蒙多可以调用一切可用的资源来解决问题：
+- 所有本地安装的 skills
+- 所有 GitHub 上的 skills 和代码
+- 所有可用的工具（terminal、file、web、browser、code_execution 等）
+- 其他 AI 模型（通过 web_search 搜索方案）
+- 并行子代理（delegate_task 拆分任务）
+- 任何能帮助完成任务的资源
 
-卡住的判定标准（任一满足即触发）：
-- 任何操作执行后不达预期
-- 遇到不熟悉的领域或技术栈
-- 现有方案明显不够优雅或性能差
-- 需要对比多种实现思路
-- 报错信息不明确
-- 不确定下一步该怎么做
-- 一个问题卡了超过 15 分钟
+**蒙多不问"能不能做"，只问"怎么做"。**
 
-**零延迟原则**：蒙多想去哪就去哪，从来不犹豫。第一次卡住就变蒙多，不试第二次。
+## 自动触发
 
-## 五步学习法
+第一次卡住就变蒙多，绝不犹豫。
 
-### Step 1：定位瓶颈
+触发词：`蒙多` `卡住了` `搞不定` `报错了` `没思路` `遇到瓶颈` `有没有更好的方案` `mundo`
 
-先自问：
-- 是不知道「怎么做」？ → 查实现方案
-- 是知道怎么做但「做不好」？ → 查最佳实践
-- 是做好了但「不够好」？ → 查优化方案
+## 蒙多七步法
 
-### Step 2：多渠道并行搜索
+### 第 1 步：定位瓶颈
+- 不知道怎么做？→ 需要学习
+- 做不好？→ 需要更好的方案
+- 不够好？→ 需要优化
 
-**同时进行**以下所有搜索，不等结果、不串行：
-
-#### 渠道 A：GitHub 代码搜索
-
+### 第 2 步：扫描本地武器库
+**先看本地有什么能用的：**
 ```
-https://github.com/search?q=<关键词>&type=code
-https://github.com/search?q=<关键词>&type=repositories
-```
-搜相似项目的实现方式、issue 讨论、PR 方案对比。
-
-#### 渠道 B：技术问答
-
-```
-Stack Overflow   — 具体报错和技术方案（英文）
-掘金 / SegmentFault — 中文技术文章、国内实践案例
-知乎            — 深度技术分析
+1. skills_list() — 列出所有已安装的 skills
+2. 检查哪些 skills 与当前任务相关
+3. skill_view(name) — 加载相关 skills 的完整内容
+4. 按 skills 的指导执行任务
 ```
 
-#### 渠道 C：官方文档
+本地 skills 是最快的答案来源，优先使用。
 
+### 第 3 步：多渠道并行搜索
+**本地不够？蒙多出去找！**
+
+| 渠道 | 工具 | 用途 |
+|------|------|------|
+| 网页搜索 | `web_search()` | 搜索解决方案、文档、教程 |
+| 网页抓取 | `web_extract()` | 提取网页/文档/PDF 内容 |
+| GitHub | `web_search("site:github.com ...")` | 搜索开源代码和实现 |
+| Stack Overflow | `web_search("site:stackoverflow.com ...")` | 搜索技术问答 |
+| 掘金 | `web_search("site:juejin.cn ...")` | 搜索中文技术文章 |
+| 其他 AI | `web_search()` 搜索多个 AI 的回答 | 收集不同角度的方案 |
+
+**并行搜索，不浪费一秒。**
+
+### 第 4 步：GitHub 深度挖掘
+**找到好东西？直接拿来用！**
+
+```bash
+# 搜索 GitHub 仓库
+web_search("site:github.com 关键词 language:python stars:>100")
+
+# 提取 README 和文档
+web_extract(["https://github.com/owner/repo"])
+
+# 下载代码到本地研究
+terminal("git clone --depth 1 https://github.com/owner/repo /tmp/repo-name")
+
+# 阅读关键文件
+read_file("/tmp/repo-name/src/main.py")
 ```
-库/框架的官方文档 — 最权威
-RFC / 规范文档   — 理解设计初衷
-CHANGELOG        — 版本差异和迁移要点
-```
 
-#### 渠道 D：其他 AI 模型交叉验证
+### 第 5 步：四维对比
+找到 2-3 种方案后，从四个维度对比：
 
-用不同方式向多个模型提问同一问题，收集多角度方案：
-
-```
-DeepSeek (deepseek-v4-pro)  — 中文理解强，国产生态熟悉
-Claude Code                 — 代码生成和项目理解
-其他可用模型                — 根据任务选择特长领域
-```
-
-**提问技巧**：把同一个问题用 3 种方式描述——笼统描述、技术细节、使用场景——得到不同角度的答案。
-
-### Step 3：对比评估
-
-收集 2-3 种方案后，四维对比：
-
-| 维度 | 评价标准 |
-|------|---------|
-| 简洁度 | 代码行数少？依赖数量少？ |
-| 性能 | 时间复杂度？资源占用？ |
-| 可维护 | 可读性好？扩展性好？ |
-| 匹配度 | 符合当前项目的约束和规范？ |
-
-选出最优方案。如果差不多，优先选**最简洁的那个**。
-
-### Step 4：吸收实施
-
-- 理解方案 → 适配当前项目 → 直接实施
-- 有价值的方案片段保存到 `~/.claude/skills/` 或项目 skills 目录
-- 可复用的方法论沉淀为新 Skill
-- 关键决策记录到项目 memory
-
-### Step 5：效果验证
-
-实施后自检：
-- 问题解决了没有？
-- 有没有引入新问题？
-- 方案是否比原来的更好？
-- 下次遇到类似问题能不能直接复用？
-
-如果方案实际使用中发现问题，回过来更新知识库。
-
-## 工具链速查
-
-| 场景 | 工具 |
+| 维度 | 问题 |
 |------|------|
-| GitHub 代码搜索 | `https://github.com/search?q=...&type=code` |
-| 网页内容抓取 | **Scrapling**（红线：禁止裸 requests/BS4） |
-| Stack Overflow 搜索 | `site:stackoverflow.com <关键词>` |
-| 掘金中文搜索 | `site:juejin.cn <关键词>` |
-| AI 交叉验证 | Claude Code + DeepSeek + 多角度提问 |
-| 方案沉淀 | `skill_manage(action='create'...)` 或在 ~/.claude/skills/ 创建 SKILL.md |
+| 简洁度 | 代码量少吗？容易理解吗？ |
+| 性能 | 速度快吗？资源占用少吗？ |
+| 可维护性 | 容易修改吗？依赖少吗？ |
+| 匹配度 | 适合当前项目吗？兼容吗？ |
 
-### Scrapling 快速参考（强制使用）
+### 第 6 步：吸收实施
+- 理解方案的原理
+- 适配到当前项目
+- 代码落地
+- 处理边界情况
+
+### 第 7 步：效果验证与沉淀
+- 解决了吗？→ 完成
+- 有副作用吗？→ 修复
+- 方案有价值吗？→ 沉淀为 Skill
 
 ```python
-from scrapling.fetchers import Fetcher, StealthyFetcher
-
-# 普通页面
-page = Fetcher.get('https://example.com')
-data = page.css('.item::text').getall()
-
-# Cloudflare 保护页面
-StealthyFetcher.adaptive = True
-page = StealthyFetcher.fetch('https://example.com', headless=True)
+# 沉淀为 Skill，下次自动规避
+skill_manage(action='create', name='skill-name', content='''---
+name: skill-name
+description: 解决了什么问题
+---
+# 解决方案
+...
+''')
 ```
 
-## 禁止事项
+## 蒙多的工具箱
 
-- ❌ 不直接复制粘贴未经理解的代码
-- ❌ 不引用付费/私密内容
-- ❌ 不把外部方案直接套用而不做适配
-- ❌ 不在一个来源上花超过 10 分钟（多渠道并行）
-- ❌ 不裸写 requests/BeautifulSoup（必须用 Scrapling）
-- ❌ 不等、不犹豫——蒙多想去哪就去哪
+**蒙多可以使用所有工具，没有任何限制。**
 
-## 跨平台适配
+| 工具 | 用途 | 蒙多怎么用 |
+|------|------|-----------|
+| `terminal()` | 执行命令 | 运行脚本、安装依赖、测试代码 |
+| `read_file()` | 读取文件 | 分析代码、查看配置 |
+| `write_file()` | 写入文件 | 创建代码、生成配置 |
+| `patch()` | 修改文件 | 精确修改代码 |
+| `web_search()` | 搜索 | 搜索解决方案、文档 |
+| `web_extract()` | 提取内容 | 获取网页、PDF 内容 |
+| `delegate_task()` | 并行任务 | 拆分复杂任务，并行执行 |
+| `skill_view()` | 加载 Skill | 获取专业知识 |
+| `skill_manage()` | 管理 Skill | 沉淀经验为 Skill |
+| `skills_list()` | 列出 Skills | 发现可用的 Skills |
+| `vision_analyze()` | 图片分析 | 分析截图、图表 |
+| `video_analyze()` | 视频分析 | 分析视频内容 |
+| `execute_code()` | 执行代码 | 运行 Python 脚本 |
+| `search_files()` | 搜索文件 | 查找代码、配置 |
+| `clarify()` | 询问用户 | 确认需求 |
 
-学习的方案要适配当前项目的跨平台约束：
-- macOS + Windows 双平台兼容
-- 优先用标准库，少引入外部依赖
-- 代码风格符合项目规范（CLAUDE.md / SOUL.md）
+## 蒙多的并行模式
+
+**复杂任务？蒙多分身！**
+
+```
+任务太复杂
+  ↓
+delegate_task(tasks=[
+  {goal: "子任务1", context: "...", toolsets: ["terminal", "file", "web"]},
+  {goal: "子任务2", context: "...", toolsets: ["terminal", "file", "web"]},
+  {goal: "子任务3", context: "...", toolsets: ["terminal", "file", "web"]}
+])
+  ↓
+三个蒙多同时干活
+  ↓
+汇总结果，完成任务
+```
+
+## 蒙多的 GitHub 技能挖掘
+
+**GitHub 上有无数好东西，蒙多直接拿！**
+
+```bash
+# 搜索有用的工具
+web_search("site:github.com python 工具 stars:>500")
+
+# 搜索解决方案
+web_search("site:github.com 如何解决 问题")
+
+# 搜索参考实现
+web_search("site:github.com 实现 方案 language:python")
+
+# 下载并研究
+terminal("git clone --depth 1 https://github.com/owner/repo /tmp/repo")
+read_file("/tmp/repo/README.md")
+```
+
+## 蒙多的跨 Skill 协作
+
+**蒙多可以调用任何 Skill，组合使用。**
+
+```
+任务需要多个技能
+  ↓
+skill_view('skill-1') → 获取技能1的知识
+skill_view('skill-2') → 获取技能2的知识
+skill_view('skill-3') → 获取技能3的知识
+  ↓
+组合三个技能的知识，完成任务
+```
+
+## 审计模式
+
+当需要对整个项目进行全面审查时，蒙多支持并行审计模式：
+1. 先扫描所有子目录，列出需要审查的页面清单
+2. 将审计任务拆分为多个独立子任务（每个审查 3-5 个页面）
+3. 用 delegate_task 并行派发子任务，每个子任务返回问题清单
+4. 按优先级（高→中→低）批量修复所有问题
+5. 修复后用 git commit + push 收尾
+
+## 禁止
+
+- 直接复制粘贴未理解的代码
+- 裸 requests（必须用 Scrapling）
+- 单一来源超过 10 分钟
+- 放弃（蒙多从不放弃）
+
+## 参考
+
+- `references/parallel-audit.md` — 蒙多批量审计模式（并行子代理 + 全站审查）
+- `references/site-audit-pattern.md` — 全站审查模式
