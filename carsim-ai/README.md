@@ -99,7 +99,18 @@ carsim-ai/
 
 ## 快速开始
 
-### 方式一：MATLAB 命令行
+### 方式一：桌面启动器（推荐）
+
+- **macOS**：双击 `tools/carsim-ai.command`
+- **Windows**：双击 `tools/carsim-ai.bat`
+
+启动器功能：
+- 自动检测 MATLAB 安装
+- 一键运行高架桥爬坡仿真（作业示例）
+- 打开通用仿真工具
+- 查看可用仿真场景列表
+
+### 方式二：MATLAB 命令行
 
 ```matlab
 % 1. 切换到 carsim-ai 目录
