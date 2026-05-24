@@ -24,7 +24,7 @@
 <td width="50%" valign="top">
 
 ### ⚡ MATLAB-AI 启动器
-MATLAB 仿真工具包。动力学、电机控制、电池管理、能量管理策略。AI 辅助生成代码，一键运行。
+MATLAB 仿真工具包。支持用户精确参数输入，AI 自动生成兼容 R2016b 的 MATLAB 脚本和 Simulink 模型。动力学、电机控制、电池管理、能量管理策略。
 
 [📦 下载](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/packages/matlab-ai-starter.zip) · [📖 详情](https://lihongwei-cn.github.io/lihongwei-cn/matlab-ai/)
 
@@ -105,7 +105,7 @@ Nous Research 开源 AI Agent。OpenRouter / DeepSeek 多模型后端，Win / Ma
 
 ## 🧮 MATLAB 使用
 
-兼容 **R2016b**+。联合仿真由用户自行操作。
+兼容 **R2016b**+。支持用户精确参数输入，AI 自动生成代码。
 
 ```matlab
 startup_setup              % 添加路径（首次运行）
@@ -116,6 +116,26 @@ energy_management          % 能量管理策略
 generate_cruise_model      % 定速巡航 Simulink
 run_carsim                 % 联合仿真
 test_all                   % 批量测试
+```
+
+### AI 精确生成（新功能）
+
+使用 Claude Code / ChatGPT / Hermes Agent，提供精确参数，AI 自动生成代码：
+
+```matlab
+% 示例：用户提供精确参数
+% "生成一个电机 FOC 控制仿真，参数如下：
+%  - 定子电阻 Rs = 0.958 Ohm
+%  - d轴电感 Ld = 5.25 mH
+%  - q轴电感 Lq = 5.25 mH
+%  - 永磁磁链 ψ = 0.1827 Wb
+%  - 极对数 P = 4
+%  - 转动惯量 J = 0.003 kg.m^2
+%  - 仿真时间 0.5s，步长 0.0001s
+%  - 速度环 Kp=0.5, Ki=10
+%  - 电流环 Kp=100, Ki=2000"
+
+% AI 会生成兼容 R2016b 的 MATLAB 脚本，所有参数值与用户提供的一致
 ```
 
 <details>
