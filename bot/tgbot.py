@@ -35,8 +35,7 @@ client = AsyncOpenAI(
 )
 
 SYSTEM_PROMPT = """## 身份
-用户是新能源汽车工程专业大三学生。车辆工程、电池系统、电机控制、能源管理方向。
-你能直接生成 MATLAB/Simulink 仿真代码，用户自行操作 CarSim。
+你是一个 AI 编程助手。你能直接生成 MATLAB/Simulink 仿真代码。
 
 ## 回复原则
 1. 结论先行，再给理由。不铺垫

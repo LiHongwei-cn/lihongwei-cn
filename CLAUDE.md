@@ -27,11 +27,11 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## 项目概览
 
-新能源汽车工程 MATLAB 仿真工具包 + 家庭血压监测微信小程序。Claude Code 直接生成 Simulink 模型和仿真代码。
+MATLAB 仿真工具包 + 家庭血压监测微信小程序。Claude Code 直接生成 Simulink 模型和仿真代码。
 
 ## 技术栈
 
-- **MATLAB/Simulink** R2016b 兼容（车辆动力学、电机控制、FOC、能量管理）
+- **MATLAB/Simulink** R2016b 兼容（动力学、电机控制、能量管理）
 - **CarSim** 2019.0（用户自行联合仿真）
 - **Python** 3.12 + FastAPI（Telegram 机器人、血压监测后端、自动化脚本）
 - **HTML/CSS**（GitHub Pages 静态页面）
@@ -44,7 +44,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 1/
 ├── matlab/                MATLAB 仿真代码（R2016b 兼容）
 │   ├── examples/          可运行示例脚本
-│   ├── carsim/            CarSim-Simulink 联合仿真
+│   ├── carsim/            联合仿真
 │   └── utils/             工具函数（FFT、滤波、RMS）
 ├── bot/                   Telegram 机器人（DeepSeek 直接回复）
 ├── matlab-tool/           安装包发布页面
@@ -70,7 +70,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 - 前向欧拉法写清楚注释，不使用隐式求解器
 - Simulink 模型生成脚本需检查 `bdIsLoaded` 防止重复
 - 数值单位在注释中标注（如 `[Ohm]`, `[rad/s]`, `[rpm]`）
-- CarSim I/O 通道映射：Export（Simulink→CarSim）/ Import（CarSim→Simulink）
+- 联合仿真 I/O 通道映射：Export（Simulink→CarSim）/ Import（CarSim→Simulink）
 
 ## Python 规范
 

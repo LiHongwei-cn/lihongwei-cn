@@ -1,6 +1,6 @@
 # MATLAB 仿真工具包
 
-MATLAB R2016b 兼容。新能源汽车工程：车辆动力学 + 电机控制 + 电池管理 + Simulink/CarSim 联合仿真。
+MATLAB R2016b 兼容。动力学 + 电机控制 + 电池管理 + Simulink 联合仿真。
 
 ## 目录
 

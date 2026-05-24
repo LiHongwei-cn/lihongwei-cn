@@ -2,7 +2,7 @@
 
 # ⚡ LiHongwei
 
-**新能源汽车工程 · MATLAB 仿真 · AI 工具开发**
+**MATLAB 仿真 · AI 工具开发**
 
 <a href="https://lihongwei-cn.github.io/lihongwei-cn/"><img src="https://img.shields.io/badge/🌐_Website-lihongwei--cn.github.io-818cf8?style=for-the-badge&logo=vercel&logoColor=white" /></a>
 <a href="https://github.com/LiHongwei-cn/lihongwei-cn/releases"><img src="https://img.shields.io/github/v/release/LiHongwei-cn/lihongwei-cn?style=for-the-badge&logo=github&color=4ade80" /></a>
@@ -24,7 +24,7 @@
 <td width="50%" valign="top">
 
 ### ⚡ MATLAB-AI 启动器
-新能源汽车仿真工具包。车辆动力学、PMSM 电机 FOC、电池 SOC 估算、能量管理。AI 辅助生成代码，一键运行。
+MATLAB 仿真工具包。动力学、电机控制、电池管理、能量管理策略。AI 辅助生成代码，一键运行。
 
 [📦 下载](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/packages/matlab-ai-starter.zip) · [📖 详情](https://lihongwei-cn.github.io/lihongwei-cn/matlab-ai/)
 
@@ -105,16 +105,16 @@ Nous Research 开源 AI Agent。OpenRouter / DeepSeek 多模型后端，Win / Ma
 
 ## 🧮 MATLAB 使用
 
-兼容 **R2016b**+。CarSim 联合仿真由用户自行操作。
+兼容 **R2016b**+。联合仿真由用户自行操作。
 
 ```matlab
 startup_setup              % 添加路径（首次运行）
-vehicle_dynamics           % 车辆纵向动力学
-motor_control              % PMSM FOC 矢量控制
+vehicle_dynamics           % 纵向动力学
+motor_control              % 电机 FOC 矢量控制
 battery_soc_ekf            % EKF SOC 估计
-energy_management          % 增程式能量管理
+energy_management          % 能量管理策略
 generate_cruise_model      % 定速巡航 Simulink
-run_carsim                 % CarSim 联合仿真
+run_carsim                 % 联合仿真
 test_all                   % 批量测试
 ```
 
