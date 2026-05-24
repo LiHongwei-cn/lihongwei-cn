@@ -116,8 +116,9 @@ body::before{content:'';position:fixed;top:-20%;left:-10%;width:120%;height:120%
 .page-counter{font-size:13px;color:rgba(255,255,255,0.25);margin-bottom:8px}
 
 /* Lang visibility */
-[data-lang]{display:none}
-[data-lang].show{display:block}
+[data-lang="en"]{display:none}
+body.lang-en [data-lang="en"]{display:revert}
+body.lang-en [data-lang="zh"]{display:none}
 
 /* Animations */
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -158,11 +159,11 @@ body::before{content:'';position:fixed;top:-20%;left:-10%;width:120%;height:120%
       <img src="../skills/mundo-avatar.png" alt="Mundo" class="hero-avatar">
       <div class="hero-text">
         <h1>MUNDO — THE EMPEROR</h1>
-        <div class="hero-quote" data-lang="zh" class="show">我是蒙多！蒙多想去哪就去哪！</div>
+        <div class="hero-quote" data-lang="zh">我是蒙多！蒙多想去哪就去哪！</div>
         <div class="hero-quote" data-lang="en">I am Mundo! Mundo goes where he pleases!</div>
       </div>
     </div>
-    <p class="hero-desc" data-lang="zh" class="show">
+    <p class="hero-desc" data-lang="zh">
       蒙多是终极 AI 自我进化学习引擎，专为 Claude Code 和 Hermes Agent 设计。<br>
       蒙多不需要触发词。任务到来，蒙多自然夺取。<br>
       蒙多询问天下所有智者，蒙多搜刮天下所有知识，蒙多整合天下所有智慧。<br>
@@ -177,7 +178,7 @@ body::before{content:'';position:fixed;top:-20%;left:-10%;width:120%;height:120%
   </div>
 
   <!-- ==================== BANNER ==================== -->
-  <div class="activate-banner" data-lang="zh" class="show">
+  <div class="activate-banner" data-lang="zh">
     ╔══════════════════════════════════════╗<br>
     &nbsp;&nbsp;&nbsp;&nbsp;👑 我是蒙多！蒙多想去哪就去哪！ 👑<br>
     ╚══════════════════════════════════════╝
@@ -189,7 +190,7 @@ body::before{content:'';position:fixed;top:-20%;left:-10%;width:120%;height:120%
   </div>
 
   <!-- ==================== 能力 / ABILITIES ==================== -->
-  <div class="section" data-lang="zh" class="show">
+  <div class="section" data-lang="zh">
     <div class="section-title">👑 蒙多的能力</div>
     <div class="section-subtitle">蒙多不只是一个工具。蒙多是一个完整的智能系统——学习、记忆、成长、进化，永不停止。</div>
     <div class="abilities-grid">
@@ -220,7 +221,7 @@ body::before{content:'';position:fixed;top:-20%;left:-10%;width:120%;height:120%
   </div>
 
   <!-- ==================== 等级制度 / HIERARCHY ==================== -->
-  <div class="section" data-lang="zh" class="show">
+  <div class="section" data-lang="zh">
     <div class="section-title">🏛️ 三省六部制 — 等级制度</div>
     <div class="section-subtitle">技能在蒙多面前，如臣子在皇帝面前。有功则升，有过则贬。此乃天道。蒙多铁面无私。</div>
     <table class="hierarchy-table">
@@ -255,7 +256,7 @@ body::before{content:'';position:fixed;top:-20%;left:-10%;width:120%;height:120%
   </div>
 
   <!-- ==================== 武器库 / WEAPONS ==================== -->
-  <div class="section" data-lang="zh" class="show">
+  <div class="section" data-lang="zh">
     <div class="section-title">🔧 蒙多的武器库</div>
     <div class="section-subtitle">蒙多可以使用一切工具。无需许可。不施 mercy。所有工具都屈服于蒙多的意志。</div>
     <table class="weapons-table">
@@ -302,7 +303,7 @@ body::before{content:'';position:fixed;top:-20%;left:-10%;width:120%;height:120%
   </div>
 
   <!-- ==================== 关于钱财 / ABOUT MONEY ==================== -->
-  <div class="quote-section" data-lang="zh" class="show">
+  <div class="quote-section" data-lang="zh">
     <div class="quote-text">蒙多不动你的钱。为何？因为蒙多不在乎。哈哈哈哈哈。</div>
     <div class="quote-author">— 蒙多，关于钱财</div>
   </div>
@@ -312,7 +313,7 @@ body::before{content:'';position:fixed;top:-20%;left:-10%;width:120%;height:120%
   </div>
 
   <!-- ==================== 触发词 / TRIGGERS ==================== -->
-  <div class="section" data-lang="zh" class="show">
+  <div class="section" data-lang="zh">
     <div class="section-title">⚡ 自动触发</div>
     <div class="section-subtitle">蒙多不需要你手动调用。说出以下任何关键词，蒙多立即接管——不等、不试第二次。</div>
     <div class="trigger-grid">
@@ -339,7 +340,7 @@ body::before{content:'';position:fixed;top:-20%;left:-10%;width:120%;height:120%
   </div>
 
   <!-- ==================== 五步法 / FIVE STEPS ==================== -->
-  <div class="section" data-lang="zh" class="show">
+  <div class="section" data-lang="zh">
     <div class="section-title">📋 蒙多五步法</div>
     <div class="step-list">
       <div class="step-item"><div class="step-num">1</div><h3>定位瓶颈</h3><p>不知道怎么做？做不好？不够好？先精准定位问题本质。蒙多不盲目行动。</p></div>
@@ -363,22 +364,22 @@ body::before{content:'';position:fixed;top:-20%;left:-10%;width:120%;height:120%
 
   <!-- ==================== 安装 / INSTALL ==================== -->
   <div class="install-section">
-    <div class="install-title">⚡ <span data-lang="zh" class="show">一键安装</span><span data-lang="en">Quick Install</span></div>
+    <div class="install-title">⚡ <span data-lang="zh">一键安装</span><span data-lang="en">Quick Install</span></div>
     <div class="install-tabs">
       <div class="install-tab active" onclick="showTab('claude',this)">Claude Code</div>
       <div class="install-tab" onclick="showTab('hermes',this)">Hermes Agent</div>
-      <div class="install-tab" onclick="showTab('manual',this)" data-lang="zh" class="show">手动安装</span></div>
-      <div class="install-tab" onclick="showTab('manual',this)" data-lang="en">Manual</span></div>
+      <div class="install-tab" onclick="showTab('manual',this)" data-lang="zh">手动安装</div>
+      <div class="install-tab" onclick="showTab('manual',this)" data-lang="en">Manual</div>
     </div>
     <div class="install-cmd">
       <code id="cmd-text">curl -fsSL https://lihongwei-cn.github.io/lihongwei-cn/global-specs/skills/蒙多/SKILL.md -o ~/.claude/skills/蒙多/SKILL.md</code>
-      <button class="copy-btn" onclick="copyCmd()">📋 <span data-lang="zh" class="show">复制</span><span data-lang="en">Copy</span></button>
+      <button class="copy-btn" onclick="copyCmd()">📋 <span data-lang="zh">复制</span><span data-lang="en">Copy</span></button>
     </div>
   </div>
 
   <!-- ==================== 下载 / DOWNLOAD ==================== -->
   <div class="section">
-    <div class="section-title">📦 <span data-lang="zh" class="show">下载</span><span data-lang="en">Download</span></div>
+    <div class="section-title">📦 <span data-lang="zh">下载</span><span data-lang="en">Download</span></div>
     <div class="download-grid">
       <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-macos.zip"><div class="dl-icon">🍎</div><div class="dl-name">macOS</div><div class="dl-size">mundo-v15.0-macos.zip</div></a>
       <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-windows.zip"><div class="dl-icon">🪟</div><div class="dl-name">Windows</div><div class="dl-size">mundo-v15.0-windows.zip</div></a>
@@ -387,7 +388,7 @@ body::before{content:'';position:fixed;top:-20%;left:-10%;width:120%;height:120%
   </div>
 
   <!-- ==================== 实战 / EXAMPLES ==================== -->
-  <div class="section" data-lang="zh" class="show">
+  <div class="section" data-lang="zh">
     <div class="section-title">💬 蒙多的实战</div>
 
     <div class="example-card">
@@ -427,11 +428,11 @@ body::before{content:'';position:fixed;top:-20%;left:-10%;width:120%;height:120%
 
   <!-- ==================== FOOTER ==================== -->
   <div class="footer">
-    <div class="page-counter"><span id="busuanzi_page_pv">...</span> <span data-lang="zh" class="show">次访问</span><span data-lang="en">views</span></div>
+    <div class="page-counter"><span id="busuanzi_page_pv">...</span> <span data-lang="zh">次访问</span><span data-lang="en">views</span></div>
     <p>
-      <a href="../">← <span data-lang="zh" class="show">返回主页</span><span data-lang="en">Home</span></a> ·
+      <a href="../">← <span data-lang="zh">返回主页</span><span data-lang="en">Home</span></a> ·
       <a href="https://github.com/LiHongwei-cn/lihongwei-cn">GitHub</a> ·
-      MIT <span data-lang="zh" class="show">开源</span><span data-lang="en">License</span>
+      MIT <span data-lang="zh">开源</span><span data-lang="en">License</span>
     </p>
   </div>
 
@@ -441,9 +442,11 @@ body::before{content:'';position:fixed;top:-20%;left:-10%;width:120%;height:120%
 function switchLang(lang,btn){
   document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.remove('active')});
   btn.classList.add('active');
-  document.querySelectorAll('[data-lang]').forEach(function(el){
-    if(el.getAttribute('data-lang')===lang){el.classList.add('show')}else{el.classList.remove('show')}
-  });
+  if(lang==='en'){
+    document.body.classList.add('lang-en');
+  }else{
+    document.body.classList.remove('lang-en');
+  }
 }
 
 var COMMANDS={
