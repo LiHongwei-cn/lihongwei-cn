@@ -31,10 +31,10 @@ MATLAB 仿真工具包。支持用户精确参数输入，AI 自动生成兼容 
 </td>
 <td width="50%" valign="top">
 
-### 🤖 Claude Code 桌面启动
-Win / Mac 双击即开即用，无需每次打开终端输命令。
+### 🚗 CarSim-AI 高架桥仿真
+基于 CarSim 2019.0 的 AI 仿真工具，模拟不同驱动类型车辆在冰雪路面上的爬坡能力。支持精确参数输入，自动生成场景和车辆配置。
 
-[🪟 Windows](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/packages/claude-desktop.bat) · [🍎 macOS](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/packages/Claude-Code.app.zip) · [📖 详情](https://lihongwei-cn.github.io/lihongwei-cn/desktop-launcher/)
+[📖 详情](https://lihongwei-cn.github.io/lihongwei-cn/carsim-ai/)
 
 </td>
 </tr>
@@ -138,16 +138,39 @@ test_all                   % 批量测试
 % AI 会生成兼容 R2016b 的 MATLAB 脚本，所有参数值与用户提供的一致
 ```
 
+### CarSim-AI 高架桥仿真（新功能）
+
+基于 CarSim 2019.0 的 AI 仿真工具，模拟不同驱动类型车辆在冰雪路面上的爬坡能力：
+
+```matlab
+% 示例：燕子矶高架仿真
+params.bridge_length = 100;    % 高架桥长度 [m]
+params.bridge_width = 8;       % 高架桥宽度 [m]
+params.slope_angle = 15;       % 坡度角度 [deg]
+params.friction = 0.2;         % 路面摩擦系数
+params.fwd_power = 100;        % 前驱车功率 [kW]
+params.awd_power = 100;        % 四驱车功率 [kW]
+params.output_dir = './output';
+
+% 运行仿真
+run_bridge_simulation(params);
+
+% 预期结果：
+% - 前驱车：打滑，爬坡失败
+% - 四驱车：成功爬坡，不撞护栏
+```
+
 <details>
 <summary>📂 项目结构</summary>
 
 ```
 ├── matlab/                MATLAB 仿真代码
 │   ├── examples/          仿真脚本
-│   ├── carsim/            CarSim 联合仿真
+│   ├── carsim/            联合仿真
 │   └── utils/             工具函数
 ├── matlab-tool/           安装包发布页面
 ├── matlab-ai/             MATLAB-AI 启动器页面
+├── carsim-ai/             CarSim-AI 高架桥仿真工具
 ├── bot/                   Telegram 机器人
 ├── tools/                 启动脚本集合
 ├── skills/                Skills 市场（14 个 Skill）
