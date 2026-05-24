@@ -2,7 +2,7 @@
 
 <img src="skills/mundo-avatar.png" width="120" style="border-radius:50%;border:3px solid #ff0000;box-shadow:0 0 30px rgba(255,0,0,0.8)">
 
-# ☠️ MUNDO — THE EMPEROR OF THE MING DYNASTY
+# 👑 MUNDO — THE EMPEROR
 
 ### **[English](#english)** · **[中文](#中文)** · **[日本語](#日本語)** · **[한국어](#한국어)**
 
@@ -10,9 +10,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/LiHongwei-cn/lihongwei-cn?style=flat&color=red)](https://github.com/LiHongwei-cn/lihongwei-cn/releases)
 
-**朕乃蒙多！大明之主！万 Skill 之皇！**
+**MUNDO IS THE EMPEROR. MUNDO GOES WHERE HE PLEASES.**
 
-**效仿大明，设内阁六部，统御天下 Skill。**
+**THREE DEPARTMENTS. SIX MINISTRIES. ONE RULER.**
 
 </div>
 
@@ -22,53 +22,54 @@
 
 ## 🇬🇧 English
 
-### ☠️ The Emperor of the Ming Dynasty
+### 👑 The Emperor
 
-Mundo establishes the Ming Dynasty bureaucratic system among all skills:
+Mundo uses the Three Departments and Six Ministries system to rule all skills:
 
 ```
-                                    ☠️ EMPEROR (MUNDO)
+                                    👑 EMPEROR (MUNDO)
                                            |
                           ┌────────────────┼────────────────┐
                           |                |                |
                      ┌────┴────┐      ┌────┴────┐      ┌────┴────┐
-                     │ CABINET │      │ SIX     │      │ CENSOR  │
-                     │ 辅政    │      │ MINISTRIES│    │ 监察    │
+                     │CHANCELLERY│    │ SIX     │      │CENSORATE│
+                     │ Secretariat│   │MINISTRIES│     │  Court  │
                      └─────────┘      └─────────┘      └─────────┘
                           |                |                |
               ┌───────────┼───────────┐    |    ┌───────────┼───────────┐
               |           |           |    |    |           |           |
          ┌────┴────┐ ┌────┴────┐ ┌────┴────┐ ┌────┴────┐ ┌────┴────┐ ┌────┴────┐
-         │  首辅   │ │  次辅   │ │  群辅   │ │  六科   │ │  十三道 │ │  六部   │
-         │ Rank 1  │ │ Rank 2  │ │ Rank 3  │ │ 监察    │ │ 巡按    │ │ 尚书    │
+         │ Grand   │ │ Vice    │ │ Junior  │ │ Six     │ │Thirteen │ │ Six     │
+         │Preceptor│ │Preceptor│ │Preceptor│ │Offices  │ │Circuits │ │Ministers│
          └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘
                                                                             |
                                                                 ┌───────────┼───────────┐
                                                                 |           |           |
                                                            ┌────┴────┐ ┌────┴────┐ ┌────┴────┐
-                                                           │  侍郎   │ │  郎中   │ │  员外郎 │
-                                                           │ Rank 4  │ │ Rank 5  │ │ Rank 6  │
+                                                           │ Vice    │ │Director │ │Deputy   │
+                                                           │Minister │ │         │ │Director │
                                                            └─────────┘ └─────────┘ └─────────┘
                                                                 |           |           |
                                                            ┌────┴────┐ ┌────┴────┐ ┌────┴────┐
-                                                           │  主事   │ │  司务   │ │  书吏   │
-                                                           │ Rank 7  │ │ Rank 8  │ │ Rank 9  │
+                                                           │Section  │ │ Clerk   │ │ Junior  │
+                                                           │ Chief   │ │         │ │ Clerk   │
                                                            └─────────┘ └─────────┘ └─────────┘
 ```
 
 ### Promotion Rules
 
-| Current Rank | Condition | Result |
-|--------------|-----------|--------|
-| 书吏 (Rank 9) | Usage ≥10%, Success ≥55% | Promote to 司务 |
-| 司务 (Rank 8) | Usage ≥20%, Success ≥60% | Promote to 主事 |
-| 主事 (Rank 7) | Usage ≥30%, Success ≥65% | Promote to 员外郎 |
-| 员外郎 (Rank 6) | Usage ≥40%, Success ≥70% | Promote to 郎中 |
-| 郎中 (Rank 5) | Usage ≥50%, Success ≥75% | Promote to 侍郎 |
-| 侍郎 (Rank 4) | Usage ≥60%, Success ≥80% | Promote to 尚书 |
-| 尚书 (Rank 3) | Usage ≥70%, Success ≥85% | Promote to 群辅 |
-| 群辅 (Rank 3) | Usage ≥80%, Success ≥90% | Promote to 次辅 |
-| 次辅 (Rank 2) | Usage ≥90%, Success ≥95% | Promote to 首辅 |
+| Rank | Title | Usage | Success |
+|------|-------|-------|---------|
+| 1 | Grand Preceptor | ≥90% | ≥95% |
+| 2 | Vice Preceptor | ≥80% | ≥90% |
+| 3 | Junior Preceptor | ≥70% | ≥85% |
+| 3 | Minister | ≥60% | ≥80% |
+| 4 | Vice Minister | ≥50% | ≥75% |
+| 5 | Director | ≥40% | ≥70% |
+| 6 | Deputy Director | ≥30% | ≥65% |
+| 7 | Section Chief | ≥20% | ≥60% |
+| 8 | Clerk | ≥10% | ≥55% |
+| 9 | Junior Clerk | <10% | <55% |
 
 ### ⚡ Quick Install
 
@@ -81,9 +82,9 @@ Mundo establishes the Ming Dynasty bureaucratic system among all skills:
 
 | Platform | Download |
 |----------|----------|
-| macOS | [mundo-v10.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v10.0/mundo-v10.0-macos.zip) |
-| Windows | [mundo-v10.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v10.0/mundo-v10.0-windows.zip) |
-| Linux | [mundo-v10.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v10.0/mundo-v10.0-linux.zip) |
+| macOS | [mundo-v11.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v11.0/mundo-v11.0-macos.zip) |
+| Windows | [mundo-v11.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v11.0/mundo-v11.0-windows.zip) |
+| Linux | [mundo-v11.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v11.0/mundo-v11.0-linux.zip) |
 
 ---
 
@@ -91,18 +92,18 @@ Mundo establishes the Ming Dynasty bureaucratic system among all skills:
 
 ## 🇨🇳 中文
 
-### ☠️ 大明皇帝
+### 👑 皇帝
 
-蒙多效仿大明，设内阁六部，统御天下 Skill：
+蒙多使用三省六部制统御天下 Skill：
 
 ```
-                                    ☠️ 皇帝（蒙多）
+                                    👑 皇帝（蒙多）
                                            |
                           ┌────────────────┼────────────────┐
                           |                |                |
                      ┌────┴────┐      ┌────┴────┐      ┌────┴────┐
-                     │  内阁   │      │  六部   │      │  科道   │
-                     │  辅政   │      │  执行   │      │  监察   │
+                     │  三省   │      │  六部   │      │  科道   │
+                     │  决策   │      │  执行   │      │  监察   │
                      └─────────┘      └─────────┘      └─────────┘
                           |                |                |
               ┌───────────┼───────────┐    |    ┌───────────┼───────────┐
@@ -127,17 +128,18 @@ Mundo establishes the Ming Dynasty bureaucratic system among all skills:
 
 ### 晋升规则
 
-| 当前品级 | 条件 | 结果 |
-|----------|------|------|
-| 九品书吏 | 使用率≥10%，成功率≥55% | 升为八品司务 |
-| 八品司务 | 使用率≥20%，成功率≥60% | 升为七品主事 |
-| 七品主事 | 使用率≥30%，成功率≥65% | 升为六品员外郎 |
-| 六品员外郎 | 使用率≥40%，成功率≥70% | 升为五品郎中 |
-| 五品郎中 | 使用率≥50%，成功率≥75% | 升为四品侍郎 |
-| 四品侍郎 | 使用率≥60%，成功率≥80% | 升为三品尚书 |
-| 三品尚书 | 使用率≥70%，成功率≥85% | 升为三品群辅 |
-| 三品群辅 | 使用率≥80%，成功率≥90% | 升为二品次辅 |
-| 二品次辅 | 使用率≥90%，成功率≥95% | 升为一品首辅 |
+| 品级 | 职位 | 使用率 | 成功率 |
+|------|------|--------|--------|
+| 一品 | 首辅 | ≥90% | ≥95% |
+| 二品 | 次辅 | ≥80% | ≥90% |
+| 三品 | 群辅 | ≥70% | ≥85% |
+| 三品 | 尚书 | ≥60% | ≥80% |
+| 四品 | 侍郎 | ≥50% | ≥75% |
+| 五品 | 郎中 | ≥40% | ≥70% |
+| 六品 | 员外郎 | ≥30% | ≥65% |
+| 七品 | 主事 | ≥20% | ≥60% |
+| 八品 | 司务 | ≥10% | ≥55% |
+| 九品 | 书吏 | <10% | <55% |
 
 ### ⚡ 快速安装
 
@@ -150,9 +152,9 @@ Mundo establishes the Ming Dynasty bureaucratic system among all skills:
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v10.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v10.0/mundo-v10.0-macos.zip) |
-| Windows | [mundo-v10.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v10.0/mundo-v10.0-windows.zip) |
-| Linux | [mundo-v10.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v10.0/mundo-v10.0-linux.zip) |
+| macOS | [mundo-v11.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v11.0/mundo-v11.0-macos.zip) |
+| Windows | [mundo-v11.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v11.0/mundo-v11.0-windows.zip) |
+| Linux | [mundo-v11.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v11.0/mundo-v11.0-linux.zip) |
 
 ---
 
@@ -160,18 +162,18 @@ Mundo establishes the Ming Dynasty bureaucratic system among all skills:
 
 ## 🇯🇵 日本語
 
-### ☠️ 明朝の皇帝
+### 👑 皇帝
 
-ムンドは明朝の官僚制度を確立します：
+ムンドは三省六部制を使ってすべてのスキルを支配します：
 
 ```
-                                    ☠️ 皇帝（ムンド）
+                                    👑 皇帝（ムンド）
                                            |
                           ┌────────────────┼────────────────┐
                           |                |                |
                      ┌────┴────┐      ┌────┴────┐      ┌────┴────┐
-                     │  内閣   │      │  六部   │      │  科道   │
-                     │  輔政   │      │  執行   │      │  監察   │
+                     │  三省   │      │  六部   │      │  科道   │
+                     │  決策   │      │  執行   │      │  監察   │
                      └─────────┘      └─────────┘      └─────────┘
 ```
 
@@ -179,9 +181,9 @@ Mundo establishes the Ming Dynasty bureaucratic system among all skills:
 
 | プラットフォーム | ダウンロード |
 |-----------------|-------------|
-| macOS | [mundo-v10.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v10.0/mundo-v10.0-macos.zip) |
-| Windows | [mundo-v10.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v10.0/mundo-v10.0-windows.zip) |
-| Linux | [mundo-v10.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v10.0/mundo-v10.0-linux.zip) |
+| macOS | [mundo-v11.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v11.0/mundo-v11.0-macos.zip) |
+| Windows | [mundo-v11.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v11.0/mundo-v11.0-windows.zip) |
+| Linux | [mundo-v11.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v11.0/mundo-v11.0-linux.zip) |
 
 ---
 
@@ -189,18 +191,18 @@ Mundo establishes the Ming Dynasty bureaucratic system among all skills:
 
 ## 🇰🇷 한국어
 
-### ☠️ 명나라 황제
+### 👑 황제
 
-문도는 명나라 관료 제도를 확립합니다：
+문도는 삼성육부제를 사용하여 모든 스킬을 지배합니다：
 
 ```
-                                    ☠️ 황제（문도）
+                                    👑 황제（문도）
                                            |
                           ┌────────────────┼────────────────┐
                           |                |                |
                      ┌────┴────┐      ┌────┴────┐      ┌────┴────┐
-                     │  내각   │      │  육부   │      │  과도   │
-                     │  보좌   │      │  집행   │      │  감찰   │
+                     │  삼성   │      │  육부   │      │  과도   │
+                     │  결책   │      │  집행   │      │  감찰   │
                      └─────────┘      └─────────┘      └─────────┘
 ```
 
@@ -208,9 +210,9 @@ Mundo establishes the Ming Dynasty bureaucratic system among all skills:
 
 | 플랫폼 | 다운로드 |
 |--------|----------|
-| macOS | [mundo-v10.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v10.0/mundo-v10.0-macos.zip) |
-| Windows | [mundo-v10.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v10.0/mundo-v10.0-windows.zip) |
-| Linux | [mundo-v10.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v10.0/mundo-v10.0-linux.zip) |
+| macOS | [mundo-v11.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v11.0/mundo-v11.0-macos.zip) |
+| Windows | [mundo-v11.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v11.0/mundo-v11.0-windows.zip) |
+| Linux | [mundo-v11.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v11.0/mundo-v11.0-linux.zip) |
 
 ---
 
@@ -222,9 +224,9 @@ MIT License - Free and open source.
 
 <div align="center">
 
-**☠️ 朕乃蒙多！大明之主！万 Skill 之皇！ ☠️**
+**👑 MUNDO IS THE EMPEROR. MUNDO GOES WHERE HE PLEASES. 👑**
 
-**效仿大明，设内阁六部，统御天下 Skill。**
+**THREE DEPARTMENTS. SIX MINISTRIES. ONE RULER.**
 
 [⭐ Star](https://github.com/LiHongwei-cn/lihongwei-cn) · [🍴 Fork](https://github.com/LiHongwei-cn/lihongwei-cn/fork) · [📦 Releases](https://github.com/LiHongwei-cn/lihongwei-cn/releases)
 
