@@ -4,9 +4,9 @@
 
 ## 核心特性
 
-- **精确参数输入**：用户提供精确数值，AI 严格按参数生成代码
+- **精确参数输入**：用户提供精确数值，AI 严格按照参数生成代码
 - **CarSim 2019.0 兼容**：使用 CarSim 标准 API 和文件格式
-- **通用场景生成**：支持各类仿真场景（高架桥、弯道、紧急避障等）
+- **通用场景生成**：支持各类仿真场景（高架桥爬坡、弯道操控、紧急避障等）
 - **车辆参数配置**：支持前驱/后驱/四驱车辆配置
 - **结果可视化**：自动生成仿真结果图表
 
@@ -83,12 +83,7 @@ carsim-ai/
 │   ├── generate_scenario.m      通用场景生成器
 │   ├── configure_vehicle.m      车辆参数配置器
 │   ├── visualize_results.m      结果可视化
-│   └── scenarios/               场景模板
-│       ├── bridge_slope.m       高架桥爬坡
-│       ├── cornering.m          弯道操控
-│       ├── obstacle_avoidance.m 紧急避障
-│       ├── braking.m            制动性能
-│       └── acceleration.m       加速性能
+│   └── generate_bridge_scenario.m 高架桥场景生成器
 ├── templates/                   模板文件
 │   └── simulation_template.par  CarSim 仿真模板
 ├── docs/                        文档
@@ -130,7 +125,7 @@ params.output_dir = '../output';
 run_simulation(params);
 ```
 
-### 方式二：桌面快捷启动
+### 方式三：桌面快捷启动
 
 - **macOS**：双击 `tools/carsim-ai.command`
 - **Windows**：双击 `tools/carsim-ai.bat`
@@ -229,7 +224,6 @@ run_simulation(params);
 
 - MATLAB R2016b+
 - CarSim 2019.0+
-- Simulink（可选，用于联合仿真）
 
 ## 常见问题
 

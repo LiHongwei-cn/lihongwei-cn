@@ -24,18 +24,12 @@ matlab/
 │   ├── driving_cycle_analysis.m     驾驶循环能耗分析（类 WLTC）
 │   ├── energy_management.m          能量管理策略（恒温器 vs 功率跟随）
 │   └── generate_cruise_model.m      定速巡航 Simulink 模型自动生成
-├── carsim/                 联合仿真
-│   ├── sim_setup.m                  环境配置（自动检测 CarSim）
-│   ├── build_carsim_model.m         搭建联合仿真模型
-│   ├── run_carsim_cruise.m          一键定速巡航仿真
-│   └── carsim_cruise_ctrl.slx       Simulink 模型文件
 ├── utils/                  工具函数
 │   ├── rms_calculation.m            RMS 有效值（R2016b 兼容）
 │   ├── fft_analysis.m               FFT 频谱分析
 │   ├── lowpass_filter.m             一阶低通滤波器
-│   └── find_carsim.m                CarSim 自动检测（Win/Mac）
+│   └── find_carsim.m                CarSim 路径检测（可选）
 ├── startup_setup.m          路径初始化（首次运行）
-├── run_carsim.m             一键启动 CarSim 联合仿真
 ├── test_all.m               批量自测
 └── README.md                本文件
 ```
@@ -196,7 +190,6 @@ P_rex_off = 0.7;       % 增程器关闭阈值
 ## 依赖
 
 - MATLAB R2016b+（含 Simulink）
-- CarSim 2019.0（仅 `carsim/` 需要）
 
 ## 开发规范
 
