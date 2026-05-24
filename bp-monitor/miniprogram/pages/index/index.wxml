@@ -1,4 +1,5 @@
 <view class="container">
+  <!-- 问候语 -->
   <view class="greeting card">
     <text class="greeting-text">{{greeting}}</text>
     <text class="date-text">{{todayDate}}</text>
@@ -42,25 +43,9 @@
     <text>点击下方按钮开始记录</text>
   </view>
 
-  <!-- 记录按钮 -->
-  <view class="record-btn-wrap" wx:if="{{!loginError}}">
-    <button class="btn-primary" bindtap="goRecord">记录血压</button>
-  </view>
-
-  <!-- 快捷入口 -->
-  <view class="nav-grid" wx:if="{{!loginError}}">
-    <view class="nav-item" bindtap="goHistory">
-      <view class="nav-icon nav-icon-history">史</view>
-      <text class="nav-label">历史记录</text>
-    </view>
-    <view class="nav-item" bindtap="goReport">
-      <view class="nav-icon nav-icon-report">报</view>
-      <text class="nav-label">周报分析</text>
-    </view>
-    <view class="nav-item" bindtap="goProfile">
-      <view class="nav-icon nav-icon-profile">我</view>
-      <text class="nav-label">健康档案</text>
-    </view>
+  <!-- 快速记录入口 -->
+  <view class="quick-record" wx:if="{{!loginError && !loading}}">
+    <button class="btn-primary btn-record" bindtap="goRecord">+ 记录血压</button>
   </view>
 
   <!-- 本周统计 -->
@@ -84,6 +69,22 @@
         <text class="trend-title">{{stats.trendTitle}}</text>
         <text class="trend-desc">{{stats.trendDesc}}</text>
       </view>
+    </view>
+  </view>
+
+  <!-- 快捷入口 -->
+  <view class="nav-grid" wx:if="{{!loginError && !loading}}">
+    <view class="nav-item" bindtap="goHistory">
+      <view class="nav-icon nav-icon-history">📋</view>
+      <text class="nav-label">历史记录</text>
+    </view>
+    <view class="nav-item" bindtap="goReport">
+      <view class="nav-icon nav-icon-report">📊</view>
+      <text class="nav-label">周报分析</text>
+    </view>
+    <view class="nav-item" bindtap="goProfile">
+      <view class="nav-icon nav-icon-profile">👤</view>
+      <text class="nav-label">健康档案</text>
     </view>
   </view>
 

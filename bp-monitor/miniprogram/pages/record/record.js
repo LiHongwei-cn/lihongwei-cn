@@ -6,6 +6,8 @@ const RANGES = {
   heartRate: { min: 30, max: 250 }
 };
 
+let validateTimer = null;
+
 Page({
   data: {
     systolic: '',
@@ -29,10 +31,33 @@ Page({
     this.setData({ timePeriod: period });
   },
 
-  onSystolicInput(e) { this.setData({ systolic: e.detail.value }); },
-  onDiastolicInput(e) { this.setData({ diastolic: e.detail.value }); },
-  onHeartRateInput(e) { this.setData({ heartRate: e.detail.value }); },
-  onNotesInput(e) { this.setData({ notes: e.detail.value }); },
+  onSystolicInput(e) {
+    this.setData({ systolic: e.detail.value });
+    this.debounceValidate('systolic');
+  },
+
+  onDiastolicInput(e) {
+    this.setData({ diastolic: e.detail.value });
+    this.debounceValidate('diastolic');
+  },
+
+  onHeartRateInput(e) {
+    this.setData({ heartRate: e.detail.value });
+    this.debounceValidate('heartRate');
+  },
+
+  onNotesInput(e) {
+    this.setData({ notes: e.detail.value });
+  },
+
+  debounceValidate(field) {
+    if (validateTimer) clearTimeout(validateTimer);
+    validateTimer = setTimeout(() => {
+      if (field === 'systolic') this.validateSys();
+      else if (field === 'diastolic') this.validateDia();
+      else if (field === 'heartRate') this.validateHR();
+    }, 300);
+  },
 
   validateField(val, range, label) {
     const v = parseInt(val);
@@ -44,9 +69,11 @@ Page({
   validateSys() {
     this.setData({ systolicError: this.validateField(this.data.systolic, RANGES.systolic, '收缩压') });
   },
+
   validateDia() {
     this.setData({ diastolicError: this.validateField(this.data.diastolic, RANGES.diastolic, '舒张压') });
   },
+
   validateHR() {
     const v = parseInt(this.data.heartRate);
     if (isNaN(v)) { this.setData({ heartRateError: '' }); return; }

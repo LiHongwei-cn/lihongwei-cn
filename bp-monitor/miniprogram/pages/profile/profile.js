@@ -20,9 +20,13 @@ Page({
 
   onShow() { this.loadProfile(); },
 
+  onPullDownRefresh() {
+    this.loadProfile().finally(() => wx.stopPullDownRefresh());
+  },
+
   loadProfile() {
     this.setData({ loading: true });
-    cloud.getUserProfile().then((data) => {
+    return cloud.getUserProfile().then((data) => {
       const user = data.user;
       app.globalData.userInfo = user;
       let meds = user.medications || [];

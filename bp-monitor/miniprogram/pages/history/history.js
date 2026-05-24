@@ -23,6 +23,7 @@ Page({
 
   setFilter(e) {
     const days = parseInt(e.currentTarget.dataset.days);
+    if (days === this.data.filterDays) return;
     this.setData({ filterDays: days, page: 1, readings: [] });
     this.loadReadings();
   },

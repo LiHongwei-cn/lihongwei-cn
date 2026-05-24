@@ -26,6 +26,11 @@ Page({
     this.loadReport();
   },
 
+  onPullDownRefresh() {
+    this.updateWeek();
+    this.loadReport().finally(() => wx.stopPullDownRefresh());
+  },
+
   updateWeek() {
     const base = new Date();
     base.setDate(base.getDate() + this.data.weekOffset * 7);
@@ -37,7 +42,7 @@ Page({
 
   loadReport() {
     this.setData({ loading: true });
-    cloud.getReports().then((data) => {
+    return cloud.getReports().then((data) => {
       const ws = this.data.weekStart;
       const match = (data.reports || []).find(r => r.weekStart === ws);
       this.setData({ report: match || null });

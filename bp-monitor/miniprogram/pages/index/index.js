@@ -28,6 +28,10 @@ Page({
     }
   },
 
+  onPullDownRefresh() {
+    this.loadData().finally(() => wx.stopPullDownRefresh());
+  },
+
   setGreeting() {
     const now = new Date();
     const hour = now.getHours();
@@ -66,7 +70,7 @@ Page({
 
   loadData() {
     this.setData({ loading: true });
-    Promise.all([
+    return Promise.all([
       cloud.getReadings({ page: 1, limit: 1 }),
       cloud.getStats({ days: 7 })
     ]).then(([listRes, statsRes]) => {
@@ -104,8 +108,8 @@ Page({
     });
   },
 
-  goRecord() { wx.navigateTo({ url: '/pages/record/record' }); },
-  goHistory() { wx.navigateTo({ url: '/pages/history/history' }); },
-  goReport() { wx.navigateTo({ url: '/pages/report/report' }); },
-  goProfile() { wx.navigateTo({ url: '/pages/profile/profile' }); }
+  goRecord() { wx.switchTab({ url: '/pages/record/record' }); },
+  goHistory() { wx.switchTab({ url: '/pages/history/history' }); },
+  goReport() { wx.switchTab({ url: '/pages/report/report' }); },
+  goProfile() { wx.switchTab({ url: '/pages/profile/profile' }); }
 });
