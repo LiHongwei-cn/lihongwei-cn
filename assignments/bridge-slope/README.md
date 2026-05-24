@@ -1,6 +1,6 @@
 # 高架桥仿真作业 - 燕子矶场景
 
-CarSim 2019.0 仿真实例：不同驱动类型车辆在冰雪路面上的爬坡能力对比。
+纯 CarSim 2019.0 仿真实例：不同驱动类型车辆在冰雪路面上的爬坡能力对比。
 
 ## 场景
 
@@ -10,7 +10,7 @@ CarSim 2019.0 仿真实例：不同驱动类型车辆在冰雪路面上的爬坡
 
 ## 使用方法
 
-### 步骤 1: 运行 MATLAB 脚本生成参数
+### 步骤 1: 运行 MATLAB 脚本生成参数说明
 
 ```matlab
 % 在 MATLAB 中运行
@@ -24,26 +24,27 @@ params.output_dir = './output';
 run_bridge_simulation(params);
 ```
 
-### 步骤 2: 在 CarSim 中设置参数
+### 步骤 2: 在 CarSim 中设置前驱车仿真
 
 1. 打开 CarSim 2019.0
-2. 创建新数据集
-3. 设置以下参数：
-   - **Road**: 设置坡度为 15 deg
-   - **Tire**: 设置摩擦系数为 0.2
-   - **Vehicle**: 根据需要选择前驱或四驱
-4. 点击 **Send to Simulink** 按钮
+2. 创建新数据集，命名为 `FWD_bridge_slope`
+3. 按照 `output/carsim_instructions_FWD.txt` 设置参数
+4. 点击 **Run** 运行仿真
+5. 导出结果：Export > CSV，保存为 `results_FWD.csv`
 
-### 步骤 3: 在 Simulink 中运行仿真
+### 步骤 3: 在 CarSim 中设置四驱车仿真
 
-1. 在 Simulink 中打开生成的模型
-2. 点击 **Run** 按钮运行仿真
-3. 仿真完成后，数据会保存到 workspace
+1. 创建新数据集，命名为 `AWD_bridge_slope`
+2. 按照 `output/carsim_instructions_AWD.txt` 设置参数
+3. 点击 **Run** 运行仿真
+4. 导出结果：Export > CSV，保存为 `results_AWD.csv`
 
 ### 步骤 4: 分析结果
 
 ```matlab
-% 在 MATLAB 中运行
+% 将 results_FWD.csv 和 results_AWD.csv 复制到 output 目录
+% 然后在 MATLAB 中运行
+cd output
 analyze_results
 ```
 
@@ -51,10 +52,45 @@ analyze_results
 
 运行 `run_bridge_simulation` 后，会生成以下文件：
 
-- `carsim_params_FWD.m` - 前驱车参数（供 CarSim 手动输入）
-- `carsim_params_AWD.m` - 四驱车参数（供 CarSim 手动输入）
-- `bridge_slope_model.slx` - Simulink 模型（需要 CarSim 已安装）
+- `carsim_instructions_FWD.txt` - 前驱车参数设置说明
+- `carsim_instructions_AWD.txt` - 四驱车参数设置说明
 - `analyze_results.m` - 结果分析脚本
+
+## CarSim 参数设置要点
+
+### 车辆设置
+
+| 参数 | 前驱车 | 四驱车 |
+|------|--------|--------|
+| 驱动类型 | FWD | AWD |
+| 整车质量 | 1500 kg | 1500 kg |
+| 轴距 | 2.7 m | 2.7 m |
+| 重心高度 | 0.5 m | 0.5 m |
+
+### 发动机设置
+
+| 参数 | 前驱车 | 四驱车 |
+|------|--------|--------|
+| 最大功率 | 100 kW | 100 kW |
+| 最大扭矩 | 19.1 Nm | 19.1 Nm |
+| 最大转速 | 6000 rpm | 6000 rpm |
+
+### 道路设置
+
+| 参数 | 值 |
+|------|-----|
+| 坡度角度 | 15 deg |
+| 路面摩擦 | 0.2 |
+| 道路宽度 | 8.0 m |
+| 护栏高度 | 0.8 m |
+
+### 仿真设置
+
+| 参数 | 值 |
+|------|-----|
+| 仿真时长 | 30 s |
+| 时间步长 | 0.001 s |
+| 初始速度 | 5 m/s (18 km/h) |
 
 ## 预期结果
 
@@ -72,64 +108,60 @@ analyze_results
 
 ## 依赖
 
-- MATLAB R2016b+
-- Simulink
-- CarSim 2019.0+（必须已安装）
+- CarSim 2019.0+
+- MATLAB R2016b+（仅用于分析结果）
 
 ## 常见问题
 
-### Q1: 为什么 CarSim 打不开？
-
-**A**: 确保 CarSim 2019.0 已正确安装，并且 MATLAB/Simulink 接口已配置。检查 CarSim 的安装路径是否正确。
-
-### Q2: 如何配置 CarSim 与 MATLAB 的接口？
+### Q1: CarSim 打不开怎么办？
 
 **A**: 
-1. 打开 CarSim
-2. 进入 Settings → MATLAB/Simulink Interface
-3. 设置 MATLAB 路径
-4. 测试连接
+1. 确认 CarSim 2019.0 已正确安装
+2. 检查 CarSim 许可证是否有效
+3. 尝试以管理员身份运行 CarSim
 
-### Q3: 仿真失败怎么办？
+### Q2: 仿真失败怎么办？
 
 **A**: 
-1. 检查 CarSim 是否正确安装
-2. 确认 Simulink 模型已正确生成
-3. 检查参数设置是否正确
-4. 查看 CarSim 的错误日志
+1. 检查参数设置是否正确
+2. 确认初始条件合理
+3. 查看 CarSim 的错误日志
 
-### Q4: 如何调整仿真参数？
+### Q3: 如何调整仿真参数？
 
 **A**: 修改 `run_bridge_simulation` 函数的输入参数，然后重新运行。
 
-## 注意事项
+### Q4: 结果分析脚本报错怎么办？
 
-1. **CarSim 必须已安装** - 本作业需要 CarSim 2019.0 或更高版本
-2. **Simulink 接口必须配置** - CarSim 需要与 MATLAB/Simulink 正确连接
-3. **参数手动输入** - 生成的参数文件需要在 CarSim 中手动输入
-4. **仿真结果依赖 CarSim** - 实际仿真结果取决于 CarSim 的求解器
+**A**: 
+1. 确认 CSV 文件格式正确
+2. 检查文件是否在正确目录
+3. 确认 MATLAB 版本兼容
 
 ## 文件结构
 
 ```
 bridge-slope/
 ├── examples/
-│   └── run_bridge_simulation.m   仿真主脚本
+│   └── run_bridge_simulation.m   参数生成脚本
 ├── utils/
-│   ├── generate_bridge_scenario.m 场景生成器
-│   ├── configure_vehicle.m        车辆配置器
-│   └── visualize_results.m        结果可视化
-├── output/                        生成的文件（运行后创建）
-│   ├── carsim_params_FWD.m        前驱车参数
-│   ├── carsim_params_AWD.m        四驱车参数
-│   ├── bridge_slope_model.slx     Simulink 模型
-│   └── analyze_results.m          结果分析脚本
-└── README.md                      本文件
+│   └── configure_vehicle.m       车辆配置器
+├── output/                       生成的文件（运行后创建）
+│   ├── carsim_instructions_FWD.txt  前驱车参数说明
+│   ├── carsim_instructions_AWD.txt  四驱车参数说明
+│   └── analyze_results.m            结果分析脚本
+└── README.md                     本文件
 ```
+
+## 注意事项
+
+1. **纯 CarSim 仿真** - 本作业不依赖 Simulink，完全在 CarSim 内部运行
+2. **参数手动输入** - 需要在 CarSim GUI 中手动输入参数
+3. **结果手动导出** - 仿真完成后需要手动导出 CSV 文件
+4. **MATLAB 仅用于分析** - 结果分析使用 MATLAB，但仿真本身不依赖
 
 ## 提取方法
 
 将整个 `bridge-slope/` 目录复制到目标电脑即可使用。确保目标电脑已安装：
-- MATLAB R2016b+
-- Simulink
 - CarSim 2019.0+
+- MATLAB R2016b+（仅用于分析结果）
