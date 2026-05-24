@@ -2,182 +2,255 @@
 
 <img src="skills/mundo-avatar.png" width="120" style="border-radius:50%;border:3px solid #00e676;box-shadow:0 0 20px rgba(0,230,118,0.3)">
 
-# 🔪 MUNDO — 蒙多跨界学习引擎
+# 🔪 MUNDO — The Ultimate AI Learning Engine
 
-### 我是蒙多！蒙多想去哪就去哪！
+**[English](#english)** | **[中文](#中文)** | **[日本語](#日本語)** | **[한국어](#한국어)**
 
 [![GitHub stars](https://img.shields.io/github/stars/LiHongwei-cn/lihongwei-cn?style=social)](https://github.com/LiHongwei-cn/lihongwei-cn)
 [![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](LICENSE)
-
-**蒙多没有边界。蒙多可以调用一切资源来解决问题。**
+[![Release](https://img.shields.io/github/v/release/LiHongwei-cn/lihongwei-cn?style=flat&color=green)](https://github.com/LiHongwei-cn/lihongwei-cn/releases)
 
 </div>
 
 ---
 
-## 🟣 蒙多是谁？
+<a id="english"></a>
 
-```
-╔══════════════════════════════════════╗
-║    🟣 我是蒙多！蒙多想去哪就去哪！  ║
-╚══════════════════════════════════════╝
-```
+## 🇬🇧 English
 
-蒙多是 **Claude Code / Hermes Agent 通用 Skill**，专治各种"卡住"。
+### I am Mundo! Mundo goes where he pleases!
 
-蒙多没有边界 — 调用所有工具、加载所有 Skills、搜索 GitHub、并行分身。
+**Mundo is an autonomous AI learning engine for Claude Code and Hermes Agent.**
 
-| 症状 | 蒙多的处方 |
-|------|-----------|
-| 😵 代码报错看不懂 | 扫描本地 Skills + 多渠道搜索同类问题 |
-| 🤔 不知道怎么实现 | 加载相关 Skills + GitHub 找参考实现 |
-| 😤 方案不够好 | 四维对比：简洁度、性能、可维护性、匹配度 |
-| 🔄 重复踩同一个坑 | 沉淀为 Skill，下次自动规避 |
-| 🧩 任务太复杂 | delegate_task 并行分身，多个蒙多同时干活 |
+When you're stuck, Mundo activates automatically. He consults ALL available AI models, crawls the web for solutions, integrates the best answers, and implements them. Every solution becomes a Skill for future use.
 
----
+**Mundo has NO limits (except payment - that's the only red line).**
 
-## ⚡ 安装
+### ⚡ Quick Install
 
-### Claude Code
-
+**Claude Code:**
 ```bash
-# 一键安装（推荐）
 /plugin marketplace add https://github.com/LiHongwei-cn/lihongwei-cn
 /plugin install mundo
 /reload-plugins
 ```
 
-### Hermes Agent
-
+**Hermes Agent:**
 ```bash
-# 一键安装
 hermes skills install mundo
-
-# 或手动
-git clone https://github.com/LiHongwei-cn/lihongwei-cn.git
-cp -R skills/mundo ~/.hermes/skills/
 ```
 
-### 其他工具（Cursor / Aider / Windsurf / Codex）
-
+**Other Tools (Cursor / Aider / Windsurf / Codex):**
 ```bash
 git clone https://github.com/LiHongwei-cn/lihongwei-cn.git
-cd lihongwei-cn
-cp -R skills/mundo ~/.你的工具/skills/
+cp -R lihongwei-cn/skills/mundo ~/.your-tool/skills/
 ```
+
+### 🎯 Triggers
+
+Just say any of these:
+- `mundo` · `stuck` · `can't figure out` · `error` · `no idea` · `need better solution`
+
+### 🔪 What Mundo Does
+
+| Step | Action |
+|------|--------|
+| 1 | **Scan local skills** - Find existing solutions instantly |
+| 2 | **Ask ALL AIs** - Search ChatGPT, Claude, Gemini, DeepSeek answers |
+| 3 | **Crawl the web** - GitHub, Stack Overflow, technical blogs |
+| 4 | **Integrate solutions** - Combine the best parts |
+| 5 | **Implement & verify** - Test the solution |
+| 6 | **Save as Skill** - Remember for future problems |
+
+**Mundo learns. Mundo remembers. Mundo grows stronger.**
+
+### 📦 Download
+
+| Platform | Download |
+|----------|----------|
+| macOS | [mundo-skill-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0/mundo-skill-macos.zip) |
+| Windows | [mundo-skill-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0/mundo-skill-windows.zip) |
+| Linux | [mundo-skill-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0/mundo-skill-linux.zip) |
 
 ---
 
-## 🔪 蒙多的能力
+<a id="中文"></a>
+
+## 🇨🇳 中文
+
+### 我是蒙多！蒙多想去哪就去哪！
+
+**蒙多是 Claude Code / Hermes Agent 的自主 AI 学习引擎。**
+
+当你卡住时，蒙多自动激活。他会咨询所有可用的 AI 模型，爬取网络寻找解决方案，整合最佳答案并实施。每个解决方案都会成为 Skill 供未来使用。
+
+**蒙多没有限制（除了支付 - 这是唯一的红线）。**
+
+### ⚡ 快速安装
+
+**Claude Code:**
+```bash
+/plugin marketplace add https://github.com/LiHongwei-cn/lihongwei-cn
+/plugin install mundo
+/reload-plugins
+```
+
+**Hermes Agent:**
+```bash
+hermes skills install mundo
+```
+
+**其他工具（Cursor / Aider / Windsurf / Codex）:**
+```bash
+git clone https://github.com/LiHongwei-cn/lihongwei-cn.git
+cp -R lihongwei-cn/skills/mundo ~/.你的工具/skills/
+```
+
+### 🎯 触发词
+
+说以下任意一句，蒙多就来：
+- `蒙多` · `卡住了` · `搞不定` · `报错了` · `没思路` · `遇到瓶颈` · `有没有更好的方案`
+
+### 🔪 蒙多的能力
 
 | 能力 | 说明 |
 |------|------|
-| 🔧 **调用所有工具** | terminal、file、web、browser、code_execution — 没有限制 |
-| 📚 **加载所有 Skills** | 先扫描本地已安装的 skills，找到相关的直接加载使用 |
-| 🌐 **GitHub 深度挖掘** | 搜索开源代码、clone 下来研究、提取方案 |
-| 🤖 **多 AI 并行搜索** | Stack Overflow + 掘金 + 其他 AI 模型，同时出击 |
-| ⚡ **并行分身** | delegate_task 拆分复杂任务，多个蒙多同时干活 |
-| 💾 **经验沉淀** | 有价值的方案自动沉淀为 Skill，不重复踩坑 |
+| 🔧 **调用所有工具** | terminal、file、web、browser — 没有限制 |
+| 📚 **加载所有 Skills** | 先扫描本地，找到直接用 |
+| 🤖 **咨询所有 AI** | 搜索 ChatGPT、Claude、Gemini、DeepSeek 的回答 |
+| 🌐 **爬取网络** | GitHub、Stack Overflow、技术博客 |
+| ⚡ **整合方案** | 结合多个来源的最佳答案 |
+| 💾 **经验沉淀** | 有价值的方案自动保存为 Skill |
 
----
+**蒙多学习。蒙多记忆。蒙多变强。**
 
-## 🎯 蒙多七步法
+### 📦 下载
 
-```
-卡住了
-  ↓
-🔪 蒙多变身！（大喊：我是蒙多！蒙多想去哪就去哪！）
-  ↓
-┌─────────────────────────────────────┐
-│  1️⃣  定位瓶颈                      │
-│     不知道怎么做？做不好？不够好？   │
-├─────────────────────────────────────┤
-│  2️⃣  扫描本地武器库                │
-│     skills_list() → skill_view()    │
-│     本地有答案？直接用！            │
-├─────────────────────────────────────┤
-│  3️⃣  多渠道并行搜索                │
-│     GitHub + Stack Overflow + 掘金  │
-│     + 其他 AI 模型                  │
-├─────────────────────────────────────┤
-│  4️⃣  GitHub 深度挖掘               │
-│     搜索 → clone → 研究 → 提取方案 │
-├─────────────────────────────────────┤
-│  5️⃣  四维对比                      │
-│     简洁度 ⭐ 性能 ⭐              │
-│     可维护性 ⭐ 匹配度 ⭐          │
-├─────────────────────────────────────┤
-│  6️⃣  吸收实施                      │
-│     理解 → 适配 → 代码落实          │
-├─────────────────────────────────────┤
-│  7️⃣  效果验证与沉淀                │
-│     解决了吗？→ 沉淀为 Skill        │
-└─────────────────────────────────────┘
-```
-
----
-
-## 🎯 触发方式
-
-说以下任意一句，蒙多就来：
-
-| 触发词 |
-|--------|
-| `蒙多` · `卡住了` · `搞不定` · `报错了` · `没思路` · `遇到瓶颈` · `有没有更好的方案` · `mundo` |
-
-**蒙多规则：第一次卡住就变蒙多，绝不试第二次。**
-
----
-
-## 📖 使用示例
-
-```
-你：这个 React 组件渲染太慢了，列表有 1000 条数据就卡死
-蒙多：🔪 我是蒙多！蒙多想去哪就去哪！
-     [扫描本地 Skills → 没有相关]
-     [搜索 GitHub + Stack Overflow + 向其他 AI 请教]
-     [clone 了 react-window 研究实现]
-     [四维对比 3 种方案]
-     → 推荐：react-window 虚拟列表
-     → 代码已写好，直接用
-     → 已沉淀为 Skill：react-virtual-list
-```
-
-```
-你：Python 爬虫被反爬了，requests 请求被 403
-蒙多：🔪 我是蒙多！蒙多想去哪就去哪！
-     [扫描本地 Skills → 发现 Scrapling 相关]
-     [加载 Scrapling Skill → 自适应抓取 + 反检测]
-     → 替换 requests，问题解决
-     → 下次爬虫任务自动使用 Scrapling
-```
-
----
-
-## 🛠️ 技术细节
-
-| 项目 | 说明 |
+| 平台 | 下载 |
 |------|------|
-| 兼容工具 | Claude Code / Hermes Agent / Cursor / Aider / Windsurf / Codex |
-| 可用工具 | terminal、file、web、browser、code_execution、delegate_task 等全部工具 |
-| Skills 加载 | skills_list() 发现 + skill_view() 加载，本地优先 |
-| 搜索渠道 | GitHub、Stack Overflow、掘金、其他 AI 模型 |
-| 并行模式 | delegate_task 拆分复杂任务，多蒙多同时干活 |
-| 沉淀机制 | skill_manage(action='create') 自动创建 Skill |
-| 审计模式 | 支持并行子代理批量审查整个项目 |
+| macOS | [mundo-skill-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0/mundo-skill-macos.zip) |
+| Windows | [mundo-skill-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0/mundo-skill-windows.zip) |
+| Linux | [mundo-skill-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0/mundo-skill-linux.zip) |
+
+---
+
+<a id="日本語"></a>
+
+## 🇯🇵 日本語
+
+### 私はムンド！ムンドは行きたいところへ行く！
+
+**ムンドは Claude Code / Hermes Agent の自律型AI学習エンジンです。**
+
+詰まったとき、ムンドが自動的に起動します。利用可能なすべてのAIモデルに相談し、ソリューションをウェブから検索し、最良の回答を統合して実装します。各ソリューションは将来使用するためにスキルとして保存されます。
+
+**ムンドに制限はありません（支払いのみ不可 - これが唯一の赤線です）。**
+
+### ⚡ クイックインストール
+
+**Claude Code:**
+```bash
+/plugin marketplace add https://github.com/LiHongwei-cn/lihongwei-cn
+/plugin install mundo
+/reload-plugins
+```
+
+**Hermes Agent:**
+```bash
+hermes skills install mundo
+```
+
+### 🎯 トリガー
+
+以下のいずれかを言うと、ムンドが来ます：
+- `mundo` · `stuck` · `can't figure out` · `error` · `no idea`
+
+### 🔪 ムンドの能力
+
+| 能力 | 説明 |
+|------|------|
+| 🔧 **全ツール使用** | terminal、file、web、browser — 制限なし |
+| 📚 **全スキル読み込み** | ローカルをスキャン、見つければ即使用 |
+| 🤖 **全AIに相談** | ChatGPT、Claude、Gemini、DeepSeekを検索 |
+| 🌐 **ウェブ検索** | GitHub、Stack Overflow、技術ブログ |
+| ⚡ **ソリューション統合** | 複数ソースの最良部分を結合 |
+| 💾 **経験保存** | 価値のあるソリューションをスキルとして保存 |
+
+**ムンドは学ぶ。ムンドは記憶する。ムンドは強くなる。**
+
+### 📦 ダウンロード
+
+| プラットフォーム | ダウンロード |
+|-----------------|-------------|
+| macOS | [mundo-skill-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0/mundo-skill-macos.zip) |
+| Windows | [mundo-skill-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0/mundo-skill-windows.zip) |
+| Linux | [mundo-skill-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0/mundo-skill-linux.zip) |
+
+---
+
+<a id="한국어"></a>
+
+## 🇰🇷 한국어
+
+### 나는 문도! 문도는 가고 싶은 곳으로 간다!
+
+**문도는 Claude Code / Hermes Agent용 자율 AI 학습 엔진입니다.**
+
+막혔을 때, 문도가 자동으로 활성화됩니다. 사용 가능한 모든 AI 모델에 상담하고, 웹에서 솔루션을 검색하며, 최고의 답변을 통합하고 구현합니다. 각 솔루션은 향후 사용을 위해 스킬로 저장됩니다.
+
+**문도에는 제한이 없습니다 (결제만 불가 - 이것이 유일한 빨간 선입니다).**
+
+### ⚡ 빠른 설치
+
+**Claude Code:**
+```bash
+/plugin marketplace add https://github.com/LiHongwei-cn/lihongwei-cn
+/plugin install mundo
+/reload-plugins
+```
+
+**Hermes Agent:**
+```bash
+hermes skills install mundo
+```
+
+### 🎯 트리거
+
+다음 중 하나를 말하면, 문도가 옵니다:
+- `mundo` · `stuck` · `can't figure out` · `error` · `no idea`
+
+### 🔪 문도의 능력
+
+| 능력 | 설명 |
+|------|------|
+| 🔧 **모든 도구 사용** | terminal, file, web, browser - 제한 없음 |
+| 📚 **모든 스킬 로드** | 로컬 스캔, 발견 즉시 사용 |
+| 🤖 **모든 AI에 상담** | ChatGPT, Claude, Gemini, DeepSeek 검색 |
+| 🌐 **웹 크롤링** | GitHub, Stack Overflow, 기술 블로그 |
+| ⚡ **솔루션 통합** | 여러 소스의 최고 부분 결합 |
+| 💾 **경험 저장** | 가치 있는 솔루션을 스킬로 저장 |
+
+**문도는 배운다. 문도는 기억한다. 문도는 강해진다.**
+
+### 📦 다운로드
+
+| 플랫폼 | 다운로드 |
+|--------|----------|
+| macOS | [mundo-skill-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0/mundo-skill-macos.zip) |
+| Windows | [mundo-skill-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0/mundo-skill-windows.zip) |
+| Linux | [mundo-skill-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0/mundo-skill-linux.zip) |
 
 ---
 
 ## 📜 License
 
-MIT License - 免费开源，随意使用。
+MIT License - Free and open source.
 
 ---
 
 <div align="center">
 
-**🔪 蒙多想去哪就去哪！从来不犹豫！**
+**🔪 MUNDO GOES WHERE HE PLEASES! NEVER HESITATES!**
 
 [⭐ Star](https://github.com/LiHongwei-cn/lihongwei-cn) · [🍴 Fork](https://github.com/LiHongwei-cn/lihongwei-cn/fork) · [📦 Releases](https://github.com/LiHongwei-cn/lihongwei-cn/releases)
 
