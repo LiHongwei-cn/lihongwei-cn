@@ -1,38 +1,98 @@
-# CarSim-AI 高架桥仿真工具
+# CarSim-AI 通用仿真工具
 
-基于 CarSim 2019.0 的 AI 仿真工具，用于模拟不同驱动类型车辆在冰雪路面上的爬坡能力。
-
-## 场景描述
-
-模拟南京燕子矶高架桥场景：
-- **路面条件**：下雪天，路面湿滑结冰，摩擦系数 0.1-0.3
-- **道路特征**：高架桥上坡路段
-- **车辆配置**：
-  - 前驱车/后驱车：在低摩擦路面上打滑，无法成功爬坡
-  - 四驱车：成功爬坡，不撞护栏
+基于 CarSim 2019.0 的 AI 仿真工具，支持用户精确参数输入，自动生成各类仿真场景。
 
 ## 核心特性
 
-- **精确参数输入**：用户可自定义高架桥、车辆、路面参数
+- **精确参数输入**：用户提供精确数值，AI 严格按参数生成代码
 - **CarSim 2019.0 兼容**：使用 CarSim 标准 API 和文件格式
-- **自动生成场景**：高架桥、护栏、低摩擦路面
-- **车辆动力学仿真**：前驱/后驱/四驱车辆对比
-- **结果可视化**：轨迹、速度、滑移率等
+- **通用场景生成**：支持各类仿真场景（高架桥、弯道、紧急避障等）
+- **车辆参数配置**：支持前驱/后驱/四驱车辆配置
+- **结果可视化**：自动生成仿真结果图表
 
-## 目录结构
+## 支持的仿真场景
+
+### 1. 高架桥爬坡仿真
+
+模拟不同驱动类型车辆在冰雪路面上的爬坡能力。
+
+```matlab
+params.scene_type = 'bridge_slope';
+params.bridge_length = 100;    % 高架桥长度 [m]
+params.slope_angle = 15;       % 坡度角度 [deg]
+params.friction = 0.2;         % 路面摩擦系数
+params.fwd_power = 100;        % 前驱车功率 [kW]
+params.awd_power = 100;        % 四驱车功率 [kW]
+```
+
+### 2. 弯道操控仿真
+
+测试车辆在不同半径弯道上的操控性能。
+
+```matlab
+params.scene_type = 'cornering';
+params.curve_radius = 50;      % 弯道半径 [m]
+params.curve_angle = 90;       % 弯道角度 [deg]
+params.road_width = 7;         % 道路宽度 [m]
+params.vehicle_speed = 60;     % 车速 [km/h]
+```
+
+### 3. 紧急避障仿真
+
+模拟车辆紧急避障性能。
+
+```matlab
+params.scene_type = 'obstacle_avoidance';
+params.obstacle_position = 50; % 障碍物位置 [m]
+params.obstacle_width = 2;     % 障碍物宽度 [m]
+params.lane_width = 3.5;       % 车道宽度 [m]
+params.vehicle_speed = 80;     % 车速 [km/h]
+```
+
+### 4. 制动性能仿真
+
+测试车辆在不同路面上的制动性能。
+
+```matlab
+params.scene_type = 'braking';
+params.initial_speed = 100;    % 初始速度 [km/h]
+params.brake_distance = 50;    % 制动距离 [m]
+params.friction = 0.8;         % 路面摩擦系数
+params.vehicle_mass = 1500;    % 车辆质量 [kg]
+```
+
+### 5. 加速性能仿真
+
+测试车辆加速性能。
+
+```matlab
+params.scene_type = 'acceleration';
+params.target_speed = 100;     % 目标速度 [km/h]
+params.acceleration_distance = 200; % 加速距离 [m]
+params.engine_power = 150;     % 发动机功率 [kW]
+params.vehicle_mass = 1500;    % 车辆质量 [kg]
+```
+
+## 文件结构
 
 ```
 carsim-ai/
 ├── examples/                    示例脚本
-│   └── run_bridge_simulation.m  高架桥仿真主脚本
+│   └── run_simulation.m         通用仿真主脚本
 ├── utils/                       工具函数
-│   ├── generate_bridge_scenario.m  高架桥场景生成器
-│   ├── configure_vehicle.m         车辆参数配置器
-│   └── visualize_results.m         结果可视化
+│   ├── generate_scenario.m      通用场景生成器
+│   ├── configure_vehicle.m      车辆参数配置器
+│   ├── visualize_results.m      结果可视化
+│   └── scenarios/               场景模板
+│       ├── bridge_slope.m       高架桥爬坡
+│       ├── cornering.m          弯道操控
+│       ├── obstacle_avoidance.m 紧急避障
+│       ├── braking.m            制动性能
+│       └── acceleration.m       加速性能
 ├── templates/                   模板文件
-│   └── simulation_template.par     CarSim 仿真模板
+│   └── simulation_template.par  CarSim 仿真模板
 ├── docs/                        文档
-│   └── user_guide.md              用户指南
+│   └── user_guide.md            用户指南
 ├── README.md                    本文件
 └── index.html                   项目网页
 ```
@@ -46,16 +106,17 @@ carsim-ai/
 cd('path/to/lihongwei-cn/carsim-ai/examples')
 
 % 2. 设置仿真参数
-params.bridge_length = 100;    % 高架桥长度 [m]
-params.bridge_width = 8;       % 高架桥宽度 [m]
-params.slope_angle = 15;       % 坡度角度 [deg]
-params.friction = 0.2;         % 路面摩擦系数
-params.fwd_power = 100;        % 前驱车功率 [kW]
-params.awd_power = 100;        % 四驱车功率 [kW]
-params.output_dir = '../output'; % 输出目录
+params.scene_type = 'bridge_slope';
+params.bridge_length = 100;
+params.bridge_width = 8;
+params.slope_angle = 15;
+params.friction = 0.2;
+params.fwd_power = 100;
+params.awd_power = 100;
+params.output_dir = '../output';
 
 % 3. 运行仿真
-run_bridge_simulation(params);
+run_simulation(params);
 ```
 
 ### 方式二：桌面快捷启动
@@ -64,6 +125,13 @@ run_bridge_simulation(params);
 - **Windows**：双击 `tools/carsim-ai.bat`
 
 ## 参数说明
+
+### 通用参数
+
+| 参数 | 说明 | 单位 |
+|------|------|------|
+| scene_type | 场景类型 | 字符串 |
+| output_dir | 输出目录 | 字符串 |
 
 ### 高架桥参数
 
@@ -80,12 +148,7 @@ run_bridge_simulation(params);
 |------|------|--------|------|
 | fwd_power | 前驱车功率 | 100 | kW |
 | awd_power | 四驱车功率 | 100 | kW |
-
-### 驱动类型
-
-- **FWD (前驱)**：前轮驱动，适合城市道路，爬坡能力一般
-- **RWD (后驱)**：后轮驱动，操控性好，爬坡能力一般
-- **AWD (四驱)**：四轮驱动，爬坡能力强，适合恶劣路况
+| rwd_power | 后驱车功率 | 100 | kW |
 
 ## 输出结果
 
@@ -93,48 +156,63 @@ run_bridge_simulation(params);
 
 ### 场景文件
 
-- `bridge_road.road` - 高架桥道路定义
-- `bridge_friction.tir` - 路面摩擦定义
-- `bridge_guardrail.par` - 护栏定义
+- `*.road` - 道路定义
+- `*.tir` - 路面摩擦定义
+- `*.par` - 场景参数
 
 ### 车辆文件
 
-- `vehicle_FWD.par` - 前驱车参数
-- `vehicle_AWD.par` - 四驱车参数
+- `vehicle_*.par` - 车辆配置
 
 ### 仿真文件
 
-- `simulation_FWD.par` - 前驱车仿真配置
-- `simulation_AWD.par` - 四驱车仿真配置
+- `simulation_*.par` - 仿真配置
 - `run_batch.bat` - 批处理脚本
 
 ### 结果文件
 
-- `results_FWD.csv` - 前驱车仿真结果
-- `results_AWD.csv` - 四驱车仿真结果
+- `results_*.csv` - 仿真结果
 - `simulation_results.png` - 可视化结果
 
-## 仿真流程
+## 添加新场景
 
-1. **场景生成**：创建高架桥、护栏、低摩擦路面
-2. **车辆配置**：设置前驱/四驱车辆参数
-3. **仿真运行**：在 CarSim 中运行两个仿真
-4. **结果分析**：分析爬坡距离、高度、滑移率
-5. **可视化**：生成轨迹、速度、滑移率图表
+### 1. 创建场景模板
 
-## 预期结果
+在 `utils/scenarios/` 目录下创建新的场景文件：
 
-### 前驱车/后驱车
+```matlab
+function params = my_custom_scenario(params)
+    % my_custom_scenario 自定义场景参数
+    %
+    % 输入：params - 用户参数
+    % 输出：params - 完整参数（包含默认值）
 
-- 在低摩擦路面上打滑
-- 爬坡失败，滑回起点
-- 车轮滑移率高
+    % 设置默认值
+    if ~isfield(params, 'my_param')
+        params.my_param = 100;  % 默认值
+    end
 
-### 四驱车
+    % 验证参数
+    assert(params.my_param > 0, '参数必须为正数');
+end
+```
 
-- 成功爬坡
-- 不撞护栏
-- 车轮滑移率低
+### 2. 注册场景
+
+在 `utils/generate_scenario.m` 中添加新场景：
+
+```matlab
+case 'my_custom'
+    params = my_custom_scenario(params);
+```
+
+### 3. 使用新场景
+
+```matlab
+params.scene_type = 'my_custom';
+params.my_param = 150;
+run_simulation(params);
+```
 
 ## 依赖
 
@@ -148,17 +226,17 @@ run_bridge_simulation(params);
 
 **A**: 本工具兼容 CarSim 2019.0 及以上版本。使用标准 API 和文件格式。
 
-### Q2: 如何调整摩擦系数？
+### Q2: 如何添加更多车辆？
 
-**A**: 修改 `params.friction` 参数。范围 0.1-0.3，值越小路面越滑。
+**A**: 修改 `run_simulation.m`，添加更多 `configure_vehicle` 调用。
 
-### Q3: 如何添加更多车辆？
-
-**A**: 修改 `run_bridge_simulation.m`，添加更多 `configure_vehicle` 调用。
-
-### Q4: 仿真失败怎么办？
+### Q3: 仿真失败怎么办？
 
 **A**: 检查 CarSim 是否正确安装，确保文件路径正确。
+
+### Q4: 如何自定义场景？
+
+**A**: 参考"添加新场景"章节，创建新的场景模板。
 
 ## 开发规范
 

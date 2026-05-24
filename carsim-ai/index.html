@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="CarSim-AI 高架桥仿真工具 - 基于 CarSim 2019.0 的 AI 仿真工具，模拟不同驱动类型车辆在冰雪路面上的爬坡能力">
-<title>CarSim-AI 高架桥仿真工具</title>
+<meta name="description" content="CarSim-AI 通用仿真工具 - 基于 CarSim 2019.0 的 AI 仿真工具，支持各类仿真场景">
+<title>CarSim-AI 通用仿真工具</title>
 <style>
 :root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#6c8cff;--green:#4ade80;--orange:#fb923c;--red:#f87171}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -106,46 +106,56 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
   <!-- Hero -->
   <div class="hero">
-    <div class="hero-badge">CarSim 2019.0 · AI 仿真</div>
-    <h1>CarSim-AI 高架桥仿真</h1>
-    <p>基于 CarSim 2019.0 的 AI 仿真工具，模拟不同驱动类型车辆在冰雪路面上的爬坡能力。支持精确参数输入，自动生成场景和车辆配置。</p>
+    <div class="hero-badge">CarSim 2019.0 · AI 通用仿真</div>
+    <h1>CarSim-AI 通用仿真工具</h1>
+    <p>基于 CarSim 2019.0 的 AI 仿真工具，支持用户精确参数输入，自动生成各类仿真场景。高架桥爬坡、弯道操控、紧急避障、制动性能、加速性能等。</p>
   </div>
 
   <!-- Download -->
   <div class="download-box" id="download">
     <div class="icon">🚗</div>
     <h2>立即使用</h2>
-    <p class="desc">包含高架桥场景生成器、车辆参数配置器、仿真运行脚本、结果可视化工具。支持 CarSim 2019.0。</p>
+    <p class="desc">包含通用仿真主脚本、场景生成器、车辆参数配置器、结果可视化工具。支持 CarSim 2019.0。</p>
     <div class="download-buttons">
       <a class="btn btn-primary" href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/carsim-ai">在 GitHub 浏览源码</a>
       <a class="btn btn-secondary" href="https://github.com/LiHongwei-cn/lihongwei-cn/blob/main/carsim-ai/README.md">查看使用说明</a>
     </div>
-    <div class="file-info">MATLAB R2016b 兼容 · CarSim 2019.0+ · 含 3 个工具函数 + 1 个示例脚本</div>
+    <div class="file-info">MATLAB R2016b 兼容 · CarSim 2019.0+ · 含 5 种仿真场景</div>
   </div>
 
-  <!-- 场景描述 -->
+  <!-- 支持的场景 -->
   <div class="section">
-    <h2 class="section-title"><span class="num">🎬</span> 场景描述</h2>
+    <h2 class="section-title"><span class="num">🎬</span> 支持的仿真场景</h2>
     <div class="feature-grid">
       <div class="feature-card">
         <div class="f-icon">🏔️</div>
-        <h3>燕子矶高架</h3>
-        <p>模拟南京燕子矶高架桥场景，包含上坡路段、护栏、低摩擦路面</p>
+        <h3>高架桥爬坡</h3>
+        <p>模拟不同驱动类型车辆在冰雪路面上的爬坡能力，支持自定义坡度、摩擦系数</p>
       </div>
       <div class="feature-card">
-        <div class="f-icon">❄️</div>
-        <h3>冰雪路面</h3>
-        <p>下雪天路面湿滑结冰，摩擦系数 0.1-0.3，模拟真实冬季路况</p>
+        <div class="f-icon">🔄</div>
+        <h3>弯道操控</h3>
+        <p>测试车辆在不同半径弯道上的操控性能，支持自定义弯道半径、角度</p>
       </div>
       <div class="feature-card">
-        <div class="f-icon">🚗</div>
-        <h3>前驱/后驱车</h3>
-        <p>在低摩擦路面上打滑，无法成功爬坡，最后滑回起点</p>
+        <div class="f-icon">⚠️</div>
+        <h3>紧急避障</h3>
+        <p>模拟车辆紧急避障性能，支持自定义障碍物位置、车道宽度</p>
       </div>
       <div class="feature-card">
-        <div class="f-icon">🚙</div>
-        <h3>四驱车</h3>
-        <p>成功爬坡，不撞护栏，展示四驱系统在恶劣路况下的优势</p>
+        <div class="f-icon">🛑</div>
+        <h3>制动性能</h3>
+        <p>测试车辆在不同路面上的制动性能，支持自定义初始速度、摩擦系数</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">🚀</div>
+        <h3>加速性能</h3>
+        <p>测试车辆加速性能，支持自定义目标速度、发动机功率</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">➕</div>
+        <h3>自定义场景</h3>
+        <p>支持用户自定义场景，扩展仿真能力</p>
       </div>
     </div>
   </div>
@@ -157,7 +167,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <div class="feature-card">
         <div class="f-icon">🎯</div>
         <h3>精确参数输入</h3>
-        <p>用户可自定义高架桥、车辆、路面参数，AI 严格按照参数生成代码</p>
+        <p>用户可自定义各类参数，AI 严格按照参数生成代码</p>
       </div>
       <div class="feature-card">
         <div class="f-icon">🔧</div>
@@ -167,12 +177,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <div class="feature-card">
         <div class="f-icon">🤖</div>
         <h3>自动生成场景</h3>
-        <p>自动生成高架桥、护栏、低摩擦路面，无需手动配置</p>
+        <p>自动生成道路、护栏、路面等场景文件</p>
       </div>
       <div class="feature-card">
         <div class="f-icon">📊</div>
         <h3>结果可视化</h3>
-        <p>生成轨迹、速度、滑移率图表，直观对比不同驱动类型</p>
+        <p>生成轨迹、速度、滑移率图表，直观对比仿真结果</p>
       </div>
     </div>
   </div>
@@ -182,84 +192,33 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     <h2 class="section-title"><span class="num">🔄</span> 工作流程</h2>
     <div class="step-list">
       <div class="step-item">
+        <h3>选择场景</h3>
+        <p>选择仿真场景类型（高架桥爬坡、弯道操控、紧急避障等）。</p>
+      </div>
+      <div class="step-item">
         <h3>设置参数</h3>
-        <p>在 MATLAB 中设置高架桥、车辆、路面参数。例如：</p>
-        <div class="cmd"><span class="cm">% 高架桥参数</span>
-params.bridge_length = 100;    <span class="cm">% 长度 [m]</span>
-params.bridge_width = 8;       <span class="cm">% 宽度 [m]</span>
-params.slope_angle = 15;       <span class="cm">% 坡度 [deg]</span>
-params.friction = 0.2;         <span class="cm">% 摩擦系数</span>
-
-<span class="cm">% 车辆参数</span>
+        <p>在 MATLAB 中设置场景参数。例如：</p>
+        <div class="cmd"><span class="cm">% 高架桥爬坡场景</span>
+params.scene_type = 'bridge_slope';
+params.bridge_length = 100;    <span class="cm">% 高架桥长度 [m]</span>
+params.bridge_width = 8;       <span class="cm">% 高架桥宽度 [m]</span>
+params.slope_angle = 15;       <span class="cm">% 坡度角度 [deg]</span>
+params.friction = 0.2;         <span class="cm">% 路面摩擦系数</span>
 params.fwd_power = 100;        <span class="cm">% 前驱车功率 [kW]</span>
 params.awd_power = 100;        <span class="cm">% 四驱车功率 [kW]</span></div>
       </div>
       <div class="step-item">
         <h3>运行仿真</h3>
-        <p>调用 <code>run_bridge_simulation(params)</code>，自动生成场景文件、车辆配置、仿真脚本。</p>
+        <p>调用 <code>run_simulation(params)</code>，自动生成场景文件、车辆配置、仿真脚本。</p>
       </div>
       <div class="step-item">
         <h3>CarSim 运行</h3>
-        <p>在 CarSim 2019.0 中加载生成的仿真文件，运行两个仿真（前驱车和四驱车）。</p>
+        <p>在 CarSim 2019.0 中加载生成的仿真文件，运行仿真。</p>
       </div>
       <div class="step-item">
         <h3>分析结果</h3>
-        <p>自动分析仿真结果，生成可视化图表，对比爬坡能力。</p>
+        <p>自动分析仿真结果，生成可视化图表。</p>
       </div>
-    </div>
-  </div>
-
-  <!-- 仿真详解 -->
-  <div class="section">
-    <h2 class="section-title"><span class="num">📊</span> 仿真详解</h2>
-    <p style="font-size:13px;color:var(--dim);margin-bottom:14px">每个工具函数的功能和参数。</p>
-
-    <div class="sim-grid">
-
-      <div class="sim-card">
-        <div class="sim-header">
-          <div class="sim-icon" style="background:linear-gradient(135deg,#0e7490,#0369a1)">🏔️</div>
-          <div class="sim-name">高架桥场景生成器</div>
-        </div>
-        <div class="sim-params">generate_bridge_scenario.m</div>
-        <div class="sim-desc">生成高架桥道路、护栏、低摩擦路面场景文件，支持自定义参数。</div>
-        <div class="sim-outputs">输出：.road, .tir, .par 文件</div>
-        <div class="sim-cmd">generate_bridge_scenario(params)</div>
-      </div>
-
-      <div class="sim-card">
-        <div class="sim-header">
-          <div class="sim-icon" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">🚗</div>
-          <div class="sim-name">车辆参数配置器</div>
-        </div>
-        <div class="sim-params">configure_vehicle.m</div>
-        <div class="sim-desc">配置前驱/后驱/四驱车辆参数，生成 CarSim 格式的车辆配置文件。</div>
-        <div class="sim-outputs">输出：vehicle_XXX.par 文件</div>
-        <div class="sim-cmd">configure_vehicle('AWD', 100)</div>
-      </div>
-
-      <div class="sim-card">
-        <div class="sim-header">
-          <div class="sim-icon" style="background:linear-gradient(135deg,#059669,#047857)">📊</div>
-          <div class="sim-name">结果可视化</div>
-        </div>
-        <div class="sim-params">visualize_results.m</div>
-        <div class="sim-desc">可视化仿真结果，生成轨迹、速度、滑移率图表。</div>
-        <div class="sim-outputs">输出：simulation_results.png</div>
-        <div class="sim-cmd">visualize_results(params, results)</div>
-      </div>
-
-      <div class="sim-card">
-        <div class="sim-header">
-          <div class="sim-icon" style="background:linear-gradient(135deg,#b91c1c,#991b1b)">🎯</div>
-          <div class="sim-name">仿真主脚本</div>
-        </div>
-        <div class="sim-params">run_bridge_simulation.m</div>
-        <div class="sim-desc">主仿真脚本，串联所有工具函数，一键运行完整仿真流程。</div>
-        <div class="sim-outputs">输出：完整仿真结果</div>
-        <div class="sim-cmd">run_bridge_simulation(params)</div>
-      </div>
-
     </div>
   </div>
 
@@ -268,41 +227,45 @@ params.awd_power = 100;        <span class="cm">% 四驱车功率 [kW]</span></d
     <h2 class="section-title"><span class="num">💻</span> 使用示例</h2>
     <div class="step-list">
       <div class="step-item">
-        <h3>完整示例</h3>
-        <p>以下是一个完整的仿真示例，模拟燕子矶高架场景：</p>
-        <div class="cmd"><span class="cm">%% 燕子矶高架仿真示例</span>
-<span class="cm">% MATLAB R2016b 兼容</span>
+        <h3>高架桥爬坡仿真</h3>
+        <p>模拟不同驱动类型车辆在冰雪路面上的爬坡能力：</p>
+        <div class="cmd"><span class="cm">%% 高架桥爬坡仿真示例</span>
+params.scene_type = 'bridge_slope';
+params.bridge_length = 100;
+params.bridge_width = 8;
+params.slope_angle = 15;
+params.friction = 0.2;
+params.fwd_power = 100;
+params.awd_power = 100;
+params.output_dir = './output';
 
-<span class="cm">% 1. 设置参数</span>
-params.bridge_length = 100;    <span class="cm">% 高架桥长度 [m]</span>
-params.bridge_width = 8;       <span class="cm">% 高架桥宽度 [m]</span>
-params.slope_angle = 15;       <span class="cm">% 坡度角度 [deg]</span>
-params.friction = 0.2;         <span class="cm">% 路面摩擦系数</span>
-params.fwd_power = 100;        <span class="cm">% 前驱车功率 [kW]</span>
-params.awd_power = 100;        <span class="cm">% 四驱车功率 [kW]</span>
-params.output_dir = './output';<span class="cm">% 输出目录</span>
-
-<span class="cm">% 2. 运行仿真</span>
-run_bridge_simulation(params);
-
-<span class="cm">% 3. 查看结果</span>
-<span class="cm">% 结果保存在 output 目录中</span></div>
+run_simulation(params);</div>
       </div>
       <div class="step-item">
-        <h3>自定义参数</h3>
-        <p>修改参数以适应不同场景：</p>
-        <div class="cmd"><span class="cm">% 更陡的坡度</span>
-params.slope_angle = 20;
+        <h3>弯道操控仿真</h3>
+        <p>测试车辆在不同半径弯道上的操控性能：</p>
+        <div class="cmd"><span class="cm">%% 弯道操控仿真示例</span>
+params.scene_type = 'cornering';
+params.curve_radius = 50;
+params.curve_angle = 90;
+params.road_width = 7;
+params.vehicle_speed = 60;
+params.output_dir = './output';
 
-<span class="cm">% 更滑的路面</span>
-params.friction = 0.15;
+run_simulation(params);</div>
+      </div>
+      <div class="step-item">
+        <h3>紧急避障仿真</h3>
+        <p>模拟车辆紧急避障性能：</p>
+        <div class="cmd"><span class="cm">%% 紧急避障仿真示例</span>
+params.scene_type = 'obstacle_avoidance';
+params.obstacle_position = 50;
+params.obstacle_width = 2;
+params.lane_width = 3.5;
+params.vehicle_speed = 80;
+params.output_dir = './output';
 
-<span class="cm">% 更长的高架桥</span>
-params.bridge_length = 150;
-
-<span class="cm">% 更高功率的车辆</span>
-params.fwd_power = 150;
-params.awd_power = 150;</div>
+run_simulation(params);</div>
       </div>
     </div>
   </div>
@@ -314,16 +277,17 @@ params.awd_power = 150;</div>
     <div class="file-group">
       <div class="file-group-label">carsim-ai/examples/ — 示例脚本</div>
       <div class="file-list">
-        <div class="file-row"><span class="file-name">run_bridge_simulation.m</span><span class="file-desc">高架桥仿真主脚本</span></div>
+        <div class="file-row"><span class="file-name">run_simulation.m</span><span class="file-desc">通用仿真主脚本</span></div>
       </div>
     </div>
 
     <div class="file-group">
       <div class="file-group-label">carsim-ai/utils/ — 工具函数</div>
       <div class="file-list">
-        <div class="file-row"><span class="file-name">generate_bridge_scenario.m</span><span class="file-desc">高架桥场景生成器</span></div>
+        <div class="file-row"><span class="file-name">generate_scenario.m</span><span class="file-desc">通用场景生成器</span></div>
         <div class="file-row"><span class="file-name">configure_vehicle.m</span><span class="file-desc">车辆参数配置器</span></div>
         <div class="file-row"><span class="file-name">visualize_results.m</span><span class="file-desc">结果可视化</span></div>
+        <div class="file-row"><span class="file-name">generate_bridge_scenario.m</span><span class="file-desc">高架桥场景生成器</span></div>
       </div>
     </div>
 

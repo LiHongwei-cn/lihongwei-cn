@@ -31,8 +31,8 @@ MATLAB 仿真工具包。支持用户精确参数输入，AI 自动生成兼容 
 </td>
 <td width="50%" valign="top">
 
-### 🚗 CarSim-AI 高架桥仿真
-基于 CarSim 2019.0 的 AI 仿真工具，模拟不同驱动类型车辆在冰雪路面上的爬坡能力。支持精确参数输入，自动生成场景和车辆配置。
+### 🚗 CarSim-AI 通用仿真工具
+基于 CarSim 2019.0 的 AI 仿真工具，支持各类仿真场景（高架桥爬坡、弯道操控、紧急避障等）。精确参数输入，自动生成场景和车辆配置。
 
 [📖 详情](https://lihongwei-cn.github.io/lihongwei-cn/carsim-ai/)
 
@@ -170,7 +170,9 @@ run_bridge_simulation(params);
 │   └── utils/             工具函数
 ├── matlab-tool/           安装包发布页面
 ├── matlab-ai/             MATLAB-AI 启动器页面
-├── carsim-ai/             CarSim-AI 高架桥仿真工具
+├── carsim-ai/             CarSim-AI 通用仿真工具
+├── assignments/           作业示例
+│   └── bridge-slope/      高架桥爬坡仿真
 ├── bot/                   Telegram 机器人
 ├── tools/                 启动脚本集合
 ├── skills/                Skills 市场（14 个 Skill）
