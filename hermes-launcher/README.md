@@ -1,5 +1,7 @@
 # Hermes Agent 一键启动器
 
+<img src="hermes-logo.png" alt="Hermes Agent" width="120" style="border-radius:24px;box-shadow:0 8px 32px rgba(0,0,0,0.3)">
+
 Nous Research 开源 AI Agent，Win / Mac 双击即用。支持 OpenRouter / OpenAI / Anthropic / DeepSeek 等多种模型后端。
 
 ## 下载
