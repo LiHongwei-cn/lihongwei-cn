@@ -1,14 +1,15 @@
 # CarSim-AI 通用仿真工具
 
-基于 CarSim 2019.0 的 AI 仿真工具，支持用户精确参数输入，自动生成各类仿真场景。
+纯 CarSim 2019.0 仿真工具，支持用户精确参数输入，自动生成各类仿真场景的参数说明。
 
 ## 核心特性
 
-- **精确参数输入**：用户提供精确数值，AI 严格按照参数生成代码
-- **CarSim 2019.0 兼容**：使用 CarSim 标准 API 和文件格式
+- **纯 CarSim 仿真**：不依赖 Simulink，完全在 CarSim 内部运行
+- **精确参数输入**：用户提供精确数值，生成对应的 CarSim 参数说明
+- **CarSim 2019.0 兼容**：使用 CarSim 标准 GUI 操作
 - **通用场景生成**：支持各类仿真场景（高架桥爬坡、弯道操控、紧急避障等）
 - **车辆参数配置**：支持前驱/后驱/四驱车辆配置
-- **结果可视化**：自动生成仿真结果图表
+- **结果分析**：提供 MATLAB 分析脚本
 
 ## 支持的仿真场景
 
@@ -80,14 +81,7 @@ carsim-ai/
 ├── examples/                    示例脚本
 │   └── run_simulation.m         通用仿真主脚本
 ├── utils/                       工具函数
-│   ├── generate_scenario.m      通用场景生成器
-│   ├── configure_vehicle.m      车辆参数配置器
-│   ├── visualize_results.m      结果可视化
-│   └── generate_bridge_scenario.m 高架桥场景生成器
-├── templates/                   模板文件
-│   └── simulation_template.par  CarSim 仿真模板
-├── docs/                        文档
-│   └── user_guide.md            用户指南
+│   └── configure_vehicle.m      车辆参数配置器
 ├── README.md                    本文件
 └── index.html                   项目网页
 ```
@@ -99,12 +93,6 @@ carsim-ai/
 - **macOS**：双击 `tools/carsim-ai.command`
 - **Windows**：双击 `tools/carsim-ai.bat`
 
-启动器功能：
-- 自动检测 MATLAB 安装
-- 一键运行高架桥爬坡仿真（作业示例）
-- 打开通用仿真工具
-- 查看可用仿真场景列表
-
 ### 方式二：MATLAB 命令行
 
 ```matlab
@@ -114,21 +102,35 @@ cd('path/to/lihongwei-cn/carsim-ai/examples')
 % 2. 设置仿真参数
 params.scene_type = 'bridge_slope';
 params.bridge_length = 100;
-params.bridge_width = 8;
 params.slope_angle = 15;
 params.friction = 0.2;
 params.fwd_power = 100;
 params.awd_power = 100;
 params.output_dir = '../output';
 
-% 3. 运行仿真
+% 3. 运行仿真（生成参数说明）
 run_simulation(params);
 ```
 
-### 方式三：桌面快捷启动
+### 方式三：在 CarSim 中操作
 
-- **macOS**：双击 `tools/carsim-ai.command`
-- **Windows**：双击 `tools/carsim-ai.bat`
+1. 运行 MATLAB 脚本生成参数说明
+2. 打开 CarSim 2019.0
+3. 按照生成的说明文件设置参数
+4. 点击 Run 运行仿真
+5. 导出结果后用 MATLAB 分析
+
+## 工作流程
+
+```
+1. 运行 MATLAB 脚本生成参数说明
+   ↓
+2. 在 CarSim 中手动输入参数
+   ↓
+3. 在 CarSim 中点击 Run 运行仿真
+   ↓
+4. 导出结果后用 MATLAB 分析
+```
 
 ## 参数说明
 
@@ -144,7 +146,6 @@ run_simulation(params);
 | 参数 | 说明 | 默认值 | 单位 |
 |------|------|--------|------|
 | bridge_length | 高架桥长度 | 100 | m |
-| bridge_width | 高架桥宽度 | 8 | m |
 | slope_angle | 坡度角度 | 15 | deg |
 | friction | 路面摩擦系数 | 0.2 | - |
 
@@ -160,95 +161,53 @@ run_simulation(params);
 
 仿真完成后，输出目录包含：
 
-### 场景文件
+### 参数说明文件
 
-- `*.road` - 道路定义
-- `*.tir` - 路面摩擦定义
-- `*.par` - 场景参数
+- `carsim_instructions_FWD.txt` - 前驱车参数设置说明
+- `carsim_instructions_AWD.txt` - 四驱车参数设置说明
 
-### 车辆文件
+### 分析脚本
 
-- `vehicle_*.par` - 车辆配置
+- `analyze_results.m` - 结果分析脚本
 
-### 仿真文件
+### 仿真结果（手动导出）
 
-- `simulation_*.par` - 仿真配置
-- `run_batch.bat` - 批处理脚本
-
-### 结果文件
-
-- `results_*.csv` - 仿真结果
-- `simulation_results.png` - 可视化结果
-
-## 添加新场景
-
-### 1. 创建场景模板
-
-在 `utils/scenarios/` 目录下创建新的场景文件：
-
-```matlab
-function params = my_custom_scenario(params)
-    % my_custom_scenario 自定义场景参数
-    %
-    % 输入：params - 用户参数
-    % 输出：params - 完整参数（包含默认值）
-
-    % 设置默认值
-    if ~isfield(params, 'my_param')
-        params.my_param = 100;  % 默认值
-    end
-
-    % 验证参数
-    assert(params.my_param > 0, '参数必须为正数');
-end
-```
-
-### 2. 注册场景
-
-在 `utils/generate_scenario.m` 中添加新场景：
-
-```matlab
-case 'my_custom'
-    params = my_custom_scenario(params);
-```
-
-### 3. 使用新场景
-
-```matlab
-params.scene_type = 'my_custom';
-params.my_param = 150;
-run_simulation(params);
-```
+- `results_FWD.csv` - 前驱车仿真结果
+- `results_AWD.csv` - 四驱车仿真结果
 
 ## 依赖
 
-- MATLAB R2016b+
 - CarSim 2019.0+
+- MATLAB R2016b+（仅用于生成参数和分析结果）
 
 ## 常见问题
 
-### Q1: CarSim 版本兼容性
+### Q1: CarSim 打不开怎么办？
 
-**A**: 本工具兼容 CarSim 2019.0 及以上版本。使用标准 API 和文件格式。
+**A**: 
+1. 确认 CarSim 2019.0 已正确安装
+2. 检查 CarSim 许可证是否有效
+3. 尝试以管理员身份运行 CarSim
 
-### Q2: 如何添加更多车辆？
+### Q2: 仿真失败怎么办？
 
-**A**: 修改 `run_simulation.m`，添加更多 `configure_vehicle` 调用。
+**A**: 
+1. 检查参数设置是否正确
+2. 确认初始条件合理
+3. 查看 CarSim 的错误日志
 
-### Q3: 仿真失败怎么办？
+### Q3: 如何添加新场景？
 
-**A**: 检查 CarSim 是否正确安装，确保文件路径正确。
-
-### Q4: 如何自定义场景？
-
-**A**: 参考"添加新场景"章节，创建新的场景模板。
+**A**: 
+1. 在 `run_simulation.m` 中添加新的场景函数
+2. 参考现有场景的实现
+3. 生成对应的参数说明文件
 
 ## 开发规范
 
-- 兼容性底线 R2016b：不使用 `rms()`、`arguments` 等新版函数
+- 兼容性底线 R2016b
 - 文件名/函数名：`snake_case`
 - 数值单位标注在注释中：`[m]`、`[deg]`、`[kW]`
-- 前向欧拉法显式迭代，不依赖隐式求解器
 - 函数保持 <200 行
 
 ## 许可证
