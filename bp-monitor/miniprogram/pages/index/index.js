@@ -1,10 +1,11 @@
 const TREND_MAP = {
-  improving:    { icon: '✅', title: '趋势向好', desc: '收缩压较前段改善，继续保持' },
-  worsening:    { icon: '⚠️', title: '需要关注', desc: '收缩压较前段升高，请留意' },
-  stable:       { icon: '💙', title: '血压平稳', desc: '近期血压稳定，保持良好习惯' },
+  improving:         { icon: '✅', title: '趋势向好', desc: '收缩压较前段改善，继续保持' },
+  worsening:         { icon: '⚠️', title: '需要关注', desc: '收缩压较前段升高，请留意' },
+  stable:            { icon: '💙', title: '血压平稳', desc: '近期血压稳定，保持良好习惯' },
   insufficient_data: { icon: '📋', title: '数据不足', desc: '继续记录以获取趋势分析' }
 };
-const api = require('../../utils/api.js');
+
+const cloud = require('../../utils/cloud.js');
 const auth = require('../../utils/auth.js');
 const app = getApp();
 
@@ -37,7 +38,7 @@ Page({
     else g = '晚上好';
 
     const name = (app.globalData.userInfo && app.globalData.userInfo.nickname) || '';
-    const display = name ? `${name}，${g}` : g;
+    const display = name ? name + '，' + g : g;
 
     const d = now.toLocaleDateString('zh-CN', {
       year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'
@@ -66,8 +67,8 @@ Page({
   loadData() {
     this.setData({ loading: true });
     Promise.all([
-      api.get('/readings', { page: 1, limit: 1 }),
-      api.get('/readings/stats', { days: 7 })
+      cloud.getReadings({ page: 1, limit: 1 }),
+      cloud.getStats({ days: 7 })
     ]).then(([listRes, statsRes]) => {
       const trend = TREND_MAP[statsRes.trend_direction] || TREND_MAP.insufficient_data;
       this.setData({

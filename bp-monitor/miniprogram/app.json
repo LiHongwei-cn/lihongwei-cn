@@ -6,7 +6,6 @@
     "pages/report/report",
     "pages/profile/profile"
   ],
-  "cloud": true,
   "window": {
     "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTitleText": "家庭血压监测",
