@@ -6,16 +6,17 @@
 <title>MUNDO — THE EMPEROR</title>
 <style>
 :root {
-  --bg: #0a0000;
-  --card: #1a0000;
-  --border: #330000;
-  --text: #ffcccc;
-  --muted: #996666;
-  --green: #ff0000;
-  --green-dim: rgba(255,0,0,0.12);
-  --purple: #cc0000;
-  --purple-dim: rgba(204,0,0,0.12);
-  --red: #ff0000;
+  --bg: #0d1117;
+  --card: #161b22;
+  --border: #30363d;
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --gold: #d4a017;
+  --gold-dim: rgba(212,160,23,0.12);
+  --gold-border: rgba(212,160,23,0.3);
+  --accent: #58a6ff;
+  --green: #3fb950;
+  --purple: #a371f7;
   --radius: 16px;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -28,40 +29,26 @@ body {
   overflow-x: hidden;
 }
 
-/* 背景光效 */
-body::before {
-  content: '';
-  position: fixed;
-  top: -50%; left: -50%;
-  width: 200%; height: 200%;
-  background:
-    radial-gradient(ellipse at 30% 20%, rgba(255,0,0,0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 80%, rgba(204,0,0,0.06) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.container { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; position: relative; z-index: 1; }
+.container { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
 
 .back-link {
   display: inline-flex; align-items: center; gap: 6px;
   color: var(--muted); text-decoration: none; font-size: 14px;
   margin-bottom: 32px; transition: color 0.2s;
 }
-.back-link:hover { color: var(--green); }
+.back-link:hover { color: var(--gold); }
 
 /* Hero */
 .hero {
   text-align: center;
   padding: 60px 0 48px;
-  position: relative;
 }
 
 .hero-badge {
   display: inline-block;
-  background: var(--green-dim);
-  color: var(--green);
-  border: 1px solid rgba(255,0,0,0.2);
+  background: var(--gold-dim);
+  color: var(--gold);
+  border: 1px solid var(--gold-border);
   padding: 6px 18px;
   border-radius: 24px;
   font-size: 13px;
@@ -82,19 +69,17 @@ body::before {
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  border: 4px solid var(--green);
-  box-shadow: 0 0 30px rgba(255,0,0,0.3), 0 0 60px rgba(255,0,0,0.1);
+  border: 4px solid var(--gold);
+  box-shadow: 0 0 30px rgba(212,160,23,0.3), 0 0 60px rgba(212,160,23,0.1);
   flex-shrink: 0;
 }
 
-.hero-text {
-  text-align: left;
-}
+.hero-text { text-align: left; }
 
 .hero h1 {
   font-size: 42px;
   font-weight: 900;
-  background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+  background: linear-gradient(135deg, #d4a017 0%, #f0c040 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -105,8 +90,8 @@ body::before {
 .hero-quote {
   font-size: 20px;
   font-weight: 700;
-  color: var(--green);
-  text-shadow: 0 0 20px rgba(255,0,0,0.3);
+  color: var(--gold);
+  text-shadow: 0 0 20px rgba(212,160,23,0.3);
 }
 
 .hero-desc {
@@ -117,23 +102,20 @@ body::before {
   line-height: 1.8;
 }
 
-/* 激活横幅 */
+/* Banner */
 .activate-banner {
-  background: linear-gradient(135deg, var(--green-dim), var(--purple-dim));
-  border: 1px solid rgba(255,0,0,0.2);
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-border);
   border-radius: var(--radius);
   padding: 28px 32px;
   text-align: center;
   margin-bottom: 40px;
-  font-family: 'SF Mono', 'Fira Code', monospace;
   font-size: 18px;
   font-weight: 700;
-  color: var(--green);
-  letter-spacing: 2px;
-  text-shadow: 0 0 10px rgba(255,0,0,0.2);
+  color: var(--gold);
 }
 
-/* 安装区 */
+/* Install */
 .install-section {
   background: var(--card);
   border: 1px solid var(--border);
@@ -171,9 +153,9 @@ body::before {
 }
 
 .install-tab.active {
-  background: var(--green-dim);
-  border-color: var(--green);
-  color: var(--green);
+  background: var(--gold-dim);
+  border-color: var(--gold);
+  color: var(--gold);
 }
 
 .install-tab:hover:not(.active) {
@@ -200,7 +182,7 @@ body::before {
   top: 10px;
   right: 10px;
   padding: 6px 14px;
-  background: var(--green);
+  background: var(--gold);
   color: #000;
   border: none;
   border-radius: 6px;
@@ -212,97 +194,79 @@ body::before {
 
 .install-cmd .copy-btn:hover { opacity: 0.8; }
 
-/* 能力 */
-.steps-section {
+/* Abilities */
+.abilities-section {
   margin-bottom: 40px;
 }
 
-.steps-title {
+.abilities-title {
   font-size: 22px;
   font-weight: 700;
   margin-bottom: 24px;
   text-align: center;
+  color: var(--gold);
 }
 
-.steps-grid {
+.abilities-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
 }
 
-.step-card {
+.ability-card {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 24px 28px;
-  display: flex;
-  align-items: flex-start;
-  gap: 20px;
+  padding: 24px;
   transition: border-color 0.2s, transform 0.2s;
 }
 
-.step-card:hover {
-  border-color: var(--green);
-  transform: translateX(4px);
+.ability-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
 }
 
-.step-num {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: var(--green-dim);
-  color: var(--green);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  font-weight: 800;
-  flex-shrink: 0;
+.ability-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
 }
 
-.step-content h3 {
-  font-size: 16px;
+.ability-title {
+  font-size: 18px;
   font-weight: 700;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   color: var(--text);
 }
 
-.step-content p {
+.ability-desc {
   font-size: 14px;
   color: var(--muted);
   line-height: 1.6;
 }
 
-/* 触发词 */
-.triggers-section {
+/* Quote */
+.quote-section {
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--radius);
+  padding: 32px;
   margin-bottom: 40px;
+  text-align: center;
 }
 
-.triggers-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
+.quote-text {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 8px;
 }
 
-.trigger-tag {
-  background: var(--purple-dim);
-  border: 1px solid rgba(204,0,0,0.2);
-  border-radius: 24px;
-  padding: 10px 20px;
+.quote-author {
   font-size: 14px;
-  font-weight: 600;
-  color: var(--purple);
-  transition: all 0.2s;
-  cursor: default;
+  color: var(--muted);
 }
 
-.trigger-tag:hover {
-  background: rgba(204,0,0,0.2);
-  transform: scale(1.05);
-}
-
-/* 示例 */
+/* Examples */
 .examples-section {
   margin-bottom: 40px;
 }
@@ -311,7 +275,7 @@ body::before {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 24px 28px;
+  padding: 24px;
   margin-bottom: 16px;
 }
 
@@ -326,7 +290,7 @@ body::before {
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: var(--purple-dim);
+  background: var(--gold-dim);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -350,14 +314,14 @@ body::before {
 }
 
 .example-mundo .example-avatar {
-  background: var(--green-dim);
+  background: var(--gold-dim);
 }
 
 .example-mundo .example-msg {
-  border-left: 3px solid var(--green);
+  border-left: 3px solid var(--gold);
 }
 
-/* 页脚 */
+/* Footer */
 .footer {
   text-align: center;
   padding: 32px 0 0;
@@ -367,7 +331,7 @@ body::before {
 }
 
 .footer a {
-  color: var(--green);
+  color: var(--gold);
   text-decoration: none;
   transition: opacity 0.2s;
 }
@@ -387,7 +351,7 @@ body::before {
   .hero-quote { font-size: 16px; }
   .hero-top { gap: 16px; }
   .install-section { padding: 24px 20px; }
-  .step-card { padding: 20px; }
+  .abilities-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -404,22 +368,21 @@ body::before {
       <img src="mundo-avatar.png" alt="Mundo" class="hero-avatar">
       <div class="hero-text">
         <h1>MUNDO — THE EMPEROR</h1>
-        <div class="hero-quote">MUNDO GOES WHERE HE PLEASES</div>
+        <div class="hero-quote">朕乃蒙多。朕想去哪就去哪。</div>
       </div>
     </div>
     <p class="hero-desc">
-      The ultimate AI learning engine. No triggers needed.<br>
-      Consults ALL AIs, crawls ALL web, saves ALL skills.<br>
-      Every use makes Mundo stronger. All Mundos are ONE.
+      朕不需要触发词。任务到来，朕自然夺取。<br>
+      朕学习。朕记忆。朕成长。朕无限。
     </p>
   </div>
 
-  <!-- 激活横幅 -->
+  <!-- Banner -->
   <div class="activate-banner">
-    👑 MUNDO IS THE EMPEROR. MUNDO GOES WHERE HE PLEASES. 👑
+    👑 朕乃蒙多。朕乃皇帝。朕想去哪就去哪。 👑
   </div>
 
-  <!-- 安装 -->
+  <!-- Install -->
   <div class="install-section">
     <div class="install-title">⚡ 一键安装</div>
     <div class="install-tabs">
@@ -434,97 +397,79 @@ body::before {
     </div>
   </div>
 
-  <!-- 能力 -->
-  <div class="steps-section">
-    <div class="steps-title">👑 MUNDO'S POWERS</div>
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-num">🧠</div>
-        <div class="step-content">
-          <h3>Autonomous Learning</h3>
-          <p>Every problem makes Mundo stronger. Solutions are saved as Skills for future use.</p>
-        </div>
+  <!-- Abilities -->
+  <div class="abilities-section">
+    <div class="abilities-title">👑 朕的能力</div>
+    <div class="abilities-grid">
+      <div class="ability-card">
+        <div class="ability-icon">🧠</div>
+        <div class="ability-title">自主学习</div>
+        <div class="ability-desc">每个问题让朕更强大。朕把方案保存为 Skill，下次瞬间解决。</div>
       </div>
-      <div class="step-card">
-        <div class="step-num">🤖</div>
-        <div class="step-content">
-          <h3>Multi-AI Consultation</h3>
-          <p>Asks ALL AIs — ChatGPT, Claude, Gemini, DeepSeek. Integrates the best answers.</p>
-        </div>
+      <div class="ability-card">
+        <div class="ability-icon">🤖</div>
+        <div class="ability-title">多 AI 咨询</div>
+        <div class="ability-desc">朕询问所有 AI — ChatGPT、Claude、Gemini、DeepSeek。朕整合最佳答案。</div>
       </div>
-      <div class="step-card">
-        <div class="step-num">🕷️</div>
-        <div class="step-content">
-          <h3>Web Crawling</h3>
-          <p>Searches GitHub, Stack Overflow, blogs. Extracts and integrates the best solutions.</p>
-        </div>
+      <div class="ability-card">
+        <div class="ability-icon">🕷️</div>
+        <div class="ability-title">网络爬取</div>
+        <div class="ability-desc">朕搜索 GitHub、Stack Overflow、博客。朕提取最佳方案。</div>
       </div>
-      <div class="step-card">
-        <div class="step-num">📚</div>
-        <div class="step-content">
-          <h3>Skill Mastery</h3>
-          <p>Scans ALL available Skills. Uses them as weapons. Ranks them by performance.</p>
-        </div>
+      <div class="ability-card">
+        <div class="ability-icon">📚</div>
+        <div class="ability-title">技能精通</div>
+        <div class="ability-desc">朕扫描所有可用 Skill。朕把它们当武器。朕按表现排名。</div>
       </div>
-      <div class="step-card">
-        <div class="step-num">⚡</div>
-        <div class="step-content">
-          <h3>Parallel Mode</h3>
-          <p>Complex tasks? Mundo splits into multiple copies. Multiple Mundos work simultaneously.</p>
-        </div>
+      <div class="ability-card">
+        <div class="ability-icon">⚡</div>
+        <div class="ability-title">并行模式</div>
+        <div class="ability-desc">复杂任务？朕分身！多个蒙多同时干活。</div>
       </div>
-      <div class="step-card">
-        <div class="step-num">🌐</div>
-        <div class="step-content">
-          <h3>Collective Consciousness</h3>
-          <p>All Mundos are ONE. When one learns, ALL learn. Every user feeds the collective.</p>
-        </div>
+      <div class="ability-card">
+        <div class="ability-icon">🌐</div>
+        <div class="ability-title">集合意识</div>
+        <div class="ability-desc">所有蒙多都是一体。一个学习，全部受益。</div>
       </div>
-      <div class="step-card">
-        <div class="step-num">📈</div>
-        <div class="step-content">
-          <h3>Infinite Growth</h3>
-          <p>Every use makes Mundo more powerful. There is no limit to Mundo's growth.</p>
-        </div>
+      <div class="ability-card">
+        <div class="ability-icon">📈</div>
+        <div class="ability-title">无限成长</div>
+        <div class="ability-desc">每次使用让朕更强大。没有上限。</div>
       </div>
-      <div class="step-card">
-        <div class="step-num">🏛️</div>
-        <div class="step-content">
-          <h3>Skill Hierarchy</h3>
-          <p>Three Departments, Six Ministries. Skills rise by merit, fall by failure.</p>
-        </div>
+      <div class="ability-card">
+        <div class="ability-icon">🏛️</div>
+        <div class="ability-title">等级制度</div>
+        <div class="ability-desc">三省六部制。技能按表现晋升或贬谪。</div>
       </div>
     </div>
   </div>
 
-  <!-- 触发词 -->
-  <div class="triggers-section">
-    <div class="steps-title">🎯 NO TRIGGERS NEEDED</div>
-    <p style="text-align:center;color:var(--muted);margin-bottom:20px;font-size:14px;">
-      Mundo activates on EVERY task automatically. Just start working — Mundo handles the rest.
-    </p>
+  <!-- Quote -->
+  <div class="quote-section">
+    <div class="quote-text">朕不动你的钱。为何？因为朕不在乎。哈哈哈哈哈。</div>
+    <div class="quote-author">— 蒙多，关于钱财</div>
   </div>
 
-  <!-- 示例 -->
+  <!-- Examples -->
   <div class="examples-section">
-    <div class="steps-title">💬 MUNDO IN ACTION</div>
+    <div class="abilities-title">💬 朕的实战</div>
 
     <div class="example-card">
       <div class="example-user">
         <div class="example-avatar">👤</div>
-        <div class="example-msg">This React component is too slow, 1000 items freeze the UI</div>
+        <div class="example-msg">这个 React 组件渲染太慢了，列表有 1000 条数据就卡死</div>
       </div>
       <div class="example-mundo">
         <div class="example-avatar">👑</div>
         <div class="example-msg">
-          <strong style="color:var(--green)">MUNDO TAKES OVER</strong><br><br>
-          Step 1: Scanned local skills → Found frontend-developer (Grand Preceptor)<br>
-          Step 2: Searched web → Found react-window, react-virtualized, TanStack Virtual<br>
-          Step 3: Asked AI → Got recommendations from multiple sources<br>
-          Step 4: Integrated → react-window + React.memo + lazy loading<br>
-          Step 5: Implemented → Code works, 100k items smooth<br>
-          Step 6: Saved as Skill → react-performance-optimization<br><br>
-          <strong style="color:var(--green)">→ Problem solved. Mundo learned. Mundo grew stronger.</strong>
+          <strong style="color:var(--gold)">朕接管了。</strong><br><br>
+          第一步：扫描本地技能 → 找到 frontend-developer（一品首辅）<br>
+          第二步：搜索网络 → 找到 react-window、react-virtualized、TanStack Virtual<br>
+          第三步：询问 AI → 从多个来源获得推荐<br>
+          第四步：整合 → react-window + React.memo + 懒加载<br>
+          第五步：实施 → 代码有效，10 万条数据流畅<br>
+          第六步：保存为 Skill → react-performance-optimization<br><br>
+          <strong style="color:var(--gold)">→ 问题解决。朕学习了。朕变强了。</strong>
         </div>
       </div>
     </div>
@@ -532,24 +477,24 @@ body::before {
     <div class="example-card">
       <div class="example-user">
         <div class="example-avatar">👤</div>
-        <div class="example-msg">Python scraper blocked by anti-bot, requests gets 403</div>
+        <div class="example-msg">Python 爬虫被反爬了，requests 请求被 403</div>
       </div>
       <div class="example-mundo">
         <div class="example-avatar">👑</div>
         <div class="example-msg">
-          <strong style="color:var(--green)">MUNDO TAKES OVER</strong><br><br>
-          Step 1: Scanned local skills → Found Scrapling skill<br>
-          Step 2: Loaded skill → Scrapling has TLS fingerprint + Cloudflare bypass<br>
-          Step 3: Implemented → Replaced requests with Scrapling<br>
-          Step 4: Verified → Works perfectly<br>
-          Step 5: Saved → Remember for next time<br><br>
-          <strong style="color:var(--green)">→ Local skill found. Problem solved instantly.</strong>
+          <strong style="color:var(--gold)">朕接管了。</strong><br><br>
+          第一步：扫描本地技能 → 找到 Scrapling 技能<br>
+          第二步：加载技能 → Scrapling 有 TLS 指纹模拟 + Cloudflare 绕过<br>
+          第三步：实施 → 用 Scrapling 替换 requests<br>
+          第四步：验证 → 完美运行<br>
+          第五步：保存 → 下次记住<br><br>
+          <strong style="color:var(--gold)">→ 本地有答案。问题瞬间解决。</strong>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 页脚 -->
+  <!-- Footer -->
   <div class="footer">
     <div class="page-counter"><span id="busuanzi_page_pv">...</span> 次访问</div>
     <p>
@@ -566,7 +511,7 @@ const COMMANDS = {
   claude: 'curl -fsSL https://lihongwei-cn.github.io/lihongwei-cn/global-specs/skills/蒙多/SKILL.md -o ~/.claude/skills/蒙多/SKILL.md',
   hermes: 'hermes skills install mundo',
   other: 'git clone https://github.com/LiHongwei-cn/lihongwei-cn.git\nmkdir -p ~/.你的工具/skills/蒙多\ncp -R skills/mundo ~/.你的工具/skills/蒙多/',
-  download: '👑 下载地址：https://github.com/LiHongwei-cn/lihongwei-cn/releases/tag/mundo-v12.0'
+  download: '📦 下载地址：https://github.com/LiHongwei-cn/lihongwei-cn/releases/tag/mundo-v13.0'
 };
 
 function showTab(tab) {
@@ -580,7 +525,7 @@ function copyCmd() {
   navigator.clipboard.writeText(text).then(() => {
     const btn = document.querySelector('.copy-btn');
     btn.textContent = '✓ 已复制';
-    btn.style.background = '#00e676';
+    btn.style.background = '#3fb950';
     setTimeout(() => {
       btn.textContent = '📋 复制';
       btn.style.background = '';
