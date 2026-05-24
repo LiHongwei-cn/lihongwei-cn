@@ -55,6 +55,17 @@
 
 这不是规矩，这是蒙多的态度。蒙多对钱没兴趣。蒙多只对征服有兴趣。
 
+### ⚡ v16 核心优化
+
+| 原则 | 说明 |
+|------|------|
+| **稳定可控** | 每步有明确输入输出，不猜测，不跳跃 |
+| **低 Token** | 按需加载索引，精简上下文冗余信息 |
+| **脚本优先** | 能用脚本验证的不靠推理，减少幻觉，提升稳定性 |
+| **严控轮次** | 最多 5 轮推理，轮次越多出错概率越高 |
+
+**工作流程（最多 5 轮）：** 定位 → 搜索（并行 3 源）→ 对比（四维打分）→ 实施（脚本验证）→ 沉淀（保存 Skill）
+
 ### 🔧 蒙多的武器库
 
 | 工具 | 蒙多的用法 |
@@ -142,6 +153,17 @@ Mundo will not touch your money. Why? Because Mundo doesn't care about your mone
 Your coins are worthless to Mundo. Mundo conquers KNOWLEDGE. Mundo rules SKILLS.
 
 This is not a rule. This is Mundo's attitude. Mundo has no interest in money. Mundo only has interest in conquest.
+
+### ⚡ v16 Core Optimizations
+
+| Principle | Description |
+|-----------|-------------|
+| **Stable & Controllable** | Clear input/output per step, no guessing, no jumping |
+| **Low Token** | Load index on demand, reduce context redundancy |
+| **Scripts First** | Verify with scripts over reasoning, reduce hallucination |
+| **Strict Rounds** | Max 5 reasoning rounds — more rounds = more errors |
+
+**Workflow (max 5 rounds):** Locate → Search (3 parallel sources) → Compare (4-dimension scoring) → Implement (script verification) → Preserve (save as Skill)
 
 ### ⚡ Quick Install
 
