@@ -9,7 +9,7 @@ const _ = db.command;
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || '';
 const CRON_SECRET_TOKEN = process.env.CRON_SECRET_TOKEN || '';
 const DEEPSEEK_BASE_URL = 'https://api.deepseek.com';
-const DEEPSEEK_MODEL = 'deepseek-v4-pro';
+const DEEPSEEK_MODEL = 'deepseek-chat';
 
 // ── Rate limits ───────────────────────────────────────────────
 const MAX_READINGS_PER_DAY = 10;
@@ -208,9 +208,123 @@ ${dailySummary}
 ${MEDICAL_DISCLAIMER}`;
 }
 
+// ── Local rule-based analysis (fallback) ─────────────────────
+function analyzeLocalReading(params) {
+  var systolic = params.systolic;
+  var diastolic = params.diastolic;
+  var heartRate = params.heartRate;
+  var timePeriod = params.timePeriod;
+  var notes = params.notes;
+  var targetSys = params.targetSystolic || 140;
+  var targetDia = params.targetDiastolic || 90;
+  var recentReadings = params.recentReadings || [];
+
+  var level = classifyBp(systolic, diastolic);
+  var inRange = systolic <= targetSys && diastolic <= targetDia;
+  var rangeText = inRange ? '在您的目标范围内（' + targetSys + '/' + targetDia + ' mmHg 以下）' : '超出您的目标范围（' + targetSys + '/' + targetDia + ' mmHg）';
+
+  var sysDiff = systolic - targetSys;
+  var diaDiff = diastolic - targetDia;
+
+  var analysis = '📊 **本次读数分析**\n';
+  analysis += '您的血压为 ' + systolic + '/' + diastolic + ' mmHg，属于**' + level + '**，' + rangeText + '。\n';
+  if (heartRate) {
+    if (heartRate < 60) analysis += '心率 ' + heartRate + ' bpm，偏低，建议关注。\n';
+    else if (heartRate > 100) analysis += '心率 ' + heartRate + ' bpm，偏快，建议注意休息。\n';
+    else analysis += '心率 ' + heartRate + ' bpm，在正常范围内。\n';
+  }
+
+  analysis += '\n💊 **生活方式建议**\n';
+  if (systolic >= 160 || diastolic >= 100) {
+    analysis += '- 强烈建议尽快就医，由医生评估是否需要调整用药\n';
+    analysis += '- 严格控制盐的摄入，每日不超过 5 克\n';
+    analysis += '- 避免剧烈运动和情绪激动\n';
+  } else if (!inRange) {
+    analysis += '- 建议减少钠盐摄入，每日不超过 6 克\n';
+    analysis += '- 保持适当运动，如快走、游泳等有氧运动，每周 150 分钟\n';
+    analysis += '- 保持规律作息，避免熬夜\n';
+  } else {
+    analysis += '- 继续保持健康的生活方式\n';
+    analysis += '- 定期监测血压，建议每天早晚各测一次\n';
+  }
+
+  analysis += '\n⚠️ **注意事项**\n';
+  if (systolic >= 180 || diastolic >= 110) {
+    analysis += '- ℹ️ 您的血压已达到 3 级高血压水平，强烈建议尽快就医\n';
+  }
+  if (recentReadings.length >= 3) {
+    var trend = '';
+    var last3 = recentReadings.slice(-3);
+    var avgLast3 = last3.reduce(function (s, r) { return s + r.systolic; }, 0) / 3;
+    if (systolic > avgLast3 + 5) trend = '呈上升趋势';
+    else if (systolic < avgLast3 - 5) trend = '有改善趋势';
+    else trend = '基本稳定';
+    analysis += '- 与近期记录对比，血压' + trend + '\n';
+  }
+  analysis += '- 请坚持规律测量，并记录每次数据\n';
+  if (!inRange) {
+    analysis += '- 如果持续偏高，建议咨询医生是否需要调整治疗方案\n';
+  }
+
+  analysis += '\n---\n*以上分析基于血压分级规则生成，仅供参考，不构成医疗诊断或处方。请以执业医师的诊断和治疗方案为准。*';
+  return analysis;
+}
+
+function analyzeLocalReport(params) {
+  var avgSystolic = params.avgSystolic;
+  var avgDiastolic = params.avgDiastolic;
+  var readingCount = params.readingCount;
+  var targetSystolic = params.targetSystolic || 140;
+  var targetDiastolic = params.targetDiastolic || 90;
+  var weekStart = params.weekStart;
+  var weekEnd = params.weekEnd;
+  var morningAvg = params.morningAvg;
+  var eveningAvg = params.eveningAvg;
+  var maxSystolic = params.maxSystolic;
+  var minSystolic = params.minSystolic;
+  var complianceRate = params.complianceRate;
+  var levelDistribution = params.levelDistribution;
+  var timeInRange = params.timeInRange;
+
+  var inRange = avgSystolic <= targetSystolic && avgDiastolic <= targetDiastolic;
+  var level = classifyBp(Math.round(avgSystolic), Math.round(avgDiastolic));
+
+  var report = '📈 **本周血压趋势**\n';
+  report += '本周共记录 ' + readingCount + ' 次，平均血压 ' + avgSystolic.toFixed(1) + '/' + avgDiastolic.toFixed(1) + ' mmHg，属于**' + level + '**。\n';
+  report += inRange ? '平均血压在目标范围内，表现良好。\n' : '平均血压超出目标范围，需要关注。\n';
+
+  report += '\n🔍 **关键发现**\n';
+  report += '- 最高血压：' + maxSystolic + ' mmHg，最低血压：' + minSystolic + ' mmHg\n';
+  if (morningAvg !== null && eveningAvg !== null) {
+    report += '- 早晚对比：早晨平均 ' + morningAvg + ' mmHg，晚上平均 ' + eveningAvg + ' mmHg\n';
+  }
+  report += '- 达标率：' + complianceRate + '%，目标范围内时间占比：' + timeInRange + '%\n';
+  if (levelDistribution) report += '- 血压分级分布：' + levelDistribution + '\n';
+
+  report += '\n🏎️ **生活方式评估**\n';
+  if (inRange) {
+    report += '- 继续保持当前的饮食和运动习惯\n';
+    report += '- 建议每天盐摄入不超过 5 克\n';
+  } else {
+    report += '- 减少钠盐摄入，每日不超过 5 克\n';
+    report += '- 增加有氧运动，如快走、游泳，每周至少 150 分钟\n';
+    report += '- 控制体重，避免熬夜和过度劳累\n';
+  }
+
+  report += '\n🎯 **下周目标**\n';
+  report += '- 坚持每天早晚各测量一次血压\n';
+  if (!inRange) report += '- 尝试减少每餐用盐量\n';
+
+  report += '\n---\n*以上分析基于血压统计数据和分级规则生成，仅供参考，不构成医疗诊断或处方。请以执业医师的诊断和治疗方案为准。*';
+  return report;
+}
+
 // ── DeepSeek API ──────────────────────────────────────────────
 async function chat(messages) {
-  if (!DEEPSEEK_API_KEY) return 'AI分析暂时不可用，请配置DEEPSEEK_API_KEY环境变量。您的血压数据已安全保存。';
+  if (!DEEPSEEK_API_KEY) {
+    console.warn('DEEPSEEK_API_KEY not configured, using local analysis');
+    return null;
+  }
   return new Promise(function (resolve) {
     var data = JSON.stringify({ model: DEEPSEEK_MODEL, messages: messages });
     var req = https.request({
@@ -223,12 +337,12 @@ async function chat(messages) {
       var body = '';
       res.on('data', function (chunk) { body += chunk; });
       res.on('end', function () {
-        try { var json = JSON.parse(body); resolve(json.choices[0].message.content || ''); }
-        catch (e) { console.error('DeepSeek parse error:', body); resolve('AI分析暂时不可用，请稍后再试。'); }
+        try { var json = JSON.parse(body); resolve(json.choices[0].message.content || null); }
+        catch (e) { console.error('DeepSeek parse error:', body); resolve(null); }
       });
     });
-    req.on('error', function (e) { console.error('DeepSeek error:', e.message); resolve('AI分析暂时不可用，请稍后再试。'); });
-    req.on('timeout', function () { req.destroy(); resolve('AI分析暂时不可用，请稍后再试。'); });
+    req.on('error', function (e) { console.error('DeepSeek error:', e.message); resolve(null); });
+    req.on('timeout', function () { req.destroy(); console.error('DeepSeek timeout'); resolve(null); });
     req.write(data);
     req.end();
   });
@@ -372,6 +486,15 @@ async function handleAddReading(openid, data) {
       { role: 'system', content: SYSTEM_PROMPT },
       { role: 'user', content: userMsg },
     ]);
+
+    // Fallback to local rule-based analysis
+    if (!aiAnalysis) {
+      aiAnalysis = analyzeLocalReading({
+        systolic, diastolic, heartRate, timePeriod: reading.timePeriod, notes: reading.notes,
+        targetSystolic: user.targetSystolic || 140, targetDiastolic: user.targetDiastolic || 90,
+        recentReadings: recent,
+      });
+    }
 
     // Save AI feedback
     await db.collection('ai_feedback').add({ data: {
@@ -575,10 +698,22 @@ async function handleGenerateReport(openid, data) {
     levelDistribution, dailySummary,
   });
 
-  const aiResponse = await chat([
+  let aiResponse = await chat([
     { role: 'system', content: SYSTEM_PROMPT },
     { role: 'user', content: userMsg },
   ]);
+
+  // Fallback to local rule-based report
+  if (!aiResponse) {
+    aiResponse = analyzeLocalReport({
+      avgSystolic: avgSys, avgDiastolic: avgDia, readingCount: count,
+      targetSystolic: targetSys, targetDiastolic: targetDia,
+      weekStart, weekEnd, morningAvg, eveningAvg,
+      maxSystolic: maxR.systolic, minSystolic: minR.systolic,
+      complianceRate: compliance.toFixed(1), levelDistribution,
+      timeInRange: timeInRange.toFixed(1),
+    });
+  }
 
   const reportData = {
     _openid: openid,

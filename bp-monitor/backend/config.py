@@ -20,7 +20,7 @@ def get_env(key: str, required: bool = True) -> str:
 
 DEEPSEEK_API_KEY = get_env("DEEPSEEK_API_KEY", required=not DEV_MODE)
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
-DEEPSEEK_MODEL = "deepseek-v4-pro"
+DEEPSEEK_MODEL = "deepseek-chat"
 
 WECHAT_APPID = get_env("WECHAT_APPID", required=not DEV_MODE)
 WECHAT_SECRET = get_env("WECHAT_SECRET", required=not DEV_MODE)
