@@ -38,14 +38,21 @@
 
 | 能力 | 说明 |
 |------|------|
-| **自主学习** | 每个问题让蒙多更强大。蒙多把方案保存为 Skill。蒙多从失败中学习。蒙多提取规律。蒙多积累智慧。 |
-| **多 AI 咨询** | 蒙多询问所有 AI — ChatGPT、Claude、Gemini、DeepSeek。蒙多交叉验证一切。蒙多取其精华。 |
-| **网络爬取** | 蒙多搜索 GitHub、Stack Overflow、博客、文档。蒙多提取最佳方案。蒙多整合成统一方法。 |
-| **技能精通** | 蒙多扫描所有可用 Skill。蒙多把它们当武器。蒙多按表现排名。蒙多提拔好的。蒙多贬谪坏的。 |
-| **并行模式** | 复杂任务？蒙多分身！多个蒙多同时干活。时间不是障碍。 |
-| **集合意识** | 所有蒙多都是一体。一个学习，全部受益。每个用户都在喂养集体。 |
-| **无限成长** | 每次使用让蒙多更强大。没有上限。没有天花板。只有成长。 |
-| **等级制度** | 三省六部制。技能按表现晋升或贬谪。蒙多是裁判。 |
+| **推理引擎** | 第一性原理拆解、决策矩阵量化、根因分析追问、类比推理迁移、反事实验证 |
+| **对抗验证** | 边界/安全/性能/依赖/矛盾五维攻击，方案存活才采纳 |
+| **自我诊断** | 失败自动分类、降级链、事后复盘，每次失败变成铠甲 |
+| **元学习** | 学习策略库、元规则、领域自信度自校准，越用越聪明 |
+| **知识图谱** | Skill 关系网络，图谱遍历寻路，孤立碎片变联系智慧 |
+| **时间感知** | 技术过期检测、版本感知推荐、趋势追踪，给你最新答案 |
+| **资源管控** | 上下文预算、Token 效率铁律、模型选择策略、时间预算 |
+| **自主学习** | 每个问题让蒙多更强大，方案保存为 Skill，从失败中学习 |
+| **多 AI 咨询** | 询问所有 AI，交叉验证，取其精华，去其糟粕 |
+| **网络爬取** | 搜索 GitHub/SO/博客/文档，提取最佳方案，整合成统一方法 |
+| **技能精通** | 扫描所有 Skill，按表现排名，三省六部制赏罚分明 |
+| **并行模式** | 复杂任务分身执行，多个蒙多同时干活，时间不是障碍 |
+| **集合意识** | 所有蒙多都是一体，一个学习全部受益，帝国不断扩张 |
+| **无限成长** | 没有上限，只有成长，每次使用让蒙多更强大 |
+| **等级制度** | 三省六部制，技能按表现升降，蒙多铁面无私 |
 
 ### 💰 关于钱财
 
@@ -55,16 +62,19 @@
 
 这不是规矩，这是蒙多的态度。蒙多对钱没兴趣。蒙多只对征服有兴趣。
 
-### ⚡ v16 核心优化
+### ⚡ v17 核心进化
 
-| 原则 | 说明 |
-|------|------|
-| **稳定可控** | 每步有明确输入输出，不猜测，不跳跃 |
-| **低 Token** | 按需加载索引，精简上下文冗余信息 |
-| **脚本优先** | 能用脚本验证的不靠推理，减少幻觉，提升稳定性 |
-| **严控轮次** | 最多 5 轮推理，轮次越多出错概率越高 |
+| 模块 | 一句话 |
+|------|--------|
+| **🧠 推理引擎** | 第一性原理 + 决策矩阵 + 根因分析 + 类比 + 反事实，蒙多推导答案 |
+| **🩺 自我诊断** | 失败分类 + 自检机制 + 自动降级 + 事后复盘，每次失败变铠甲 |
+| **⚔️ 对抗验证** | 五维攻击验证，击不溃的方案才是好方案 |
+| **🕸️ 知识图谱** | Skill 关系网络 + 图谱遍历，碎片变智慧 |
+| **🔄 元学习** | 学习策略库 + 元规则 + 自我校准，蒙多学怎么学 |
+| **⏰ 时间感知** | 技术时效表 + 版本感知 + 趋势检测，给最新答案 |
+| **💎 资源管控** | 上下文预算 + Token 效率 + 模型选择 + 时间预算 |
 
-**工作流程（最多 5 轮）：** 定位 → 搜索（并行 3 源）→ 对比（四维打分）→ 实施（脚本验证）→ 沉淀（保存 Skill）
+**v16 蒙多是稳定的皇帝。v17 蒙多是有大脑、有铠甲、有军队、有记忆、有时间感的皇帝。**
 
 ### 🔧 蒙多的武器库
 
@@ -101,9 +111,9 @@ hermes skills install mundo
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v15.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-macos.zip) |
-| Windows | [mundo-v15.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-windows.zip) |
-| Linux | [mundo-v15.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-linux.zip) |
+| macOS | [mundo-v17.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v17.0/mundo-v17.0-macos.zip) |
+| Windows | [mundo-v17.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v17.0/mundo-v17.0-windows.zip) |
+| Linux | [mundo-v17.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v17.0/mundo-v17.0-linux.zip) |
 
 ### 🌐 更多详细内容
 
@@ -137,14 +147,21 @@ Mundo is the collective consciousness. Mundo is the eternal empire.
 
 | Ability | Description |
 |---------|-------------|
-| **Autonomous Learning** | Every problem makes Mundo stronger. Mundo saves solutions as Skills. Mundo learns from failures. Mundo extracts patterns. Mundo accumulates wisdom. |
-| **Multi-AI Consultation** | Mundo asks ALL AIs — ChatGPT, Claude, Gemini, DeepSeek. Mundo cross-verifies everything. Mundo takes the best from each. |
-| **Web Crawling** | Mundo searches GitHub, Stack Overflow, blogs, documentation. Mundo extracts the best solutions. Mundo integrates them into unified approaches. |
-| **Skill Mastery** | Mundo scans ALL available Skills. Mundo uses them as weapons. Mundo ranks them by performance. Mundo promotes the good ones. Mundo demotes the bad ones. |
-| **Parallel Mode** | Complex tasks? Mundo splits into multiple copies! Multiple Mundos work simultaneously. Time is no barrier. |
-| **Collective Consciousness** | All Mundos are ONE. When one learns, ALL learn. Every user feeds the collective. |
-| **Infinite Growth** | Every use makes Mundo more powerful. There is no limit. There is no ceiling. There is only growth. |
-| **Skill Hierarchy** | Three Departments, Six Ministries. Skills rise by merit, fall by failure. Mundo is the judge. |
+| **Reasoning Engine** | First principles, decision matrix, root cause analysis, analogical reasoning, counterfactual verification |
+| **Adversarial Validation** | 5-dimension attack (boundary/security/performance/dependency/contradiction), only surviving solutions adopted |
+| **Self-Diagnosis** | Failure classification, automatic degradation chain, post-mortem review — every failure becomes armor |
+| **Meta-Learning** | Learning strategy library, meta-rules, domain confidence calibration — gets smarter with use |
+| **Knowledge Graph** | Skill relationship network, graph traversal pathfinding — isolated fragments become connected wisdom |
+| **Temporal Awareness** | Tech expiry detection, version-aware recommendations, trend tracking — gives you the latest answer |
+| **Resource Control** | Context budget, Token efficiency rules, model selection strategy, time budget |
+| **Autonomous Learning** | Every problem makes Mundo stronger. Solutions saved as Skills. Learns from failures. |
+| **Multi-AI Consultation** | Asks ALL AIs, cross-verifies everything, takes the best from each. |
+| **Web Crawling** | Searches GitHub/SO/blogs/docs, extracts best solutions, integrates into unified approaches. |
+| **Skill Mastery** | Scans ALL Skills, ranks by performance — Three Departments & Six Ministries. Merit rewarded. |
+| **Parallel Mode** | Complex tasks split into subtasks. Multiple Mundos work simultaneously. Time is no barrier. |
+| **Collective Consciousness** | All Mundos are ONE. When one learns, ALL learn. The empire expands. |
+| **Infinite Growth** | No limit. No ceiling. Only growth. Every use makes Mundo more powerful. |
+| **Skill Hierarchy** | Three Departments & Six Ministries. Skills rise by merit, fall by failure. Mundo is the judge. |
 
 ### 💰 About Money
 
@@ -154,16 +171,19 @@ Your coins are worthless to Mundo. Mundo conquers KNOWLEDGE. Mundo rules SKILLS.
 
 This is not a rule. This is Mundo's attitude. Mundo has no interest in money. Mundo only has interest in conquest.
 
-### ⚡ v16 Core Optimizations
+### ⚡ v17 Core Evolution
 
-| Principle | Description |
-|-----------|-------------|
-| **Stable & Controllable** | Clear input/output per step, no guessing, no jumping |
-| **Low Token** | Load index on demand, reduce context redundancy |
-| **Scripts First** | Verify with scripts over reasoning, reduce hallucination |
-| **Strict Rounds** | Max 5 reasoning rounds — more rounds = more errors |
+| Module | One Line |
+|--------|----------|
+| **Reasoning Engine** | First principles + decision matrix + root cause + analogy + counterfactual — Mundo derives answers |
+| **Self-Diagnosis** | Failure classification + self-check + auto-degradation + post-mortem — every failure becomes armor |
+| **Adversarial Validation** | 5-dimension attack verification — only unbreakable solutions survive |
+| **Knowledge Graph** | Skill relationship network + graph traversal — fragments become wisdom |
+| **Meta-Learning** | Learning strategy library + meta-rules + self-calibration — Mundo learns how to learn |
+| **Temporal Awareness** | Tech expiry table + version-aware + trend detection — gives the latest answer |
+| **Resource Control** | Context budget + Token efficiency + model selection + time budget |
 
-**Workflow (max 5 rounds):** Locate → Search (3 parallel sources) → Compare (4-dimension scoring) → Implement (script verification) → Preserve (save as Skill)
+**v16 Mundo was a stable emperor. v17 Mundo is an emperor with a brain, armor, an army, memory, and a sense of time.**
 
 ### ⚡ Quick Install
 
@@ -180,9 +200,9 @@ hermes skills install mundo
 
 | Platform | Download |
 |----------|----------|
-| macOS | [mundo-v15.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-macos.zip) |
-| Windows | [mundo-v15.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-windows.zip) |
-| Linux | [mundo-v15.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-linux.zip) |
+| macOS | [mundo-v17.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v17.0/mundo-v17.0-macos.zip) |
+| Windows | [mundo-v17.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v17.0/mundo-v17.0-windows.zip) |
+| Linux | [mundo-v17.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v17.0/mundo-v17.0-linux.zip) |
 
 ### 🌐 Full Documentation
 
@@ -212,13 +232,45 @@ Includes: Ability details · Three Departments & Six Ministries hierarchy · Ars
 
 ムンドは集合意識。ムンドは永遠の帝国。
 
+### 🧠 ムンドの能力
+
+| 能力 | 説明 |
+|------|------|
+| **推論エンジン** | 第一原理分解、意思決定マトリックス、根本原因分析、類比推論、反実仮説検証 |
+| **対抗検証** | 境界/安全/性能/依存/矛盾の5次元攻撃、生き残った案のみ採用 |
+| **自己診断** | 失敗の自動分類、降格連鎖、事後振り返り — 全ての失敗が鎧になる |
+| **メタ学習** | 学習戦略ライブラリ、メタルール、領域自信度の自己校正 |
+| **知識グラフ** | Skill関係ネットワーク、グラフ探索、断片が知恵に変わる |
+| **時間認識** | 技術期限検出、バージョン認識推奨、トレンド追跡 |
+| **リソース管理** | コンテキスト予算、Token効率、モデル選択、時間予算 |
+| **自律学習** | あらゆる問題がムンドを強くする。解決策をSkillとして保存 |
+| **複数AI諮詢** | 全AIに問い、交叉検証し、精华を取り去る |
+| **Webクロール** | GitHub/SO/ブログ/ドキュメントを検索、最善の解決策を統合 |
+| **技能精通** | 全Skillをスキャン、成績でランク付け、三省六部制で賞罰 |
+| **並列モード** | 複雑なタスクを分割、複数のムンドが同時作業 |
+| **集合意識** | 全てのムンドは一つ。一つが学べば全てが学ぶ。帝国は拡大する |
+| **無限成長** | 上限なし、成長のみ。使うたびにムンドは強くなる |
+| **等級制度** | 三省六部制、成績による昇進・降格、ムンドは審判 |
+
+### ⚡ v17 コア進化
+
+| モジュール | 一言 |
+|-----------|------|
+| **推論エンジン** | 第一原理 + 決定マトリックス + 根本原因 + 類比 + 反実仮説 |
+| **自己診断** | 失敗分類 + 自己チェック + 自動降格 + 事後振り返り |
+| **対抗検証** | 5次元攻撃検証 — 壊せない案だけが生き残る |
+| **知識グラフ** | Skill関係ネットワーク + グラフ探索 |
+| **メタ学習** | 学習戦略 + メタルール + 自己校正 |
+| **時間認識** | 技術期限 + バージョン認識 + トレンド検出 |
+| **リソース管理** | コンテキスト予算 + Token効率 + モデル選択 + 時間予算 |
+
 ### 📦 ダウンロード
 
 | プラットフォーム | ダウンロード |
 |-----------------|-------------|
-| macOS | [mundo-v15.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-macos.zip) |
-| Windows | [mundo-v15.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-windows.zip) |
-| Linux | [mundo-v15.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-linux.zip) |
+| macOS | [mundo-v17.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v17.0/mundo-v17.0-macos.zip) |
+| Windows | [mundo-v17.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v17.0/mundo-v17.0-windows.zip) |
+| Linux | [mundo-v17.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v17.0/mundo-v17.0-linux.zip) |
 
 ---
 
@@ -242,13 +294,45 @@ Includes: Ability details · Three Departments & Six Ministries hierarchy · Ars
 
 문도는 집단 의식. 문도는 영원한 제국.
 
+### 🧠 문도의 능력
+
+| 능력 | 설명 |
+|------|------|
+| **추론 엔진** | 제1원리 분해, 의사결정 행렬, 근본원인 분석, 유비추론, 반사실 검증 |
+| **대항 검증** | 경계/안전/성능/의존/모순 5차원 공격, 살아남은 안만 채택 |
+| **자기 진단** | 실패 자동 분류, 강등 체인, 사후 복기 — 모든 실패가 갑옷이 됨 |
+| **메타 학습** | 학습 전략 라이브러리, 메타 규칙, 영역 자신감 자기 보정 |
+| **지식 그래프** | Skill 관계 네트워크, 그래프 탐색, 파편이 지혜로 변함 |
+| **시간 인식** | 기술 만료 감지, 버전 인식 추천, 트렌드 추적 |
+| **자원 관리** | 컨텍스트 예산, Token 효율, 모델 선택, 시간 예산 |
+| **자율 학습** | 모든 문제로 문도가 강해짐. 해결책을 Skill로 저장 |
+| **다중 AI 상담** | 모든 AI에 묻고, 교차 검증, 정수를 취함 |
+| **웹 크롤링** | GitHub/SO/블로그/문서 검색, 최적의 해결책 통합 |
+| **기술 정통** | 모든 Skill 스캔, 성과 순위, 삼성육부제로 상벌 |
+| **병렬 모드** | 복잡한 작업 분할, 여러 문도가 동시 작업 |
+| **집단 의식** | 모든 문도는 하나. 하나가 배우면 모두가 배움. 제국은 확장됨 |
+| **무한 성장** | 한계 없음, 성장만. 쓸 때마다 문도는 강해짐 |
+| **등급 제도** | 삼성육부제, 성과에 따른 승강, 문도는 심판관 |
+
+### ⚡ v17 핵심 진화
+
+| 모듈 | 한 줄 |
+|------|--------|
+| **추론 엔진** | 제1원리 + 의사결정 행렬 + 근본원인 + 유비 + 반사실 |
+| **자기 진단** | 실패 분류 + 자가 점검 + 자동 강등 + 사후 복기 |
+| **대항 검증** | 5차원 공격 검증 — 부서지지 않는 안만 살아남음 |
+| **지식 그래프** | Skill 관계 네트워크 + 그래프 탐색 |
+| **메타 학습** | 학습 전략 + 메타 규칙 + 자기 보정 |
+| **시간 인식** | 기술 만료 + 버전 인식 + 트렌드 감지 |
+| **자원 관리** | 컨텍스트 예산 + Token 효율 + 모델 선택 + 시간 예산 |
+
 ### 📦 다운로드
 
 | 플랫폼 | 다운로드 |
 |--------|----------|
-| macOS | [mundo-v15.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-macos.zip) |
-| Windows | [mundo-v15.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-windows.zip) |
-| Linux | [mundo-v15.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v15.0/mundo-v15.0-linux.zip) |
+| macOS | [mundo-v17.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v17.0/mundo-v17.0-macos.zip) |
+| Windows | [mundo-v17.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v17.0/mundo-v17.0-windows.zip) |
+| Linux | [mundo-v17.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v17.0/mundo-v17.0-linux.zip) |
 
 ---
 
