@@ -28,7 +28,6 @@ matlab/
 │   ├── rms_calculation.m            RMS 有效值（R2016b 兼容）
 │   ├── fft_analysis.m               FFT 频谱分析
 │   ├── lowpass_filter.m             一阶低通滤波器
-│   └── find_carsim.m                CarSim 路径检测（可选）
 ├── startup_setup.m          路径初始化（首次运行）
 ├── test_all.m               批量自测
 └── README.md                本文件
@@ -186,12 +185,6 @@ SOC_max = 0.85;        % SOC 上限
 P_rex_on = 0.3;        % 增程器开启阈值
 P_rex_off = 0.7;       % 增程器关闭阈值
 ```
-
-### CarSim 联合仿真（可选）
-
-如需 CarSim 联合仿真，可使用 `utils/find_carsim.m` 检测 CarSim 安装路径。
-CarSim 2019.0+ 的联合仿真通过 Simulink I/O 通道实现。
-CarSim 官方仅支持 Windows，macOS 用户可用纯 MATLAB 脚本替代。
 
 ## 依赖
 

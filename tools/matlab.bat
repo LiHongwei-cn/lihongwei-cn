@@ -91,7 +91,6 @@ echo   工具:
 echo     rms_calculation       RMS 有效值
 echo     fft_analysis          FFT 频谱分析
 echo     lowpass_filter        低通滤波器
-echo     find_carsim           CarSim 路径检测
 echo.
 pause
 goto :menu

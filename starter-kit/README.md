@@ -27,8 +27,6 @@ vehicle_dynamics  # 运行车辆动力学仿真
 │   │   ├── vehicle_dynamics.m      车辆纵向动力学
 │   │   ├── motor_control.m         PMSM 电机 FOC 控制
 │   │   └── generate_cruise_model.m 生成定速巡航 Simulink 模型
-│   ├── carsim/            CarSim 联合仿真
-│   │   └── sim_setup.m              联合仿真配置
 │   └── utils/             工具函数
 │       ├── fft_analysis.m          FFT 频谱分析
 │       ├── lowpass_filter.m        一阶低通滤波
@@ -53,14 +51,9 @@ AI 直接生成可运行的 MATLAB 脚本，保存到 `matlab/examples/`。
 2. 双击 `matlab.bat` 启动 MATLAB
 3. 在 Command Window 输入脚本名运行
 
-### CarSim 联合仿真
-
-运行 `sim_setup` 自动配置联合仿真环境。
-
 ## 兼容性
 
 - MATLAB R2016b 及以上
-- CarSim 2019.0
 
 ## 将此模板连接到你的 GitHub
 

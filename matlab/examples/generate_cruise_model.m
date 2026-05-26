@@ -1,8 +1,7 @@
-%% 生成定速巡航 Simulink 模型（独立版，不使用 CarSim）
+%% 生成定速巡航 Simulink 模型（独立版）
 % MATLAB R2016b 兼容
 % 运行此脚本 -> 自动生成 cruise_control.slx 文件
 % 注意：此模型使用简化车辆动力学（Transfer Fcn）
-% 如需 CarSim 联合仿真，请使用 ../carsim/build_carsim_model.m
 
 function generate_cruise_model()
     modelName = 'cruise_control';

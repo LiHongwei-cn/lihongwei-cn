@@ -111,7 +111,6 @@ case $choice in
     echo "    rms_calculation       RMS 有效值"
     echo "    fft_analysis          FFT 频谱分析"
     echo "    lowpass_filter        低通滤波器"
-    echo "    find_carsim           CarSim 路径检测"
     echo ""
     read -p "按任意键返回菜单..."
     exec "$0"

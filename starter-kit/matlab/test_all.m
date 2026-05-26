@@ -5,7 +5,6 @@ scriptDir = fileparts(mfilename('fullpath'));
 addpath(scriptDir);
 addpath(fullfile(scriptDir, 'utils'));
 addpath(fullfile(scriptDir, 'examples'));
-addpath(fullfile(scriptDir, 'carsim'));
 
 passed = 0;
 failed = 0;

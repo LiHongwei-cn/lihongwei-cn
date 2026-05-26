@@ -12,7 +12,7 @@ GitHub: https://github.com/LiHongwei-cn/lihongwei-cn
 AI 生成 MATLAB 仿真代码，提交到 GitHub 后，
 在任何笔记本上双击 bat 文件即可运行。
 
-支持：车辆动力学、电机控制、电池SOC估算、能量管理、驾驶循环分析、CarSim 联合仿真
+支持：车辆动力学、电机控制、电池SOC估算、能量管理、驾驶循环分析
 
 
 二、第一次使用（笔记本）
@@ -46,31 +46,17 @@ AI 生成 MATLAB 仿真代码，提交到 GitHub 后，
     battery_soc_ekf           - 电池 SOC 估算（EKF vs 安时积分）
     driving_cycle_analysis    - 驾驶循环能耗分析
     energy_management         - 增程式能量管理策略
-    run_carsim                - CarSim-Simulink 联合仿真（自动检测并启动 CarSim）
     test_all                  - 批量测试所有脚本
 
 
-三、CarSim 联合仿真
-----------------------------------------
-
-  1. 在 MATLAB 中输入 run_carsim
-  2. 脚本自动搭建 Simulink 模型 → 自动检测并启动 CarSim
-  3. 在 CarSim 中点击 [Run Control] → Models 下拉选 Simulink
-  4. 浏览选择 matlab\carsim\carsim_cruise_ctrl.slx
-  5. 点 I/O Channels 确认信号：
-     Export: Throttle / Brake_MPa / MotorTorque
-     Import: Vx_kmh / Ax_g / EngineRPM
-  6. Time Step = 0.001, Stop Time = 30 → 点 Run
-
-
-四、以后每次使用
+三、以后每次使用
 ----------------------------------------
 
   1. 双击 matlab.bat（自动 git pull + 启动 MATLAB + 配路径）
   2. 直接输入命令运行
 
 
-五、用完还电脑
+四、用完还电脑
 ----------------------------------------
 
   1. 删除项目文件：
@@ -84,7 +70,7 @@ AI 生成 MATLAB 仿真代码，提交到 GitHub 后，
   注意：公用电脑注意清理个人文件，不要遗留代码或账户信息。
 
 
-六、Telegram Bot
+五、Telegram Bot
 ----------------------------------------
 
   手机端 MATLAB 代码生成助手，基于 DeepSeek 模型。
@@ -93,7 +79,7 @@ AI 生成 MATLAB 仿真代码，提交到 GitHub 后，
   Bot 地址：@lihongwei_ev_bot（需获取访问权限）
 
 
-七、完整文件列表
+六、完整文件列表
 ----------------------------------------
 
   matlab/examples/vehicle_dynamics.m         - 车辆纵向动力学
@@ -105,10 +91,6 @@ AI 生成 MATLAB 仿真代码，提交到 GitHub 后，
   matlab/examples/energy_management.m        - 能量管理策略
   matlab/examples/generate_cruise_model.m    - 定速巡航 Simulink 模型
   matlab/examples/dc_motor_simulink.m        - 直流电机 Simulink 模型
-  matlab/carsim/sim_setup.m                  - CarSim 联合仿真配置
-  matlab/carsim/build_carsim_model.m         - CarSim 联仿模型搭建
-  matlab/carsim/run_carsim_cruise.m          - 一键运行定速巡航（自动检测并启动 CarSim）
-  matlab/carsim/carsim_cruise_ctrl.slx       - 定速巡航 Simulink 模型
   matlab/utils/fft_analysis.m                - FFT 频谱分析
   matlab/utils/lowpass_filter.m              - 一阶低通滤波
   matlab/utils/rms_calculation.m             - RMS 有效值计算
@@ -117,4 +99,4 @@ AI 生成 MATLAB 仿真代码，提交到 GitHub 后，
   matlab.bat                                 - MATLAB 一键启动
 
 
-兼容性：MATLAB R2016b+（自动检测版本） · CarSim 2019.0+（自动检测路径） · Windows 7/10/11
+兼容性：MATLAB R2016b+（自动检测版本） · Windows 7/10/11

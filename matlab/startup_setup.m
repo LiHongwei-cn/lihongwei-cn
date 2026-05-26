@@ -9,7 +9,6 @@ scriptPath = fileparts(mfilename('fullpath'));
 addpath(scriptPath);
 addpath(fullfile(scriptPath, 'examples'));
 addpath(fullfile(scriptPath, 'utils'));
-addpath(fullfile(scriptPath, 'carsim'));
 
 try
     savepath;

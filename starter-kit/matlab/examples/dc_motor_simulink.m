@@ -2,7 +2,6 @@
 % MATLAB R2016b + Simulink 兼容
 % 运行此脚本自动生成并打开模型
 % 注意：此模型使用简化电机+负载模型（Transfer Fcn）
-% 如需 CarSim 联合仿真，请使用 ../carsim/build_carsim_model.m
 
 clear; clc;
 

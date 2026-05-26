@@ -94,7 +94,6 @@ You are Hermes Agent, an intelligent AI assistant created by Nous Research. You 
 ~/Desktop/lihongwei-cn/
 ├── matlab/                 # MATLAB 仿真（R2016b 兼容）
 │   ├── examples/           # 动力学、电机控制示例
-│   ├── carsim/             # 联合仿真
 │   └── utils/              # FFT、滤波、RMS 等工具函数
 ├── bot/                    # Telegram Bot
 │   ├── tgbot.py            # 旧版 Python Bot（已被 Hermes Gateway 替代）
@@ -222,7 +221,6 @@ if timeout > API_TIMEOUT_SECONDS: ...
 - 禁止 2017+ 函数（如 `rms`），禁止 `eval`/`feval`
 - Simulink 模型生成前检查 `bdIsLoaded` 防止重复加载
 - 数值单位注释标注（`[Ohm]`, `[rad/s]`, `[rpm]`）
-- 联合仿真 I/O 通道：Export（Simulink→CarSim）/ Import（CarSim→Simulink）
 - 仿真参数集中声明，使用有意义的常量名
 - 前向欧拉法写清楚注释，不使用隐式求解器
 - 函数保持 <200 行

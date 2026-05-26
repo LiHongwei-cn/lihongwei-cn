@@ -56,9 +56,8 @@ echo Available commands:
 echo   vehicle_dynamics        motor_control
 echo   dc_motor_pwm            ev_dynamics_simple
 echo   battery_soc_ekf         driving_cycle_analysis
-echo   energy_management       run_carsim
+echo   energy_management
 echo   test_all
 echo.
-echo CarSim: type run_carsim (auto-detects + launches)
 echo.
 pause

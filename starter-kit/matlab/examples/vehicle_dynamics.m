@@ -1,7 +1,6 @@
 %% 车辆纵向动力学仿真
 % MATLAB R2016b 兼容
 % 演示：加速-匀速-制动工况
-% 可扩展为 CarSim 输入的前处理
 
 clear; clc; close all;
 
