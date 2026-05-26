@@ -33,38 +33,38 @@ function results = hil_test_runner(t, veh_vel, veh_pos, lat_pos, ...
     tc1_fcw = any(fcw_flag(1:idx_0_5s));
     tc1_aeb = any(aeb_flag(1:idx_0_5s));
     tc1_pass = ~tc1_fcw && ~tc1_aeb;
-    results(1).name   = '正常行驶（前0.5秒无预警）';
+    results(1).name   = 'Normal driving (no warn in first 0.5s)';
     results(1).passed = tc1_pass;
-    results(1).detail = sprintf('FCW=%d AEB=%d（期望 0, 0）', tc1_fcw, tc1_aeb);
+    results(1).detail = sprintf('FCW=%d AEB=%d (expect 0, 0)', tc1_fcw, tc1_aeb);
 
     %% 测试用例2：障碍物接近 - 应触发 FCW
     % 场景：车辆接近静止障碍物，TTC 降至 2.5 秒以下时应触发 FCW
     tc2_pass = any(fcw_flag);
-    results(2).name   = '障碍物接近触发FCW';
+    results(2).name   = 'Obstacle approach triggers FCW';
     results(2).passed = tc2_pass;
-    results(2).detail = sprintf('FCW触发=%d', tc2_pass);
+    results(2).detail = sprintf('FCW triggered=%d', tc2_pass);
 
     %% 测试用例3：非常接近 - 应触发 AEB
     % 场景：TTC 降至 1.0 秒以下时应触发自动紧急制动
     tc3_pass = any(aeb_flag);
-    results(3).name   = '非常接近触发AEB';
+    results(3).name   = 'Close range triggers AEB';
     results(3).passed = tc3_pass;
-    results(3).detail = sprintf('AEB触发=%d', tc3_pass);
+    results(3).detail = sprintf('AEB triggered=%d', tc3_pass);
 
     %% 测试用例4：车道偏移 - 应触发 LDW
     % 场景：车辆横向偏移超过 0.3 米时应触发车道偏离预警
     tc4_pass = any(ldw_flag);
-    results(4).name   = '车道偏移触发LDW';
+    results(4).name   = 'Lane drift triggers LDW';
     results(4).passed = tc4_pass;
-    results(4).detail = sprintf('LDW触发=%d, 最大偏移=%.3f m', ...
+    results(4).detail = sprintf('LDW triggered=%d, max offset=%.3f m', ...
                         tc4_pass, max(abs(lat_pos)));
 
     %% 测试用例5：传感器失效 - 系统应优雅降级
     % 场景：模拟 t=3s 时雷达丢失，验证系统不会崩溃
     % 判断标准：速度向量中无 NaN（系统正常运行）
     tc5_pass = ~any(isnan(veh_vel));
-    results(5).name   = '传感器失效优雅降级';
+    results(5).name   = 'Sensor failure graceful degradation';
     results(5).passed = tc5_pass;
-    results(5).detail = sprintf('速度含NaN=%d（期望 0）', any(isnan(veh_vel)));
+    results(5).detail = sprintf('NaN in velocity=%d (expect 0)', any(isnan(veh_vel)));
 
 end
