@@ -14,7 +14,7 @@ MATLAB R2016b 兼容。支持用户精确参数输入，AI 自动生成 MATLAB/S
 
 ```
 matlab/
-├── examples/               示例脚本（可直接运行）
+├── examples/               仿真脚本（可直接运行）
 │   ├── vehicle_dynamics.m           纵向动力学（加速-匀速-制动）
 │   ├── motor_control.m              FOC 矢量控制仿真
 │   ├── dc_motor_pwm.m               直流电机 PWM 调速（PI 闭环）
@@ -23,11 +23,18 @@ matlab/
 │   ├── battery_soc_ekf.m            电池 SOC 估算（安时积分 vs EKF）
 │   ├── driving_cycle_analysis.m     驾驶循环能耗分析（类 WLTC）
 │   ├── energy_management.m          能量管理策略（恒温器 vs 功率跟随）
-│   └── generate_cruise_model.m      定速巡航 Simulink 模型自动生成
+│   ├── generate_cruise_model.m      定速巡航 Simulink 模型自动生成
+│   └── adas_hil_demo/               ADAS HIL 测试 Demo
+│       ├── main_adas_hil_demo.m     主脚本（场景+仿真+报告）
+│       ├── vehicle_model.m          纵向动力学模型
+│       ├── sensor_model.m           雷达/摄像头/超声波仿真
+│       ├── adas_controller.m        FCW/AEB/LDW 控制器
+│       ├── hil_test_runner.m        自动化测试（5个用例）
+│       └── visualize_results.m      结果可视化（8子图合一）
 ├── utils/                  工具函数
 │   ├── rms_calculation.m            RMS 有效值（R2016b 兼容）
 │   ├── fft_analysis.m               FFT 频谱分析
-│   ├── lowpass_filter.m             一阶低通滤波器
+│   └── lowpass_filter.m             一阶低通滤波器
 ├── startup_setup.m          路径初始化（首次运行）
 ├── test_all.m               批量自测
 └── README.md                本文件
