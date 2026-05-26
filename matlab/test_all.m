@@ -37,31 +37,14 @@ catch e
     fprintf('[FAIL] lowpass_filter: %s\n', e.message); failed = failed + 1;
 end
 
-fprintf('\n========== 测试 examples ==========\n');
+fprintf('\n========== 测试 ADAS HIL Demo ==========\n');
 
-tests = {
-    'vehicle_dynamics',        @vehicle_dynamics;
-    'motor_control',           @motor_control;
-    'dc_motor_pwm',            @dc_motor_pwm;
-    'ev_dynamics_simple',      @ev_dynamics_simple;
-    'battery_soc_ekf',         @battery_soc_ekf;
-    'driving_cycle_analysis',  @driving_cycle_analysis;
-    'energy_management',       @energy_management;
-};
-
-for i = 1:size(tests, 1)
-    name = tests{i, 1};
-    func = tests{i, 2};
-    try
-        func();
-        fprintf('[PASS] %s\n', name);
-        passed = passed + 1;
-    catch e
-        fprintf('[FAIL] %s: %s\n', name, e.message);
-        failed = failed + 1;
-    end
-    close all;
+try
+    addpath(fullfile(scriptDir, 'examples', 'adas_hil_demo'));
+    main_adas_hil_demo;
+    fprintf('[PASS] main_adas_hil_demo\n'); passed = passed + 1;
+catch e
+    fprintf('[FAIL] main_adas_hil_demo: %s\n', e.message); failed = failed + 1;
 end
 
 fprintf('\n========== 结果: %d 通过 / %d 失败 ==========\n', passed, failed);
-exit;
