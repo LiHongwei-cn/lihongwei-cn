@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="MATLAB 仿真工具包 — R2016b 兼容。动力学 · 电机控制 · 电池管理 · 能量管理 · Simulink 自动生成。免费开源。">
+<meta name="description" content="MATLAB 仿真工具包 — R2016b 兼容。动力学 · 电机控制 · 电池管理 · 能量管理 · ADAS HIL 测试 · Simulink 自动生成。免费开源。">
 <title>MATLAB 仿真工具包</title>
 <style>
 :root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#6c8cff;--green:#4ade80;--orange:#fb923c}
@@ -71,25 +71,25 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 <body>
 <div class="container">
 
-  <a class="back-link" href="../">← 返回主页</a>
+  <a class="back-link" href="../">&#8592; 返回主页</a>
 
   <div class="hero">
     <div class="hero-badge">免费 · 开源 · R2016b 兼容</div>
     <h1>MATLAB 仿真工具包</h1>
-    <p>涵盖动力学、电机控制、电池管理、能量管理策略。支持精确参数输入，AI 自动生成兼容 R2016b 的 MATLAB/Simulink 代码。</p>
+    <p>9 个仿真脚本覆盖车辆动力学、电机控制、电池管理、能量管理、ADAS HIL 测试。精确参数输入，前向欧拉积分，全部兼容 R2016b。</p>
   </div>
 
   <!-- Download -->
   <div class="download-box" id="download">
-    <div class="icon">📦</div>
+    <div class="icon">&#128230;</div>
     <h2>立即下载安装包</h2>
-    <p class="desc">包含 9 个仿真脚本 + 4 个工具函数 + Simulink 模型生成器 + 一键启动脚本（Win/Mac）。R2016b 兼容。</p>
+    <p class="desc">包含 9 个仿真脚本 + ADAS HIL 测试 Demo + 工具函数 + 一键启动脚本（Win/Mac）。R2016b 兼容。</p>
     <div class="download-buttons">
       <a class="btn btn-primary" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/packages/matlab-ai-starter.zip">下载安装包（ZIP）</a>
       <a class="btn btn-secondary" href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/matlab" target="_blank">在 GitHub 浏览源码</a>
       <a class="btn btn-secondary" href="https://github.com/LiHongwei-cn/lihongwei-cn/blob/main/matlab/README.md" target="_blank">查看操作说明</a>
     </div>
-    <div class="file-info">ZIP 压缩包 · 20+ 个文件 · MATLAB R2016b 兼容 · 含 Simulink 模型</div>
+    <div class="file-info">ZIP 压缩包 · 30+ 个文件 · MATLAB R2016b 兼容 · 含 Simulink 模型</div>
     <div style="margin-top:18px;font-size:13px;color:var(--dim)">
       桌面启动脚本：
       <a href="https://github.com/LiHongwei-cn/lihongwei-cn/raw/main/tools/matlab.command" style="color:var(--accent)">macOS .command</a>
@@ -100,81 +100,90 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
   <!-- Simulation List -->
   <div class="section">
-    <h2 class="section-title"><span class="num">📊</span> 仿真脚本一览</h2>
-    <p style="font-size:13px;color:var(--dim);margin-bottom:14px">每个脚本均可直接在 MATLAB 中运行，自动绘图并输出关键指标。</p>
+    <h2 class="section-title"><span class="num">1</span> 仿真脚本</h2>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:14px">每个脚本均可在 MATLAB 中直接运行，自动绘图并输出关键指标。参数集中在脚本顶部，修改方便。</p>
 
     <div class="sim-grid">
 
       <div class="sim-card">
         <div class="sim-header">
-          <div class="sim-icon" style="background:linear-gradient(135deg,#0e7490,#0369a1)">🚗</div>
+          <div class="sim-icon" style="background:linear-gradient(135deg,#0e7490,#0369a1)">&#128663;</div>
           <div class="sim-name">纵向动力学</div>
         </div>
-        <div class="sim-desc">加速→匀速→制动三工况。1500kg · Cd=0.32 · 前向欧拉 · dt=0.01s</div>
+        <div class="sim-desc">加速-匀速-制动三工况仿真。1600kg 整车，前向欧拉 dt=0.01s，输出速度/位移/加速度曲线。</div>
         <div class="sim-cmd">vehicle_dynamics</div>
       </div>
 
       <div class="sim-card">
         <div class="sim-header">
-          <div class="sim-icon" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">⚡</div>
+          <div class="sim-icon" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">&#9889;</div>
           <div class="sim-name">FOC 电机控制</div>
         </div>
-        <div class="sim-desc">永磁同步电机 id=0 矢量控制。Rs=0.958Ω · Ld=Lq=5.25mH · 4极</div>
+        <div class="sim-desc">永磁同步电机 id=0 矢量控制。电流环 + 速度环双闭环 PI，输出 dq 电流、转矩、转速。</div>
         <div class="sim-cmd">motor_control</div>
       </div>
 
       <div class="sim-card">
         <div class="sim-header">
-          <div class="sim-icon" style="background:linear-gradient(135deg,#059669,#047857)">🔧</div>
+          <div class="sim-icon" style="background:linear-gradient(135deg,#059669,#047857)">&#128295;</div>
           <div class="sim-name">直流电机 PWM</div>
         </div>
-        <div class="sim-desc">H 桥 PWM + PI 转速闭环。48V · Ra=0.5Ω · 10kHz PWM</div>
+        <div class="sim-desc">H 桥 PWM 调速 + PI 转速闭环。48V 直流电机，10kHz PWM，输出转速/电流/占空比。</div>
         <div class="sim-cmd">dc_motor_pwm</div>
       </div>
 
       <div class="sim-card">
         <div class="sim-header">
-          <div class="sim-icon" style="background:linear-gradient(135deg,#6366f1,#4f46e5)">📐</div>
+          <div class="sim-icon" style="background:linear-gradient(135deg,#6366f1,#4f46e5)">&#128208;</div>
           <div class="sim-name">Simulink 模型自动生成</div>
         </div>
-        <div class="sim-desc">自动搭建直流电机 Simulink 模型 + 定速巡航 Simulink 模型</div>
+        <div class="sim-desc">自动搭建直流电机 Simulink 模型和定速巡航 Simulink 模型。脚本调用 Simulink API，无需手动拖拽。</div>
         <div class="sim-cmd">dc_motor_simulink · generate_cruise_model</div>
       </div>
 
       <div class="sim-card">
         <div class="sim-header">
-          <div class="sim-icon" style="background:linear-gradient(135deg,#b91c1c,#991b1b)">🔋</div>
+          <div class="sim-icon" style="background:linear-gradient(135deg,#b91c1c,#991b1b)">&#128267;</div>
           <div class="sim-name">整车动力学</div>
         </div>
-        <div class="sim-desc">完整 EV 模型：电机+电池+能耗+SOC+续航。1600kg · 100kW PMSM</div>
+        <div class="sim-desc">完整 EV 模型：电机+电池+能耗+SOC+续航。1600kg，100kW PMSM，输出能耗与续航里程。</div>
         <div class="sim-cmd">ev_dynamics_simple</div>
       </div>
 
       <div class="sim-card">
         <div class="sim-header">
-          <div class="sim-icon" style="background:linear-gradient(135deg,#ea580c,#c2410c)">📈</div>
+          <div class="sim-icon" style="background:linear-gradient(135deg,#ea580c,#c2410c)">&#128200;</div>
           <div class="sim-name">电池 SOC 估算</div>
         </div>
-        <div class="sim-desc">安时积分 vs EKF 对比。Li-ion 3.7V · 50Ah · 一阶 RC 模型</div>
+        <div class="sim-desc">安时积分 vs 扩展卡尔曼滤波对比。Li-ion 3.7V 50Ah，一阶 RC 等效电路模型。</div>
         <div class="sim-cmd">battery_soc_ekf</div>
       </div>
 
       <div class="sim-card">
         <div class="sim-header">
-          <div class="sim-icon" style="background:linear-gradient(135deg,#0e7490,#155e75)">🛣️</div>
+          <div class="sim-icon" style="background:linear-gradient(135deg,#0e7490,#155e75)">&#128739;</div>
           <div class="sim-name">驾驶循环分析</div>
         </div>
-        <div class="sim-desc">类 WLTC 速度曲线 · 能耗与回馈分析 · 能量流饼图</div>
+        <div class="sim-desc">类 WLTC 速度曲线能耗分析。计算驱动能耗、回馈能量、净能耗，输出能量流饼图。</div>
         <div class="sim-cmd">driving_cycle_analysis</div>
       </div>
 
       <div class="sim-card">
         <div class="sim-header">
-          <div class="sim-icon" style="background:linear-gradient(135deg,#7c3aed,#5b21b6)">⚙️</div>
+          <div class="sim-icon" style="background:linear-gradient(135deg,#7c3aed,#5b21b6)">&#9881;</div>
           <div class="sim-name">能量管理策略</div>
         </div>
-        <div class="sim-desc">恒温器 vs 功率跟随策略对比。增程式 · 120kW 驱动 + 60kW 增程器</div>
+        <div class="sim-desc">增程式电动车恒温器 vs 功率跟随策略对比。120kW 驱动 + 60kW 增程器，输出 SOC 轨迹和油耗。</div>
         <div class="sim-cmd">energy_management</div>
+      </div>
+
+      <div class="sim-card" style="border-color:rgba(108,140,255,0.3)">
+        <div class="sim-header">
+          <div class="sim-icon" style="background:linear-gradient(135deg,#dc2626,#b91c1c)">&#128676;</div>
+          <div class="sim-name">ADAS HIL 测试 Demo</div>
+        </div>
+        <div class="sim-desc">车辆动力学 + 雷达/摄像头/超声波传感器仿真 + FCW/AEB/LDW 控制器。含 5 个自动化测试用例，自动 PASS/FAIL 判定。</div>
+        <div class="sim-cmd">adas_hil_demo/main_adas_hil_demo</div>
       </div>
 
     </div>
@@ -182,44 +191,44 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
 
   <!-- Quick Start -->
   <div class="section">
-    <h2 class="section-title"><span class="num">⚡</span> 快速开始</h2>
+    <h2 class="section-title"><span class="num">2</span> 快速开始</h2>
     <div class="feature-grid">
       <div class="feature-card">
-        <div class="f-icon">🖥️</div>
+        <div class="f-icon">&#128187;</div>
         <h3>桌面启动</h3>
         <p>Windows 双击 <code>matlab.bat</code><br>macOS 双击 <code>matlab.command</code></p>
       </div>
       <div class="feature-card">
-        <div class="f-icon">📘</div>
+        <div class="f-icon">&#128214;</div>
         <h3>MATLAB 命令行</h3>
-        <p><code>cd matlab</code> → <code>startup_setup</code> → 输入脚本名运行</p>
+        <p><code>cd matlab</code> 运行 <code>startup_setup</code>，然后输入脚本名</p>
       </div>
       <div class="feature-card">
-        <div class="f-icon">🤖</div>
-        <h3>AI 生成</h3>
-        <p>提供精确参数，AI 自动生成 R2016b 兼容的 MATLAB 代码</p>
+        <div class="f-icon">&#129302;</div>
+        <h3>AI 辅助生成</h3>
+        <p>提供精确参数，Claude Code / DeepSeek 自动生成 R2016b 兼容代码</p>
       </div>
       <div class="feature-card">
-        <div class="f-icon">🔄</div>
+        <div class="f-icon">&#128260;</div>
         <h3>批量测试</h3>
-        <p>运行 <code>test_all</code> 一键测试所有仿真脚本</p>
+        <p>运行 <code>test_all</code> 一键验证所有仿真脚本是否正常</p>
       </div>
     </div>
   </div>
 
   <!-- Compatibility -->
   <div class="section">
-    <h2 class="section-title"><span class="num">◆</span> 兼容性</h2>
+    <h2 class="section-title"><span class="num">3</span> 兼容性</h2>
     <div class="feature-grid">
       <div class="feature-card">
-        <div class="f-icon">📐</div>
+        <div class="f-icon">&#128208;</div>
         <h3>MATLAB</h3>
-        <p>R2016b 及以上版本<br>含 Simulink 许可（模型生成需要）<br>纯脚本仿真无需 Simulink</p>
+        <p>R2016b 及以上版本<br>Simulink 仅模型生成脚本需要<br>其余脚本纯 MATLAB 即可运行</p>
       </div>
       <div class="feature-card">
-        <div class="f-icon">💻</div>
+        <div class="f-icon">&#128187;</div>
         <h3>操作系统</h3>
-        <p>Windows 7/10/11（全部功能）<br>macOS 11+（Apple Silicon / Intel）</p>
+        <p>Windows 7/10/11<br>macOS 11+（Apple Silicon / Intel）</p>
       </div>
     </div>
   </div>
