@@ -1,5 +1,5 @@
-%% è¡Œé©¶å·¥å†µèƒ½è€—åˆ†æ
-% MATLAB R2016b å…¼å®¹
+%% ĞĞÊ»¹¤¿öÄÜºÄ·ÖÎö
+% MATLAB R2016b ¼æÈİ
 
 clc; close all;
 
@@ -35,27 +35,27 @@ drv = P_mot>0; reg = P_mot<0;
 
 figure('Position', [50 50 950 700]);
 subplot(3,2,1); plot(t/60, v_kmh, 'b-', 'LineWidth', 1.2);
-xlabel('æ—¶é—´ (min)'); ylabel('è½¦é€Ÿ (km/h)'); grid on; title('è¡Œé©¶å·¥å†µ');
-subplot(3,2,2); yyaxis left; plot(t/60, P_mot/1000, 'b-'); ylabel('åŠŸç‡ (kW)');
-yyaxis right; plot(t/60, E_con/1000, 'r-', 'LineWidth', 1.5); ylabel('èƒ½è€— (kWh)');
-xlabel('æ—¶é—´ (min)'); grid on; title('åŠŸç‡ä¸èƒ½è€—');
+xlabel('Ê±¼ä (min)'); ylabel('³µËÙ (km/h)'); grid on; title('ĞĞÊ»¹¤¿ö');
+subplot(3,2,2); yyaxis left; plot(t/60, P_mot/1000, 'b-'); ylabel('¹¦ÂÊ (kW)');
+yyaxis right; plot(t/60, E_con/1000, 'r-', 'LineWidth', 1.5); ylabel('ÄÜºÄ (kWh)');
+xlabel('Ê±¼ä (min)'); grid on; title('¹¦ÂÊÓëÄÜºÄ');
 subplot(3,2,3); histogram(P_mot(drv)/1000, 30, 'FaceColor', 'b'); hold on;
-lgd = {'é©±åŠ¨'};
-if any(reg), histogram(abs(P_mot(reg))/1000, 30, 'FaceColor', 'g'); lgd{end+1} = 'å†ç”Ÿ'; end
-xlabel('åŠŸç‡ (kW)'); ylabel('é¢‘æ¬¡'); legend(lgd); grid on; title('åŠŸç‡åˆ†å¸ƒ');
+lgd = {'Çı¶¯'};
+if any(reg), histogram(abs(P_mot(reg))/1000, 30, 'FaceColor', 'g'); lgd{end+1} = 'ÔÙÉú'; end
+xlabel('¹¦ÂÊ (kW)'); ylabel('Æµ´Î'); legend(lgd); grid on; title('¹¦ÂÊ·Ö²¼');
 subplot(3,2,4); plot(t/60, a, 'r-', 'LineWidth', 1);
-xlabel('æ—¶é—´ (min)'); ylabel('åŠ é€Ÿåº¦ (m/s^2)'); grid on; title('åŠ é€Ÿåº¦');
+xlabel('Ê±¼ä (min)'); ylabel('¼ÓËÙ¶È (m/s^2)'); grid on; title('¼ÓËÙ¶È');
 subplot(3,2,5); plot(t/60, SOC*100, 'b-', 'LineWidth', 1.2);
-xlabel('æ—¶é—´ (min)'); ylabel('SOC (%)'); grid on; title('ç”µæ± SOC');
+xlabel('Ê±¼ä (min)'); ylabel('SOC (%)'); grid on; title('µç³ØSOC');
 subplot(3,2,6);
 E_drv = sum(P_bat(drv)*dt/3600); E_reg = sum(abs(P_bat(reg))*dt/3600);
-if E_reg>0, pie([E_drv, E_reg], {'é©±åŠ¨ (Wh)','å†ç”Ÿ (Wh)'}); end
-title('èƒ½é‡åˆ†å¸ƒ');
+if E_reg>0, pie([E_drv, E_reg], {'Çı¶¯ (Wh)','ÔÙÉú (Wh)'}); end
+title('ÄÜÁ¿·Ö²¼');
 
 dist = sum(v_ms*dt)/1000;
-fprintf('===== è¡Œé©¶å·¥å†µèƒ½è€—åˆ†æ =====\n');
-fprintf('è¡Œé©¶è·ç¦»: %.2f km\n', dist);
-fprintf('èƒ½è€—: %.1f kWh/100km\n', E_con(end)/dist*100/1000);
-fprintf('SOCå˜åŒ–: %.1f%%\n', (SOC_0-SOC(end))*100);
-fprintf('é¢„è®¡ç»­èˆª: %.0f km\n', dist*SOC_0/(SOC_0-SOC(end)+0.001));
-fprintf('å†ç”Ÿåˆ¶åŠ¨æ¯”ä¾‹: %.1f%%\n', sum(abs(P_bat(reg)))/max(sum(abs(P_bat)),1e-6)*100);
+fprintf('===== ĞĞÊ»¹¤¿öÄÜºÄ·ÖÎö =====\n');
+fprintf('ĞĞÊ»¾àÀë: %.2f km\n', dist);
+fprintf('ÄÜºÄ: %.1f kWh/100km\n', E_con(end)/dist*100/1000);
+fprintf('SOC±ä»¯: %.1f%%\n', (SOC_0-SOC(end))*100);
+fprintf('Ô¤¼ÆĞøº½: %.0f km\n', dist*SOC_0/(SOC_0-SOC(end)+0.001));
+fprintf('ÔÙÉúÖÆ¶¯±ÈÀı: %.1f%%\n', sum(abs(P_bat(reg)))/max(sum(abs(P_bat)),1e-6)*100);

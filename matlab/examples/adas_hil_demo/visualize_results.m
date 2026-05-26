@@ -2,56 +2,56 @@ function visualize_results(t, veh_pos, veh_vel, veh_acc, lat_pos, ...
     radar_range, camera_lane, fcw_flag, aeb_flag, ldw_flag, ...
     throttle_cmd, brake_cmd, obs_dist)
 
-    figure('Name', 'ADAS HIL ä»¿çœŸç»“æœ', 'NumberTitle', 'off', ...
+    figure('Name', 'ADAS HIL ·ÂÕæ½á¹û', 'NumberTitle', 'off', ...
            'Units', 'normalized', 'Position', [0.05 0.05 0.9 0.85]);
 
     subplot(4, 2, 1);
     plot(t, veh_pos, 'b-', 'LineWidth', 1.2); hold on;
     plot(t, obs_dist * ones(size(t)), 'r--', 'LineWidth', 1.0);
-    xlabel('æ—¶é—´ [s]'); ylabel('ä½ç½® [m]');
-    title('çºµå‘è½¨è¿¹');
-    legend('è½¦è¾†', 'éšœç¢ç‰©', 'Location', 'northwest');
+    xlabel('Ê±¼ä [s]'); ylabel('Î»ÖÃ [m]');
+    title('×İÏò¹ì¼£');
+    legend('³µÁ¾', 'ÕÏ°­Îï', 'Location', 'northwest');
     grid on;
 
     subplot(4, 2, 2);
     plot(t, lat_pos, 'b-', 'LineWidth', 1.2); hold on;
     plot(t, 0.3 * ones(size(t)), 'r--', 'LineWidth', 1.0);
     plot(t, -0.3 * ones(size(t)), 'r--', 'LineWidth', 1.0);
-    xlabel('æ—¶é—´ [s]'); ylabel('æ¨ªå‘åç§» [m]');
-    title('æ¨ªå‘ä½ç½®');
-    legend('åç§»é‡', 'LDWé˜ˆå€¼', 'Location', 'northwest');
+    xlabel('Ê±¼ä [s]'); ylabel('ºáÏòÆ«ÒÆ [m]');
+    title('ºáÏòÎ»ÖÃ');
+    legend('Æ«ÒÆÁ¿', 'LDWãĞÖµ', 'Location', 'northwest');
     grid on;
 
     subplot(4, 2, 3);
     plot(t, veh_vel * 3.6, 'b-', 'LineWidth', 1.2);
-    xlabel('æ—¶é—´ [s]'); ylabel('è½¦é€Ÿ [km/h]');
-    title('è½¦é€Ÿæ›²çº¿');
+    xlabel('Ê±¼ä [s]'); ylabel('³µËÙ [km/h]');
+    title('³µËÙÇúÏß');
     grid on;
 
     subplot(4, 2, 4);
     plot(t, veh_acc, 'b-', 'LineWidth', 1.2);
-    xlabel('æ—¶é—´ [s]'); ylabel('åŠ é€Ÿåº¦ [m/s^2]');
-    title('åŠ é€Ÿåº¦');
+    xlabel('Ê±¼ä [s]'); ylabel('¼ÓËÙ¶È [m/s^2]');
+    title('¼ÓËÙ¶È');
     grid on;
 
     subplot(4, 2, 5);
     plot(t, radar_range, 'b-', 'LineWidth', 1.0);
-    xlabel('æ—¶é—´ [s]'); ylabel('è·ç¦» [m]');
-    title('é›·è¾¾æµ‹è·');
+    xlabel('Ê±¼ä [s]'); ylabel('¾àÀë [m]');
+    title('À×´ï²â¾à');
     grid on;
 
     subplot(4, 2, 6);
     plot(t, camera_lane, 'b-', 'LineWidth', 1.0);
-    xlabel('æ—¶é—´ [s]'); ylabel('åç§» [m]');
-    title('æ‘„åƒå¤´è½¦é“åç§»');
+    xlabel('Ê±¼ä [s]'); ylabel('Æ«ÒÆ [m]');
+    title('ÉãÏñÍ·³µµÀÆ«ÒÆ');
     grid on;
 
     subplot(4, 2, 7);
     plot(t, throttle_cmd, 'g-', 'LineWidth', 1.0); hold on;
     plot(t, brake_cmd, 'r-', 'LineWidth', 1.0);
-    xlabel('æ—¶é—´ [s]'); ylabel('æŒ‡ä»¤ [0-1]');
-    title('æ²¹é—¨ä¸åˆ¶åŠ¨');
-    legend('æ²¹é—¨', 'åˆ¶åŠ¨', 'Location', 'east');
+    xlabel('Ê±¼ä [s]'); ylabel('Ö¸Áî [0-1]');
+    title('ÓÍÃÅÓëÖÆ¶¯');
+    legend('ÓÍÃÅ', 'ÖÆ¶¯', 'Location', 'east');
     ylim([-0.1, 1.1]);
     grid on;
 
@@ -60,8 +60,8 @@ function visualize_results(t, veh_pos, veh_vel, veh_acc, lat_pos, ...
     plot(t, double(fcw_flag), 'Color', [0.9 0.7 0], 'LineWidth', 1.5);
     plot(t, double(aeb_flag), 'r-', 'LineWidth', 1.5);
     plot(t, double(ldw_flag), 'm-', 'LineWidth', 1.5);
-    xlabel('æ—¶é—´ [s]'); ylabel('çŠ¶æ€');
-    title('ADASè­¦å‘Š');
+    xlabel('Ê±¼ä [s]'); ylabel('×´Ì¬');
+    title('ADAS¾¯¸æ');
     legend('FCW', 'AEB', 'LDW', 'Location', 'east');
     ylim([-0.1, 1.3]);
     grid on;
