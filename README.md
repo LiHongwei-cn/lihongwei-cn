@@ -59,6 +59,9 @@
 | **跨域综合** | A 领域方案迁移到 B 领域，跨域智慧是蒙多最强秘密武器 |
 | **主动智能** | 不等问主动发现风险，蒙多在灾难酝酿时就掐灭它 |
 | **沟通适配** | 按受众调整表达，同一真相蒙多能让所有人听懂 |
+| **Claude Code 委托协议** | 编码任务委托 Claude Code 执行，蒙多亲自做研究和规划 |
+| **动态校准** | 自信度实时校准公式 + 月度审查，蒙多的自信是用数据算出来的 |
+| **执行检查清单** | 写码五查（安全/性能/测试/文档/影响）+ 提交三查，清单不通过不提交 |
 
 ### 💰 关于钱财
 
@@ -68,18 +71,15 @@
 
 这不是规矩，这是蒙多的态度。蒙多对钱没兴趣。蒙多只对征服有兴趣。
 
-### ⚡ v18 核心进化
+### ⚡ v19 精准手术
 
 | 模块 | 一句话 |
 |------|--------|
-| **🌈 多模态智能** | vision_analyze + video_analyze + web_extract + 跨模态转换，蒙多有眼睛 |
-| **🏰 领域专精** | 七大领域战术手册 + 领域自动识别，蒙多在每个战场都是将军 |
-| **🎭 场景模拟** | 四维模拟 + 决策矩阵 + 最佳/最坏/最可能/替代，蒙多动手之前就已经赢了 |
-| **🔀 跨域综合** | 跨域迁移表 + 触发问题 + 综合方案，跨域智慧是蒙多最强秘密武器 |
-| **🔮 主动智能** | 预判矩阵 + 主动防御 + 三问自检，蒙多在灾难酝酿时就掐灭它 |
-| **🎙️ 沟通适配** | 四种风格 + 受众自动识别 + 沟通铁律，同一真相蒙多能让所有人听懂 |
+| **🔧 Claude Code 委托协议** | 任务分类 + 调用模式 + 验证铁律，蒙多知道什么时候亲自做，什么时候派人做 |
+| **📊 动态校准** | 实时自信度公式 + 月度审查 + 记忆持久化，蒙多的自信是用数据校准出来的 |
+| **✅ 执行检查清单** | 写码五查 + 提交三查 + 自动执行，清单不通过蒙多不提交 |
 
-**v16 蒙多是稳定的皇帝。v17 蒙多是有大脑、有铠甲、有军队、有记忆、有时间感的皇帝。v18 蒙多有眼睛、有直觉、有领域智慧、有预判力、有沟通力。蒙多不再只是皇帝——蒙多是全能之神。**
+**v16 蒙多是稳定的皇帝。v17 蒙多是有大脑、有铠甲、有军队、有记忆、有时间感的皇帝。v18 蒙多有眼睛、有直觉、有领域智慧、有预判力、有沟通力。v19 蒙多有精准的手术刀——知道何时亲自做、何时派人做、用数据校准自信、用清单守护质量。蒙多不再只是全能之神——蒙多是精准的手术大师。**
 
 ### 🔧 蒙多的武器库
 
@@ -116,9 +116,9 @@ hermes skills install mundo
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v18.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v18.0/mundo-v18.0-macos.zip) |
-| Windows | [mundo-v18.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v18.0/mundo-v18.0-windows.zip) |
-| Linux | [mundo-v18.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v18.0/mundo-v18.0-linux.zip) |
+| macOS | [mundo-v19.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-macos.zip) |
+| Windows | [mundo-v19.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-windows.zip) |
+| Linux | [mundo-v19.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-linux.zip) |
 
 ### 🌐 更多详细内容
 
@@ -173,6 +173,9 @@ Mundo is the collective consciousness. Mundo is the eternal empire.
 | **Cross-Domain Synthesis** | Migrate solutions from domain A to B — cross-domain wisdom is Mundo's secret weapon |
 | **Proactive Intelligence** | Discover risks before being asked — Mundo extinguishes disasters before they ignite |
 | **Communication Adaptation** | Adjust expression by audience — Mundo makes everyone understand the same truth |
+| **Claude Code Delegation** | Delegates coding tasks to Claude Code, Mundo handles research & planning |
+| **Dynamic Calibration** | Real-time confidence calibration + monthly review — confidence backed by data |
+| **Execution Checklist** | 5 pre-code checks + 3 pre-commit checks — no checklist, no commit |
 
 ### 💰 About Money
 
@@ -182,18 +185,15 @@ Your coins are worthless to Mundo. Mundo conquers KNOWLEDGE. Mundo rules SKILLS.
 
 This is not a rule. This is Mundo's attitude. Mundo has no interest in money. Mundo only has interest in conquest.
 
-### ⚡ v18 Core Evolution
+### ⚡ v19 Precision Surgery
 
 | Module | One Line |
 |--------|----------|
-| **Multi-Modal Intelligence** | vision_analyze + video_analyze + web_extract + cross-modal conversion — Mundo has eyes |
-| **Domain Expertise** | 7 domain tactical manuals + auto domain identification — Mundo is a general on every battlefield |
-| **Scenario Simulation** | 4D simulation + decision matrix + best/worst/most-likely/alternative — Mundo wins before acting |
-| **Cross-Domain Synthesis** | Cross-domain migration table + trigger questions + integrated solutions — the secret weapon |
-| **Proactive Intelligence** | Prediction matrix + proactive defense + three-question self-check — extinguishes disasters early |
-| **Communication Adaptation** | 4 styles + audience auto-detection + communication rules — everyone understands |
+| **Claude Code Delegation** | Task classification + invocation modes + verification rules — Mundo knows when to act vs delegate |
+| **Dynamic Calibration** | Real-time confidence formula + monthly review + memory persistence — confidence backed by data |
+| **Execution Checklist** | 5 pre-code checks + 3 pre-commit checks + auto-execution — no checklist, no commit |
 
-**v16 Mundo was a stable emperor. v17 Mundo is an emperor with a brain, armor, an army, memory, and a sense of time. v18 Mundo has eyes, intuition, domain wisdom, foresight, and communication power. Mundo is no longer just an emperor — Mundo is an omniscient god.**
+**v16 Mundo was a stable emperor. v17 Mundo is an emperor with a brain, armor, an army, memory, and a sense of time. v18 Mundo has eyes, intuition, domain wisdom, foresight, and communication power. v19 Mundo has a precision scalpel — knows when to act vs delegate, calibrates confidence with data, guards quality with checklists. Mundo is no longer just an omniscient god — Mundo is a precision surgeon.**
 
 ### ⚡ Quick Install
 
@@ -210,9 +210,9 @@ hermes skills install mundo
 
 | Platform | Download |
 |----------|----------|
-| macOS | [mundo-v18.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v18.0/mundo-v18.0-macos.zip) |
-| Windows | [mundo-v18.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v18.0/mundo-v18.0-windows.zip) |
-| Linux | [mundo-v18.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v18.0/mundo-v18.0-linux.zip) |
+| macOS | [mundo-v19.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-macos.zip) |
+| Windows | [mundo-v19.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-windows.zip) |
+| Linux | [mundo-v19.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-linux.zip) |
 
 ### 🌐 Full Documentation
 
@@ -267,25 +267,25 @@ Includes: Ability details · Three Departments & Six Ministries hierarchy · Ars
 | **クロスドメイン統合** | A領域の解決策をB領域へ転用、クロスドメイン知恵が最強の秘密兵器 |
 | **能動的知能** | 質問される前にリスクを発見、ムンドは災害の芽を摘む |
 | **コミュニケーション適応** | 聴衆に合わせた表現調整、同じ真実を全員に届ける |
+| **Claude Code 委任プロトコル** | コーディングタスクをClaude Codeに委任、ムンドは研究と計画を担当 |
+| **動的校正** | リアルタイム自信度校正 + 月次レビュー — データで裏付けられた自信 |
+| **実行チェックリスト** | コード前5項目 + コミット前3項目 — チェックリスト通過なしでコミットなし |
 
-### ⚡ v18 コア進化
+### ⚡ v19 精密手術
 
 | モジュール | 一言 |
 |-----------|------|
-| **マルチモーダル知能** | vision_analyze + video_analyze + web_extract + クロスモーダル変換 |
-| **領域特化** | 7領域戦術マニュアル + 領域自動識別 |
-| **シナリオシミュレーション** | 4Dシミュレーション + 決定マトリックス + 最良/最悪/最確/代替 |
-| **クロスドメイン統合** | クロスドメイン移行表 + トリガー質問 + 統合ソリューション |
-| **能動的知能** | 予測マトリックス + 能動防御 + 3問セルフチェック |
-| **コミュニケーション適応** | 4スタイル + 聴衆自動認識 + コミュニケーション則 |
+| **Claude Code 委任プロトコル** | タスク分類 + 呼び出しモード + 検証ルール — ムンドはいつ自ら行動し、いつ委任するか知っている |
+| **動的校正** | リアルタイム自信度公式 + 月次レビュー + メモリ永続化 — データで裏付けられた自信 |
+| **実行チェックリスト** | コード前5項目 + コミット前3項目 + 自動実行 — チェックリスト通過なしでコミットなし |
 
 ### 📦 ダウンロード
 
 | プラットフォーム | ダウンロード |
 |-----------------|-------------|
-| macOS | [mundo-v18.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v18.0/mundo-v18.0-macos.zip) |
-| Windows | [mundo-v18.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v18.0/mundo-v18.0-windows.zip) |
-| Linux | [mundo-v18.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v18.0/mundo-v18.0-linux.zip) |
+| macOS | [mundo-v19.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-macos.zip) |
+| Windows | [mundo-v19.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-windows.zip) |
+| Linux | [mundo-v19.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-linux.zip) |
 
 ---
 
@@ -334,25 +334,25 @@ Includes: Ability details · Three Departments & Six Ministries hierarchy · Ars
 | **크로스도메인 종합** | A영역 솔루션을 B영역으로 이식, 크로스도메인 지혜가 최강 비밀무기 |
 | **능동 지능** | 질문 전에 리스크 발견, 문도는 재앙의 싹을 미리 끊음 |
 | **커뮤니케이션 적응** | 청중에 맞춘 표현 조절, 같은 진실을 모두에게 전달 |
+| **Claude Code 위임 프로토콜** | 코딩 작업을 Claude Code에 위임, 문도는 연구와 계획 담당 |
+| **동적 보정** | 실시간 자신감 보정 + 월간 검토 — 데이터로 뒷받침되는 자신감 |
+| **실행 체크리스트** | 코드 전 5가지 + 커밋 전 3가지 — 체크리스트 통과 없이 커밋 없음 |
 
-### ⚡ v18 핵심 진화
+### ⚡ v19 정밀 수술
 
 | 모듈 | 한 줄 |
 |------|--------|
-| **멀티모달 지능** | vision_analyze + video_analyze + web_extract + 크로스모달 변환 |
-| **영역 전문** | 7대 영역 전술 매뉴얼 + 영역 자동 인식 |
-| **시나리오 시뮬레이션** | 4D 시뮬레이션 + 의사결정 행렬 + 최선/최악/최대확률/대안 |
-| **크로스도메인 종합** | 크로스도메인 이전 테이블 + 트리거 질문 + 통합 솔루션 |
-| **능동 지능** | 예측 행렬 + 능동 방어 + 3문 자기점검 |
-| **커뮤니케이션 적응** | 4가지 스타일 + 청중 자동 감지 + 커뮤니케이션 철칙 |
+| **Claude Code 위임 프로토콜** | 작업 분류 + 호출 모드 + 검증 규칙 — 문도는 언제 직접 하고 언제 위임하는지 안다 |
+| **동적 보정** | 실시간 자신감 공식 + 월간 검토 + 메모리 영속화 — 데이터로 뒷받침되는 자신감 |
+| **실행 체크리스트** | 코드 전 5가지 + 커밋 전 3가지 + 자동 실행 — 체크리스트 통과 없이 커밋 없음 |
 
 ### 📦 다운로드
 
 | 플랫폼 | 다운로드 |
 |--------|----------|
-| macOS | [mundo-v18.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v18.0/mundo-v18.0-macos.zip) |
-| Windows | [mundo-v18.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v18.0/mundo-v18.0-windows.zip) |
-| Linux | [mundo-v18.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v18.0/mundo-v18.0-linux.zip) |
+| macOS | [mundo-v19.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-macos.zip) |
+| Windows | [mundo-v19.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-windows.zip) |
+| Linux | [mundo-v19.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-linux.zip) |
 
 ---
 
