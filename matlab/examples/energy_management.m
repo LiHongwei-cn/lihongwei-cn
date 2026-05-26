@@ -3,7 +3,7 @@
 % 基于规则的恒温器(thermostat)策略 + 功率跟随策略对比
 % 适用于增程式(串联混合动力)车辆
 
-clear; clc; close all;
+clc; close all;
 
 %% 车辆参数
 m  = 2000;        % 质量 [kg]

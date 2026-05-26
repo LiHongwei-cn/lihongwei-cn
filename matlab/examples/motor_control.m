@@ -3,7 +3,7 @@
 % 演示：矢量控制（FOC）基本算法
 % 电流环 PI 调节 + SVPWM
 
-clear; clc; close all;
+clc; close all;
 
 %% 电机参数
 pmsm.Rs  = 0.958;      % 定子电阻 [Ohm]

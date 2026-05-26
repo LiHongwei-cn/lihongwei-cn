@@ -3,7 +3,7 @@
 % 一阶 RC 等效电路模型 + EKF 状态估计
 % 演示：真实 SOC vs 安时积分 vs EKF 估计
 
-clear; clc; close all;
+clc; close all;
 
 % 自动添加工具路径
 scriptPath = fileparts(mfilename('fullpath'));

@@ -2,7 +2,7 @@
 % MATLAB R2016b 兼容
 % 包含：电机转矩特性 + 纵向动力学 + 能耗估算
 
-clear; clc; close all;
+clc; close all;
 
 %% 车辆参数
 m  = 1600;       % 整车质量 [kg]

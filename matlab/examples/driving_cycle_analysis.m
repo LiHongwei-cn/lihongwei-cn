@@ -2,7 +2,7 @@
 % MATLAB R2016b 兼容
 % 构造类 WLTC 工况 + 电动汽车能耗模型
 
-clear; clc; close all;
+clc; close all;
 
 %% 生成类 WLTC 速度曲线 [km/h]
 dt = 1;              % [s]

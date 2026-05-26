@@ -2,7 +2,7 @@
 % MATLAB R2016b 兼容
 % 演示：H桥 PWM + PI 转速闭环控制
 
-clear; clc; close all;
+clc; close all;
 
 %% 直流电机参数
 Ra = 0.5;        % 电枢电阻 [Ohm]

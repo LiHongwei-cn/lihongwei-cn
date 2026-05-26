@@ -11,7 +11,7 @@
 %
 % 使用方法：在 MATLAB 中打开此文件，按 F5 运行
 
-clear; clc; close all;
+clc; close all;
 
 %% 车辆参数
 vehicle_params.m   = 1500;     % 整车质量 [kg]

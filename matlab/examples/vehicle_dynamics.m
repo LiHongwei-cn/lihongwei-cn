@@ -2,7 +2,7 @@
 % MATLAB R2016b 兼容
 % 演示：加速-匀速-制动工况
 
-clear; clc; close all;
+clc; close all;
 
 %% 车辆参数
 param.m   = 1500;      % 整车质量 [kg]
