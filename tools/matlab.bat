@@ -2,16 +2,16 @@
 chcp 65001 >nul
 setlocal enabledelayedexpansion
 
-:: MATLAB-AI 一键启动器 (Windows)
-:: 用法：双击 matlab-ai.bat
+:: MATLAB 仿真工具包一键启动器 (Windows)
+:: 用法：双击 matlab.bat
 
 set "SCRIPT_DIR=%~dp0"
 set "PROJECT_DIR=%SCRIPT_DIR%.."
 set "MATLAB_DIR=%PROJECT_DIR%\matlab"
-set "LAUNCHER_URL=https://lihongwei-cn.github.io/lihongwei-cn/matlab-ai/"
+set "LAUNCHER_URL=https://lihongwei-cn.github.io/lihongwei-cn/matlab/"
 
 echo ========================================
-echo   MATLAB-AI 新能源汽车仿真工具包
+echo   MATLAB 仿真工具包
 echo ========================================
 echo.
 echo 项目目录: %PROJECT_DIR%
@@ -100,7 +100,7 @@ goto :menu
 echo [X] 未检测到 MATLAB 安装
 echo.
 echo 请选择操作：
-echo   1) 打开 MATLAB-AI 启动器网页
+echo   1) 打开 MATLAB 启动器网页
 echo   2) 手动输入 MATLAB 命令
 echo   3) 退出
 echo.

@@ -36,9 +36,9 @@ matlab/
 
 ## 快速开始
 
-### 方式一：MATLAB-AI 启动器（推荐）
+### 方式一：启动器网页（推荐）
 
-打开 `matlab-ai/index.html`，可视化选择仿真脚本，一键启动。
+打开 `matlab/index.html`，可视化选择仿真脚本，一键启动。
 
 ### 方式二：AI 精确生成（新功能）
 
@@ -81,8 +81,8 @@ test_all
 
 ### 方式四：桌面快捷启动
 
-- **macOS**：双击 `tools/matlab-ai.command`
-- **Windows**：双击 `tools/matlab-ai.bat`
+- **macOS**：双击 `tools/matlab.command`
+- **Windows**：双击 `tools/matlab.bat`
 
 ## AI 生成代码规范
 
@@ -186,6 +186,12 @@ SOC_max = 0.85;        % SOC 上限
 P_rex_on = 0.3;        % 增程器开启阈值
 P_rex_off = 0.7;       % 增程器关闭阈值
 ```
+
+### CarSim 联合仿真（可选）
+
+如需 CarSim 联合仿真，可使用 `utils/find_carsim.m` 检测 CarSim 安装路径。
+CarSim 2019.0+ 的联合仿真通过 Simulink I/O 通道实现。
+CarSim 官方仅支持 Windows，macOS 用户可用纯 MATLAB 脚本替代。
 
 ## 依赖
 

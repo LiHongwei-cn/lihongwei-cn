@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MATLAB 仿真工具包 — R2016b 兼容。动力学 · 电机控制 · 电池管理 · 能量管理 · Simulink 自动生成 · CarSim 可选。免费开源。">
+<title>MATLAB 仿真工具包</title>
+<style>
+:root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#6c8cff;--green:#4ade80;--orange:#fb923c}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);min-height:100vh;line-height:1.7}
+.container{max-width:900px;margin:0 auto;padding:32px 24px 80px}
+
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color 0.2s}
+.back-link:hover{color:var(--text)}
+
+.hero{text-align:center;padding:40px 0 24px}
+.hero-badge{display:inline-block;background:rgba(108,140,255,0.12);color:var(--accent);border:1px solid rgba(108,140,255,0.2);padding:4px 14px;border-radius:20px;font-size:12px;margin-bottom:16px;letter-spacing:1px}
+.hero h1{font-size:34px;font-weight:800;background:linear-gradient(135deg,#6c8cff,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
+.hero p{font-size:15px;color:var(--dim);max-width:600px;margin:0 auto}
+
+.download-box{background:linear-gradient(135deg,rgba(108,140,255,0.08),rgba(167,139,250,0.08));border:2px solid rgba(108,140,255,0.25);border-radius:20px;padding:36px 32px;margin:24px 0 40px;text-align:center}
+.download-box .icon{font-size:44px;margin-bottom:10px}
+.download-box h2{font-size:24px;font-weight:800;margin-bottom:6px}
+.download-box .desc{color:var(--dim);font-size:14px;margin-bottom:24px;max-width:440px;margin-left:auto;margin-right:auto}
+.download-buttons{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+.download-buttons .btn{display:inline-flex;align-items:center;gap:8px;padding:16px 32px;border-radius:14px;font-size:16px;font-weight:700;text-decoration:none;transition:all 0.25s;border:none;cursor:pointer}
+.download-buttons .btn-primary{background:var(--accent);color:#fff;box-shadow:0 4px 20px rgba(108,140,255,0.3)}
+.download-buttons .btn-primary:hover{background:#7d9aff;transform:translateY(-3px);box-shadow:0 8px 30px rgba(108,140,255,0.4)}
+.download-buttons .btn-secondary{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:var(--text)}
+.download-buttons .btn-secondary:hover{background:rgba(255,255,255,0.1);transform:translateY(-3px)}
+.download-box .file-info{margin-top:14px;font-size:13px;color:var(--dim)}
+
+.section{margin-bottom:40px}
+.section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:rgba(108,140,255,0.12);color:var(--accent);font-size:14px;font-weight:700;flex-shrink:0}
+
+.sim-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.sim-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;transition:border-color 0.25s,background 0.25s}
+.sim-card:hover{border-color:rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+.sim-card .sim-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.sim-card .sim-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sim-card .sim-name{font-size:15px;font-weight:700}
+.sim-card .sim-desc{font-size:13px;color:var(--dim);line-height:1.65;margin-bottom:8px}
+.sim-card .sim-cmd{display:inline-block;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:6px;padding:2px 10px;font-family:'Consolas','Courier New',monospace;font-size:11px;color:#a78bfa;margin-top:6px}
+
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.feature-card .f-icon{font-size:22px;margin-bottom:8px}
+.feature-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.feature-card p{font-size:13px;color:var(--dim);line-height:1.6}
+
+.tip{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.12);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--orange);margin-top:10px}
+.tip.info{background:rgba(108,140,255,0.07);border-color:rgba(108,140,255,0.12);color:var(--accent)}
+
+.footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:32px}
+.footer a{color:rgba(255,255,255,0.3);text-decoration:none}
+.footer a:hover{color:rgba(255,255,255,0.5)}
+.page-counter{text-align:center;padding:24px 0 8px;font-size:13px;color:rgba(255,255,255,0.2)}
+
+@media(max-width:640px){
+  .container{padding:20px 16px 60px}
+  .hero h1{font-size:26px}
+  .download-box{padding:28px 16px}
+  .download-buttons .btn{padding:14px 24px;font-size:15px}
+  .sim-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="../">← 返回主页</a>
+
+  <div class="hero">
+    <div class="hero-badge">免费 · 开源 · R2016b 兼容</div>
+    <h1>MATLAB 仿真工具包</h1>
+    <p>涵盖动力学、电机控制、电池管理、能量管理策略。支持精确参数输入，AI 自动生成兼容 R2016b 的 MATLAB/Simulink 代码。CarSim 联合仿真可选。</p>
+  </div>
+
+  <!-- Download -->
+  <div class="download-box" id="download">
+    <div class="icon">📦</div>
+    <h2>立即下载安装包</h2>
+    <p class="desc">包含 9 个仿真脚本 + 4 个工具函数 + Simulink 模型生成器 + 一键启动脚本（Win/Mac）。R2016b 兼容。</p>
+    <div class="download-buttons">
+      <a class="btn btn-primary" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/packages/matlab-ai-starter.zip">下载安装包（ZIP）</a>
+      <a class="btn btn-secondary" href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/matlab" target="_blank">在 GitHub 浏览源码</a>
+      <a class="btn btn-secondary" href="https://github.com/LiHongwei-cn/lihongwei-cn/blob/main/matlab/README.md" target="_blank">查看操作说明</a>
+    </div>
+    <div class="file-info">ZIP 压缩包 · 20+ 个文件 · MATLAB R2016b 兼容 · 含 Simulink 模型</div>
+    <div style="margin-top:18px;font-size:13px;color:var(--dim)">
+      桌面启动脚本：
+      <a href="https://github.com/LiHongwei-cn/lihongwei-cn/raw/main/tools/matlab.command" style="color:var(--accent)">macOS .command</a>
+      ·
+      <a href="https://github.com/LiHongwei-cn/lihongwei-cn/raw/main/tools/matlab.bat" style="color:var(--accent)">Windows .bat</a>
+    </div>
+  </div>
+
+  <!-- Simulation List -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">📊</span> 仿真脚本一览</h2>
+    <p style="font-size:13px;color:var(--dim);margin-bottom:14px">每个脚本均可直接在 MATLAB 中运行，自动绘图并输出关键指标。</p>
+
+    <div class="sim-grid">
+
+      <div class="sim-card">
+        <div class="sim-header">
+          <div class="sim-icon" style="background:linear-gradient(135deg,#0e7490,#0369a1)">🚗</div>
+          <div class="sim-name">纵向动力学</div>
+        </div>
+        <div class="sim-desc">加速→匀速→制动三工况。1500kg · Cd=0.32 · 前向欧拉 · dt=0.01s</div>
+        <div class="sim-cmd">vehicle_dynamics</div>
+      </div>
+
+      <div class="sim-card">
+        <div class="sim-header">
+          <div class="sim-icon" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">⚡</div>
+          <div class="sim-name">FOC 电机控制</div>
+        </div>
+        <div class="sim-desc">永磁同步电机 id=0 矢量控制。Rs=0.958Ω · Ld=Lq=5.25mH · 4极</div>
+        <div class="sim-cmd">motor_control</div>
+      </div>
+
+      <div class="sim-card">
+        <div class="sim-header">
+          <div class="sim-icon" style="background:linear-gradient(135deg,#059669,#047857)">🔧</div>
+          <div class="sim-name">直流电机 PWM</div>
+        </div>
+        <div class="sim-desc">H 桥 PWM + PI 转速闭环。48V · Ra=0.5Ω · 10kHz PWM</div>
+        <div class="sim-cmd">dc_motor_pwm</div>
+      </div>
+
+      <div class="sim-card">
+        <div class="sim-header">
+          <div class="sim-icon" style="background:linear-gradient(135deg,#6366f1,#4f46e5)">📐</div>
+          <div class="sim-name">Simulink 模型自动生成</div>
+        </div>
+        <div class="sim-desc">自动搭建直流电机 Simulink 模型 + 定速巡航 Simulink 模型</div>
+        <div class="sim-cmd">dc_motor_simulink · generate_cruise_model</div>
+      </div>
+
+      <div class="sim-card">
+        <div class="sim-header">
+          <div class="sim-icon" style="background:linear-gradient(135deg,#b91c1c,#991b1b)">🔋</div>
+          <div class="sim-name">整车动力学</div>
+        </div>
+        <div class="sim-desc">完整 EV 模型：电机+电池+能耗+SOC+续航。1600kg · 100kW PMSM</div>
+        <div class="sim-cmd">ev_dynamics_simple</div>
+      </div>
+
+      <div class="sim-card">
+        <div class="sim-header">
+          <div class="sim-icon" style="background:linear-gradient(135deg,#ea580c,#c2410c)">📈</div>
+          <div class="sim-name">电池 SOC 估算</div>
+        </div>
+        <div class="sim-desc">安时积分 vs EKF 对比。Li-ion 3.7V · 50Ah · 一阶 RC 模型</div>
+        <div class="sim-cmd">battery_soc_ekf</div>
+      </div>
+
+      <div class="sim-card">
+        <div class="sim-header">
+          <div class="sim-icon" style="background:linear-gradient(135deg,#0e7490,#155e75)">🛣️</div>
+          <div class="sim-name">驾驶循环分析</div>
+        </div>
+        <div class="sim-desc">类 WLTC 速度曲线 · 能耗与回馈分析 · 能量流饼图</div>
+        <div class="sim-cmd">driving_cycle_analysis</div>
+      </div>
+
+      <div class="sim-card">
+        <div class="sim-header">
+          <div class="sim-icon" style="background:linear-gradient(135deg,#7c3aed,#5b21b6)">⚙️</div>
+          <div class="sim-name">能量管理策略</div>
+        </div>
+        <div class="sim-desc">恒温器 vs 功率跟随策略对比。增程式 · 120kW 驱动 + 60kW 增程器</div>
+        <div class="sim-cmd">energy_management</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CarSim -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">🚗</span> CarSim 联合仿真（可选）</h2>
+    <div class="tip info" style="margin-bottom:14px">
+      CarSim 是高精度动力学仿真软件，<strong>仅支持 Windows</strong>。本工具包的 CarSim 联仿功能为可选组件，所有纯 MATLAB 脚本在 Windows 和 macOS 上均可独立运行。
+    </div>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="f-icon">🔍</div>
+        <h3>自动检测</h3>
+        <p>运行 <code>find_carsim</code> 自动检测本机 CarSim 安装路径</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">🔗</div>
+        <h3>Simulink I/O</h3>
+        <p>CarSim 2019.0+ 通过 Simulink I/O 通道实现联合仿真</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">💻</div>
+        <h3>平台要求</h3>
+        <p>CarSim 官方仅支持 Windows<br>macOS 用户可用纯 MATLAB 脚本替代</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Start -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">⚡</span> 快速开始</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="f-icon">🖥️</div>
+        <h3>桌面启动</h3>
+        <p>Windows 双击 <code>matlab.bat</code><br>macOS 双击 <code>matlab.command</code></p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">📘</div>
+        <h3>MATLAB 命令行</h3>
+        <p><code>cd matlab</code> → <code>startup_setup</code> → 输入脚本名运行</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">🤖</div>
+        <h3>AI 生成</h3>
+        <p>提供精确参数，AI 自动生成 R2016b 兼容的 MATLAB 代码</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">🔄</div>
+        <h3>批量测试</h3>
+        <p>运行 <code>test_all</code> 一键测试所有仿真脚本</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compatibility -->
+  <div class="section">
+    <h2 class="section-title"><span class="num">◆</span> 兼容性</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="f-icon">📐</div>
+        <h3>MATLAB</h3>
+        <p>R2016b 及以上版本<br>含 Simulink 许可（模型生成需要）<br>纯脚本仿真无需 Simulink</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">🚗</div>
+        <h3>CarSim</h3>
+        <p>2019.0 及以上版本<br>联合仿真接口（Send to Simulink）<br>仅 Windows · 可选组件</p>
+      </div>
+      <div class="feature-card">
+        <div class="f-icon">💻</div>
+        <h3>操作系统</h3>
+        <p>Windows 7/10/11（全部功能）<br>macOS 11+（Apple Silicon / Intel）<br>CarSim 联仿仅 Windows</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-counter">
+    本页被阅读 <span id="busuanzi_value_page_pv">...</span> 次
+  </div>
+
+  <div class="footer">
+    <a href="https://github.com/LiHongwei-cn/lihongwei-cn" target="_blank">GitHub</a>
+    &nbsp;·&nbsp; 基于 MIT 协议开源
+    &nbsp;·&nbsp; LiHongwei
+  </div>
+</div>
+<script defer src="https://jsd.dusays.com/npm/penndu@17.0.0/bsz.js"></script>
+</body>
+</html>

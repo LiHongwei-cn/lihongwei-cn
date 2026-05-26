@@ -1,14 +1,14 @@
 #!/bin/bash
-# MATLAB-AI 一键启动器 (macOS)
-# 用法：双击 .command 文件，或在终端运行 bash matlab-ai.command
+# MATLAB 仿真工具包一键启动器 (macOS)
+# 用法：双击 .command 文件，或在终端运行 bash matlab.command
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 MATLAB_DIR="$PROJECT_DIR/matlab"
-LAUNCHER_URL="https://lihongwei-cn.github.io/lihongwei-cn/matlab-ai/"
+LAUNCHER_URL="https://lihongwei-cn.github.io/lihongwei-cn/matlab/"
 
 echo "========================================"
-echo "  MATLAB-AI 新能源汽车仿真工具包"
+echo "  MATLAB 仿真工具包"
 echo "========================================"
 echo ""
 echo "项目目录: $PROJECT_DIR"
@@ -38,7 +38,7 @@ if [ -z "$MATLAB" ]; then
   echo "[X] 未检测到 MATLAB 安装"
   echo ""
   echo "请选择操作："
-  echo "  1) 打开 MATLAB-AI 启动器网页（可视化选择脚本）"
+  echo "  1) 打开 MATLAB 启动器网页（可视化选择脚本）"
   echo "  2) 手动输入 MATLAB 命令"
   echo "  3) 退出"
   echo ""
