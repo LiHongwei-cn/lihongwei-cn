@@ -1,53 +1,53 @@
-%% ºÚµ•µÁ∂Ø≥µ∂Ø¡¶—ß∑¬’Ê
-% MATLAB R2016b ºÊ»›
+%% Ê∞∏Á£ÅÂêåÊ≠•ÁîµÊú∫Áü¢ÈáèÊéßÂà∂‰ªøÁúü
+% MATLAB R2016b ÂÖºÂÆπ
 
 clc; close all;
 
-m = 1600; Cd = 0.28; Af = 2.1; rho = 1.225;
-f = 0.012; g = 9.81; rw = 0.33;
-T_max = 250; n_base = 3800; eta_motor = 0.90;
-V_bat = 350; Q_bat = 100; SOC_init = 0.95;
+pmsm.Rs = 0.958; pmsm.Ld = 0.00525; pmsm.Lq = 0.00525;
+pmsm.psi = 0.1827; pmsm.P = 4; pmsm.J = 0.003; pmsm.B = 0.0001;
 
-dt = 0.05; T = 60; t = 0:dt:T; n = length(t);
-V_CRUISE = 80/3.6; T_ACCEL = 15; T_CRUISE = 45;
-v_target = V_CRUISE*min(t/T_ACCEL,1).*(t<=T_CRUISE) ...
-         + V_CRUISE*max(1-(t-T_CRUISE)/T_ACCEL,0).*(t>T_CRUISE);
+Ts = 1e-4; T = 0.5; t = 0:Ts:T; n = length(t);
+Kp_i = 100; Ki_i = 2000; Kp_s = 0.5; Ki_s = 10;
 
-v = zeros(1,n); s = zeros(1,n); T_m = zeros(1,n);
-P_m = zeros(1,n); E_cons = zeros(1,n); SOC = SOC_init*ones(1,n);
+w_ref = 0*(t<0.1) + 1000*(t>=0.1 & t<0.3) + 2000*(t>=0.3);
+TL = 0.5*(t>0.4);
 
-for i = 2:n
-    a_req = max(-3, min(3, 2.0*(v_target(i-1)-v(i-1))));
-    Fr = 0.5*rho*Cd*Af*v(i-1)^2 + f*m*g;
-    mrpm = v(i-1)*60/(2*pi*rw);
-    Ta = T_max * min(1, n_base/max(mrpm,1));
-    Tw = max(-Ta*0.5, min(Ta, (m*a_req+Fr)*rw));
-    T_m(i) = Tw;
-    v(i) = max(0, v(i-1) + (Tw/rw - Fr)/m*dt);
-    s(i) = s(i-1) + v(i)*dt;
-    P_m(i) = Tw*(mrpm*2*pi/60);
-    Pb = P_m(i) / (eta_motor*(P_m(i)>=0) + 0.6*(P_m(i)<0));
-    E_cons(i) = E_cons(i-1) + Pb*dt/3600;
-    SOC(i) = SOC(i-1) - Pb*dt/(V_bat*Q_bat*3600);
+id = 0; iq = 0; wm = 0; id_ref = 0;
+ei_d = 0; ei_q = 0; ew = 0;
+id_log = zeros(1,n); iq_log = zeros(1,n); wm_log = zeros(1,n);
+vd_log = zeros(1,n); vq_log = zeros(1,n); Te_log = zeros(1,n);
+
+for k = 1:n
+    e = (w_ref(k) - wm*30/pi)*(pi/30);
+    ew = ew + e*Ts;
+    iq_ref = max(min(Kp_s*e + Ki_s*ew, 10), -10);
+    ei_d = ei_d + (id_ref-id)*Ts;
+    vd = Kp_i*(id_ref-id) + Ki_i*ei_d;
+    ei_q = ei_q + (iq_ref-iq)*Ts;
+    vq = Kp_i*(iq_ref-iq) + Ki_i*ei_q;
+    vd = vd - pmsm.Lq*pmsm.P*wm*iq;
+    vq = vq + pmsm.psi*pmsm.P*wm + pmsm.Ld*pmsm.P*wm*id;
+    id = id + (vd - pmsm.Rs*id + pmsm.Lq*pmsm.P*wm*iq)/pmsm.Ld*Ts;
+    iq = iq + (vq - pmsm.Rs*iq - pmsm.psi*pmsm.P*wm - pmsm.Ld*pmsm.P*wm*id)/pmsm.Lq*Ts;
+    Te = 1.5*pmsm.P*(pmsm.psi*iq + (pmsm.Ld-pmsm.Lq)*id*iq);
+    wm = wm + (Te - pmsm.B*wm - TL(k))/pmsm.J*Ts;
+    id_log(k)=id; iq_log(k)=iq; wm_log(k)=wm*30/pi;
+    vd_log(k)=vd; vq_log(k)=vq; Te_log(k)=Te;
 end
 
-figure('Position', [100 100 900 650]);
-subplot(3,2,1); plot(t, v*3.6, 'b-', t, v_target*3.6, 'r--', 'LineWidth', 1.5);
-ylabel('≥µÀŸ (km/h)'); grid on; legend(' µº ','ƒø±Í'); title('≥µÀŸ∏˙◊Ÿ');
-subplot(3,2,2); plot(t, T_m, 'g-', 'LineWidth', 1.5);
-ylabel('◊™æÿ (Nm)'); grid on; title('µÁª˙◊™æÿ');
-subplot(3,2,3); plot(t, s/1000, 'b-', 'LineWidth', 1.5);
-ylabel('æ‡¿Î (km)'); grid on; title('¿€º∆–– ªæ‡¿Î');
-subplot(3,2,4); plot(t, P_m/1000, 'r-', 'LineWidth', 1.5);
-ylabel('π¶¬  (kW)'); grid on; title('µÁª˙π¶¬ ');
-subplot(3,2,5); plot(t, E_cons, 'm-', 'LineWidth', 1.5);
-xlabel(' ±º‰ (s)'); ylabel('ƒ‹¡ø (Wh)'); grid on; title('¿€º∆ƒ‹∫ƒ');
-subplot(3,2,6); plot(t, SOC*100, 'b-', 'LineWidth', 1.5);
-xlabel(' ±º‰ (s)'); ylabel('SOC (%)'); grid on; title('µÁ≥ÿSOC');
+figure('Position', [100 100 900 700]);
+subplot(3,2,1); plot(t, w_ref, 'r--', t, wm_log, 'b-', 'LineWidth', 1.2);
+xlabel('Êó∂Èó¥ (s)'); ylabel('ËΩ¨ÈÄü (rpm)'); legend('ÂèÇËÄÉ','ÂÆûÈôÖ'); grid on; title('ËΩ¨ÈÄüÂìçÂ∫î');
+subplot(3,2,2); plot(t, Te_log, 'b-', 'LineWidth', 1.2);
+xlabel('Êó∂Èó¥ (s)'); ylabel('ËΩ¨Áü© (Nm)'); grid on; title('ÁîµÁ£ÅËΩ¨Áü©');
+subplot(3,2,3); plot(t, id_log, 'r-', t, iq_log, 'b-', 'LineWidth', 1.2);
+xlabel('Êó∂Èó¥ (s)'); ylabel('ÁîµÊµÅ (A)'); legend('id','iq'); grid on; title('dqËΩ¥ÁîµÊµÅ');
+subplot(3,2,4); plot(t, vd_log, 'r-', t, vq_log, 'b-', 'LineWidth', 1.2);
+xlabel('Êó∂Èó¥ (s)'); ylabel('ÁîµÂéã (V)'); legend('vd','vq'); grid on; title('dqËΩ¥ÁîµÂéã');
+subplot(3,2,5:6); plot(t, w_ref, 'r--', t, wm_log, 'b-', 'LineWidth', 1.2);
+xlim([0.38 0.5]); xlabel('Êó∂Èó¥ (s)'); ylabel('ËΩ¨ÈÄü (rpm)');
+legend('ÂèÇËÄÉ','ÂÆûÈôÖ'); grid on; title('Èò∂Ë∑ÉÂìçÂ∫îÂ±ÄÈÉ®ÊîæÂ§ß');
 
-fprintf('===== µÁ∂Ø≥µ∂Ø¡¶—ß∑¬’ÊΩ·π˚ =====\n');
-fprintf('◊Ó∏ﬂ≥µÀŸ: %.1f km/h\n', max(v)*3.6);
-fprintf('–– ªæ‡¿Î: %.2f km\n', s(end)/1000);
-fprintf('ƒ‹∫ƒ: %.1f kWh/100km\n', E_cons(end)/(s(end)/1000)/10);
-fprintf(' £”‡SOC: %.1f%%\n', SOC(end)*100);
-fprintf('–¯∫Ω¿Ô≥Ã: %.0f km\n', s(end)*SOC_init/(SOC_init-SOC(end)+0.001));
+fprintf('===== Áü¢ÈáèÊéßÂà∂ÁªìÊûú =====\n');
+fprintf('ËΩ¨ÈÄüËØØÂ∑Æ: %.2f rpm\n', abs(wm_log(end)-w_ref(end)));
+fprintf('Â≥∞ÂÄºËΩ¨Áü©: %.3f Nm\n', max(Te_log));
