@@ -1,5 +1,5 @@
-%% Battery SOC Estimation - Extended Kalman Filter
-% MATLAB R2016b Compatible
+%% 电池SOC估计 - 扩展卡尔曼滤波
+% MATLAB R2016b 兼容
 
 clc; close all;
 scriptPath = fileparts(mfilename('fullpath'));
@@ -47,17 +47,17 @@ end
 
 figure('Position', [100 100 850 600]);
 subplot(3,1,1); plot(t, I_load, 'b-', 'LineWidth', 1);
-xlabel('Time (s)'); ylabel('Current (A)'); grid on; title('Load Current');
+xlabel('时间 (s)'); ylabel('电流 (A)'); grid on; title('负载电流');
 subplot(3,1,2); plot(t, V_term, 'b-', 'LineWidth', 1);
-xlabel('Time (s)'); ylabel('Voltage (V)'); grid on; title('Terminal Voltage');
+xlabel('时间 (s)'); ylabel('电压 (V)'); grid on; title('端电压');
 subplot(3,1,3);
 plot(t, soc_true*100, 'k-', t, soc_ah*100, 'r--', t, soc_ekf*100, 'b-', 'LineWidth', 1.2);
-xlabel('Time (s)'); ylabel('SOC (%)');
-legend('True','Coulomb','EKF'); grid on; title('SOC Estimation');
+xlabel('时间 (s)'); ylabel('SOC (%)');
+legend('真实值','安时法','EKF'); grid on; title('SOC估计');
 
 err_ah = soc_ah - soc_true; err_ekf = soc_ekf - soc_true;
-fprintf('===== SOC Estimation Results =====\n');
-fprintf('Coulomb RMS Error: %.3f%%\n', rms_calculation(err_ah)*100);
-fprintf('EKF RMS Error: %.3f%%\n', rms_calculation(err_ekf)*100);
-fprintf('Coulomb Final Error: %.3f%%\n', abs(soc_ah(end)-soc_true(end))*100);
-fprintf('EKF Final Error: %.3f%%\n', abs(soc_ekf(end)-soc_true(end))*100);
+fprintf('===== SOC估计结果 =====\n');
+fprintf('安时法RMS误差: %.3f%%\n', rms_calculation(err_ah)*100);
+fprintf('EKF RMS误差: %.3f%%\n', rms_calculation(err_ekf)*100);
+fprintf('安时法终值误差: %.3f%%\n', abs(soc_ah(end)-soc_true(end))*100);
+fprintf('EKF终值误差: %.3f%%\n', abs(soc_ekf(end)-soc_true(end))*100);

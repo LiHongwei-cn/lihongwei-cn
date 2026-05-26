@@ -1,5 +1,5 @@
-%% DC Motor PWM Speed Control
-% MATLAB R2016b Compatible
+%% 直流电机 PWM 调速仿真
+% MATLAB R2016b 兼容
 
 clc; close all;
 
@@ -26,18 +26,18 @@ end
 
 figure('Position', [100 100 900 650]);
 subplot(3,2,1); plot(t, w_ref*30/pi, 'r--', t, w_log, 'b-', 'LineWidth', 1.5);
-xlabel('Time (s)'); ylabel('Speed (rpm)'); legend('Ref','Actual'); grid on; title('Speed Response');
+xlabel('时间 (s)'); ylabel('转速 (rpm)'); legend('参考','实际'); grid on; title('转速响应');
 subplot(3,2,2); plot(t, w_log, 'b-', 'LineWidth', 1.2); xlim([0.75 0.9]);
-xlabel('Time (s)'); ylabel('Speed (rpm)'); grid on; title('Acceleration (Zoom)');
+xlabel('时间 (s)'); ylabel('转速 (rpm)'); grid on; title('加速过程（放大）');
 subplot(3,2,3); plot(t, ia_log, 'r-', 'LineWidth', 1.2);
-xlabel('Time (s)'); ylabel('Current (A)'); grid on; title('Armature Current');
+xlabel('时间 (s)'); ylabel('电流 (A)'); grid on; title('电枢电流');
 subplot(3,2,4); plot(t, TL, 'r-', t, Kt*ia_log, 'b-', 'LineWidth', 1.2);
-xlabel('Time (s)'); ylabel('Torque (Nm)'); legend('Load','EM'); grid on; title('Torque');
+xlabel('时间 (s)'); ylabel('转矩 (Nm)'); legend('负载','电磁'); grid on; title('转矩');
 subplot(3,2,5); plot(t, va_log, 'g-', 'LineWidth', 1.2);
-xlabel('Time (s)'); ylabel('Voltage (V)'); grid on; title('Armature Voltage');
+xlabel('时间 (s)'); ylabel('电压 (V)'); grid on; title('电枢电压');
 subplot(3,2,6); plot(t, duty_log*100, 'm-', 'LineWidth', 1.2);
-xlabel('Time (s)'); ylabel('Duty (%)'); grid on; title('PWM Duty Cycle');
+xlabel('时间 (s)'); ylabel('占空比 (%)'); grid on; title('PWM占空比');
 
-fprintf('===== DC Motor Results =====\n');
-fprintf('Speed error: %.1f rpm\n', abs(w_log(end)-w_ref(end)*30/pi));
-fprintf('Peak current: %.2f A\n', max(abs(ia_log)));
+fprintf('===== 直流电机仿真结果 =====\n');
+fprintf('转速误差: %.1f rpm\n', abs(w_log(end)-w_ref(end)*30/pi));
+fprintf('峰值电流: %.2f A\n', max(abs(ia_log)));

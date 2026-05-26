@@ -1,8 +1,8 @@
-% HIL Test Runner
+% HIL 测试用例验证
 %
-% Runs 5 test cases on simulation results, outputs pass/fail
+% 功能：对仿真结果运行 5 个测试用例，输出通过/失败结果
 %
-% Compatible: MATLAB R2016b
+% 兼容版本：MATLAB R2016b
 
 function results = hil_test_runner(t, veh_vel, veh_pos, lat_pos, ...
     fcw_flag, aeb_flag, ldw_flag, radar_rng)
@@ -10,39 +10,39 @@ function results = hil_test_runner(t, veh_vel, veh_pos, lat_pos, ...
     N = length(t);
     results = struct('name', {}, 'passed', {}, 'detail', {});
 
-    %% Test 1: Normal driving - no warnings in first 0.5s
+    %% 测试1：正常行驶 - 前0.5秒不应触发任何警告
     dt = t(2) - t(1);
     idx_0_5s = round(0.5 / dt);
     tc1_fcw = any(fcw_flag(1:idx_0_5s));
     tc1_aeb = any(aeb_flag(1:idx_0_5s));
     tc1_pass = ~tc1_fcw && ~tc1_aeb;
-    results(1).name   = 'Normal driving (no warn <0.5s)';
+    results(1).name   = '正常行驶（前0.5秒无预警）';
     results(1).passed = tc1_pass;
-    results(1).detail = sprintf('FCW=%d AEB=%d (expect 0, 0)', tc1_fcw, tc1_aeb);
+    results(1).detail = sprintf('FCW=%d AEB=%d (期望 0, 0)', tc1_fcw, tc1_aeb);
 
-    %% Test 2: Obstacle approach - FCW should trigger
+    %% 测试2：障碍物接近 - 应触发 FCW
     tc2_pass = any(fcw_flag);
-    results(2).name   = 'Obstacle approach triggers FCW';
+    results(2).name   = '障碍物接近触发 FCW';
     results(2).passed = tc2_pass;
-    results(2).detail = sprintf('FCW triggered=%d', tc2_pass);
+    results(2).detail = sprintf('FCW 触发=%d', tc2_pass);
 
-    %% Test 3: Very close - AEB should trigger
+    %% 测试3：非常接近 - 应触发 AEB
     tc3_pass = any(aeb_flag);
-    results(3).name   = 'Close range triggers AEB';
+    results(3).name   = '近距离触发 AEB';
     results(3).passed = tc3_pass;
-    results(3).detail = sprintf('AEB triggered=%d', tc3_pass);
+    results(3).detail = sprintf('AEB 触发=%d', tc3_pass);
 
-    %% Test 4: Lane drift - LDW should trigger
+    %% 测试4：车道偏移 - 应触发 LDW
     tc4_pass = any(ldw_flag);
-    results(4).name   = 'Lane drift triggers LDW';
+    results(4).name   = '车道偏移触发 LDW';
     results(4).passed = tc4_pass;
-    results(4).detail = sprintf('LDW triggered=%d, max drift=%.3f m', ...
+    results(4).detail = sprintf('LDW 触发=%d, 最大偏移=%.3f m', ...
                         tc4_pass, max(abs(lat_pos)));
 
-    %% Test 5: Sensor failure - graceful degradation
+    %% 测试5：传感器失效 - 系统应优雅降级
     tc5_pass = ~any(isnan(veh_vel));
-    results(5).name   = 'Sensor failure graceful degradation';
+    results(5).name   = '传感器失效优雅降级';
     results(5).passed = tc5_pass;
-    results(5).detail = sprintf('NaN in velocity=%d (expect 0)', any(isnan(veh_vel)));
+    results(5).detail = sprintf('速度含 NaN=%d (期望 0)', any(isnan(veh_vel)));
 
 end

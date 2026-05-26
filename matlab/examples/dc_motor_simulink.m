@@ -1,5 +1,6 @@
-%% DC Motor PWM Speed Control - Simulink Model (Auto-Build)
-% MATLAB R2016b + Simulink Compatible
+%% 直流电机 PWM 调速 Simulink 模型（自动搭建，独立版）
+% MATLAB R2016b + Simulink 兼容
+% 运行此脚本自动生成并打开模型
 
 clc; close all;
 
@@ -12,14 +13,14 @@ end
 new_system(model);
 open_system(model);
 
-%% Motor Parameters
+%% 电机参数
 Ra = 0.5; La = 0.003; Ke = 0.05; Kt = 0.05;
 J = 0.01; B = 0.001; Vdc = 48;
 
-%% PI Parameters
+%% PI 参数
 Kp = 0.8; Ki = 5.0;
 
-%% Build Model
+%% ========== 搭建模型 ==========
 
 add_block('simulink/Sources/Step', [model '/Speed Ref']);
 set_param([model '/Speed Ref'], 'Time', '0.3', 'Before', '0', 'After', '100');
@@ -68,7 +69,7 @@ set_param([model '/rpm'], 'Gain', '30/pi');
 add_block('simulink/Sinks/Scope', [model '/Scope']);
 set_param([model '/Scope'], 'NumInputPorts', '3', 'Position', [700 100 950 400]);
 
-%% Layout
+%% 布局
 set_param([model '/Speed Ref'],     'Position', [30  180 70  210]);
 set_param([model '/Speed Error'],   'Position', [130 180 170 220]);
 set_param([model '/Kp'],            'Position', [230 130 270 170]);
@@ -86,7 +87,7 @@ set_param([model '/Ke'],            'Position', [860 260 900 300]);
 set_param([model '/rpm'],           'Position', [860 360 900 400]);
 set_param([model '/Scope'],         'Position', [700 100 950 400]);
 
-%% Wiring
+%% ========== 连线 ==========
 add_line(model, 'Speed Ref/1', 'Speed Error/1');
 add_line(model, 'Mechanical/1', 'Speed Error/2');
 add_line(model, 'Speed Error/1', 'Kp/1');
@@ -125,11 +126,11 @@ add_line(model, 'rpm/1', 'Mux/2');
 add_line(model, 'Electrical/1', 'Mux/3');
 add_line(model, 'Mux/1', 'Scope/1');
 
-%% Configure & Save
+%% 配置 & 保存
 set_param(model, 'Solver', 'ode45', 'StopTime', '2');
 set_param(model, 'StartTime', '0.0');
 save_system(model);
 
-fprintf('===== Simulink Model Generated =====\n');
-fprintf('Model: %s\n', model);
-fprintf('Double-click Scope to view: Speed Ref / Actual Speed (rpm) / Armature Current (A)\n');
+fprintf('===== Simulink 模型已生成 =====\n');
+fprintf('模型名称: %s\n', model);
+fprintf('双击 Scope 查看: 转速参考 / 实际转速 (rpm) / 电枢电流 (A)\n');

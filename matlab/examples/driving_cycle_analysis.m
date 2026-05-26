@@ -1,5 +1,5 @@
-%% Driving Cycle Energy Analysis
-% MATLAB R2016b Compatible
+%% 工况能耗分析
+% MATLAB R2016b 兼容
 
 clc; close all;
 
@@ -35,27 +35,27 @@ drv = P_mot>0; reg = P_mot<0;
 
 figure('Position', [50 50 950 700]);
 subplot(3,2,1); plot(t/60, v_kmh, 'b-', 'LineWidth', 1.2);
-xlabel('Time (min)'); ylabel('Speed (km/h)'); grid on; title('Driving Cycle');
-subplot(3,2,2); yyaxis left; plot(t/60, P_mot/1000, 'b-'); ylabel('Power (kW)');
-yyaxis right; plot(t/60, E_con/1000, 'r-', 'LineWidth', 1.5); ylabel('Energy (kWh)');
-xlabel('Time (min)'); grid on; title('Power & Energy');
+xlabel('时间 (min)'); ylabel('车速 (km/h)'); grid on; title('行驶工况');
+subplot(3,2,2); yyaxis left; plot(t/60, P_mot/1000, 'b-'); ylabel('功率 (kW)');
+yyaxis right; plot(t/60, E_con/1000, 'r-', 'LineWidth', 1.5); ylabel('能量 (kWh)');
+xlabel('时间 (min)'); grid on; title('功率与能耗');
 subplot(3,2,3); histogram(P_mot(drv)/1000, 30, 'FaceColor', 'b'); hold on;
-lgd = {'Drive'};
-if any(reg), histogram(abs(P_mot(reg))/1000, 30, 'FaceColor', 'g'); lgd{end+1} = 'Regen'; end
-xlabel('Power (kW)'); ylabel('Count'); legend(lgd); grid on; title('Power Distribution');
+lgd = {'驱动'};
+if any(reg), histogram(abs(P_mot(reg))/1000, 30, 'FaceColor', 'g'); lgd{end+1} = '再生'; end
+xlabel('功率 (kW)'); ylabel('频次'); legend(lgd); grid on; title('功率分布');
 subplot(3,2,4); plot(t/60, a, 'r-', 'LineWidth', 1);
-xlabel('Time (min)'); ylabel('Accel (m/s^2)'); grid on; title('Acceleration');
+xlabel('时间 (min)'); ylabel('加速度 (m/s^2)'); grid on; title('加速度');
 subplot(3,2,5); plot(t/60, SOC*100, 'b-', 'LineWidth', 1.2);
-xlabel('Time (min)'); ylabel('SOC (%)'); grid on; title('Battery SOC');
+xlabel('时间 (min)'); ylabel('SOC (%)'); grid on; title('电池SOC');
 subplot(3,2,6);
 E_drv = sum(P_bat(drv)*dt/3600); E_reg = sum(abs(P_bat(reg))*dt/3600);
-if E_reg>0, pie([E_drv, E_reg], {'Drive (Wh)','Regen (Wh)'}); end
-title('Energy Flow');
+if E_reg>0, pie([E_drv, E_reg], {'驱动 (Wh)','再生 (Wh)'}); end
+title('能量流向');
 
 dist = sum(v_ms*dt)/1000;
-fprintf('===== Driving Cycle Analysis =====\n');
-fprintf('Distance: %.2f km\n', dist);
-fprintf('Energy: %.1f kWh/100km\n', E_con(end)/dist*100/1000);
-fprintf('SOC used: %.1f%%\n', (SOC_0-SOC(end))*100);
-fprintf('Range: %.0f km\n', dist*SOC_0/(SOC_0-SOC(end)+0.001));
-fprintf('Regen ratio: %.1f%%\n', sum(abs(P_bat(reg)))/max(sum(abs(P_bat)),1e-6)*100);
+fprintf('===== 工况能耗分析 =====\n');
+fprintf('行驶距离: %.2f km\n', dist);
+fprintf('能耗: %.1f kWh/100km\n', E_con(end)/dist*100/1000);
+fprintf('SOC消耗: %.1f%%\n', (SOC_0-SOC(end))*100);
+fprintf('续航里程: %.0f km\n', dist*SOC_0/(SOC_0-SOC(end)+0.001));
+fprintf('再生比例: %.1f%%\n', sum(abs(P_bat(reg)))/max(sum(abs(P_bat)),1e-6)*100);

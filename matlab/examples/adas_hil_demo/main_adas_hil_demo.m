@@ -1,15 +1,15 @@
-% ADAS Hardware-in-the-Loop Simulation Demo
+% ADAS 硬件在环仿真演示
 %
-% Features:
-%   FCW (Forward Collision Warning): TTC < 2.5s
-%   AEB (Automatic Emergency Braking): TTC < 1.0s
-%   LDW (Lane Departure Warning): Lateral offset > 0.3m
+% 功能：模拟三种辅助驾驶功能
+%   FCW（前碰撞预警）：TTC < 2.5 秒
+%   AEB（自动紧急制动）：TTC < 1.0 秒
+%   LDW（车道偏离预警）：横向偏移 > 0.3 米
 %
-% Compatible: MATLAB R2016b
+% 兼容版本：MATLAB R2016b
 
 clc; close all;
 
-%% Vehicle Parameters
+%% 车辆参数
 vehicle_params.m   = 1500;
 vehicle_params.Cd  = 0.32;
 vehicle_params.Af  = 2.2;
@@ -20,7 +20,7 @@ vehicle_params.F_max_engine = 4000;
 vehicle_params.F_max_brake  = 8000;
 vehicle_params.v_max = 200 / 3.6;
 
-%% Sensor Parameters
+%% 传感器参数
 sensor_cfg.radar_max_range   = 150;
 sensor_cfg.radar_range_std   = 0.5;
 sensor_cfg.radar_rate_std    = 0.1;
@@ -29,7 +29,7 @@ sensor_cfg.camera_det_prob   = 0.95;
 sensor_cfg.camera_lane_std   = 0.05;
 sensor_cfg.ultrasonic_range  = 5;
 
-%% Scenario Parameters
+%% 场景参数
 v0_kmh      = 80;
 v0          = v0_kmh / 3.6;
 x0          = 0;
@@ -37,13 +37,13 @@ obs_dist    = 60;
 obs_speed   = 0;
 lat_offset0 = 0;
 
-%% Simulation Parameters
+%% 仿真参数
 dt    = 0.01;
 t_end = 5;
 t     = 0:dt:t_end;
 N     = length(t);
 
-%% Pre-allocate
+%% 预分配
 veh_pos      = zeros(1, N);
 veh_vel      = zeros(1, N);
 veh_acc      = zeros(1, N);
@@ -56,12 +56,12 @@ ldw_flag     = false(1, N);
 radar_range  = zeros(1, N);
 camera_lane  = zeros(1, N);
 
-%% Initial Conditions
+%% 初始条件
 veh_pos(1)     = x0;
 veh_vel(1)     = v0;
 veh_lat_pos(1) = lat_offset0;
 
-%% Main Simulation Loop
+%% 主仿真循环
 for k = 1:N
     obs_range      = obs_dist - veh_pos(k);
     obs_range_rate = obs_speed - veh_vel(k);
@@ -97,32 +97,32 @@ for k = 1:N
     camera_lane(k)  = sens.camera.lane_offset;
 end
 
-%% Test Verification
+%% 测试验证
 test_results = hil_test_runner(t, veh_vel, veh_pos, veh_lat_pos, ...
     fcw_flag, aeb_flag, ldw_flag, radar_range);
 
-%% Test Report
+%% 测试报告
 fprintf('\n');
 fprintf('========================================\n');
-fprintf('  ADAS HIL Test Report\n');
-fprintf('  Date: %s\n', datestr(now));
-fprintf('  Scenario: v0=%d km/h, obs_dist=%d m\n', v0_kmh, obs_dist);
+fprintf('  ADAS 硬件在环仿真测试报告\n');
+fprintf('  日期: %s\n', datestr(now));
+fprintf('  场景: 初始速度 %d km/h, 障碍物距离 %d m\n', v0_kmh, obs_dist);
 fprintf('========================================\n');
 for i = 1:length(test_results)
     if test_results(i).passed
-        status = 'PASS';
+        status = '通过';
     else
-        status = 'FAIL';
+        status = '失败';
     end
-    fprintf('  Test%d  %-30s [%s]\n', i, test_results(i).name, status);
+    fprintf('  测试%d  %-30s [%s]\n', i, test_results(i).name, status);
 end
 fprintf('========================================\n');
 n_pass = sum([test_results.passed]);
-fprintf('  Result: %d / %d passed\n', n_pass, length(test_results));
+fprintf('  结果: %d / %d 通过\n', n_pass, length(test_results));
 fprintf('========================================\n');
 fprintf('\n');
 
-%% Visualization
+%% 可视化
 visualize_results(t, veh_pos, veh_vel, veh_acc, veh_lat_pos, ...
     radar_range, camera_lane, fcw_flag, aeb_flag, ldw_flag, ...
     throttle_cmd, brake_cmd, obs_dist);

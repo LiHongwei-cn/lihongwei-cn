@@ -1,5 +1,5 @@
-%% PMSM FOC Control Simulation
-% MATLAB R2016b Compatible
+%% 永磁同步电机矢量控制仿真
+% MATLAB R2016b 兼容
 
 clc; close all;
 
@@ -37,17 +37,17 @@ end
 
 figure('Position', [100 100 900 700]);
 subplot(3,2,1); plot(t, w_ref, 'r--', t, wm_log, 'b-', 'LineWidth', 1.2);
-xlabel('Time (s)'); ylabel('Speed (rpm)'); legend('Ref','Actual'); grid on; title('Speed Response');
+xlabel('时间 (s)'); ylabel('转速 (rpm)'); legend('参考','实际'); grid on; title('转速响应');
 subplot(3,2,2); plot(t, Te_log, 'b-', 'LineWidth', 1.2);
-xlabel('Time (s)'); ylabel('Torque (Nm)'); grid on; title('Torque Output');
+xlabel('时间 (s)'); ylabel('转矩 (Nm)'); grid on; title('电磁转矩');
 subplot(3,2,3); plot(t, id_log, 'r-', t, iq_log, 'b-', 'LineWidth', 1.2);
-xlabel('Time (s)'); ylabel('Current (A)'); legend('id','iq'); grid on; title('d-q Current');
+xlabel('时间 (s)'); ylabel('电流 (A)'); legend('id','iq'); grid on; title('dq轴电流');
 subplot(3,2,4); plot(t, vd_log, 'r-', t, vq_log, 'b-', 'LineWidth', 1.2);
-xlabel('Time (s)'); ylabel('Voltage (V)'); legend('vd','vq'); grid on; title('d-q Voltage');
+xlabel('时间 (s)'); ylabel('电压 (V)'); legend('vd','vq'); grid on; title('dq轴电压');
 subplot(3,2,5:6); plot(t, w_ref, 'r--', t, wm_log, 'b-', 'LineWidth', 1.2);
-xlim([0.38 0.5]); xlabel('Time (s)'); ylabel('Speed (rpm)');
-legend('Ref','Actual'); grid on; title('Load Response (Zoom)');
+xlim([0.38 0.5]); xlabel('时间 (s)'); ylabel('转速 (rpm)');
+legend('参考','实际'); grid on; title('负载响应（放大）');
 
-fprintf('===== Motor Control Results =====\n');
-fprintf('Speed error: %.2f rpm\n', abs(wm_log(end)-w_ref(end)));
-fprintf('Peak torque: %.3f Nm\n', max(Te_log));
+fprintf('===== 电机控制仿真结果 =====\n');
+fprintf('转速误差: %.2f rpm\n', abs(wm_log(end)-w_ref(end)));
+fprintf('峰值转矩: %.3f Nm\n', max(Te_log));
