@@ -87,6 +87,8 @@ echo     generate_cruise_model 定速巡航 Simulink 模型
 echo   电池 ^& 能量:
 echo     battery_soc_ekf       SOC 估算（EKF）
 echo     energy_management     增程式能量管理
+echo   ADAS:
+echo     adas_hil_demo/main_adas_hil_demo  ADAS HIL 综合演示
 echo   工具:
 echo     rms_calculation       RMS 有效值
 echo     fft_analysis          FFT 频谱分析
