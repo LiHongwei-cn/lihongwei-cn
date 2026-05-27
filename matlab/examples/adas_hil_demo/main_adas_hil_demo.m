@@ -33,7 +33,7 @@ sensor_cfg.ultrasonic_range  = 5;
 v0_kmh      = 80;
 v0          = v0_kmh / 3.6;
 x0          = 0;
-obs_dist    = 60;
+obs_dist    = 80;
 obs_speed   = 0;
 lat_offset0 = 0;
 
