@@ -1,19 +1,20 @@
-%% Startup script - add MATLAB search paths
-% R2016b compatible
-% Run once, or auto-run from matlab.bat
+%% 启动脚本——添加 MATLAB 搜索路径
+% 功能：将 matlab/ 目录下的工具函数和示例脚本添加到 MATLAB 搜索路径
+% 兼容版本：MATLAB R2016b
+% 使用方式：运行一次，或由 matlab.bat 自动调用
 
-fprintf('Adding matlab tool directories to search path...\n');
+fprintf('正在添加 matlab 工具目录到搜索路径...\n');
 
 scriptPath = fileparts(mfilename('fullpath'));
 
-addpath(scriptPath);
-addpath(fullfile(scriptPath, 'examples'));
-addpath(fullfile(scriptPath, 'utils'));
+addpath(scriptPath);                              % matlab/ 根目录
+addpath(fullfile(scriptPath, 'examples'));         % 示例脚本
+addpath(fullfile(scriptPath, 'utils'));            % 工具函数
 
 try
     savepath;
 catch
-    fprintf('(path not saved to disk, will re-apply next launch)\n');
+    fprintf('(路径未保存到磁盘，下次启动时重新添加)\n');
 end
 
-fprintf('Done. Commands: vehicle_dynamics motor_control test_all ...\n');
+fprintf('完成。可用命令: vehicle_dynamics motor_control test_all ...\n');
