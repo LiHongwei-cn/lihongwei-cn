@@ -63,6 +63,7 @@
 | **沟通适配** | 按受众调整表达，同一真相蒙多能让所有人听懂 |
 | **Claude Code 委托协议** | 编码任务委托 Claude Code 执行，蒙多亲自做研究和规划 |
 | **动态校准** | 自信度实时校准公式 + 月度审查，蒙多的自信是用数据算出来的 |
+| **云仓库与自动化** | 双向同步(本地↔云端)、质量评分(0-100)、去重引擎、每日自动进化、每周质量审计 |
 | **执行检查清单** | 写码五查（安全/性能/测试/文档/影响）+ 提交三查，清单不通过不提交 |
 
 ### 💰 关于钱财
@@ -117,9 +118,9 @@ hermes skills install mundo
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v19.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-macos.zip) |
-| Windows | [mundo-v19.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-windows.zip) |
-| Linux | [mundo-v19.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-linux.zip) |
+| macOS | [mundo-v19.2-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-macos.zip) |
+| Windows | [mundo-v19.2-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-windows.zip) |
+| Linux | [mundo-v19.2-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-linux.zip) |
 
 ### 🌐 更多详细内容
 
@@ -210,9 +211,9 @@ hermes skills install mundo
 
 | Platform | Download |
 |----------|----------|
-| macOS | [mundo-v19.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-macos.zip) |
-| Windows | [mundo-v19.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-windows.zip) |
-| Linux | [mundo-v19.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-linux.zip) |
+| macOS | [mundo-v19.2-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-macos.zip) |
+| Windows | [mundo-v19.2-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-windows.zip) |
+| Linux | [mundo-v19.2-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-linux.zip) |
 
 ### 🌐 Full Documentation
 
@@ -284,9 +285,9 @@ Includes: Ability details · Three Departments & Six Ministries hierarchy · Ars
 
 | プラットフォーム | ダウンロード |
 |-----------------|-------------|
-| macOS | [mundo-v19.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-macos.zip) |
-| Windows | [mundo-v19.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-windows.zip) |
-| Linux | [mundo-v19.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-linux.zip) |
+| macOS | [mundo-v19.2-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-macos.zip) |
+| Windows | [mundo-v19.2-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-windows.zip) |
+| Linux | [mundo-v19.2-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-linux.zip) |
 
 ---
 
@@ -352,9 +353,9 @@ Includes: Ability details · Three Departments & Six Ministries hierarchy · Ars
 
 | 플랫폼 | 다운로드 |
 |--------|----------|
-| macOS | [mundo-v19.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-macos.zip) |
-| Windows | [mundo-v19.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-windows.zip) |
-| Linux | [mundo-v19.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.0/mundo-v19.0-linux.zip) |
+| macOS | [mundo-v19.2-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-macos.zip) |
+| Windows | [mundo-v19.2-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-windows.zip) |
+| Linux | [mundo-v19.2-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-linux.zip) |
 
 ---
 
