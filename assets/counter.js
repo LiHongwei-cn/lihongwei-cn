@@ -13,7 +13,17 @@
 
   // 初始偏移量 — 新访客看到的真实基础数据
   var SITE_OFFSET = 2047;
-  var PAGE_OFFSET = 523;
+
+  // 每个页面根据路径生成不同的偏移量，避免所有页面数字一样
+  function pageOffset(path) {
+    var hash = 0;
+    for (var i = 0; i < path.length; i++) {
+      hash = ((hash << 5) - hash) + path.charCodeAt(i);
+      hash = hash & hash;
+    }
+    return 300 + Math.abs(hash % 450);
+  }
+  var PAGE_OFFSET = pageOffset(location.pathname);
 
   // === localStorage counter (always works, never loses data) ===
   function getLocalCount(key) {
