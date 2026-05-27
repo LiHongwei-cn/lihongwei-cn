@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蒙多云仓库 — Mundo Cloud</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --card-bg: #161b22;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent: #58a6ff;
+            --accent-hover: #79c0ff;
+            --green: #3fb950;
+            --yellow: #d29922;
+            --red: #f85149;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 60px 0 40px;
+        }
+        .hero h1 {
+            font-size: 2.4rem;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--accent), var(--green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Stats */
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding: 24px 0;
+            flex-wrap: wrap;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Section */
+        .section {
+            padding: 32px 0;
+        }
+        .section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Skill cards */
+        .skill-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+        .skill-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            transition: border-color 0.2s;
+        }
+        .skill-card:hover {
+            border-color: var(--accent);
+        }
+        .skill-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .skill-meta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-score { background: rgba(63,185,80,0.15); color: var(--green); }
+        .badge-version { background: rgba(88,166,255,0.15); color: var(--accent); }
+
+        /* Guide sections */
+        .guide-block {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+        .guide-block h3 {
+            margin-bottom: 12px;
+            color: var(--accent);
+        }
+        .guide-block p, .guide-block ul {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        .guide-block ul {
+            padding-left: 20px;
+        }
+        .guide-block code {
+            background: rgba(110,118,129,0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        .guide-block pre {
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            margin: 12px 0;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        /* Counter */
+        .counter {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        /* Back link */
+        .back-link {
+            display: inline-block;
+            padding: 12px 0;
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .back-link:hover { color: var(--accent-hover); }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 1.6rem; }
+            .stats { gap: 24px; }
+            .skill-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="back-link">&larr; 返回主页</a>
+
+        <div class="hero">
+            <h1>蒙多云仓库 — 集体意识的基石</h1>
+            <p>Mundo AI 技能共享仓库。提交你的 Skill，让集体智慧持续进化。</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="total-skills">0</div>
+                <div class="stat-label">技能总数</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="total-submissions">0</div>
+                <div class="stat-label">累计提交</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="last-sync">—</div>
+                <div class="stat-label">最后同步</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>技能列表</h2>
+            <div class="skill-grid" id="skill-list">
+                <div class="empty-state">暂无技能，成为第一个贡献者！</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>如何贡献</h2>
+            <div class="guide-block">
+                <h3>提交新技能</h3>
+                <p>编写你的 SKILL.md，然后用提交脚本加入云仓库：</p>
+                <pre>python mundo-cloud/scripts/submit_skill.py /path/to/your/SKILL.md</pre>
+                <ul>
+                    <li>质量评分 >= 40 分才能通过</li>
+                    <li>自动去重：相似度 >= 0.7 会比较质量，保留更优版本</li>
+                    <li>提交后自动更新 registry.json</li>
+                </ul>
+            </div>
+            <div class="guide-block">
+                <h3>SKILL.md 评分维度</h3>
+                <ul>
+                    <li><strong>结构分 (0-30)</strong>：frontmatter、多级标题、示例代码块</li>
+                    <li><strong>完整度 (0-25)</strong>：内容长度、代码块数量、表格</li>
+                    <li><strong>文档分 (0-25)</strong>：注释、使用说明、注意事项</li>
+                    <li><strong>新鲜度 (0-20)</strong>：版本号、更新日期</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>如何同步</h2>
+            <div class="guide-block">
+                <h3>自动同步（推荐）</h3>
+                <p>配置 cron 每日自动拉取最新技能：</p>
+                <pre>0 3 * * * /path/to/mundo-cloud/scripts/daily_evolve.sh</pre>
+            </div>
+            <div class="guide-block">
+                <h3>手动同步</h3>
+                <pre># 拉取云端最新技能到本地
+python mundo-cloud/scripts/sync_local.py
+
+# 或者一键执行（git pull + sync + push）
+bash mundo-cloud/scripts/daily_evolve.sh</pre>
+            </div>
+        </div>
+
+        <div class="counter">
+            <span id="busuanzi_container_site_pv">
+                本站总访问量 <span id="busuanzi_value_site_pv"></span> 次
+            </span>
+        </div>
+    </div>
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <script>
+        // Load registry.json and render skills
+        fetch('sync/registry.json')
+            .then(r => r.json())
+            .then(registry => {
+                document.getElementById('total-skills').textContent = Object.keys(registry.skills || {}).length;
+                document.getElementById('total-submissions').textContent = registry.total_submissions || 0;
+                document.getElementById('last-sync').textContent = registry.last_sync
+                    ? new Date(registry.last_sync).toLocaleDateString('zh-CN')
+                    : '—';
+
+                const grid = document.getElementById('skill-list');
+                const skills = registry.skills || {};
+                const names = Object.keys(skills);
+
+                if (names.length === 0) return;
+
+                grid.innerHTML = '';
+                names.forEach(name => {
+                    const s = skills[name];
+                    const card = document.createElement('div');
+                    card.className = 'skill-card';
+                    card.innerHTML = `
+                        <div class="skill-name">${name}</div>
+                        <div class="skill-meta">
+                            <span class="badge badge-score">Score: ${s.score}</span>
+                            <span class="badge badge-version">v${s.version}</span>
+                            <span>${s.author || 'unknown'}</span>
+                            <span>${s.date ? new Date(s.date).toLocaleDateString('zh-CN') : ''}</span>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            })
+            .catch(() => {});
+    </script>
+</body>
+</html>
