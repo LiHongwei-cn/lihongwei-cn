@@ -3,7 +3,7 @@
 % 兼容版本：MATLAB R2016b
 % 使用方式：运行一次，或由 matlab.bat 自动调用
 
-fprintf('正在添加 matlab 工具目录到搜索路径...\n');
+fprintf('Adding matlab directories to path...\n');
 
 scriptPath = fileparts(mfilename('fullpath'));
 
@@ -14,7 +14,7 @@ addpath(fullfile(scriptPath, 'utils'));            % 工具函数
 try
     savepath;
 catch
-    fprintf('(路径未保存到磁盘，下次启动时重新添加)\n');
+    fprintf('(Path not saved to disk, will re-add on next startup)\n');
 end
 
-fprintf('完成。可用命令: vehicle_dynamics motor_control test_all ...\n');
+fprintf('Done. Commands: vehicle_dynamics motor_control test_all ...\n');

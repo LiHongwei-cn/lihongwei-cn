@@ -73,48 +73,48 @@ f2 = sum(P_gen2)*dt/3600/1000*fuel_rate;
 dist = sum(v_ms*dt)/1000;
 
 %% 输出结果
-fprintf('===== 混合动力能量管理策略对比 =====\n');
-fprintf('行驶距离: %.1f km\n', dist);
-fprintf('%-18s %-15s %-15s\n', '指标', '恒温器策略', '功率跟随策略');
-fprintf('%-18s %-15.1f %-15.1f\n', '油耗/100km (L)', f1/dist*100, f2/dist*100);
-fprintf('%-18s %-15.2f %-15.2f\n', '终止SOC', SOC1(end), SOC2(end));
-fprintf('%-18s %-15d %-15d\n', '发电次数', sum(diff(P_gen1>0)~=0), sum(diff(P_gen2>0)~=0));
+fprintf('===== HEV Energy Management Comparison =====\n');
+fprintf('Distance: %.1f km\n', dist);
+fprintf('%-18s %-15s %-15s\n', 'Metric', 'Thermostat', 'Power Follow');
+fprintf('%-18s %-15.1f %-15.1f\n', 'Fuel/100km (L)', f1/dist*100, f2/dist*100);
+fprintf('%-18s %-15.2f %-15.2f\n', 'Final SOC', SOC1(end), SOC2(end));
+fprintf('%-18s %-15d %-15d\n', 'Gen cycles', sum(diff(P_gen1>0)~=0), sum(diff(P_gen2>0)~=0));
 
 %% 绘图
 figure('Position', [50 50 1000 700]);
 
 subplot(4,2,1);
 plot(t/60, v_ms*3.6, 'b-');
-xlabel('时间 (min)'); ylabel('车速 (km/h)');
-grid on; title('行驶工况');
+xlabel('Time (min)'); ylabel('Speed (km/h)');
+grid on; title('Driving Cycle');
 
 subplot(4,2,2);
 plot(t/60, P_dem/1000, 'b-');
-xlabel('时间 (min)'); ylabel('功率 (kW)');
-grid on; title('需求功率');
+xlabel('Time (min)'); ylabel('Power (kW)');
+grid on; title('Power Demand');
 
 subplot(4,2,3);
 yyaxis left; plot(t/60, SOC1*100, 'b-'); ylabel('SOC (%)');
-yyaxis right; plot(t/60, P_gen1/1000, 'r-'); ylabel('发电机功率 (kW)');
-xlabel('时间 (min)'); grid on; title('恒温器策略');
+yyaxis right; plot(t/60, P_gen1/1000, 'r-'); ylabel('Gen Power (kW)');
+xlabel('Time (min)'); grid on; title('Thermostat');
 
 subplot(4,2,4);
 yyaxis left; plot(t/60, SOC2*100, 'b-'); ylabel('SOC (%)');
-yyaxis right; plot(t/60, P_gen2/1000, 'r-'); ylabel('发电机功率 (kW)');
-xlabel('时间 (min)'); grid on; title('功率跟随策略');
+yyaxis right; plot(t/60, P_gen2/1000, 'r-'); ylabel('Gen Power (kW)');
+xlabel('Time (min)'); grid on; title('Power Follow');
 
 subplot(4,2,5);
 plot(t/60, cumsum(P_gen1)*dt/3600/1000, 'r-', t/60, cumsum(P_gen2)*dt/3600/1000, 'b-');
-xlabel('时间 (min)'); ylabel('累计发电量 (kWh)');
-legend('恒温器', '功率跟随'); grid on; title('累计发电量');
+xlabel('Time (min)'); ylabel('Gen Energy (kWh)');
+legend('Thermostat', 'Power Follow'); grid on; title('Cumulative Generation');
 
 subplot(4,2,6);
 scatter(P_dem/1000, P_gen1/1000, 3, 'r'); hold on;
 scatter(P_dem/1000, P_gen2/1000, 3, 'b');
-xlabel('需求功率 (kW)'); ylabel('发电机功率 (kW)');
-legend('恒温器', '功率跟随'); grid on; title('功率分布');
+xlabel('Demand (kW)'); ylabel('Gen Power (kW)');
+legend('Thermostat', 'Power Follow'); grid on; title('Power Distribution');
 
 subplot(4,2,7:8);
 bar([f1, f2; f1/dist*100, f2/dist*100]');
-set(gca, 'XTickLabel', {'恒温器', '功率跟随'});
-legend('总油耗 (L)', '百公里油耗'); title('油耗对比');
+set(gca, 'XTickLabel', {'Thermostat', 'Power Follow'});
+legend('Total Fuel (L)', 'Fuel/100km'); title('Fuel Comparison');

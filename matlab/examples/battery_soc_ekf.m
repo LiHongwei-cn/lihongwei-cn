@@ -78,24 +78,24 @@ figure('Position', [100 100 850 600]);
 
 subplot(3,1,1);
 plot(t, I_load, 'b-', 'LineWidth', 1);
-xlabel('时间 (s)'); ylabel('电流 (A)');
-grid on; title('负载电流');
+xlabel('Time (s)'); ylabel('Current (A)');
+grid on; title('Load Current');
 
 subplot(3,1,2);
 plot(t, V_term, 'b-', 'LineWidth', 1);
-xlabel('时间 (s)'); ylabel('电压 (V)');
-grid on; title('端电压');
+xlabel('Time (s)'); ylabel('Voltage (V)');
+grid on; title('Terminal Voltage');
 
 subplot(3,1,3);
 plot(t, soc_true*100, 'k-', t, soc_ah*100, 'r--', t, soc_ekf*100, 'b-', 'LineWidth', 1.2);
-xlabel('时间 (s)'); ylabel('SOC (%)');
-legend('真实值', '安时法', 'EKF'); grid on; title('SOC 估算对比');
+xlabel('Time (s)'); ylabel('SOC (%)');
+legend('True', 'Coulomb Counting', 'EKF'); grid on; title('SOC Estimation');
 
 %% 输出结果
 err_ah = soc_ah - soc_true;
 err_ekf = soc_ekf - soc_true;
-fprintf('===== SOC 估算结果 =====\n');
-fprintf('安时法 RMS误差: %.3f%%\n', rms_calculation(err_ah)*100);
-fprintf('EKF RMS误差: %.3f%%\n', rms_calculation(err_ekf)*100);
-fprintf('安时法终值误差: %.3f%%\n', abs(soc_ah(end)-soc_true(end))*100);
-fprintf('EKF终值误差: %.3f%%\n', abs(soc_ekf(end)-soc_true(end))*100);
+fprintf('===== SOC Estimation Results =====\n');
+fprintf('Coulomb counting RMS error: %.3f%%\n', rms_calculation(err_ah)*100);
+fprintf('EKF RMS error: %.3f%%\n', rms_calculation(err_ekf)*100);
+fprintf('Coulomb counting final error: %.3f%%\n', abs(soc_ah(end)-soc_true(end))*100);
+fprintf('EKF final error: %.3f%%\n', abs(soc_ekf(end)-soc_true(end))*100);

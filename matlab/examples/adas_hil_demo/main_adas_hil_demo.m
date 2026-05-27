@@ -104,21 +104,21 @@ test_results = hil_test_runner(t, veh_vel, veh_pos, veh_lat_pos, ...
 %% 输出结果
 fprintf('\n');
 fprintf('========================================\n');
-fprintf('  ADAS 硬件在环仿真测试报告\n');
-fprintf('  日期: %s\n', datestr(now));
-fprintf('  场景: 初始速度 = %d km/h, 障碍物距离 = %d m\n', v0_kmh, obs_dist);
+fprintf('  ADAS HIL Test Report\n');
+fprintf('  Date: %s\n', datestr(now));
+fprintf('  Scenario: v0 = %d km/h, obstacle = %d m\n', v0_kmh, obs_dist);
 fprintf('========================================\n');
 for i = 1:length(test_results)
     if test_results(i).passed
-        status = '通过';
+        status = 'PASS';
     else
-        status = '未通过';
+        status = 'FAIL';
     end
-    fprintf('  测试%d  %-30s [%s]\n', i, test_results(i).name, status);
+    fprintf('  Test%d  %-30s [%s]\n', i, test_results(i).name, status);
 end
 fprintf('========================================\n');
 n_pass = sum([test_results.passed]);
-fprintf('  结果: %d / %d 通过\n', n_pass, length(test_results));
+fprintf('  Result: %d / %d PASS\n', n_pass, length(test_results));
 fprintf('========================================\n');
 fprintf('\n');
 

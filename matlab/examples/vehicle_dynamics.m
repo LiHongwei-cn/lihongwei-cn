@@ -63,28 +63,28 @@ figure('Position', [100 100 900 650]);
 subplot(2,2,1);
 plot(v_target_kmh, F_aero, 'r-', v_target_kmh, F_roll, 'b--', ...
      v_target_kmh, F_total, 'k-', 'LineWidth', 1.5);
-xlabel('车速 (km/h)'); ylabel('阻力 (N)');
-legend('空气阻力', '滚动阻力', '总阻力');
-grid on; title('行驶阻力');
+xlabel('Speed (km/h)'); ylabel('Force (N)');
+legend('Aero', 'Rolling', 'Total');
+grid on; title('Driving Resistance');
 
 subplot(2,2,2);
 plot(v_target_kmh, P_motor/1000, 'b-', v_target_kmh, P_bat/1000, 'r--', 'LineWidth', 1.5);
-xlabel('车速 (km/h)'); ylabel('功率 (kW)');
-legend('电机输出', '电池消耗');
-grid on; title('功率需求');
+xlabel('Speed (km/h)'); ylabel('Power (kW)');
+legend('Motor', 'Battery');
+grid on; title('Power Demand');
 
 subplot(2,2,3);
 plot(v_target_kmh, E_100km*ones(1,nn)/1000, 'b-', 'LineWidth', 1.5);
-xlabel('车速 (km/h)'); ylabel('能耗 (kWh/100km)');
-grid on; title('等速巡航能耗');
+xlabel('Speed (km/h)'); ylabel('Energy (kWh/100km)');
+grid on; title('Constant Speed Energy');
 
 subplot(2,2,4);
 bar([v_max_kmh, range_km]);
-set(gca, 'XTickLabel', {'最高车速', '续航里程'});
-ylabel('数值'); grid on; title('关键指标');
+set(gca, 'XTickLabel', {'Vmax', 'Range'});
+ylabel('Value'); grid on; title('Key Metrics');
 
 %% 输出结果
-fprintf('===== 电动汽车纵向动力学仿真 =====\n');
-fprintf('最高车速: %.0f km/h\n', v_max_kmh);
-fprintf('60km/h 等速续航里程: %.0f km\n', range_km);
-fprintf('60km/h 百公里能耗: %.2f kWh\n', E_100km/1000);
+fprintf('===== EV Longitudinal Dynamics =====\n');
+fprintf('Max speed: %.0f km/h\n', v_max_kmh);
+fprintf('60km/h range: %.0f km\n', range_km);
+fprintf('60km/h energy: %.2f kWh/100km\n', E_100km/1000);

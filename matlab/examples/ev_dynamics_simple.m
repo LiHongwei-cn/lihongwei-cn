@@ -73,32 +73,32 @@ figure('Position', [100 100 900 650]);
 
 subplot(3,2,1);
 plot(t, v*3.6, 'b-', t, v_target*3.6, 'r--', 'LineWidth', 1.5);
-ylabel('速度 (km/h)'); grid on; legend('实际', '目标'); title('速度跟踪');
+ylabel('Speed (km/h)'); grid on; legend('Actual', 'Target'); title('Speed Tracking');
 
 subplot(3,2,2);
 plot(t, T_m, 'g-', 'LineWidth', 1.5);
-ylabel('转矩 (Nm)'); grid on; title('电机转矩');
+ylabel('Torque (Nm)'); grid on; title('Motor Torque');
 
 subplot(3,2,3);
 plot(t, s/1000, 'b-', 'LineWidth', 1.5);
-ylabel('距离 (km)'); grid on; title('累计行驶距离');
+ylabel('Distance (km)'); grid on; title('Cumulative Distance');
 
 subplot(3,2,4);
 plot(t, P_m/1000, 'r-', 'LineWidth', 1.5);
-ylabel('功率 (kW)'); grid on; title('电机功率');
+ylabel('Power (kW)'); grid on; title('Motor Power');
 
 subplot(3,2,5);
 plot(t, E_cons, 'm-', 'LineWidth', 1.5);
-xlabel('时间 (s)'); ylabel('能耗 (Wh)'); grid on; title('累计能耗');
+xlabel('Time (s)'); ylabel('Energy (Wh)'); grid on; title('Cumulative Energy');
 
 subplot(3,2,6);
 plot(t, SOC*100, 'b-', 'LineWidth', 1.5);
-xlabel('时间 (s)'); ylabel('SOC (%)'); grid on; title('电池SOC');
+xlabel('Time (s)'); ylabel('SOC (%)'); grid on; title('Battery SOC');
 
 %% 输出结果
-fprintf('===== 简单电动汽车动力学仿真结果 =====\n');
-fprintf('最高车速: %.1f km/h\n', max(v)*3.6);
-fprintf('行驶距离: %.2f km\n', s(end)/1000);
-fprintf('能耗: %.1f kWh/100km\n', E_cons(end)/(s(end)/1000)/10);
-fprintf('剩余SOC: %.1f%%\n', SOC(end)*100);
-fprintf('续航里程: %.0f km\n', s(end)*params.SOC_init/(params.SOC_init-SOC(end)+0.001));
+fprintf('===== Simple EV Dynamics =====\n');
+fprintf('Max speed: %.1f km/h\n', max(v)*3.6);
+fprintf('Distance: %.2f km\n', s(end)/1000);
+fprintf('Energy: %.1f kWh/100km\n', E_cons(end)/(s(end)/1000)/10);
+fprintf('SOC remaining: %.1f%%\n', SOC(end)*100);
+fprintf('Range: %.0f km\n', s(end)*params.SOC_init/(params.SOC_init-SOC(end)+0.001));

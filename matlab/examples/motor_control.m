@@ -76,30 +76,30 @@ figure('Position', [100 100 900 700]);
 
 subplot(3,2,1);
 plot(t, w_ref, 'r--', t, wm_log, 'b-', 'LineWidth', 1.2);
-xlabel('时间 (s)'); ylabel('转速 (rpm)');
-legend('参考', '实际'); grid on; title('转速响应');
+xlabel('Time (s)'); ylabel('Speed (rpm)');
+legend('Ref', 'Actual'); grid on; title('Speed Response');
 
 subplot(3,2,2);
 plot(t, Te_log, 'b-', 'LineWidth', 1.2);
-xlabel('时间 (s)'); ylabel('转矩 (Nm)');
-grid on; title('电磁转矩');
+xlabel('Time (s)'); ylabel('Torque (Nm)');
+grid on; title('Electromagnetic Torque');
 
 subplot(3,2,3);
 plot(t, id_log, 'r-', t, iq_log, 'b-', 'LineWidth', 1.2);
-xlabel('时间 (s)'); ylabel('电流 (A)');
-legend('id', 'iq'); grid on; title('dq轴电流');
+xlabel('Time (s)'); ylabel('Current (A)');
+legend('id', 'iq'); grid on; title('dq Current');
 
 subplot(3,2,4);
 plot(t, vd_log, 'r-', t, vq_log, 'b-', 'LineWidth', 1.2);
-xlabel('时间 (s)'); ylabel('电压 (V)');
-legend('vd', 'vq'); grid on; title('dq轴电压');
+xlabel('Time (s)'); ylabel('Voltage (V)');
+legend('vd', 'vq'); grid on; title('dq Voltage');
 
 subplot(3,2,5:6);
 plot(t, w_ref, 'r--', t, wm_log, 'b-', 'LineWidth', 1.2);
-xlim([0.38 0.5]); xlabel('时间 (s)'); ylabel('转速 (rpm)');
-legend('参考', '实际'); grid on; title('阶跃响应局部放大');
+xlim([0.38 0.5]); xlabel('Time (s)'); ylabel('Speed (rpm)');
+legend('Ref', 'Actual'); grid on; title('Step Response Detail');
 
 %% 输出结果
-fprintf('===== 矢量控制仿真结果 =====\n');
-fprintf('转速误差: %.2f rpm\n', abs(wm_log(end)-w_ref(end)));
-fprintf('峰值转矩: %.3f Nm\n', max(Te_log));
+fprintf('===== PMSM FOC Results =====\n');
+fprintf('Speed error: %.2f rpm\n', abs(wm_log(end)-w_ref(end)));
+fprintf('Peak torque: %.3f Nm\n', max(Te_log));
