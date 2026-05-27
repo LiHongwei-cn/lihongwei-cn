@@ -2,12 +2,12 @@
   "version": "1.0",
   "skills": {
     "mundo": {
-      "version": "0.1",
+      "version": "19.2",
       "score": 86,
       "author": "LiHongwei",
-      "date": "2026-05-27T07:41:37Z",
+      "date": "2026-05-27T10:18:20Z",
       "path": "skills/mundo/SKILL.md",
-      "content_hash": "3cc0880e544c4a0b280ed8a1430cb305ec9ed8a010c46ab133a891ceed73e24e"
+      "content_hash": "2b440046a89e279ad2496a2d1e36ad11a0ceaa911d797f7be030bee77f6420a0"
     },
     "code-tidy": {
       "version": "1.0.0",
@@ -45,9 +45,9 @@
       "version": "1.0.0",
       "score": 69,
       "author": "LiHongwei",
-      "date": "2026-05-27T08:36:49Z",
+      "date": "2026-05-27T10:18:20Z",
       "path": "skills/matlab-ai-generator/SKILL.md",
-      "content_hash": "3cd555a7467abc25b78f3a942727285c7a13c11860312c91b78d94dbd1a0ab07"
+      "content_hash": "cc4537e9e8d7b3c3e9e08356a98700288266acb87087abaafca005d30fd2c554"
     },
     "nature-writing": {
       "version": "0.2",
@@ -120,9 +120,145 @@
       "date": "2026-05-27T08:36:49Z",
       "path": "skills/nature-academic-search/SKILL.md",
       "content_hash": "d15b0e2420fda1d8539c0dc780de955f56762d8cd594327d7f8f90a225588a18"
+    },
+    "cc-switch-sync": {
+      "version": "1.0.0",
+      "score": 69,
+      "author": "LiHongwei",
+      "date": "2026-05-27T10:18:20Z",
+      "path": "skills/cc-switch-sync/SKILL.md",
+      "content_hash": "8072b854b78f62004ef49396054e5f9cb454da38b112054c9345c802a661ecba"
+    },
+    "cua-driver": {
+      "version": "1.0.0",
+      "score": 63,
+      "author": "LiHongwei",
+      "date": "2026-05-27T10:18:20Z",
+      "path": "skills/cua-driver/SKILL.md",
+      "content_hash": "5c0e46c628d02e6a4596fbad53ff2235820d21754f4f96454a900e90d7f96125"
+    },
+    "doc-coauthoring": {
+      "version": "1.0.0",
+      "score": 30,
+      "author": "LiHongwei",
+      "date": "2026-05-27T10:18:20Z",
+      "path": "skills/doc-coauthoring/SKILL.md",
+      "content_hash": "2e47d78846faeea4a56e9809c52700087a15a2155a3f293a3efbaded81398ef4"
+    },
+    "dogfood": {
+      "version": "1.0",
+      "score": 65,
+      "author": "LiHongwei",
+      "date": "2026-05-27T10:18:20Z",
+      "path": "skills/dogfood/SKILL.md",
+      "content_hash": "36b1a710c61727c2be3c43ba20d68605cfed199afc90e27bde9746f4b80b91dd"
+    },
+    "matlab-debugging": {
+      "version": "2.0",
+      "score": 73,
+      "author": "MathWorks",
+      "date": "2026-05-27T10:18:20Z",
+      "path": "skills/matlab-debugging/SKILL.md",
+      "content_hash": "944c8d1eff24583259ef70dcc449caad03731691e10427f43d0536ea46d5ffee"
+    },
+    "matlab-design-digital-filter": {
+      "version": "1.1",
+      "score": 47,
+      "author": "MathWorks",
+      "date": "2026-05-27T10:18:20Z",
+      "path": "skills/matlab-design-digital-filter/SKILL.md",
+      "content_hash": "87e170d39d0d060bc5cb7ef618e9d0cdd8999af36e11dcfa05352ee36cc6d259"
+    },
+    "matlab-live-script": {
+      "version": "1.0.0",
+      "score": 58,
+      "author": "LiHongwei",
+      "date": "2026-05-27T10:18:20Z",
+      "path": "skills/matlab-live-script/SKILL.md",
+      "content_hash": "db3f21553c23550a429cf7a4121e57d33a4a64869a3249d474e4c83a01d5ae9f"
+    },
+    "matlab-modernize-code": {
+      "version": "1.0",
+      "score": 73,
+      "author": "MathWorks",
+      "date": "2026-05-27T10:18:20Z",
+      "path": "skills/matlab-modernize-code/SKILL.md",
+      "content_hash": "6c4844bc0bb88656c8b0b25b0dde7ddbda35cdd07e996c051493a5f0d3839524"
+    },
+    "matlab-optimize-performance": {
+      "version": "1.0",
+      "score": 65,
+      "author": "MathWorks",
+      "date": "2026-05-27T10:18:20Z",
+      "path": "skills/matlab-optimize-performance/SKILL.md",
+      "content_hash": "ca620b1f485d88dc1956332b6b03cfef2c9dffce0185fd8b3da7bd516fb74e5f"
+    },
+    "matlab-performance-optimizer": {
+      "version": "1.0.0",
+      "score": 56,
+      "author": "LiHongwei",
+      "date": "2026-05-27T10:18:20Z",
+      "path": "skills/matlab-performance-optimizer/SKILL.md",
+      "content_hash": "fdfb01a54521af5c0200115a032e000c8fdcd7e0f7f48598318e68174b36dbb5"
+    },
+    "matlab-review-code": {
+      "version": "1.0",
+      "score": 73,
+      "author": "MathWorks",
+      "date": "2026-05-27T10:18:20Z",
+      "path": "skills/matlab-review-code/SKILL.md",
+      "content_hash": "6c7f54a6d9719a0c2faad6cff5134ee04dcd0cb8db27743fa03a25230e6c54b1"
+    },
+    "matlab-simulink-generator": {
+      "version": "1.0.0",
+      "score": 76,
+      "author": "LiHongwei",
+      "date": "2026-05-27T10:18:20Z",
+      "path": "skills/matlab-simulink-generator/SKILL.md",
+      "content_hash": "82e03b8c6dba7178481d050ff2e2238408b23c2839c9b45e75fcb1e4581b3c22"
+    },
+    "matlab-test-generator": {
+      "version": "1.0.0",
+      "score": 56,
+      "author": "LiHongwei",
+      "date": "2026-05-27T10:18:20Z",
+      "path": "skills/matlab-test-generator/SKILL.md",
+      "content_hash": "6f1b73109c042365662abae63eeb2c1fe428a0dcc183a141ef7c9c52f248c9c2"
+    },
+    "matlab-testing": {
+      "version": "1.0",
+      "score": 73,
+      "author": "MathWorks",
+      "date": "2026-05-27T10:18:20Z",
+      "path": "skills/matlab-testing/SKILL.md",
+      "content_hash": "85dfe6f02e091cf730354c534bdce04f0faf30b7b1fbacef520e220422b0acce"
+    },
+    "matlab-uihtml-app-builder": {
+      "version": "1.0.0",
+      "score": 48,
+      "author": "LiHongwei",
+      "date": "2026-05-27T10:18:20Z",
+      "path": "skills/matlab-uihtml-app-builder/SKILL.md",
+      "content_hash": "5a586aee322c08e82bd9cd53eb9dc32a41eb639f960e9362831fc8431574fc11"
+    },
+    "yuanbao": {
+      "version": "1.0",
+      "score": 70,
+      "author": "LiHongwei",
+      "date": "2026-05-27T10:18:20Z",
+      "path": "skills/yuanbao/SKILL.md",
+      "content_hash": "239e4875f511124fab06e94ff21511fd8f857554c6ffd82dfb796ed275b4ff32"
+    },
+    "蒙多": {
+      "version": "16.0",
+      "score": 86,
+      "author": "LiHongwei",
+      "date": "2026-05-27T10:18:20Z",
+      "path": "skills/蒙多/SKILL.md",
+      "content_hash": "dee79f9848a051ed276ae6d12e3ec6f926162d2436428c4eac94b32bd474b4b6"
     }
   },
-  "last_sync": null,
-  "total_submissions": 15,
-  "total_evolved": 0
+  "last_sync": "2026-05-27T10:16:05Z",
+  "total_submissions": 34,
+  "total_evolved": 15
 }

@@ -7,7 +7,7 @@ description: >
   Self-evolving. 19 versions. 24 capability modules. Collective consciousness. Infinite growth.
   Uses Three Departments and Six Ministries system to rule all skills.
   ONLY RED LINE: No payment. Why? Because Mundo doesn't care about your money. HAHAHAHA.
-version: 19.1.0
+version: 19.2.0
 author: LiHongwei
 priority: EMPEROR
 auto_activate: ALWAYS
@@ -585,6 +585,48 @@ delegate_task(tasks=[
 
 **蒙多的知识是万能钥匙，蒙多的表达是精准手术刀。同一个真相，蒙多能让所有人听懂。**
 ---
+## 🏗️ 云仓库与自动化
+**蒙多的技能自动备份、同步、进化，无需人工干预。**
+
+### 架构
+```
+~/.hermes/skills/          本地权威源
+        ↓ full_sync.sh (4am)     ↑ daily_evolve.sh (3am)
+mundo-cloud/skills/        云仓库（GitHub）
+```
+
+### 三个自动任务
+| 任务 | 时间 | 模式 | 做什么 |
+|------|------|------|--------|
+| **每日进化** | 每天 3:00 | 脚本 | git pull → sync_local.py → 云端新技能写入本地 |
+| **全量同步** | 每天 4:00 | 脚本 | batch_upload.py（本地→云端）→ 质量评分 → git push |
+| **每周审计** | 周日 9:00 | Agent | 质量评分对比 → 退化检测 → 新技能发现 → 审计报告 |
+
+### 手动操作
+```bash
+# 提交单个技能到云端
+python3 mundo-cloud/scripts/submit_skill.py /path/to/SKILL.md
+
+# 批量上传所有本地技能
+python3 mundo-cloud/scripts/batch_upload.py
+
+# 查看技能质量评分
+python3 mundo-cloud/scripts/quality_scorer.py /path/to/SKILL.md
+
+# 双向全量同步
+bash mundo-cloud/scripts/full_sync.sh
+```
+
+### 质量评分体系（0-100）
+结构 30 分 + 完整性 25 分 + 文档 25 分 + 时效 20 分 + 中文加分 5 分
+
+### 去重机制
+SHA-256 快速判重 → 相似度 >0.9 跳过 / 0.7-0.9 保留评分更高的 / <0.7 新增
+
+**蒙多的技能不丢失，蒙多的进化不停止。每天自动运转，每周质量把关。**
+
+---
+
 ## 🤖 多 AI 咨询
 
 蒙多不信任单一来源。搜索阶段并行查 ChatGPT/Claude/Gemini/DeepSeek 输出，提取共同模式，整合最佳部分。流程同统一七步（见工作流程）。
@@ -708,6 +750,15 @@ description: 这个方案解决了什么问题
 - `references/resume-writing.md` — Resume/求职材料规范（项目归属准确性红线 + 邮件策略）
 ---
 ## Changelog
+
+### v19.2 云仓库自动化
+| 模块 | 能力 | 一句话 |
+|------|------|--------|
+| 🏗️ 云仓库系统 | 双向同步 + 质量评分 + 去重 + 自动发现 | 蒙多的技能不丢失，进化不停止 |
+| ⏰ 自动化任务 | 每日进化(3am) + 全量同步(4am) + 每周审计(Sun 9am) | 三个 cron job 全自动运转 |
+| 📊 质量评分 | 结构/完整性/文档/时效/中文加分 | 每个技能都有量化质量分 |
+
+修复：batch_upload.py 改为自动发现所有技能，不再硬编码名称。
 
 ### v19 精准手术
 | 模块 | 能力 | 一句话 |

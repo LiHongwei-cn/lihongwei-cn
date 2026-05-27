@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Batch upload all custom skills to Mundo cloud repository."""
+"""Batch upload all local skills to Mundo cloud repository (auto-discover)."""
 
 import shutil, json, hashlib, re
 from pathlib import Path
@@ -13,23 +13,15 @@ registry = json.loads(REGISTRY_PATH.read_text("utf-8"))
 hermes = Path.home() / ".hermes" / "skills"
 gs = Path.home() / "Desktop" / "lihongwei-cn" / "global-specs" / "skills"
 
+# auto-discover all skills with SKILL.md
 skills_to_upload = {}
-
-# Custom skills
-for name in ["code-tidy", "homepage-layout", "neat-freak", "cross-platform-launcher", "matlab-ai-generator"]:
-    src = hermes / name / "SKILL.md"
-    if src.exists():
-        skills_to_upload[name] = src
-
-# Nature academic skills
-for name in ["nature-writing", "nature-polishing", "nature-figure", "nature-citation",
-             "nature-data", "nature-reader", "nature-response", "nature-paper2ppt", "nature-academic-search"]:
-    src = gs / name / "SKILL.md"
-    if src.exists():
+for src in list(hermes.glob("*/SKILL.md")) + list(gs.glob("*/SKILL.md")):
+    name = src.parent.name
+    if name not in skills_to_upload:
         skills_to_upload[name] = src
 
 uploaded = []
-for name, src_path in skills_to_upload.items():
+for name, src_path in sorted(skills_to_upload.items()):
     dest_dir = SKILLS_DIR / name
     dest_dir.mkdir(parents=True, exist_ok=True)
 
@@ -45,6 +37,11 @@ for name, src_path in skills_to_upload.items():
 
     content = (dest_dir / "SKILL.md").read_text("utf-8")
     content_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+    # skip if hash unchanged
+    existing = registry["skills"].get(name, {})
+    if existing.get("content_hash") == content_hash:
+        continue
 
     version = "1.0.0"
     author = "LiHongwei"
