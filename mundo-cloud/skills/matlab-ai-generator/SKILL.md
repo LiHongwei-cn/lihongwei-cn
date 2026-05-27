@@ -320,9 +320,27 @@ Ki_s = 10;
 % ... [后续代码]
 ```
 
-## R2016b 兼容性参考
+## 铁律（用户多次纠正）
 
-详细兼容性速查表见 `references/r2016b-compatibility.md`。
+1. **全中文输出**：所有 xlabel/ylabel/title/legend/fprintf 必须中文。代码注释必须中文。英文只允许在代码变量名中。
+2. **单图布局**：所有子图合并到一张 figure，用 `subplot(M,N,n)` 排列，不生成多个独立 figure。
+3. **批量修复**：用户说"修复这个文件的中文"时，必须检查并修复所有同目录下的 .m 文件，不只修被提到的那一个。
+4. **UTF-8 编码**：所有 .m 文件必须 UTF-8。Windows MATLAB R2016b 保存的 GBK 文件需重写为 UTF-8。用 `file xxx.m` 验证编码。
+5. **参数集中**：所有仿真参数定义在主脚本顶部，函数通过 struct 接收参数，不在函数内部硬编码。
+
+## 编码陷阱（pitfall）
+
+Windows MATLAB R2016b 默认用 GBK 编码保存中文。macOS 上 `file` 命令显示 `ISO-8859 text`。在 macOS 上编辑后需确认编码为 `UTF-8 text`。Claude Code 重写文件时自动使用 UTF-8。
+
+## Claude Code 委托注意事项
+
+- 大批量文件重写（>5 个 .m 文件）容易超时（600s 限制）
+- 拆分为每批 4-5 个文件，分多次调用
+- 用 `file *.m` 验证所有文件编码一致性
+
+## References
+
+- `references/r2016b-compatibility.md`
 
 ## 参考文件
 
@@ -331,6 +349,8 @@ Ki_s = 10;
 - `references/matlab-project-structure.md` — 仿真项目结构规范（文件组织、参数传递、绘图、测试用例、编码）
 - `references/hil-demo-architecture.md` — ADAS HIL 测试 Demo 架构参考（文件结构、参数传递、测试用例模板）
 - `references/project-consolidation.md` — 多项目合并指南（合并决策、引用清理、真实案例）
+- `references/matlab-encoding.md` — 文件编码规范（UTF-8 vs GBK，跨平台兼容）
+- `references/matlab-chinese-output.md` — 全中文输出规范（标签速查、报告模板、图表合并）
 
 ## 相关技能
 
