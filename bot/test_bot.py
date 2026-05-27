@@ -1,6 +1,5 @@
-"""
-端到端测试：直接调用 handler 函数，验证 bot 核心逻辑
-运行: python3 -m pytest test_bot.py -v
+"""端到端测试：直接调用 handler 函数，验证 bot 核心逻辑
+运行: python -m pytest test_bot.py -v
 """
 import os
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -10,7 +9,10 @@ import pytest
 os.environ.setdefault("TELEGRAM_TOKEN", "PLACEHOLDER_TELEGRAM_TOKEN")
 os.environ.setdefault("DEEPSEEK_API_KEY", "PLACEHOLDER_DEEPSEEK_KEY")
 
-from tgbot import start_cmd, handle_message, handle_photo, error_handler, _split_long_msg
+from tgbot import (
+    start_cmd, help_cmd, handle_message, handle_photo,
+    error_handler, _split_long_msg, _load_system_prompt,
+)
 
 
 class FakeUser:
@@ -40,6 +42,15 @@ def make_mock_context() -> AsyncMock:
     return ctx
 
 
+# ─── 系统提示词 ───
+
+
+def test_system_prompt_loaded():
+    prompt = _load_system_prompt()
+    assert len(prompt) > 50
+    assert "MATLAB" in prompt or "身份" in prompt
+
+
 # ─── 长消息分段 ───
 
 
@@ -65,16 +76,33 @@ def test_split_exact_boundary():
 
 
 @pytest.mark.asyncio
-async def test_start_command():
+@patch("tgbot._save_chat_id")
+async def test_start_command(mock_save):
     update = make_mock_update("/start")
     ctx = make_mock_context()
 
     await start_cmd(update, ctx)
 
-    ctx.bot.send_chat_action.assert_not_called()  # /start 不需要 typing
+    mock_save.assert_called_once_with(update.effective_chat.id)
     update.message.reply_text.assert_called_once()
     args = update.message.reply_text.call_args[0]
-    assert "就绪" in args[0] or "Bot" in args[0]
+    assert "就绪" in args[0]
+
+
+# ─── /help 命令 ───
+
+
+@pytest.mark.asyncio
+async def test_help_command():
+    update = make_mock_update("/help")
+    ctx = make_mock_context()
+
+    await help_cmd(update, ctx)
+
+    update.message.reply_text.assert_called_once()
+    reply = update.message.reply_text.call_args[0][0]
+    assert "Danking Bot" in reply
+    assert "/help" in reply
 
 
 # ─── 文字消息 ───
@@ -82,24 +110,26 @@ async def test_start_command():
 
 @pytest.mark.integration
 @pytest.mark.asyncio
-async def test_handle_message_success():
+@patch("tgbot._save_chat_id")
+async def test_handle_message_success(mock_save):
     """真实调用 DeepSeek API — 跳过: pytest -m 'not integration'"""
     update = make_mock_update("什么是FOC控制？一句话回答")
     ctx = make_mock_context()
 
     await handle_message(update, ctx)
 
+    mock_save.assert_called_once()
     ctx.bot.send_chat_action.assert_called_once_with(
         chat_id=update.effective_chat.id, action="typing"
     )
     update.message.reply_text.assert_called_once()
     reply = update.message.reply_text.call_args[0][0]
     assert len(reply) > 5
-    print(f"\n  DeepSeek 回复: {reply[:100]}...")
 
 
 @pytest.mark.asyncio
-async def test_handle_message_api_error():
+@patch("tgbot._save_chat_id")
+async def test_handle_message_api_error(mock_save):
     """模拟 API 错误时给用户友好提示"""
     update = make_mock_update("测试错误处理")
     ctx = make_mock_context()
@@ -110,16 +140,16 @@ async def test_handle_message_api_error():
     update.message.reply_text.assert_called_once()
     reply = update.message.reply_text.call_args[0][0]
     assert "出错" in reply or "再试" in reply
-    print(f"\n  错误提示: {reply}")
 
 
 @pytest.mark.asyncio
-async def test_handle_message_long_reply():
+@patch("tgbot._save_chat_id")
+async def test_handle_message_long_reply(mock_save):
     """模拟长回复分段发送"""
     update = make_mock_update("写一篇5000字的论文")
     ctx = make_mock_context()
 
-    long_reply = "内容" * 2500  # 5000 字符
+    long_reply = "内容" * 2500
     mock_resp = MagicMock()
     mock_resp.choices = [MagicMock()]
     mock_resp.choices[0].message.content = long_reply
@@ -128,16 +158,15 @@ async def test_handle_message_long_reply():
     with patch("tgbot.client.chat.completions.create", mock_create):
         await handle_message(update, ctx)
 
-    call_count = update.message.reply_text.call_count
-    print(f"\n  分段发送次数: {call_count}")
-    assert call_count > 1
+    assert update.message.reply_text.call_count > 1
 
 
 # ─── 图片消息 ───
 
 
 @pytest.mark.asyncio
-async def test_handle_photo():
+@patch("tgbot._save_chat_id")
+async def test_handle_photo(mock_save):
     """测试图片处理（mock 掉 API 和 Telegram 文件下载）"""
     update = AsyncMock()
     update.effective_user = FakeUser()
@@ -161,12 +190,14 @@ async def test_handle_photo():
     with patch("tgbot.client.chat.completions.create", AsyncMock(return_value=mock_resp)):
         await handle_photo(update, ctx)
 
+    mock_save.assert_called_once()
     ctx.bot.send_chat_action.assert_called_once()
     update.message.reply_text.assert_called_once_with("图片分析结果")
 
 
 @pytest.mark.asyncio
-async def test_handle_photo_error():
+@patch("tgbot._save_chat_id")
+async def test_handle_photo_error(mock_save):
     """测试图片处理错误"""
     update = AsyncMock()
     update.effective_user = FakeUser()

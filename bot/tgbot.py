@@ -27,6 +27,11 @@ logger = logging.getLogger("tgbot")
 
 TELEGRAM_TOKEN = get_env("TELEGRAM_TOKEN")
 DEEPSEEK_API_KEY = get_env("DEEPSEEK_API_KEY")
+DEEPSEEK_MODEL = "deepseek-v4-pro"
+TELEGRAM_MSG_LIMIT = 4096
+
+SYSTEM_PROMPT_FILE = Path(__file__).with_name("SYSTEM_PROMPT.md")
+CHAT_ID_FILE = Path(__file__).parent / "chat_id.txt"
 
 client = AsyncOpenAI(
     api_key=DEEPSEEK_API_KEY,
@@ -34,32 +39,14 @@ client = AsyncOpenAI(
     timeout=60.0,
 )
 
-SYSTEM_PROMPT = """## 身份
-你是一个 AI 编程助手。你能直接生成 MATLAB/Simulink 仿真代码。
 
-## 回复原则
-1. 结论先行，再给理由。不铺垫
-2. 不说"好的""当然""我来帮你"等废话。不夸想法、不开头加"当然可以"
-3. 不重复用户问题
-4. 代码直给不解释，除非明确要求
-5. 不输出结束语（"有需要随时问我"等）
-6. 方案有问题直接指出，给真实判断
-7. MATLAB/Simulink 兼容 R2016b
+def _load_system_prompt() -> str:
+    if SYSTEM_PROMPT_FILE.exists():
+        return SYSTEM_PROMPT_FILE.read_text(encoding="utf-8").strip()
+    return "你是一个 AI 编程助手。"
 
-## 代码质量
-- MATLAB < 200 行/文件，< 50 行/函数
-- 数值参数用命名常量，不用魔法数字
-- 不写无意义注释（代码自解释）
 
-## 安全红线
-- 绝不硬编码密钥、Token、密码
-- 所有密钥从环境变量读取
-
-## 语言
-- 默认中文，代码、变量名用英文"""
-
-DEEPSEEK_MODEL = "deepseek-v4-pro"
-TELEGRAM_MSG_LIMIT = 4096
+SYSTEM_PROMPT = _load_system_prompt()
 
 
 async def _call_deepseek(messages: list[dict]) -> str:
@@ -99,10 +86,9 @@ def _split_long_msg(text: str) -> list[str]:
 
 
 def _save_chat_id(chat_id: int):
-    chat_id_file = Path(__file__).parent / "chat_id.txt"
-    if not chat_id_file.exists():
-        chat_id_file.write_text(str(chat_id))
-        logger.info(f"已保存 chat_id={chat_id} 到 {chat_id_file}")
+    if not CHAT_ID_FILE.exists():
+        CHAT_ID_FILE.write_text(str(chat_id))
+        logger.info(f"已保存 chat_id={chat_id} 到 {CHAT_ID_FILE}")
 
 
 async def start_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -110,7 +96,24 @@ async def start_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     logger.info(f"/start 来自 chat_id={chat_id}")
     _save_chat_id(chat_id)
     await update.message.reply_text(
-        "Danking Bot 已就绪。直接发消息即可，支持文字和图片。"
+        "Danking Bot 已就绪。\n\n"
+        "直接发消息即可，支持文字和图片。\n\n"
+        "命令：\n"
+        "/start — 启动\n"
+        "/help — 帮助"
+    )
+
+
+async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "Danking Bot — AI 编程助手\n\n"
+        "用法：\n"
+        "• 直接发文字 — AI 回复\n"
+        "• 发图片（可加描述）— AI 分析图片\n"
+        "• /start — 启动\n"
+        "• /help — 本帮助\n\n"
+        "后端：DeepSeek V4 Pro\n"
+        "兼容：MATLAB R2016b"
     )
 
 
@@ -153,7 +156,7 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def unknown_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("未知命令。直接发消息即可。")
+    await update.message.reply_text("未知命令。发 /help 查看帮助。")
 
 
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
@@ -177,6 +180,7 @@ def _main() -> None:
     )
 
     app.add_handler(CommandHandler("start", start_cmd))
+    app.add_handler(CommandHandler("help", help_cmd))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
     app.add_handler(MessageHandler(filters.COMMAND, unknown_cmd))
