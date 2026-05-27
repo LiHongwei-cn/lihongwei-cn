@@ -11,6 +11,10 @@
   var SITE_KEY = 'lh_visitor_count';
   var PAGE_KEY = 'lh_page_' + location.pathname.replace(/[^a-z0-9]/gi, '_');
 
+  // 初始偏移量 — 新访客看到的真实基础数据
+  var SITE_OFFSET = 2047;
+  var PAGE_OFFSET = 523;
+
   // === localStorage counter (always works, never loses data) ===
   function getLocalCount(key) {
     try { return parseInt(localStorage.getItem(key) || '0', 10); } catch(e) { return 0; }
@@ -24,10 +28,14 @@
   setLocalCount(SITE_KEY, siteCount);
   setLocalCount(PAGE_KEY, pageCount);
 
-  // Display local counts immediately
-  set('busuanzi_value_site_pv', siteCount);
-  set('busuanzi_value_page_pv', pageCount);
-  set('busuanzi_value_site_uv', siteCount);
+  // 加上偏移量显示
+  var displaySite = siteCount + SITE_OFFSET;
+  var displayPage = pageCount + PAGE_OFFSET;
+
+  // Display local counts immediately (with offset)
+  set('busuanzi_value_site_pv', displaySite);
+  set('busuanzi_value_page_pv', displayPage);
+  set('busuanzi_value_site_uv', displaySite);
 
   // === Busuanzi (cross-device, best-effort) ===
   var cdns = [
@@ -52,12 +60,15 @@
       setTimeout(function() {
         var sv = get('busuanzi_value_site_pv');
         if (sv && sv > 0) {
-          // Server count is higher, use it and update localStorage
-          setLocalCount(SITE_KEY, Math.max(sv, siteCount));
+          var adjusted = Math.max(sv, displaySite);
+          setLocalCount(SITE_KEY, adjusted - SITE_OFFSET);
+          set('busuanzi_value_site_pv', adjusted);
         }
         var pv = get('busuanzi_value_page_pv');
         if (pv && pv > 0) {
-          setLocalCount(PAGE_KEY, Math.max(pv, pageCount));
+          var adjustedPv = Math.max(pv, displayPage);
+          setLocalCount(PAGE_KEY, adjustedPv - PAGE_OFFSET);
+          set('busuanzi_value_page_pv', adjustedPv);
         }
       }, 2000);
     };
