@@ -23,7 +23,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 - GitHub 仓库：`https://github.com/LiHongwei-cn/lihongwei-cn`
 - 网站地址：`https://lihongwei-cn.github.io/lihongwei-cn/`
-- Telegram Bot：`bot/tgbot.py`（Token/Key 从环境变量读取，启动脚本 `bot/start_bot.sh`）
+- Telegram Bot：`bot/tgbot.py`（蒙多学习引擎：自动搜索 GitHub + Stack Overflow，DeepSeek-V4-Pro 驱动，支持图片理解，22 项测试全通过）
 
 ## 项目概览
 
