@@ -8,9 +8,121 @@
       "date": "2026-05-27T07:41:37Z",
       "path": "skills/mundo/SKILL.md",
       "content_hash": "3cc0880e544c4a0b280ed8a1430cb305ec9ed8a010c46ab133a891ceed73e24e"
+    },
+    "code-tidy": {
+      "version": "1.0.0",
+      "score": 61,
+      "author": "LiHongwei",
+      "date": "2026-05-27T08:36:49Z",
+      "path": "skills/code-tidy/SKILL.md",
+      "content_hash": "6ba72900e37b3f5da9ffb853d8c312e27d3262859f505ab61d890d49da13c48e"
+    },
+    "homepage-layout": {
+      "version": "1.0.0",
+      "score": 44,
+      "author": "LiHongwei",
+      "date": "2026-05-27T08:36:49Z",
+      "path": "skills/homepage-layout/SKILL.md",
+      "content_hash": "6d35a5f843383e85e85983c7dbfcf16540d4b19b6ec283ee396cb9af999c0b02"
+    },
+    "neat-freak": {
+      "version": "1.0.0",
+      "score": 59,
+      "author": "LiHongwei",
+      "date": "2026-05-27T08:36:49Z",
+      "path": "skills/neat-freak/SKILL.md",
+      "content_hash": "dfa7ba124e896ae16d8cec21071fbeb10841f2d1b497a46c85c6bed6fc89bbf5"
+    },
+    "cross-platform-launcher": {
+      "version": "1.0.0",
+      "score": 69,
+      "author": "LiHongwei",
+      "date": "2026-05-27T08:36:49Z",
+      "path": "skills/cross-platform-launcher/SKILL.md",
+      "content_hash": "9a693067693a9b4a20d738d2a4bd5734b036a61549c5c1d1351d22e8860c761f"
+    },
+    "matlab-ai-generator": {
+      "version": "1.0.0",
+      "score": 69,
+      "author": "LiHongwei",
+      "date": "2026-05-27T08:36:49Z",
+      "path": "skills/matlab-ai-generator/SKILL.md",
+      "content_hash": "3cd555a7467abc25b78f3a942727285c7a13c11860312c91b78d94dbd1a0ab07"
+    },
+    "nature-writing": {
+      "version": "0.2",
+      "score": 47,
+      "author": "Community contribution based on curated Nature/Nature Communications writing patterns and open research-writing notes",
+      "date": "2026-05-27T08:36:49Z",
+      "path": "skills/nature-writing/SKILL.md",
+      "content_hash": "9cf73605a225fd17d1ee191c5f8f978a198902eeb3ff467edc7de38bfdbeae4c"
+    },
+    "nature-polishing": {
+      "version": "5.0",
+      "score": 55,
+      "author": "Yuan1z skill rebuilt from course notes plus Academic Phrasebank",
+      "date": "2026-05-27T08:36:49Z",
+      "path": "skills/nature-polishing/SKILL.md",
+      "content_hash": "946eeed13b86805fbd926e6adc25c84d825e3726f001a11175b9ad277e3a2792"
+    },
+    "nature-figure": {
+      "version": "1.0.0",
+      "score": 51,
+      "author": "LiHongwei",
+      "date": "2026-05-27T08:36:49Z",
+      "path": "skills/nature-figure/SKILL.md",
+      "content_hash": "8418c227f56f5fbaf6af75eff7d15916630e159329e831d7379d377fe9e55ebb"
+    },
+    "nature-citation": {
+      "version": "1.0.0",
+      "score": 56,
+      "author": "LiHongwei",
+      "date": "2026-05-27T08:36:49Z",
+      "path": "skills/nature-citation/SKILL.md",
+      "content_hash": "26f852df3aa8f4d1ba38b747aaa58b70dd34d83bb1e4fca7f1a2fb76bd1ee20b"
+    },
+    "nature-data": {
+      "version": "1.0.0",
+      "score": 51,
+      "author": "LiHongwei",
+      "date": "2026-05-27T08:36:49Z",
+      "path": "skills/nature-data/SKILL.md",
+      "content_hash": "16761a2d6aef2a28f25b4eb443c4d47d7e393d4de525b11793b72452f1d116d8"
+    },
+    "nature-reader": {
+      "version": "1.0.0",
+      "score": 49,
+      "author": "LiHongwei",
+      "date": "2026-05-27T08:36:49Z",
+      "path": "skills/nature-reader/SKILL.md",
+      "content_hash": "5c36a0af0cc1462318fac28c5b4382c7db4f51855db7fef6a66e5f634c700c36"
+    },
+    "nature-response": {
+      "version": "0.1",
+      "score": 61,
+      "author": "LiHongwei",
+      "date": "2026-05-27T08:36:49Z",
+      "path": "skills/nature-response/SKILL.md",
+      "content_hash": "9521d5cd6d66b331a635dda21608fc9546d0ef10140d3cfa28f1acb11c0da159"
+    },
+    "nature-paper2ppt": {
+      "version": "1.0.0",
+      "score": 44,
+      "author": "LiHongwei",
+      "date": "2026-05-27T08:36:49Z",
+      "path": "skills/nature-paper2ppt/SKILL.md",
+      "content_hash": "70bb1b9522763a158e8d45fd1149fefe55e839c6b4d9e4a86d227a3986074414"
+    },
+    "nature-academic-search": {
+      "version": "1.0.0",
+      "score": 56,
+      "author": "LiHongwei",
+      "date": "2026-05-27T08:36:49Z",
+      "path": "skills/nature-academic-search/SKILL.md",
+      "content_hash": "d15b0e2420fda1d8539c0dc780de955f56762d8cd594327d7f8f90a225588a18"
     }
   },
   "last_sync": null,
-  "total_submissions": 1,
+  "total_submissions": 15,
   "total_evolved": 0
 }
