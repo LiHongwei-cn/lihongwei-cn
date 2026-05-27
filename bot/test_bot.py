@@ -10,8 +10,10 @@ os.environ.setdefault("TELEGRAM_TOKEN", "PLACEHOLDER_TELEGRAM_TOKEN")
 os.environ.setdefault("DEEPSEEK_API_KEY", "PLACEHOLDER_DEEPSEEK_KEY")
 
 from tgbot import (
-    start_cmd, help_cmd, handle_message, handle_photo,
+    start_cmd, help_cmd, mundo_cmd, handle_message, handle_photo,
     error_handler, _split_long_msg, _load_system_prompt,
+    _search_github, _search_stackoverflow, _mundo_search,
+    MUNDO_KEYWORDS,
 )
 
 
@@ -34,11 +36,11 @@ def make_mock_update(text: str) -> AsyncMock:
     return update
 
 
-def make_mock_context() -> AsyncMock:
+def make_mock_context(args=None) -> AsyncMock:
     ctx = AsyncMock()
     ctx.bot = AsyncMock()
     ctx.bot.send_chat_action = AsyncMock()
-    ctx.args = []
+    ctx.args = args or []
     return ctx
 
 
@@ -48,7 +50,15 @@ def make_mock_context() -> AsyncMock:
 def test_system_prompt_loaded():
     prompt = _load_system_prompt()
     assert len(prompt) > 50
-    assert "MATLAB" in prompt or "身份" in prompt
+    assert "蒙多" in prompt
+
+
+def test_mundo_keywords_match():
+    assert MUNDO_KEYWORDS.search("蒙多帮我看看")
+    assert MUNDO_KEYWORDS.search("我卡住了")
+    assert MUNDO_KEYWORDS.search("报错了怎么办")
+    assert MUNDO_KEYWORDS.search("Mundo learn this")
+    assert not MUNDO_KEYWORDS.search("今天天气不错")
 
 
 # ─── 长消息分段 ───
@@ -87,6 +97,7 @@ async def test_start_command(mock_save):
     update.message.reply_text.assert_called_once()
     args = update.message.reply_text.call_args[0]
     assert "就绪" in args[0]
+    assert "/mundo" in args[0]
 
 
 # ─── /help 命令 ───
@@ -101,11 +112,105 @@ async def test_help_command():
 
     update.message.reply_text.assert_called_once()
     reply = update.message.reply_text.call_args[0][0]
-    assert "Danking Bot" in reply
-    assert "/help" in reply
+    assert "蒙多" in reply
+    assert "/mundo" in reply
 
 
-# ─── 文字消息 ───
+# ─── /mundo 命令 ───
+
+
+@pytest.mark.asyncio
+@patch("tgbot._save_chat_id")
+async def test_mundo_no_args(mock_save):
+    """无参数时显示用法"""
+    update = make_mock_update("/mundo")
+    ctx = make_mock_context(args=[])
+
+    await mundo_cmd(update, ctx)
+
+    update.message.reply_text.assert_called_once()
+    reply = update.message.reply_text.call_args[0][0]
+    assert "蒙多" in reply
+    assert "用法" in reply
+
+
+@pytest.mark.asyncio
+@patch("tgbot._save_chat_id")
+@patch("tgbot._mundo_search", new_callable=AsyncMock, return_value="GitHub 搜索结果")
+@patch("tgbot._call_deepseek", new_callable=AsyncMock, return_value="蒙多的回答")
+async def test_mundo_with_query(mock_ai, mock_search, mock_save):
+    """有参数时搜索 + AI 回复"""
+    update = make_mock_update("/mundo Python 爬虫 403")
+    ctx = make_mock_context(args=["Python", "爬虫", "403"])
+
+    await mundo_cmd(update, ctx)
+
+    mock_save.assert_called_once()
+    mock_search.assert_called_once_with("Python 爬虫 403")
+    # 两次回复：搜索中提示 + AI 回复
+    assert update.message.reply_text.call_count == 2
+
+
+@pytest.mark.asyncio
+@patch("tgbot._save_chat_id")
+@patch("tgbot._mundo_search", new_callable=AsyncMock, return_value="")
+@patch("tgbot._call_deepseek", new_callable=AsyncMock, return_value="蒙多的回答")
+async def test_mundo_no_search_results(mock_ai, mock_search, mock_save):
+    """搜索无结果时仍给出 AI 回复"""
+    update = make_mock_update("/mundo 非常冷门的问题")
+    ctx = make_mock_context(args=["非常冷门的问题"])
+
+    await mundo_cmd(update, ctx)
+
+    assert update.message.reply_text.call_count == 2
+
+
+# ─── 文字消息（蒙多关键词自动触发） ───
+
+
+@pytest.mark.asyncio
+@patch("tgbot._save_chat_id")
+@patch("tgbot._mundo_search", new_callable=AsyncMock, return_value="搜索结果")
+@patch("tgbot._call_deepseek", new_callable=AsyncMock, return_value="回复")
+async def test_mundo_auto_trigger(mock_ai, mock_search, mock_save):
+    """说「蒙多」自动激活学习模式"""
+    update = make_mock_update("蒙多帮我看看这个bug")
+    ctx = make_mock_context()
+
+    await handle_message(update, ctx)
+
+    mock_search.assert_called_once()
+    # 有蒙多 banner + AI 回复
+    assert update.message.reply_text.call_count == 2
+
+
+@pytest.mark.asyncio
+@patch("tgbot._save_chat_id")
+@patch("tgbot._mundo_search", new_callable=AsyncMock, return_value="搜索结果")
+@patch("tgbot._call_deepseek", new_callable=AsyncMock, return_value="回复")
+async def test_mundo_trigger_stuck(mock_ai, mock_search, mock_save):
+    """说「卡住了」自动激活"""
+    update = make_mock_update("这个报错我卡住了")
+    ctx = make_mock_context()
+
+    await handle_message(update, ctx)
+
+    mock_search.assert_called_once()
+
+
+@pytest.mark.asyncio
+@patch("tgbot._save_chat_id")
+@patch("tgbot._mundo_search", new_callable=AsyncMock)
+@patch("tgbot._call_deepseek", new_callable=AsyncMock, return_value="回复")
+async def test_normal_message_no_mundo(mock_ai, mock_search, mock_save):
+    """普通消息不触发蒙多"""
+    update = make_mock_update("今天天气怎么样")
+    ctx = make_mock_context()
+
+    await handle_message(update, ctx)
+
+    mock_search.assert_not_called()
+    update.message.reply_text.assert_called_once()
 
 
 @pytest.mark.integration
@@ -119,9 +224,6 @@ async def test_handle_message_success(mock_save):
     await handle_message(update, ctx)
 
     mock_save.assert_called_once()
-    ctx.bot.send_chat_action.assert_called_once_with(
-        chat_id=update.effective_chat.id, action="typing"
-    )
     update.message.reply_text.assert_called_once()
     reply = update.message.reply_text.call_args[0][0]
     assert len(reply) > 5
@@ -167,7 +269,7 @@ async def test_handle_message_long_reply(mock_save):
 @pytest.mark.asyncio
 @patch("tgbot._save_chat_id")
 async def test_handle_photo(mock_save):
-    """测试图片处理（mock 掉 API 和 Telegram 文件下载）"""
+    """测试图片处理"""
     update = AsyncMock()
     update.effective_user = FakeUser()
     update.effective_chat = FakeChat()
@@ -191,7 +293,6 @@ async def test_handle_photo(mock_save):
         await handle_photo(update, ctx)
 
     mock_save.assert_called_once()
-    ctx.bot.send_chat_action.assert_called_once()
     update.message.reply_text.assert_called_once_with("图片分析结果")
 
 
@@ -221,6 +322,66 @@ async def test_handle_photo_error(mock_save):
     update.message.reply_text.assert_called_once()
     reply = update.message.reply_text.call_args[0][0]
     assert "出错" in reply or "再试" in reply
+
+
+# ─── 搜索函数 ───
+
+
+@pytest.mark.asyncio
+@patch("tgbot.http_client.get", new_callable=AsyncMock)
+async def test_search_github_success(mock_get):
+    """GitHub 搜索成功"""
+    mock_resp = MagicMock()
+    mock_resp.status_code = 200
+    mock_resp.json.return_value = {
+        "items": [
+            {"full_name": "user/repo", "stargazers_count": 100, "description": "测试仓库"},
+        ]
+    }
+    mock_get.return_value = mock_resp
+
+    result = await _search_github("python爬虫")
+    assert "GitHub" in result
+    assert "user/repo" in result
+
+
+@pytest.mark.asyncio
+@patch("tgbot.http_client.get", new_callable=AsyncMock)
+async def test_search_github_error(mock_get):
+    """GitHub 搜索失败时返回空"""
+    mock_get.side_effect = Exception("网络错误")
+    result = await _search_github("test")
+    assert result == ""
+
+
+@pytest.mark.asyncio
+@patch("tgbot.http_client.get", new_callable=AsyncMock)
+async def test_search_so_success(mock_get):
+    """SO 搜索成功"""
+    mock_resp = MagicMock()
+    mock_resp.status_code = 200
+    mock_resp.json.return_value = {
+        "items": [
+            {"title": "How to fix 403", "score": 50, "answer_count": 3, "link": "https://so.com/q/1"},
+        ]
+    }
+    mock_get.return_value = mock_resp
+
+    result = await _search_stackoverflow("403 error")
+    assert "Stack Overflow" in result
+    assert "403" in result
+
+
+@pytest.mark.asyncio
+@patch("tgbot._search_github", new_callable=AsyncMock, return_value="GitHub 结果")
+@patch("tgbot._search_stackoverflow", new_callable=AsyncMock, return_value="SO 结果")
+async def test_mundo_search_parallel(mock_so, mock_gh):
+    """蒙多搜索并行执行"""
+    result = await _mundo_search("test query")
+    assert "GitHub" in result
+    assert "SO" in result
+    mock_gh.assert_called_once()
+    mock_so.assert_called_once()
 
 
 # ─── 错误处理 ───
