@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Deduplication + comparison engine for Mundo skills.
 
-Compares a candidate SKILL.md against all existing skills in skills/:
+Fast path: SHA-256 hash match → immediate skip.
+Slow path: SequenceMatcher comparison against existing skills.
+
   - similarity >= 0.9 → near-duplicate (skip or replace if better)
   - similarity >= 0.7 → similar (warn, compare quality)
   - similarity <  0.7 → unique (add)
@@ -11,18 +13,23 @@ Stdlib only — uses difflib.SequenceMatcher.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 from difflib import SequenceMatcher
 from pathlib import Path
 
-# Resolve sibling import
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from quality_scorer import score_skill
 
 SKILLS_DIR = Path(__file__).resolve().parent.parent / "skills"
+REGISTRY_PATH = Path(__file__).resolve().parent.parent / "sync" / "registry.json"
 NEAR_DUPLICATE_THRESHOLD = 0.9
 SIMILAR_THRESHOLD = 0.7
+
+
+def _content_hash(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def _read_skill(path: Path) -> str:
@@ -30,8 +37,23 @@ def _read_skill(path: Path) -> str:
 
 
 def _find_existing_skills() -> list[Path]:
-    """Find all SKILL.md files under skills/."""
     return sorted(SKILLS_DIR.rglob("SKILL.md"))
+
+
+def _load_registry_hashes() -> dict[str, str]:
+    """Load stored content hashes from registry.json."""
+    if not REGISTRY_PATH.exists():
+        return {}
+    try:
+        registry = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {}
+    hashes: dict[str, str] = {}
+    for name, info in registry.get("skills", {}).items():
+        h = info.get("content_hash")
+        if h:
+            hashes[name] = h
+    return hashes
 
 
 def _similarity(a: str, b: str) -> float:
@@ -52,7 +74,23 @@ def check_duplicate(candidate_path: str | Path) -> dict:
         return {"action": "skip", "reason": f"File not found: {candidate}", "similarity": 0.0}
 
     candidate_text = _read_skill(candidate)
+    candidate_hash = _content_hash(candidate_text)
     candidate_score = score_skill(candidate)
+
+    # --- Fast path: SHA-256 hash match ---
+    registry_hashes = _load_registry_hashes()
+    for name, stored_hash in registry_hashes.items():
+        if stored_hash == candidate_hash:
+            return {
+                "action": "skip",
+                "reason": f"Exact content hash match with existing skill '{name}'",
+                "similarity": 1.0,
+                "matched_skill": name,
+                "candidate_score": candidate_score["total"],
+                "hash_match": True,
+            }
+
+    # --- Slow path: SequenceMatcher comparison ---
     existing = _find_existing_skills()
 
     if not existing:
@@ -64,17 +102,18 @@ def check_duplicate(candidate_path: str | Path) -> dict:
             "candidate_score": candidate_score["total"],
         }
 
+    # Cache existing skill texts to avoid re-reading in scoring step
+    cached_texts: dict[Path, str] = {}
     best_sim = 0.0
     best_match: Path | None = None
-    best_match_text = ""
 
     for skill_path in existing:
         skill_text = _read_skill(skill_path)
+        cached_texts[skill_path] = skill_text
         sim = _similarity(candidate_text, skill_text)
         if sim > best_sim:
             best_sim = sim
             best_match = skill_path
-            best_match_text = skill_text
 
     result: dict = {
         "similarity": round(best_sim, 4),
@@ -119,8 +158,9 @@ def check_duplicate(candidate_path: str | Path) -> dict:
 
 
 def main() -> None:
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 2 or sys.argv[1] in ("--help", "-h"):
         print("Usage: python dedup_engine.py <path/to/SKILL.md>", file=sys.stderr)
+        print("Check if a skill duplicates existing skills in the cloud repo.", file=sys.stderr)
         sys.exit(1)
 
     result = check_duplicate(sys.argv[1])

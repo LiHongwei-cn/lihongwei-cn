@@ -1,7 +1,16 @@
 {
   "version": "1.0",
-  "skills": {},
+  "skills": {
+    "mundo": {
+      "version": "0.1",
+      "score": 86,
+      "author": "LiHongwei",
+      "date": "2026-05-27T07:41:37Z",
+      "path": "skills/mundo/SKILL.md",
+      "content_hash": "3cc0880e544c4a0b280ed8a1430cb305ec9ed8a010c46ab133a891ceed73e24e"
+    }
+  },
   "last_sync": null,
-  "total_submissions": 0,
+  "total_submissions": 1,
   "total_evolved": 0
 }

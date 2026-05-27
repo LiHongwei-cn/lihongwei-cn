@@ -9,7 +9,9 @@ Stdlib only.
 
 from __future__ import annotations
 
+import hashlib
 import json
+import re
 import shutil
 import sys
 from datetime import datetime, timezone
@@ -19,6 +21,30 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 REGISTRY_PATH = REPO_ROOT / "sync" / "registry.json"
 EVOLUTION_LOG = REPO_ROOT / "sync" / "evolution_log.json"
 LOCAL_SKILLS_DIR = Path.home() / ".hermes" / "skills" / "mundo"
+MAX_COPY_RETRIES = 1
+
+
+def _content_hash(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _file_hash(path: Path) -> str:
+    return _content_hash(path.read_text(encoding="utf-8"))
+
+
+def _parse_version(version_str: str) -> list[int]:
+    """Parse a version string into a list of int parts."""
+    return [int(x) for x in re.split(r"\.", version_str) if x.isdigit()]
+
+
+def _version_gt(a: str, b: str) -> bool:
+    """Return True if version a > version b using semantic versioning."""
+    a_parts = _parse_version(a)
+    b_parts = _parse_version(b)
+    max_len = max(len(a_parts), len(b_parts))
+    a_padded = a_parts + [0] * (max_len - len(a_parts))
+    b_padded = b_parts + [0] * (max_len - len(b_parts))
+    return a_padded > b_padded
 
 
 def _load_json(path: Path) -> dict:
@@ -55,9 +81,15 @@ def _log_evolution(entry: dict) -> None:
     if "entries" not in log:
         log["entries"] = []
     log["entries"].insert(0, entry)
-    # Keep last 200 entries
     log["entries"] = log["entries"][:200]
     _save_json(EVOLUTION_LOG, log)
+
+
+def _copy_and_verify(src: Path, dst: Path) -> bool:
+    """Copy file and verify hash matches. Returns True if successful."""
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src, dst)
+    return _file_hash(src) == _file_hash(dst)
 
 
 def sync_local() -> dict:
@@ -80,7 +112,7 @@ def sync_local() -> dict:
         cloud_version = skill_info.get("version", "0.0")
         local_version = local_versions.get(skill_name, "0.0")
 
-        if cloud_version <= local_version:
+        if not _version_gt(cloud_version, local_version):
             skipped.append(skill_name)
             continue
 
@@ -92,8 +124,17 @@ def sync_local() -> dict:
 
         try:
             local_dest = LOCAL_SKILLS_DIR / skill_name / "SKILL.md"
-            local_dest.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(cloud_skill_path, local_dest)
+            success = _copy_and_verify(cloud_skill_path, local_dest)
+
+            # Retry once on hash mismatch
+            if not success:
+                local_dest.unlink(missing_ok=True)
+                success = _copy_and_verify(cloud_skill_path, local_dest)
+
+            if not success:
+                errors.append({"skill": skill_name, "error": "Hash mismatch after copy (retried)"})
+                continue
+
             _write_local_version(skill_name, cloud_version)
 
             synced.append({
@@ -101,6 +142,7 @@ def sync_local() -> dict:
                 "from_version": local_version,
                 "to_version": cloud_version,
                 "score": skill_info.get("score", 0),
+                "content_hash": skill_info.get("content_hash", ""),
             })
         except Exception as e:
             errors.append({"skill": skill_name, "error": str(e)})
@@ -134,6 +176,11 @@ def sync_local() -> dict:
 
 
 def main() -> None:
+    if "--help" in sys.argv or "-h" in sys.argv:
+        print("Usage: python sync_local.py", file=sys.stderr)
+        print("Sync cloud skills from registry.json to local ~/.hermes/skills/mundo/.", file=sys.stderr)
+        sys.exit(0)
+
     result = sync_local()
     print(json.dumps(result, ensure_ascii=False, indent=2))
 

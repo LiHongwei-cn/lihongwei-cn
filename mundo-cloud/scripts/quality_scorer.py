@@ -1,21 +1,36 @@
 #!/usr/bin/env python3
 """Quality scoring engine for Mundo skills.
 
-Scores a SKILL.md file on four dimensions (0–100 total):
-  - Structure   (0–30): frontmatter, sections, examples
-  - Completeness(0–25): description length, code blocks, tables
+Scores a SKILL.md file on five dimensions (0–100+ total):
+  - Structure    (0–30): frontmatter, sections, examples
+  - Completeness (0–25): description length, code blocks, tables
   - Documentation(0–25): comments, usage instructions, pitfalls
-  - Freshness   (0–20): recency, active maintenance signals
+  - Freshness    (0–20): recency, active maintenance signals
+  - Bonus        (+5):   Chinese content detection
 
 Stdlib only — no pip install needed.
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import sys
 from pathlib import Path
+
+_HAS_CHINESE_RE = re.compile(r"[一-鿿]")
+_VERSION_RE = re.compile(
+    r"(?i)(?:version|v)[\"']?\s*[:=]?\s*[\"']?(\d+(?:\.\d+){1,3})"
+)
+_COMMENT_RE = re.compile(
+    r"(<!--.*?-->|#.*(?:TODO|NOTE|FIXME)|#.*(?:注意|警告|备注))",
+    re.DOTALL,
+)
+
+
+def _content_hash(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 def _has_frontmatter(text: str) -> bool:
@@ -34,20 +49,27 @@ def _count_tables(text: str) -> int:
     return len(re.findall(r"^\|.+\|$", text, re.MULTILINE)) // 2
 
 
-def _count_code_blocks(text: str) -> int:
-    return len(re.findall(r"```", text)) // 2
-
-
 def _has_comments(text: str) -> bool:
-    return bool(re.search(r"(<!--.*?-->|#.*TODO|#.*NOTE|#.*FIXME)", text, re.DOTALL))
+    return bool(_COMMENT_RE.search(text))
 
 
 def _has_usage_section(text: str) -> bool:
-    return bool(re.search(r"(?i)^#{1,6}\s*(usage|how\s+to|getting\s+started|quick\s+start)", text, re.MULTILINE))
+    return bool(re.search(
+        r"(?i)^#{1,6}\s*(usage|how\s+to|getting\s+started|quick\s+start)",
+        text,
+        re.MULTILINE,
+    ))
 
 
 def _has_pitfalls(text: str) -> bool:
-    return bool(re.search(r"(?i)(pitfall|caveat|warning|caution|danger|注意|警告|坑)", text))
+    return bool(re.search(
+        r"(?i)(pitfall|caveat|warning|caution|danger|注意|警告|坑)",
+        text,
+    ))
+
+
+def _has_chinese(text: str) -> bool:
+    return bool(_HAS_CHINESE_RE.search(text))
 
 
 def _score_structure(text: str) -> tuple[int, list[str]]:
@@ -97,7 +119,7 @@ def _score_completeness(text: str) -> tuple[int, list[str]]:
     else:
         details.append(f"✗ too short ({desc_len} chars)")
 
-    code_count = _count_code_blocks(text)
+    code_count = _count_examples(text)
     if code_count >= 3:
         score += 8
         details.append(f"✓ {code_count} code blocks")
@@ -146,19 +168,33 @@ def _score_freshness(text: str) -> tuple[int, list[str]]:
     score = 0
     details: list[str] = []
 
-    version_match = re.search(r"(?i)version[\"']?\s*[:=]\s*[\"']?(\d+\.\d+)", text)
+    version_match = _VERSION_RE.search(text)
     if version_match:
         score += 10
         details.append(f"✓ version declared: {version_match.group(1)}")
     else:
         details.append("✗ no version found")
 
-    date_match = re.search(r"(?i)(updated?|date|last.?modified)[\"']?\s*[:=]\s*[\"']?(\d{4}[-/]\d{2})", text)
+    date_match = re.search(
+        r"(?i)(updated?|date|last.?modified)[\"']?\s*[:=]\s*[\"']?(\d{4}[-/]\d{2})",
+        text,
+    )
     if date_match:
         score += 10
         details.append(f"✓ dated: {date_match.group(2)}")
     else:
         details.append("✗ no date found")
+
+    return score, details
+
+
+def _score_bonus(text: str) -> tuple[int, list[str]]:
+    score = 0
+    details: list[str] = []
+
+    if _has_chinese(text):
+        score += 5
+        details.append("✓ Chinese content detected (+5 bonus)")
 
     return score, details
 
@@ -175,24 +211,28 @@ def score_skill(file_path: str | Path) -> dict:
     c_score, c_details = _score_completeness(text)
     d_score, d_details = _score_documentation(text)
     f_score, f_details = _score_freshness(text)
+    b_score, b_details = _score_bonus(text)
 
-    total = s_score + c_score + d_score + f_score
+    total = s_score + c_score + d_score + f_score + b_score
 
     return {
         "file": str(path),
         "total": total,
+        "content_hash": _content_hash(text),
         "breakdown": {
             "structure": {"score": s_score, "max": 30, "details": s_details},
             "completeness": {"score": c_score, "max": 25, "details": c_details},
             "documentation": {"score": d_score, "max": 25, "details": d_details},
             "freshness": {"score": f_score, "max": 20, "details": f_details},
+            "bonus": {"score": b_score, "max": 5, "details": b_details},
         },
     }
 
 
 def main() -> None:
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 2 or sys.argv[1] in ("--help", "-h"):
         print("Usage: python quality_scorer.py <path/to/SKILL.md>", file=sys.stderr)
+        print("Score a SKILL.md on structure, completeness, docs, freshness.", file=sys.stderr)
         sys.exit(1)
 
     result = score_skill(sys.argv[1])

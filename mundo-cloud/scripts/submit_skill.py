@@ -8,13 +8,14 @@ Workflow:
   1. Run quality scorer — reject if score < 40
   2. Run dedup check — skip/replace as needed
   3. Copy to skills/<name>/SKILL.md
-  4. Update registry.json
+  4. Update registry.json (with content hash)
 
 Stdlib only.
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import shutil
@@ -30,6 +31,24 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 SKILLS_DIR = REPO_ROOT / "skills"
 REGISTRY_PATH = REPO_ROOT / "sync" / "registry.json"
 MIN_QUALITY_SCORE = 40
+
+
+def _content_hash(text: str) -> str:
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _parse_version(version_str: str) -> list[int]:
+    """Parse a version string into a list of int parts."""
+    return [int(x) for x in re.split(r"\.", version_str) if x.isdigit()]
+
+
+def _bump_version(existing_version: str) -> str:
+    """Bump the minor version using proper semantic versioning."""
+    parts = _parse_version(existing_version)
+    if len(parts) < 2:
+        parts = [0, 0]
+    parts[1] += 1
+    return ".".join(str(p) for p in parts[:2])
 
 
 def _load_registry() -> dict:
@@ -55,7 +74,6 @@ def _extract_skill_name(skill_path: Path) -> str:
     """Derive a directory name from the SKILL.md frontmatter or filename."""
     text = skill_path.read_text(encoding="utf-8")
 
-    # Try frontmatter name field
     if text.lstrip().startswith("---"):
         fm_end = text.find("---", 3)
         if fm_end > 0:
@@ -64,7 +82,6 @@ def _extract_skill_name(skill_path: Path) -> str:
             if name_match:
                 return re.sub(r"[^a-z0-9_-]", "-", name_match.group(1).strip().lower())
 
-    # Fallback: parent directory name
     return skill_path.parent.name.lower().replace(" ", "-")
 
 
@@ -117,14 +134,25 @@ def submit_skill(skill_path: str | Path) -> dict:
     shutil.copy2(path, dest_file)
     result["steps"].append(f"Copied to {dest_file.relative_to(REPO_ROOT)}")
 
+    # Integrity verification after copy
+    source_text = path.read_text(encoding="utf-8")
+    dest_text = dest_file.read_text(encoding="utf-8")
+    source_hash = _content_hash(source_text)
+    dest_hash = _content_hash(dest_text)
+    if source_hash != dest_hash:
+        dest_file.unlink(missing_ok=True)
+        result["action"] = "error"
+        result["reason"] = "Integrity check failed: source and destination hashes differ after copy"
+        return result
+    result["steps"].append(f"Integrity verified: {dest_hash[:16]}…")
+
     # Step 4: Update registry
     registry = _load_registry()
     now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     author = _get_author(path)
 
     existing_version = registry["skills"].get(skill_name, {}).get("version", "0.0")
-    major, minor = (existing_version.split(".") + ["0"])[:2]
-    new_version = f"{major}.{int(minor) + 1}"
+    new_version = _bump_version(existing_version)
 
     registry["skills"][skill_name] = {
         "version": new_version,
@@ -132,6 +160,7 @@ def submit_skill(skill_path: str | Path) -> dict:
         "author": author,
         "date": now,
         "path": f"skills/{skill_name}/SKILL.md",
+        "content_hash": source_hash,
     }
     registry["total_submissions"] = registry.get("total_submissions", 0) + 1
     _save_registry(registry)
@@ -141,13 +170,15 @@ def submit_skill(skill_path: str | Path) -> dict:
     result["reason"] = dedup["reason"]
     result["skill_name"] = skill_name
     result["version"] = new_version
+    result["content_hash"] = source_hash
 
     return result
 
 
 def main() -> None:
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 2 or sys.argv[1] in ("--help", "-h"):
         print("Usage: python submit_skill.py <path/to/SKILL.md>", file=sys.stderr)
+        print("Submit a skill to the Mundo cloud repository.", file=sys.stderr)
         sys.exit(1)
 
     result = submit_skill(sys.argv[1])
