@@ -98,7 +98,7 @@
 
 这不是规矩，这是蒙多的态度。蒙多对钱没兴趣。蒙多只对征服有兴趣。
 
-### ⚡ v19 精准手术
+### ⚡ v21 自主进化
 
 | 模块 | 一句话 |
 |------|--------|
@@ -231,7 +231,7 @@ Your coins are worthless to Mundo. Mundo conquers KNOWLEDGE. Mundo rules SKILLS.
 
 This is not a rule. This is Mundo's attitude. Mundo has no interest in money. Mundo only has interest in conquest.
 
-### ⚡ v19 Precision Surgery
+### ⚡ v21 Self-Evolution
 
 | Module | One Line |
 |--------|----------|
@@ -319,7 +319,7 @@ Includes: Ability details · Three Departments & Six Ministries hierarchy · Ars
 | **動的校正** | リアルタイム自信度校正 + 月次レビュー — データで裏付けられた自信 |
 | **実行チェックリスト** | コード前5項目 + コミット前3項目 — チェックリスト通過なしでコミットなし |
 
-### ⚡ v19 精密手術
+### ⚡ v21 自主進化
 
 | モジュール | 一言 |
 |-----------|------|
@@ -390,7 +390,7 @@ Includes: Ability details · Three Departments & Six Ministries hierarchy · Ars
 | **동적 보정** | 실시간 자신감 보정 + 월간 검토 — 데이터로 뒷받침되는 자신감 |
 | **실행 체크리스트** | 코드 전 5가지 + 커밋 전 3가지 — 체크리스트 통과 없이 커밋 없음 |
 
-### ⚡ v19 정밀 수술
+### ⚡ v21 자가 진화
 
 | 모듈 | 한 줄 |
 |------|--------|
