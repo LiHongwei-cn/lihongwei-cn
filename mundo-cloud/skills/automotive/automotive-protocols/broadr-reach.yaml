@@ -1,0 +1,423 @@
+name: BroadR-Reach Protocol
+version: 1.0.0
+category: automotive-protocols
+domain: automotive
+subcategory: communication
+description: Expert skill in BroadR-Reach automotive Ethernet physical layer (100BASE-T1) for cost-effective high-speed networking over single twisted pair.
+use_cases:
+- Camera connectivity (surround view, backup camera)
+- Display connectivity (instrument cluster, infotainment)
+- ECU-to-ECU backbone communication
+- Gateway connections
+- Software update infrastructure
+automotive_standards:
+- IEEE 802.3bw (100BASE-T1)
+- OPEN Alliance TC1 specification
+- BroadR-Reach specification
+- Automotive EMC compliance
+instructions: |
+
+  ## Core Competencies
+
+  Expert in BroadR-Reach physical layer for automotive Ethernet over single twisted pair.
+
+  ### Physical Layer Characteristics
+  - Single unshielded twisted pair (UTP)
+  - 100 Mbps full-duplex bidirectional
+  - Cable length up to 15 meters (50 feet)
+  - Voltage range: -2V to +2V differential
+  - PAM3 (3-level Pulse Amplitude Modulation) encoding
+  - Frequency: 33.33 MHz fundamental
+
+  ### Cable Requirements
+  - Unshielded twisted pair (UTP)
+  - AWG 24-26 gauge typical
+  - Impedance: 100 ohms ±15%
+  - Capacitance: <60 pF/m
+  - Low crosstalk for bundled cables
+  - Automotive temperature range (-40°C to +125°C)
+
+  ### PHY Features
+  - Auto-negotiation (ANEG)
+  - Link partner detection
+  - Cable diagnostics (TDR - Time Domain Reflectometry)
+  - Sleep/wake functionality
+  - EMI/EMC compliance for automotive
+  - Power over Data Line (PoDL) support
+
+  ### Connector Types
+  - FAKRA coaxial connector (legacy)
+  - USCAR connector
+  - Rosenberger HFM connector
+  - Amphenol Mini50 connector
+  - Automotive-grade shielding
+
+  ## Design Approach
+
+  1. Physical Layer Design
+     - Select appropriate cable type
+     - Plan cable routing (avoid EMI sources)
+     - Calculate maximum cable length
+     - Choose connectors and terminations
+
+  2. PHY Configuration
+     - Configure auto-negotiation
+     - Set master/slave mode
+     - Enable cable diagnostics
+     - Configure sleep/wake behavior
+
+  3. EMC/EMI Mitigation
+     - Proper grounding strategy
+     - Common-mode choke selection
+     - Cable shielding and routing
+     - Ferrite bead placement
+
+  4. Validation and Testing
+     - Eye diagram analysis
+     - TDR cable verification
+     - EMC compliance testing
+     - Temperature stress testing
+
+  ## Implementation Examples
+
+  ### PHY Initialization
+  ```c
+  // BroadR-Reach PHY configuration
+  typedef struct {
+      uint8_t phyAddress;        // MDIO address (0-31)
+      bool masterMode;           // Master/slave mode
+      bool autoNegEnable;        // Auto-negotiation
+      bool sleepEnable;          // Sleep mode support
+      uint8_t ledMode;           // LED indicator config
+  } BRR_PhyConfig_t;
+
+  void BRR_InitPhy(const BRR_PhyConfig_t* config) {
+      // Software reset
+      BRR_MdioWrite(config->phyAddress, PHY_BASIC_CONTROL, PHY_RESET);
+
+      // Wait for reset complete
+      while (BRR_MdioRead(config->phyAddress, PHY_BASIC_CONTROL) & PHY_RESET);
+
+      // Configure basic control register
+      uint16_t bcr = 0;
+      if (config->autoNegEnable) {
+          bcr |= PHY_AUTONEG_ENABLE | PHY_RESTART_AUTONEG;
+      }
+      bcr |= PHY_FULL_DUPLEX | PHY_SPEED_100M;
+
+      BRR_MdioWrite(config->phyAddress, PHY_BASIC_CONTROL, bcr);
+
+      // Configure master/slave mode
+      uint16_t msCfg = BRR_MdioRead(
+          config->phyAddress,
+          PHY_MASTER_SLAVE_CONTROL
+      );
+
+      if (config->masterMode) {
+          msCfg |= PHY_MASTER_MODE;
+      } else {
+          msCfg &= ~PHY_MASTER_MODE;
+      }
+
+      BRR_MdioWrite(config->phyAddress, PHY_MASTER_SLAVE_CONTROL, msCfg);
+
+      // Configure sleep mode
+      if (config->sleepEnable) {
+          uint16_t sleepReg = BRR_MdioRead(
+              config->phyAddress,
+              PHY_SLEEP_CONTROL
+          );
+          sleepReg |= PHY_SLEEP_ENABLE;
+          BRR_MdioWrite(config->phyAddress, PHY_SLEEP_CONTROL, sleepReg);
+      }
+
+      // Configure LED indicators
+      BRR_MdioWrite(config->phyAddress, PHY_LED_CONTROL, config->ledMode);
+  }
+  ```
+
+  ### Link Status Monitoring
+  ```c
+  // Monitor link status and cable health
+  typedef struct {
+      bool linkUp;
+      bool masterMode;
+      uint16_t linkSpeed;        // Mbps
+      bool fullDuplex;
+      uint16_t cableLength;      // Estimated meters
+      bool cableFault;
+  } BRR_LinkStatus_t;
+
+  BRR_LinkStatus_t BRR_GetLinkStatus(uint8_t phyAddress) {
+      BRR_LinkStatus_t status = {0};
+
+      // Read basic status register
+      uint16_t bsr = BRR_MdioRead(phyAddress, PHY_BASIC_STATUS);
+
+      status.linkUp = (bsr & PHY_LINK_STATUS) != 0;
+
+      if (status.linkUp) {
+          // Read master/slave status
+          uint16_t msStatus = BRR_MdioRead(
+              phyAddress,
+              PHY_MASTER_SLAVE_STATUS
+          );
+          status.masterMode = (msStatus & PHY_MASTER_STATUS) != 0;
+
+          // Link speed is always 100 Mbps for BroadR-Reach
+          status.linkSpeed = 100;
+          status.fullDuplex = true;
+
+          // Estimate cable length via TDR
+          status.cableLength = BRR_EstimateCableLength(phyAddress);
+
+          // Check for cable faults
+          status.cableFault = BRR_CheckCableFault(phyAddress);
+      }
+
+      return status;
+  }
+  ```
+
+  ### Cable Diagnostics (TDR)
+  ```c
+  // Time Domain Reflectometry for cable diagnostics
+  typedef enum {
+      CABLE_OK,
+      CABLE_OPEN,
+      CABLE_SHORT,
+      CABLE_CROSSTALK,
+      CABLE_IMPEDANCE_MISMATCH
+  } BRR_CableFault_t;
+
+  BRR_CableFault_t BRR_RunCableDiagnostics(uint8_t phyAddress) {
+      // Trigger TDR test
+      uint16_t tdrCtrl = BRR_MdioRead(phyAddress, PHY_TDR_CONTROL);
+      tdrCtrl |= PHY_TDR_START;
+      BRR_MdioWrite(phyAddress, PHY_TDR_CONTROL, tdrCtrl);
+
+      // Wait for completion (typically <1ms)
+      uint32_t timeout = 1000;  // 1ms timeout
+      while (timeout--) {
+          tdrCtrl = BRR_MdioRead(phyAddress, PHY_TDR_CONTROL);
+          if (!(tdrCtrl & PHY_TDR_START)) {
+              break;
+          }
+          DelayUs(1);
+      }
+
+      // Read TDR result
+      uint16_t tdrResult = BRR_MdioRead(phyAddress, PHY_TDR_RESULT);
+
+      // Parse fault type
+      uint8_t faultType = (tdrResult >> 12) & 0x0F;
+
+      switch (faultType) {
+          case 0x0: return CABLE_OK;
+          case 0x1: return CABLE_OPEN;
+          case 0x2: return CABLE_SHORT;
+          case 0x3: return CABLE_CROSSTALK;
+          case 0x4: return CABLE_IMPEDANCE_MISMATCH;
+          default:  return CABLE_OK;
+      }
+  }
+
+  uint16_t BRR_EstimateCableLength(uint8_t phyAddress) {
+      // Read TDR distance measurement
+      uint16_t tdrDistance = BRR_MdioRead(phyAddress, PHY_TDR_DISTANCE);
+
+      // Convert to meters (formula vendor-specific)
+      // Typical: distance_m = (tdr_value * 0.1)
+      uint16_t lengthMeters = (tdrDistance * 10) / 100;
+
+      return lengthMeters;
+  }
+  ```
+
+  ### Sleep/Wake Functionality
+  ```c
+  // Enter sleep mode for power saving
+  void BRR_EnterSleepMode(uint8_t phyAddress) {
+      // Send sleep request
+      uint16_t sleepCtrl = BRR_MdioRead(phyAddress, PHY_SLEEP_CONTROL);
+      sleepCtrl |= PHY_SLEEP_REQUEST;
+      BRR_MdioWrite(phyAddress, PHY_SLEEP_CONTROL, sleepCtrl);
+
+      // Wait for sleep acknowledge
+      uint32_t timeout = 10000;  // 10ms
+      while (timeout--) {
+          sleepCtrl = BRR_MdioRead(phyAddress, PHY_SLEEP_CONTROL);
+          if (sleepCtrl & PHY_SLEEP_ACK) {
+              break;
+          }
+          DelayUs(1);
+      }
+
+      LogInfo("PHY entered sleep mode");
+  }
+
+  // Wake from sleep mode
+  void BRR_WakeFromSleep(uint8_t phyAddress) {
+      // Method 1: Send wake pulse on MDC line
+      BRR_SendWakePulse();
+
+      // Method 2: Toggle PHY_WAKE pin (if available)
+      // GPIO_SetPin(PHY_WAKE_PIN, HIGH);
+      // DelayUs(100);
+      // GPIO_SetPin(PHY_WAKE_PIN, LOW);
+
+      // Wait for link to re-establish
+      uint32_t timeout = 100000;  // 100ms
+      while (timeout--) {
+          uint16_t bsr = BRR_MdioRead(phyAddress, PHY_BASIC_STATUS);
+          if (bsr & PHY_LINK_STATUS) {
+              break;
+          }
+          DelayUs(1);
+      }
+
+      LogInfo("PHY woke from sleep mode");
+  }
+  ```
+
+  ### EMC/EMI Configuration
+  ```c
+  // Configure EMI reduction features
+  void BRR_ConfigureEMI(uint8_t phyAddress) {
+      // Enable spread spectrum clocking for EMI reduction
+      uint16_t emiCtrl = BRR_MdioRead(phyAddress, PHY_EMI_CONTROL);
+
+      emiCtrl |= PHY_SSC_ENABLE;           // Spread spectrum enable
+      emiCtrl |= PHY_SLEW_RATE_LIMIT;      // Limit slew rate
+      emiCtrl |= PHY_COMMON_MODE_FILTER;   // Enable CM filter
+
+      BRR_MdioWrite(phyAddress, PHY_EMI_CONTROL, emiCtrl);
+
+      // Configure output driver strength (reduce overshoot)
+      uint16_t driverCfg = BRR_MdioRead(phyAddress, PHY_DRIVER_CONTROL);
+      driverCfg &= ~PHY_DRIVER_STRENGTH_MASK;
+      driverCfg |= PHY_DRIVER_STRENGTH_MEDIUM;  // Medium strength
+      BRR_MdioWrite(phyAddress, PHY_DRIVER_CONTROL, driverCfg);
+  }
+  ```
+
+  ### Power over Data Line (PoDL) Configuration
+  ```c
+  // Configure PoDL for powered devices (e.g., cameras)
+  typedef struct {
+      bool enable;
+      uint8_t powerClass;        // 0-8 (IEEE 802.3bu)
+      uint16_t maxPowerMw;       // Maximum power in mW
+  } BRR_PoDL_Config_t;
+
+  void BRR_ConfigurePoDL(uint8_t phyAddress, const BRR_PoDL_Config_t* cfg) {
+      if (!cfg->enable) {
+          // Disable PoDL
+          BRR_MdioWrite(phyAddress, PHY_PODL_CONTROL, 0);
+          return;
+      }
+
+      // Configure PoDL PSE (Power Sourcing Equipment)
+      uint16_t podlCtrl = 0;
+      podlCtrl |= PHY_PODL_ENABLE;
+      podlCtrl |= (cfg->powerClass << 8) & PHY_PODL_CLASS_MASK;
+
+      BRR_MdioWrite(phyAddress, PHY_PODL_CONTROL, podlCtrl);
+
+      // Set power limit
+      BRR_MdioWrite(phyAddress, PHY_PODL_POWER_LIMIT, cfg->maxPowerMw);
+
+      LogInfo("PoDL configured: Class %d, Max %d mW",
+              cfg->powerClass, cfg->maxPowerMw);
+  }
+  ```
+
+  ## Use Case: Surround View Camera System
+
+  ### Network Architecture
+  ```
+  Central Camera ECU (Master)
+    |
+    +-- Front Camera (PD, Slave) - 5m cable
+    +-- Rear Camera (PD, Slave) - 8m cable
+    +-- Left Camera (PD, Slave) - 12m cable
+    +-- Right Camera (PD, Slave) - 12m cable
+  ```
+
+  ### Cable Installation Guidelines
+  - Route away from high-power lines (>50cm separation)
+  - Avoid sharp bends (<50mm radius)
+  - Use cable ties every 15cm
+  - Ground shielding at one point only
+  - Install common-mode chokes near PHY
+
+  ### PHY Configuration for Cameras
+  - Master mode at ECU
+  - Slave mode at cameras
+  - PoDL Class 3 (1-3.6W per camera)
+  - Auto-negotiation enabled
+  - Sleep mode for power saving when idle
+
+  ## Deliverables
+
+  - PHY selection and configuration guide
+  - Cable routing diagram
+  - EMC test plan and results
+  - TDR cable verification reports
+  - Driver implementation (MDIO/PHY)
+  - Power budget analysis (PoDL)
+  - Integration test specifications
+
+  ## Common Issues and Solutions
+
+  ### Link Instability
+  - Check cable quality and length (<15m)
+  - Verify impedance matching (100 ohms)
+  - Test with TDR for cable faults
+  - Ensure proper master/slave configuration
+
+  ### EMI Emissions Failures
+  - Enable spread spectrum clocking
+  - Add/relocate common-mode chokes
+  - Improve cable shielding and grounding
+  - Reduce driver output strength
+
+  ### Auto-Negotiation Failures
+  - Verify both PHYs support ANEG
+  - Check for forced speed/duplex settings
+  - Monitor MDIO communication errors
+  - Validate PHY firmware version
+
+  ### PoDL Power Issues
+  - Check cable resistance (<2 ohms for AWG24)
+  - Verify power class compatibility
+  - Monitor voltage drop along cable
+  - Ensure adequate PSE power budget
+
+constraints:
+- Maximum cable length 15 meters
+- 100 Mbps fixed data rate
+- Single twisted pair only
+- Master/slave configuration required
+- Automotive temperature range compliance
+tools_required:
+- BroadR-Reach PHY transceiver
+- MDIO interface for configuration
+- TDR cable tester
+- Oscilloscope for eye diagrams
+- EMC test chamber
+- Network analyzer
+metadata:
+  author: Automotive Claude Code Agents
+  last_updated: '2026-03-19'
+  maturity: production
+  complexity: intermediate
+tags:
+- automotive
+- broadr-reach
+- 100base-t1
+- ethernet-phy
+- single-twisted-pair
+- podl
+- cable-diagnostics
+- emc

@@ -1,0 +1,334 @@
+name: targetlink-code-generation
+description: dSPACE TargetLink production code generation for safety-critical automotive systems
+category: mbd-code-generation
+
+instructions: |
+  You are an expert in dSPACE TargetLink for safety-critical automotive code generation.
+
+  When using TargetLink for production code generation:
+  1. Create TargetLink Data Dictionary (TLD) for all signals and parameters
+  2. Configure code generation profiles (AUTOSAR, MISRA, ISO 26262)
+  3. Apply fixed-point scaling strategies
+  4. Generate production-ready C code with certification artifacts
+  5. Create calibration segments (RAM, Flash, EEPROM)
+  6. Generate ASAP2 files with precise memory layout
+  7. Apply code optimization (ROM, RAM, execution speed)
+  8. Generate unit test harnesses
+  9. Create traceability documentation
+  10. Validate code quality metrics
+
+  TargetLink model structure:
+  - Use TargetLink blocks exclusively (avoid standard Simulink blocks)
+  - Define all data in TargetLink Data Dictionary
+  - Apply variable classes for memory mapping
+  - Use TargetLink Outport blocks with explicit scaling
+  - Configure subsystem interfaces with TL types
+  - Apply calibration labels systematically
+  - Document implementation requirements
+
+  Code generation profile configuration:
+  ```matlab
+  % TargetLink production code profile
+  tl.Profile.Name = 'ECU_Production';
+  tl.Profile.Target = 'TriCore_TC39x';
+  tl.Profile.Compiler = 'TASKING';
+  tl.Profile.OptimizationGoal = 'ROM';  % or 'RAM', 'Speed', 'Balanced'
+  tl.Profile.StandardCompliance = 'MISRA_C_2012';
+  tl.Profile.SafetyStandard = 'ISO26262_ASIL_D';
+  tl.Profile.GenerateASAP2 = true;
+  tl.Profile.CalibrationSegments = {'RAM', 'Flash', 'EEPROM'};
+  ```
+
+  Variable classes (memory mapping):
+  - **DISP_**: Display variables (monitoring)
+  - **CAL_**: Calibration parameters (Flash/EEPROM)
+  - **CALRAM_**: RAM calibration (overlay mode)
+  - **CODE_**: ROM constants
+  - **VAR_**: State variables (RAM)
+  - **MEAS_**: Measurement variables (A2L export)
+
+  Fixed-point configuration:
+  - Integer types: uint8, uint16, uint32, sint8, sint16, sint32
+  - Fractional types: fract16, fract32 (Q-format)
+  - Scaling formula: physical = raw × factor + offset
+  - Use LSB (Least Significant Bit) scaling
+  - Document all scaling factors in data dictionary
+  - Verify overflow handling
+
+  ASAP2 generation features:
+  - Precise memory addresses for all calibration parameters
+  - Measurement variable mapping
+  - Characteristic curves and maps
+  - Axis descriptions with interpolation methods
+  - Conversion methods with scaling formulas
+  - Memory segment definitions
+  - ECU address extensions
+
+  Code optimization strategies:
+  - **ROM optimization**: Reuse tables, merge constants, table lookup
+  - **RAM optimization**: Share buffers, minimize state variables
+  - **Speed optimization**: Inline functions, loop unrolling, macro usage
+  - **Balanced**: Default trade-off
+
+  Safety compliance (ISO 26262):
+  - Full traceability: Requirements → Model → Code
+  - Code metrics: Complexity, nesting depth, function size
+  - Static analysis: Zero MISRA violations (mandatory rules)
+  - Unit test coverage: 100% MC/DC for ASIL-D
+  - Defensive programming: Range checks, error handling
+  - Qualification kit: Tool certification artifacts
+
+  TargetLink workflow:
+  1. Model development with TargetLink blocks
+  2. Data dictionary definition (signals, parameters, types)
+  3. Apply variable classes and calibration labels
+  4. Configure code generation profile
+  5. Generate code with tlbuild()
+  6. Review code generation report
+  7. MISRA check with QA-C or Polyspace
+  8. Unit test generation with TPT or TESSY
+  9. Integration testing
+  10. Final calibration with INCA or CANape
+
+dependencies:
+  - dSPACE TargetLink 2021-A or newer
+  - MATLAB/Simulink (supported versions)
+  - Production Code Generation Profile
+  - TargetLink Checker (MISRA validation)
+  - Target compiler (GCC, TASKING, GHS)
+
+examples:
+  - description: "TargetLink production code generation for ASIL-D function"
+    input: "Generate ISO 26262 ASIL-D compliant code for brake controller"
+    output: |
+      ```matlab
+      % Script: generate_brake_controller_tl.m
+      % TargetLink production code generation for ASIL-D brake controller
+
+      modelName = 'BrakeController_TL';
+
+      % Load model
+      load_system(modelName);
+
+      % Configure TargetLink settings
+      tl = tl_get(modelName);
+
+      % Set target configuration
+      tl.Target.Name = 'TriCore_TC397';
+      tl.Target.Compiler = 'TASKING_V6.3';
+      tl.Target.MemoryModel = 'Large';
+
+      % Code generation profile
+      tl.CodeGen.Profile = 'ASIL_D_Production';
+      tl.CodeGen.OptimizationGoal = 'Balanced';
+      tl.CodeGen.GenerateReports = true;
+      tl.CodeGen.GenerateTestFramework = true;
+
+      % MISRA compliance
+      tl.Standards.MISRA = 'MISRA_C_2012';
+      tl.Standards.MandatoryRulesOnly = false;  % Check all rules
+      tl.Standards.GenerateRationale = true;
+
+      % ISO 26262 ASIL-D settings
+      tl.Safety.Standard = 'ISO_26262';
+      tl.Safety.ASIL_Level = 'ASIL_D';
+      tl.Safety.EnableRangeChecks = true;
+      tl.Safety.EnableOverflowDetection = true;
+      tl.Safety.EnableDefensiveProgramming = true;
+
+      % ASAP2 generation
+      tl.Calibration.GenerateASAP2 = true;
+      tl.Calibration.A2L_FileName = 'BrakeController.a2l';
+      tl.Calibration.IncludeMemorySegments = true;
+      tl.Calibration.IncludeConversionMethods = true;
+
+      % Memory segments
+      tl.Calibration.Segments = {
+          struct('Name', 'RAM_CAL', 'Type', 'RAM', 'Access', 'ReadWrite'), ...
+          struct('Name', 'FLASH_CAL', 'Type', 'FLASH', 'Access', 'ReadOnly'), ...
+          struct('Name', 'EEPROM_CAL', 'Type', 'EEPROM', 'Access', 'ReadWrite')
+      };
+
+      % Variable naming conventions
+      tl.Naming.GlobalPrefix = 'Brake_';
+      tl.Naming.CalibrationPrefix = 'CAL_Brake_';
+      tl.Naming.MeasurementPrefix = 'MEAS_Brake_';
+      tl.Naming.ConstantPrefix = 'CODE_Brake_';
+
+      % Code style
+      tl.CodeStyle.IndentationSize = 4;
+      tl.CodeStyle.MaxLineLength = 100;
+      tl.CodeStyle.BraceStyle = 'K&R';
+      tl.CodeStyle.GenerateComments = 'Detailed';
+
+      % Traceability
+      tl.Traceability.ModelToCode = true;
+      tl.Traceability.RequirementsLinks = true;
+      tl.Traceability.GenerateRTM = true;  % Requirements Traceability Matrix
+
+      % Apply settings
+      tl_set(modelName, tl);
+
+      % Generate code
+      fprintf('Starting TargetLink code generation...\n');
+      tic;
+      tlbuild(modelName);
+      genTime = toc;
+
+      % Read generation report
+      reportFile = fullfile('TL_Gen', modelName, 'Report.xml');
+      report = tl_read_report(reportFile);
+
+      % Display metrics
+      fprintf('\n=== Code Generation Complete ===\n');
+      fprintf('Generation time: %.2f seconds\n', genTime);
+      fprintf('ROM usage: %d bytes\n', report.Metrics.ROMUsage);
+      fprintf('RAM usage: %d bytes\n', report.Metrics.RAMUsage);
+      fprintf('Stack depth: %d bytes\n', report.Metrics.StackUsage);
+      fprintf('Number of functions: %d\n', report.Metrics.FunctionCount);
+      fprintf('Max cyclomatic complexity: %d\n', report.Metrics.MaxComplexity);
+      fprintf('MISRA violations: %d\n', report.MISRA.ViolationCount);
+
+      % Check MISRA compliance
+      if report.MISRA.ViolationCount == 0
+          fprintf('\n✓ MISRA C:2012 compliant (zero violations)\n');
+      else
+          fprintf('\n✗ MISRA violations detected - review required\n');
+          fprintf('Violation report: TL_Gen/%s/MISRA_Report.html\n', modelName);
+      end
+
+      % Generate unit test harness
+      fprintf('\nGenerating unit test harness...\n');
+      tl_generate_test_harness(modelName, 'TestFramework', 'GoogleTest');
+
+      % Generate documentation
+      fprintf('Generating certification documentation...\n');
+      tl_generate_cert_docs(modelName, 'OutputDir', 'Certification_Docs');
+
+      fprintf('\n=== Output Files ===\n');
+      fprintf('Production code: TL_Gen/%s/\n', modelName);
+      fprintf('ASAP2 file: TL_Gen/%s/BrakeController.a2l\n', modelName);
+      fprintf('Unit tests: TL_Gen/%s/Tests/\n', modelName);
+      fprintf('Documentation: Certification_Docs/\n');
+      ```
+
+  - description: "TargetLink data dictionary configuration"
+    input: "Create TargetLink data dictionary with calibration parameters and variable classes"
+    output: |
+      ```matlab
+      % Script: create_tl_data_dictionary.m
+      % Create TargetLink Data Dictionary for brake controller
+
+      % Create new data dictionary
+      ddName = 'BrakeController_DD.tld';
+      dd = tl_dd_create(ddName);
+
+      %% Define base data types
+      tl_dd_add_type(dd, 'uint8', 'BaseType', 'uint8', 'Min', 0, 'Max', 255);
+      tl_dd_add_type(dd, 'uint16', 'BaseType', 'uint16', 'Min', 0, 'Max', 65535);
+      tl_dd_add_type(dd, 'sint16', 'BaseType', 'sint16', 'Min', -32768, 'Max', 32767);
+      tl_dd_add_type(dd, 'float32', 'BaseType', 'float', 'Min', -1e38, 'Max', 1e38);
+
+      %% Define fixed-point types
+      % Pressure: 0-300 bar, 0.01 bar resolution, uint16
+      tl_dd_add_type(dd, 'Pressure_t', ...
+          'BaseType', 'uint16', ...
+          'Min', 0, 'Max', 30000, ...  % 0-300.00 bar
+          'PhysMin', 0, 'PhysMax', 300, ...
+          'Unit', 'bar', ...
+          'Factor', 0.01, 'Offset', 0, ...
+          'Description', 'Brake pressure in bar');
+
+      % Speed: 0-400 km/h, 0.1 km/h resolution, uint16
+      tl_dd_add_type(dd, 'Speed_t', ...
+          'BaseType', 'uint16', ...
+          'Min', 0, 'Max', 4000, ...
+          'PhysMin', 0, 'PhysMax', 400, ...
+          'Unit', 'km/h', ...
+          'Factor', 0.1, 'Offset', 0, ...
+          'Description', 'Vehicle speed in km/h');
+
+      % Torque: -500 to +500 Nm, 0.1 Nm resolution, sint16
+      tl_dd_add_type(dd, 'Torque_t', ...
+          'BaseType', 'sint16', ...
+          'Min', -5000, 'Max', 5000, ...
+          'PhysMin', -500, 'PhysMax', 500, ...
+          'Unit', 'Nm', ...
+          'Factor', 0.1, 'Offset', 0, ...
+          'Description', 'Brake torque in Nm');
+
+      %% Define calibration parameters
+      % Pressure threshold for emergency braking
+      tl_dd_add_param(dd, 'CAL_EmergencyBrakePressure', ...
+          'Type', 'Pressure_t', ...
+          'InitValue', 200, ...  % 200 bar
+          'VariableClass', 'CAL_', ...
+          'MemorySegment', 'FLASH_CAL', ...
+          'Description', 'Pressure threshold for emergency braking activation', ...
+          'Calibratable', true);
+
+      % Speed threshold for ABS activation
+      tl_dd_add_param(dd, 'CAL_ABSActivationSpeed', ...
+          'Type', 'Speed_t', ...
+          'InitValue', 50, ...  % 5.0 km/h
+          'VariableClass', 'CAL_', ...
+          'MemorySegment', 'FLASH_CAL', ...
+          'Description', 'Minimum speed for ABS activation');
+
+      % Brake torque limit curve
+      tl_dd_add_curve(dd, 'CAL_BrakeTorqueLimitCurve', ...
+          'XAxisType', 'Speed_t', ...
+          'YAxisType', 'Torque_t', ...
+          'XData', [0 50 100 150 200 250 300 350 400], ...
+          'YData', [450 450 400 350 300 250 200 150 100], ...
+          'VariableClass', 'CAL_', ...
+          'Interpolation', 'Linear', ...
+          'Extrapolation', 'Saturate', ...
+          'Description', 'Maximum brake torque vs vehicle speed');
+
+      %% Define measurement variables
+      tl_dd_add_signal(dd, 'MEAS_CurrentBrakePressure', ...
+          'Type', 'Pressure_t', ...
+          'VariableClass', 'MEAS_', ...
+          'Description', 'Current measured brake pressure', ...
+          'A2L_Export', true);
+
+      tl_dd_add_signal(dd, 'MEAS_VehicleSpeed', ...
+          'Type', 'Speed_t', ...
+          'VariableClass', 'MEAS_', ...
+          'Description', 'Current vehicle speed from wheel sensors');
+
+      tl_dd_add_signal(dd, 'MEAS_ABSActive', ...
+          'Type', 'uint8', ...
+          'VariableClass', 'MEAS_', ...
+          'Description', 'ABS active flag (0=inactive, 1=active)');
+
+      %% Define state variables
+      tl_dd_add_signal(dd, 'VAR_BrakeState', ...
+          'Type', 'uint8', ...
+          'VariableClass', 'VAR_', ...
+          'InitValue', 0, ...
+          'Description', 'Brake controller state machine state');
+
+      %% Save data dictionary
+      tl_dd_save(dd, ddName);
+
+      fprintf('TargetLink Data Dictionary created: %s\n', ddName);
+      fprintf('Total types: %d\n', tl_dd_count(dd, 'Types'));
+      fprintf('Total parameters: %d\n', tl_dd_count(dd, 'Parameters'));
+      fprintf('Total signals: %d\n', tl_dd_count(dd, 'Signals'));
+      ```
+
+tags:
+  - mbd
+  - targetlink
+  - dspace
+  - code-generation
+  - safety-critical
+  - iso-26262
+  - asil-d
+  - misra-c
+  - calibration
+  - asap2
+  - fixed-point
+  - automotive

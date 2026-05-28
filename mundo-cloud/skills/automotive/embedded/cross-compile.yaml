@@ -1,0 +1,382 @@
+name: "Cross-Compilation and Embedded Build Skills"
+version: "1.0.0"
+description: "Comprehensive skills for ARM cross-compilation and embedded development"
+category: "embedded"
+
+instructions: |
+  ## Embedded Cross-Compilation Guide
+
+  ### Overview
+
+  Cross-compilation builds executable code on a host machine (x86_64 Linux/Windows)
+  for a different target architecture (ARM Cortex-M, Cortex-A, RISC-V). This is
+  essential for automotive embedded development where ECU hardware has limited
+  resources and cannot host a compiler.
+
+  ### Toolchain Architecture
+
+  ```
+  Host (x86_64 Linux)                    Target (ARM Cortex-M4)
+  ┌──────────────────────┐              ┌──────────────────────┐
+  │ arm-none-eabi-gcc    │  ──────►     │ STM32F4 MCU          │
+  │ arm-none-eabi-ld     │  .elf/.hex   │ 1MB Flash            │
+  │ arm-none-eabi-objcopy│              │ 192KB RAM             │
+  │ arm-none-eabi-gdb    │  ◄──────     │ OpenOCD/ST-Link      │
+  └──────────────────────┘   debug      └──────────────────────┘
+  ```
+
+  ### Common Automotive Toolchains
+
+  | Toolchain | Target | Usage |
+  |-----------|--------|-------|
+  | arm-none-eabi-gcc | Cortex-M (bare-metal) | MCU firmware (BMS, gateway) |
+  | arm-linux-gnueabihf-gcc | Cortex-A (Linux) | Linux-based ECUs |
+  | aarch64-linux-gnu-gcc | Cortex-A53/A72 (Linux) | HPC, ADAS platforms |
+  | qcc (QNX) | Various ARM/x86 | QNX RTOS targets |
+  | tricore-gcc | Infineon TriCore | Engine/transmission ECUs |
+
+  ### Compiler Flags for ARM Cortex-M
+
+  ```makefile
+  # Target CPU and instruction set
+  MCPU = -mcpu=cortex-m4
+  MTHUMB = -mthumb
+
+  # Floating point
+  MFPU = -mfpu=fpv4-sp-d16
+  MFLOAT = -mfloat-abi=hard    # hard = HW FPU, soft = SW emulation
+
+  # Optimization
+  OPT = -Os                     # Size optimization for flash-limited MCUs
+  # OPT = -O2                   # Speed optimization for performance-critical
+
+  # Code generation
+  CFLAGS = $(MCPU) $(MTHUMB) $(MFPU) $(MFLOAT) $(OPT)
+  CFLAGS += -ffunction-sections -fdata-sections  # Enable garbage collection
+  CFLAGS += -Wall -Wextra -Werror               # Strict warnings
+  CFLAGS += -std=c11                             # C11 standard
+
+  # Linker flags
+  LDFLAGS = -T linker_script.ld
+  LDFLAGS += -Wl,--gc-sections    # Remove unused sections
+  LDFLAGS += -Wl,-Map=output.map  # Generate memory map
+  LDFLAGS += --specs=nosys.specs  # No system calls (bare-metal)
+  ```
+
+  ### Linker Script Essentials
+
+  ```ld
+  MEMORY {
+      FLASH (rx)  : ORIGIN = 0x08000000, LENGTH = 1024K
+      RAM (rwx)   : ORIGIN = 0x20000000, LENGTH = 192K
+      CCMRAM (rw) : ORIGIN = 0x10000000, LENGTH = 64K
+  }
+
+  SECTIONS {
+      .isr_vector : { KEEP(*(.isr_vector)) } > FLASH
+      .text       : { *(.text*) } > FLASH
+      .rodata     : { *(.rodata*) } > FLASH
+      .data       : { *(.data*) } > RAM AT > FLASH  /* LMA in Flash, VMA in RAM */
+      .bss (NOLOAD) : { *(.bss*) *(COMMON) } > RAM
+      ._stack (NOLOAD) : { . = ALIGN(8); . += 8K; _estack = .; } > RAM
+  }
+  ```
+
+  ### Startup Code Requirements
+
+  The startup code (usually assembly) must:
+  1. Set stack pointer to top of RAM (_estack from linker script)
+  2. Copy .data section from Flash (LMA) to RAM (VMA)
+  3. Zero-initialize .bss section
+  4. Enable FPU if target has one (write to CPACR register)
+  5. Call SystemInit() for clock configuration
+  6. Call __libc_init_array() for C++ static constructors
+  7. Call main()
+
+  ### Binary Output Formats
+
+  ```bash
+  # ELF to raw binary (for flash programming)
+  arm-none-eabi-objcopy -O binary firmware.elf firmware.bin
+
+  # ELF to Intel HEX
+  arm-none-eabi-objcopy -O ihex firmware.elf firmware.hex
+
+  # ELF to Motorola S-Record
+  arm-none-eabi-objcopy -O srec firmware.elf firmware.s19
+
+  # Check binary size
+  arm-none-eabi-size firmware.elf
+  #   text    data     bss     dec     hex filename
+  #  45232    1024    8192   54448    d4b0 firmware.elf
+  ```
+
+  ### Memory Usage Analysis
+
+  ```bash
+  # Generate map file (add -Wl,-Map=output.map to LDFLAGS)
+  # Map file shows section sizes, symbol addresses, and memory regions
+
+  # Find largest functions
+  arm-none-eabi-nm --size-sort firmware.elf | tail -20
+
+  # Check section sizes
+  arm-none-eabi-size -A firmware.elf
+  ```
+
+  ### RTOS Integration
+
+  When porting FreeRTOS or Zephyr to the target:
+  - Configure system tick timer (SysTick for Cortex-M)
+  - Set heap size in FreeRTOSConfig.h or linker script
+  - Configure interrupt priorities (PendSV, SVCall for context switch)
+  - Reserve stack space per task (minimum 256 bytes, typical 1-4KB)
+
+  ### Debugging
+
+  ```bash
+  # Start OpenOCD for STM32
+  openocd -f interface/stlink.cfg -f target/stm32f4x.cfg
+
+  # Connect GDB
+  arm-none-eabi-gdb firmware.elf
+  (gdb) target remote :3333
+  (gdb) monitor reset halt
+  (gdb) load
+  (gdb) break main
+  (gdb) continue
+  ```
+
+  ### Best Practices
+
+  - Pin toolchain version in CI/CD for reproducible builds
+  - Use -Os for flash-constrained MCUs, -O2 for CPU-constrained
+  - Enable -ffunction-sections + --gc-sections to remove dead code
+  - Always generate and review the map file for memory usage
+  - Test on host with native build (mocks for HAL) before target
+  - Use static analysis (cppcheck, MISRA checkers) in build pipeline
+  - Keep bootloader and application in separate build targets
+
+skills:
+  - id: "gcc-arm-setup-toolchain"
+    name: "Setup ARM GCC Toolchain"
+    description: "Configure cross-compilation environment"
+    tags: ["gcc", "arm", "toolchain"]
+    implementation: |
+      Setup ARM GCC toolchain:
+      1. Install arm-none-eabi-gcc toolchain
+      2. Verify compiler version and features
+      3. Setup environment variables (PATH)
+      4. Configure target CPU architecture
+      5. Setup FPU options if available
+      6. Verify toolchain with test compilation
+      7. Document toolchain version for reproducibility
+
+      Example:
+      ```python
+      from tools.adapters.embedded.gcc_arm_adapter import GCCArmAdapter, ARMArchitecture
+
+      adapter = GCCArmAdapter("arm-none-eabi")
+      ```
+
+  - id: "cross-compile-source"
+    name: "Cross-Compile C/C++ Source"
+    description: "Compile source files for ARM target"
+    tags: ["compile", "arm", "embedded"]
+    implementation: |
+      Cross-compile source files:
+      1. Define build configuration (target, optimization)
+      2. Set compiler flags (-mcpu, -mthumb, -mfloat-abi)
+      3. Add include paths for headers
+      4. Define preprocessor macros
+      5. Compile each source file to object
+      6. Collect warnings and errors
+      7. Verify compilation success
+
+  - id: "link-embedded-executable"
+    name: "Link ARM Executable"
+    description: "Link object files with linker script"
+    tags: ["linker", "arm", "embedded"]
+    implementation: |
+      Link embedded executable:
+      1. Prepare linker script for memory layout
+      2. Define memory regions (FLASH, RAM)
+      3. Specify section placements (.text, .data, .bss)
+      4. Add startup code and vector table
+      5. Link all object files
+      6. Generate ELF output file
+      7. Analyze memory usage (text/data/bss sizes)
+
+  - id: "generate-binary-formats"
+    name: "Generate Flash Binary"
+    description: "Convert ELF to binary/hex formats"
+    tags: ["binary", "hex", "programming"]
+    implementation: |
+      Generate flash binaries:
+      1. Convert ELF to raw binary (.bin)
+      2. Generate Intel HEX format (.hex)
+      3. Generate Motorola S-record (.srec)
+      4. Calculate binary checksum
+      5. Split binaries for bootloader
+      6. Add version information to binary
+      7. Validate binary integrity
+
+  - id: "optimize-embedded-code"
+    name: "Optimize for Size/Speed"
+    description: "Apply optimization strategies"
+    tags: ["optimization", "performance", "embedded"]
+    implementation: |
+      Optimize embedded code:
+      1. Choose optimization level (-O0, -Os, -O2, -O3)
+      2. Enable link-time optimization (-flto)
+      3. Remove unused code (-ffunction-sections, -fdata-sections)
+      4. Use --gc-sections in linker
+      5. Inline small functions
+      6. Optimize for target architecture
+      7. Measure code size reduction
+
+  - id: "static-library-creation"
+    name: "Create Static Library"
+    description: "Build reusable static library"
+    tags: ["library", "ar", "embedded"]
+    implementation: |
+      Create static library:
+      1. Compile library source files
+      2. Use ar (archiver) to create .a file
+      3. Add index with ranlib
+      4. Document library API
+      5. Provide header files
+      6. Test library linking
+      7. Version library artifacts
+
+  - id: "startup-code-development"
+    name: "Develop Startup Code"
+    description: "Create low-level initialization"
+    tags: ["startup", "assembly", "embedded"]
+    implementation: |
+      Develop startup code:
+      1. Create vector table in assembly
+      2. Implement Reset_Handler
+      3. Initialize stack pointer (SP)
+      4. Copy .data section to RAM
+      5. Zero-initialize .bss section
+      6. Enable FPU if present
+      7. Call main() function
+
+  - id: "linker-script-creation"
+    name: "Create Linker Script"
+    description: "Define memory layout and sections"
+    tags: ["linker", "memory", "embedded"]
+    implementation: |
+      Create linker script:
+      1. Define MEMORY regions (FLASH, RAM, CCMRAM)
+      2. Set ENTRY point (Reset_Handler)
+      3. Define section placement (.isr_vector, .text)
+      4. Place .data in RAM with LMA in FLASH
+      5. Define .bss section in RAM
+      6. Setup heap and stack regions
+      7. Add __attribute__ section support
+
+  - id: "interrupt-vector-table"
+    name: "Configure Interrupt Vector Table"
+    description: "Setup interrupt handlers"
+    tags: ["interrupts", "nvic", "embedded"]
+    implementation: |
+      Configure interrupt vector table:
+      1. Define vector table array in flash
+      2. Add stack pointer as first entry
+      3. Add Reset_Handler and other system handlers
+      4. Add peripheral interrupt handlers
+      5. Implement weak default handlers
+      6. Use __attribute__((interrupt)) if needed
+      7. Configure NVIC priority grouping
+
+  - id: "debug-symbols-generation"
+    name: "Generate Debug Symbols"
+    description: "Enable debugging with DWARF symbols"
+    tags: ["debug", "dwarf", "gdb"]
+    implementation: |
+      Generate debug symbols:
+      1. Compile with -g flag
+      2. Choose debug format (-gdwarf-4)
+      3. Keep debug symbols in ELF
+      4. Generate separate debug symbols (objcopy)
+      5. Create symbol map file
+      6. Verify debug info with readelf
+      7. Optimize debug info size
+
+  - id: "bootloader-integration"
+    name: "Integrate Bootloader"
+    description: "Setup application for bootloader"
+    tags: ["bootloader", "firmware", "embedded"]
+    implementation: |
+      Integrate with bootloader:
+      1. Offset application start address
+      2. Modify vector table offset (VTOR)
+      3. Add application signature
+      4. Implement version information
+      5. Add CRC/checksum for validation
+      6. Create bootloader communication protocol
+      7. Test firmware update process
+
+  - id: "rtos-port"
+    name: "Port RTOS to Target"
+    description: "Integrate FreeRTOS or Zephyr"
+    tags: ["rtos", "freertos", "zephyr"]
+    implementation: |
+      Port RTOS to target:
+      1. Download RTOS source (FreeRTOS/Zephyr)
+      2. Configure FreeRTOSConfig.h or prj.conf
+      3. Add port-specific files for ARM Cortex
+      4. Setup system tick interrupt
+      5. Configure heap and stack sizes
+      6. Create tasks and priorities
+      7. Test context switching
+
+  - id: "embedded-unit-testing"
+    name: "Unit Test Embedded Code"
+    description: "Setup unit testing framework"
+    tags: ["testing", "unity", "embedded"]
+    implementation: |
+      Setup embedded unit testing:
+      1. Integrate Unity test framework
+      2. Create test runner application
+      3. Mock hardware dependencies
+      4. Write test cases for modules
+      5. Run tests on host (native build)
+      6. Run tests on target hardware
+      7. Measure code coverage
+
+  - id: "memory-map-analysis"
+    name: "Analyze Memory Map"
+    description: "Understand memory usage and layout"
+    tags: ["memory", "analysis", "embedded"]
+    implementation: |
+      Analyze memory map:
+      1. Generate map file during linking
+      2. Parse .text, .data, .bss sections
+      3. Identify largest functions/variables
+      4. Check for memory overlaps
+      5. Verify stack/heap allocation
+      6. Find memory fragmentation
+      7. Generate memory report
+
+  - id: "peripheral-driver-development"
+    name: "Develop Peripheral Driver"
+    description: "Create HAL/LL driver for peripheral"
+    tags: ["driver", "hal", "peripheral"]
+    implementation: |
+      Develop peripheral driver:
+      1. Read peripheral reference manual
+      2. Define register structures and addresses
+      3. Implement initialization function
+      4. Create read/write API functions
+      5. Add interrupt handling
+      6. Implement error handling
+      7. Document driver API
+
+metadata:
+  toolchains: ["arm-none-eabi-gcc", "arm-linux-gnueabihf-gcc"]
+  architectures: ["Cortex-M0", "Cortex-M3", "Cortex-M4", "Cortex-M7", "Cortex-R5"]
+  rtos: ["FreeRTOS", "Zephyr", "ThreadX"]
+  debuggers: ["OpenOCD", "JLink", "ST-Link"]

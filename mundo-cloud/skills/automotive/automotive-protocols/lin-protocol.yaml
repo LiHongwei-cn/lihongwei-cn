@@ -1,0 +1,345 @@
+name: LIN Protocol
+version: 1.0.0
+category: automotive-protocols
+domain: automotive
+subcategory: communication
+description: Expert skill in LIN (Local Interconnect Network) low-cost serial bus protocol for non-critical automotive subsystems.
+use_cases:
+- Seat control and memory functions
+- Mirror and window control
+- Climate control actuators
+- Interior lighting and ambient lighting
+- Door lock and unlock mechanisms
+automotive_standards:
+- ISO 17987 (LIN Specification)
+- LIN 2.2A specification
+- AUTOSAR LIN Driver
+- SAE J2602
+instructions: |
+
+  ## Core Competencies
+
+  Expert in LIN protocol for cost-effective automotive sub-networks.
+
+  ### Physical Layer
+  - Single-wire bidirectional bus
+  - Baud rates: 1 kbps to 20 kbps (typical: 9.6/19.2 kbps)
+  - Master-slave architecture (1 master, up to 16 slaves)
+  - Dominant (0V) and recessive (12V battery voltage)
+  - Bus length up to 40 meters
+  - No termination resistors required
+
+  ### Protocol Architecture
+  - Master schedules all communication
+  - Slaves respond only when addressed
+  - Time-triggered schedule tables
+  - Event-triggered frames for efficiency
+  - Diagnostic services (ISO 14229 subset)
+
+  ### Frame Structure
+  ```
+  |<---------- LIN Frame ---------->|
+  | Header (Master)  | Response      |
+  | Break | Sync | ID| Data | CRC   |
+  ```
+
+  - Break field: 13 dominant bits minimum
+  - Sync byte: 0x55 for baud rate sync
+  - Protected ID: 6-bit ID + 2 parity bits
+  - Data: 1-8 bytes
+  - Checksum: Classic or Enhanced
+
+  ### LIN Frame Types
+  - Unconditional frames (standard data)
+  - Event-triggered frames (slave polling)
+  - Sporadic frames (conditional master transmission)
+  - Diagnostic frames (node configuration)
+
+  ### Schedule Table Concept
+  ```c
+  // Schedule table defines communication pattern
+  LIN_ScheduleTable_t SeatControlSchedule[] = {
+      {FRAME_SeatPosition,    10},  // Every 10ms
+      {FRAME_SeatMemory,      50},  // Every 50ms
+      {FRAME_EventTrigger,   100},  // Slave event polling
+      {FRAME_DiagRequest,    200},  // Diagnostic window
+  };
+  ```
+
+  ## Design Approach
+
+  1. Network Planning
+     - Define master and slave nodes
+     - Create signal database (LDF file)
+     - Design schedule tables
+     - Assign frame IDs (0x00-0x3F)
+
+  2. Master Node Implementation
+     - Configure UART for LIN
+     - Implement schedule table execution
+     - Handle slave responses
+     - Provide diagnostic services
+
+  3. Slave Node Implementation
+     - Configure frame filters (ID match)
+     - Implement response generation
+     - Handle sleep/wakeup commands
+     - Support node configuration
+
+  4. Validation and Testing
+     - Bus timing verification
+     - Frame error injection
+     - Sleep/wakeup testing
+     - EMC compliance testing
+
+  ## Implementation Examples
+
+  ### Master Frame Transmission (AUTOSAR)
+  ```c
+  // LIN master sends unconditional frame
+  void Lin_MasterSendFrame(uint8 channel, Lin_PduType* pdu) {
+      // Send break field (13-26 dominant bits)
+      Lin_SendBreak(channel);
+
+      // Send sync byte (0x55)
+      Lin_SendByte(channel, LIN_SYNC_BYTE);
+
+      // Calculate protected ID (ID + parity)
+      uint8 protectedId = Lin_CalculateProtectedId(pdu->Id);
+      Lin_SendByte(channel, protectedId);
+
+      // Send data bytes
+      for (uint8 i = 0; i < pdu->DataLength; i++) {
+          Lin_SendByte(channel, pdu->Data[i]);
+      }
+
+      // Send checksum (enhanced)
+      uint8 checksum = Lin_CalculateChecksum(
+          protectedId,
+          pdu->Data,
+          pdu->DataLength,
+          LIN_ENHANCED_CRC
+      );
+      Lin_SendByte(channel, checksum);
+  }
+  ```
+
+  ### Slave Response Handling
+  ```c
+  // LIN slave responds to master request
+  void Lin_SlaveProcessFrame(uint8 id, uint8* data, uint8 len) {
+      Lin_FrameResponseType response;
+
+      // Check if this frame is for us
+      if (Lin_GetFrameResponse(id, &response) == E_OK) {
+          switch (response.Type) {
+              case LIN_UNCONDITIONAL:
+                  // Provide response data
+                  Lin_PrepareResponse(
+                      response.Data,
+                      response.Length
+                  );
+                  break;
+
+              case LIN_EVENT_TRIGGERED:
+                  // Check if we have data to send
+                  if (Lin_HasEventData()) {
+                      Lin_PrepareResponse(
+                          eventData,
+                          eventLength
+                      );
+                  }
+                  break;
+
+              case LIN_DIAGNOSTIC:
+                  // Handle diagnostic request
+                  Lin_ProcessDiagnostic(data, len);
+                  break;
+          }
+      }
+  }
+  ```
+
+  ### Schedule Table Execution
+  ```c
+  // Master executes schedule table
+  typedef struct {
+      uint8 frameId;
+      uint16 delayMs;
+  } Lin_ScheduleEntry_t;
+
+  const Lin_ScheduleEntry_t seatSchedule[] = {
+      {0x10, 10},   // Seat position every 10ms
+      {0x11, 20},   // Seat tilt every 20ms
+      {0x12, 50},   // Memory recall every 50ms
+      {0x3C, 100},  // Event-triggered every 100ms
+      {0x3D, 200}   // Diagnostic every 200ms
+  };
+
+  void Lin_ExecuteSchedule(uint8 channel) {
+      static uint8 scheduleIndex = 0;
+      static uint32 lastTime = 0;
+
+      uint32 currentTime = GetTickCount();
+      const Lin_ScheduleEntry_t* entry = &seatSchedule[scheduleIndex];
+
+      if (currentTime - lastTime >= entry->delayMs) {
+          Lin_SendFrame(channel, entry->frameId);
+
+          scheduleIndex = (scheduleIndex + 1) %
+                          ARRAY_SIZE(seatSchedule);
+          lastTime = currentTime;
+      }
+  }
+  ```
+
+  ### Sleep/Wakeup Implementation
+  ```c
+  // Sleep command (diagnostic frame 0x3C)
+  void Lin_GoToSleep(uint8 channel) {
+      uint8 sleepCmd[] = {0x00, 0xFF, 0xFF, 0xFF,
+                          0xFF, 0xFF, 0xFF, 0xFF};
+      Lin_SendDiagnosticFrame(channel, 0x3C, sleepCmd, 8);
+
+      // Enter sleep mode after frame transmission
+      Lin_SetState(channel, LIN_STATE_SLEEP);
+  }
+
+  // Wakeup pulse (dominant signal 250-5000us)
+  void Lin_Wakeup(uint8 channel) {
+      // Send dominant pulse (typically 500us)
+      Lin_SendWakeupPulse(channel, 500);
+
+      // Wait for bus recovery
+      DelayUs(150);
+
+      // Resume normal operation
+      Lin_SetState(channel, LIN_STATE_OPERATIONAL);
+  }
+  ```
+
+  ### Node Configuration (LIN 2.x)
+  ```c
+  // Assign NAD (Node Address for Diagnostics)
+  void Lin_AssignNAD(uint8 supplierId, uint16 functionId, uint8 newNAD) {
+      uint8 configData[] = {
+          0x06,                      // Service: Assign NAD
+          (supplierId >> 8) & 0xFF,  // Supplier ID MSB
+          supplierId & 0xFF,         // Supplier ID LSB
+          (functionId >> 8) & 0xFF,  // Function ID MSB
+          functionId & 0xFF,         // Function ID LSB
+          newNAD,                    // New NAD
+          0xFF, 0xFF
+      };
+
+      Lin_SendDiagnosticFrame(0, 0x3C, configData, 8);
+  }
+  ```
+
+  ## Use Case: Power Seat Control
+
+  ### Network Architecture
+  ```
+  Master (Body Control Module)
+    |
+    +-- Slave 1: Seat Position Sensor (NAD 0x01)
+    +-- Slave 2: Lumbar Actuator (NAD 0x02)
+    +-- Slave 3: Recline Motor (NAD 0x03)
+    +-- Slave 4: Height Adjustment (NAD 0x04)
+  ```
+
+  ### Signal Database (LDF excerpt)
+  ```ldf
+  Signals {
+      SeatPositionFB: 8, 0, RightSeatSensor, AllNodes;
+      LumbarPosition: 8, 0, LumbarActuator, AllNodes;
+      ReclineAngle: 16, 0, ReclineMotor, AllNodes;
+      SeatHeight: 8, 0, HeightActuator, AllNodes;
+      MemoryRecall: 2, 0, BodyControlModule, AllNodes;
+  }
+
+  Frames {
+      SeatStatus: 0x10, BodyControlModule, 4 {
+          SeatPositionFB, 0;
+          LumbarPosition, 8;
+          ReclineAngle, 16;
+      }
+
+      SeatCommand: 0x11, BodyControlModule, 2 {
+          MemoryRecall, 0;
+          TargetPosition, 8;
+      }
+  }
+
+  Schedule_tables {
+      NormalOperation {
+          SeatStatus delay 10 ms;
+          SeatCommand delay 20 ms;
+          EventTriggered delay 50 ms;
+      }
+  }
+  ```
+
+  ### Timing Considerations
+  - Frame time: ~10ms at 9.6 kbps for 8-byte frame
+  - Schedule cycle: 100-200ms typical
+  - Response timeout: 14ms maximum (LIN spec)
+  - Sleep transition: within 4 seconds
+
+  ## Deliverables
+
+  - LIN network description file (LDF)
+  - Node capability files (NCF)
+  - Master schedule tables
+  - Slave driver implementation
+  - Diagnostic database (ODX)
+  - Integration test specifications
+  - EMC test report
+
+  ## Common Issues and Solutions
+
+  ### Sync Byte Errors
+  - Check baud rate tolerance (<1.5%)
+  - Verify UART clock source stability
+  - Adjust slave sync detection
+
+  ### Checksum Failures
+  - Verify classic vs. enhanced CRC mode
+  - Check endianness of multi-byte signals
+  - Validate checksum calculation algorithm
+
+  ### Sleep/Wakeup Problems
+  - Check wakeup pulse duration (250-5000us)
+  - Verify bus pullup resistor (1k typical)
+  - Ensure all nodes support sleep mode
+
+  ### Bus Contention
+  - Verify schedule table timing
+  - Check for rogue slave transmissions
+  - Monitor bus idle time between frames
+
+constraints:
+- Single-master architecture only
+- Maximum 16 slave nodes per network
+- Baud rate limited to 20 kbps
+- No real-time guarantees (scheduled access)
+- Limited diagnostic capabilities vs. CAN
+tools_required:
+- Vector CANoe with LIN option
+- LIN node configuration tool
+- LDF editor (Vector vSignalyzer)
+- Logic analyzer for protocol debugging
+- LIN transceiver hardware
+metadata:
+  author: Automotive Claude Code Agents
+  last_updated: '2026-03-19'
+  maturity: production
+  complexity: intermediate
+tags:
+- automotive
+- lin
+- local-interconnect-network
+- iso-17987
+- autosar
+- body-control
+- low-cost

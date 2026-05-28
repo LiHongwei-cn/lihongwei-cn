@@ -1,0 +1,389 @@
+name: vibration-test
+description: Vibration table control for automotive component testing per ISO 16750-3, SAE J2380, IEC 60068-2-64
+category: testing-metrology
+
+instructions: |
+  You are an expert in vibration testing for automotive battery pack and component validation.
+
+  When implementing vibration test integration:
+  1. Configure shaker table (electrodynamic or hydraulic)
+  2. Program test profiles (sine sweep, random, shock, road load)
+  3. Control vibration amplitude (displacement, velocity, acceleration)
+  4. Monitor control and response accelerometers
+  5. Implement closed-loop feedback control
+  6. Perform frequency sweeps (5Hz to 2kHz)
+  7. Execute random vibration per PSD specifications
+  8. Generate shock pulses (half-sine, sawtooth, trapezoidal)
+  9. Implement multi-axis vibration (6-DOF)
+  10. Monitor mechanical resonances and transmissibility
+  11. Implement abort limits for specimen protection
+  12. Generate test reports per ISO/SAE standards
+  13. Support field data replication (measured road profiles)
+  14. Perform modal analysis to identify resonant frequencies
+  15. Integrate with data acquisition for synchronous measurements
+
+  Supported Equipment:
+  - IMV i-Series electrodynamic shakers
+  - Bruel & Kjaer LDS V-Series
+  - Thermotron S-Series vibration systems
+  - MTS 850 hydraulic shakers
+  - Unholtz-Dickie UD-Series
+
+  Test Types:
+  - Sine sweep (constant frequency sweep)
+  - Sine dwell (resonance search)
+  - Random vibration (PSD profile)
+  - Shock (half-sine, trapezoidal)
+  - Classical shock (SRS spectrum)
+  - Road load data replication
+  - Multi-axis simultaneous
+  - Temperature + vibration combined
+
+  Vibration Standards:
+  - ISO 16750-3: Road vehicles - Environmental conditions - Mechanical loads
+  - SAE J2380: Vibration testing of electric vehicle batteries
+  - IEC 60068-2-64: Environmental testing - Vibration, broadband random
+  - MIL-STD-810: Military environmental test methods
+  - UN ECE R100.02: Electric powertrains - Vibration
+
+  Control Parameters:
+  - Frequency range: 5-2000 Hz
+  - Acceleration: 0.1-100 g (RMS or peak)
+  - Displacement: 1mm - 50mm (pk-pk)
+  - Velocity: 10-2000 mm/s
+  - PSD levels: 0.001 - 1.0 g²/Hz
+
+dependencies:
+  - pyvisa for GPIB/Ethernet control
+  - numpy for signal processing
+  - scipy for frequency analysis
+  - matplotlib for plotting PSD
+
+examples:
+  - description: "IMV vibration controller random vibration test"
+    input: "Execute random vibration test per ISO 16750-3 curve A"
+    output: |
+      ```python
+      import pyvisa
+      import numpy as np
+      import time
+      from dataclasses import dataclass
+      from typing import List, Tuple
+      from datetime import datetime
+
+
+      @dataclass
+      class VibrationStatus:
+          timestamp: datetime
+          frequency: float       # Hz
+          control_level: float   # g RMS
+          response_level: float  # g RMS
+          abort_flag: bool
+
+
+      class IMVVibrationController:
+          """IMV i-Series Vibration Controller Interface."""
+
+          def __init__(self, address: str = "TCPIP0::192.168.1.20::INSTR"):
+              """Connect to vibration controller."""
+              self.rm = pyvisa.ResourceManager()
+              self.controller = self.rm.open_resource(address)
+              self.controller.timeout = 10000
+
+              idn = self.controller.query("*IDN?")
+              print(f"Connected to: {idn}")
+
+              self._reset()
+
+          def _reset(self):
+              """Reset controller to safe state."""
+              self.controller.write("*RST")
+              self.controller.write("STOP")
+              time.sleep(1)
+
+          def configure_random_vibration(
+              self,
+              psd_profile: List[Tuple[float, float]],
+              duration: int,
+              ramp_time: int = 30
+          ):
+              """
+              Configure random vibration test.
+
+              Args:
+                  psd_profile: List of (frequency_hz, psd_g2_hz) points
+                  duration: Test duration in seconds
+                  ramp_time: Ramp up/down time in seconds
+              """
+              # Set test type
+              self.controller.write("TEST:TYPE RANDOM")
+
+              # Configure PSD profile
+              self.controller.write(f"RANDOM:POINTS {len(psd_profile)}")
+
+              for i, (freq, psd) in enumerate(psd_profile):
+                  self.controller.write(f"RANDOM:FREQ{i} {freq}")
+                  self.controller.write(f"RANDOM:PSD{i} {psd}")
+
+              # Set test duration
+              self.controller.write(f"RANDOM:DURATION {duration}")
+              self.controller.write(f"RANDOM:RAMP {ramp_time}")
+
+              # Set control parameters
+              self.controller.write("CONTROL:MODE CLOSED")
+              self.controller.write("CONTROL:SENSOR 1")  # Control accelerometer
+
+              print(f"Random vibration configured: {len(psd_profile)} points, {duration}s")
+
+          def configure_sine_sweep(
+              self,
+              start_freq: float,
+              end_freq: float,
+              sweep_rate: float,
+              amplitude_g: float,
+              num_sweeps: int = 1
+          ):
+              """
+              Configure sine sweep test.
+
+              Args:
+                  start_freq: Starting frequency in Hz
+                  end_freq: Ending frequency in Hz
+                  sweep_rate: Sweep rate in octaves/minute
+                  amplitude_g: Constant acceleration amplitude in g
+                  num_sweeps: Number of sweeps to perform
+              """
+              self.controller.write("TEST:TYPE SINE")
+
+              self.controller.write(f"SINE:FREQ:START {start_freq}")
+              self.controller.write(f"SINE:FREQ:STOP {end_freq}")
+              self.controller.write(f"SINE:SWEEP:RATE {sweep_rate}")
+              self.controller.write(f"SINE:AMPLITUDE {amplitude_g}")
+              self.controller.write(f"SINE:SWEEPS {num_sweeps}")
+
+              print(f"Sine sweep configured: {start_freq}-{end_freq}Hz, {amplitude_g}g, {sweep_rate} oct/min")
+
+          def set_abort_limits(
+              self,
+              max_accel: float,
+              max_displacement: float
+          ):
+              """
+              Set safety abort limits.
+
+              Args:
+                  max_accel: Maximum acceleration in g
+                  max_displacement: Maximum displacement in mm
+              """
+              self.controller.write(f"ABORT:ACCEL {max_accel}")
+              self.controller.write(f"ABORT:DISP {max_displacement}")
+
+              print(f"Abort limits: {max_accel}g, {max_displacement}mm")
+
+          def start_test(self):
+              """Start vibration test."""
+              self.controller.write("START")
+              print("Vibration test started")
+
+          def stop_test(self):
+              """Stop vibration test immediately."""
+              self.controller.write("STOP")
+              print("Vibration test stopped")
+
+          def is_test_running(self) -> bool:
+              """Check if test is currently running."""
+              status = self.controller.query("STATUS:TEST?")
+              return "RUNNING" in status
+
+          def read_status(self) -> VibrationStatus:
+              """Read current vibration status."""
+              freq = float(self.controller.query("MEAS:FREQ?"))
+              control = float(self.controller.query("MEAS:CONTROL:LEVEL?"))
+              response = float(self.controller.query("MEAS:RESPONSE:LEVEL?"))
+              abort = bool(int(self.controller.query("STATUS:ABORT?")))
+
+              return VibrationStatus(
+                  timestamp=datetime.now(),
+                  frequency=freq,
+                  control_level=control,
+                  response_level=response,
+                  abort_flag=abort
+              )
+
+          def run_iso16750_profile_a(
+              self,
+              duration: int = 3600,
+              axis: str = "Z"
+          ) -> List[VibrationStatus]:
+              """
+              Execute ISO 16750-3 Profile A (passenger car).
+
+              Args:
+                  duration: Test duration in seconds (default 1 hour)
+                  axis: Test axis (X, Y, or Z)
+
+              Returns:
+                  List of status measurements
+              """
+              # ISO 16750-3 Profile A PSD
+              psd_profile = [
+                  (5.0, 0.0001),
+                  (10.0, 0.001),
+                  (20.0, 0.01),
+                  (50.0, 0.01),
+                  (100.0, 0.005),
+                  (200.0, 0.002),
+                  (500.0, 0.0005),
+                  (1000.0, 0.0001)
+              ]
+
+              print(f"\n=== ISO 16750-3 Profile A Test ===")
+              print(f"Axis: {axis}, Duration: {duration}s")
+
+              # Configure test
+              self.configure_random_vibration(
+                  psd_profile=psd_profile,
+                  duration=duration,
+                  ramp_time=30
+              )
+
+              # Set abort limits
+              self.set_abort_limits(
+                  max_accel=50.0,    # 50g max
+                  max_displacement=25.0  # 25mm max
+              )
+
+              # Start test
+              self.start_test()
+
+              # Monitor test
+              status_log = []
+              while self.is_test_running():
+                  status = self.read_status()
+                  status_log.append(status)
+
+                  print(f"Freq: {status.frequency:.1f}Hz, "
+                        f"Control: {status.control_level:.3f}g RMS, "
+                        f"Response: {status.response_level:.3f}g RMS")
+
+                  if status.abort_flag:
+                      print("ABORT condition detected!")
+                      self.stop_test()
+                      break
+
+                  time.sleep(5)  # Log every 5 seconds
+
+              print("Test complete")
+              return status_log
+
+          def run_resonance_search(
+              self,
+              freq_range: Tuple[float, float] = (5.0, 500.0),
+              amplitude_g: float = 0.5
+          ) -> List[Tuple[float, float]]:
+              """
+              Perform resonance search using sine sweep.
+
+              Args:
+                  freq_range: (start_freq, end_freq) in Hz
+                  amplitude_g: Sweep amplitude in g
+
+              Returns:
+                  List of (frequency, transmissibility) tuples
+              """
+              print(f"\n=== Resonance Search ===")
+              print(f"Frequency range: {freq_range[0]}-{freq_range[1]}Hz")
+
+              # Configure slow sine sweep for resonance detection
+              self.configure_sine_sweep(
+                  start_freq=freq_range[0],
+                  end_freq=freq_range[1],
+                  sweep_rate=0.5,  # 0.5 octaves/min (slow)
+                  amplitude_g=amplitude_g,
+                  num_sweeps=1
+              )
+
+              # Start sweep
+              self.start_test()
+
+              # Collect transmissibility data
+              resonance_data = []
+              while self.is_test_running():
+                  status = self.read_status()
+
+                  # Transmissibility = Response / Control
+                  transmissibility = (status.response_level / status.control_level
+                                     if status.control_level > 0 else 0)
+
+                  resonance_data.append((status.frequency, transmissibility))
+
+                  if transmissibility > 5.0:
+                      print(f"Resonance detected at {status.frequency:.1f}Hz (Q={transmissibility:.2f})")
+
+                  time.sleep(1)
+
+              return resonance_data
+
+          def close(self):
+              """Close controller connection."""
+              self.stop_test()
+              self.controller.close()
+              self.rm.close()
+
+
+      # Usage: Battery pack vibration test per ISO 16750-3
+      if __name__ == "__main__":
+          shaker = IMVVibrationController("TCPIP0::192.168.1.20::INSTR")
+
+          # First, perform resonance search
+          print("Step 1: Resonance search")
+          resonance_data = shaker.run_resonance_search(
+              freq_range=(5.0, 500.0),
+              amplitude_g=0.5
+          )
+
+          # Find peak resonances
+          import numpy as np
+          resonances = [(f, q) for f, q in resonance_data if q > 3.0]
+          if resonances:
+              print("\nDetected resonances:")
+              for freq, q in resonances:
+                  print(f"  {freq:.1f} Hz (Q={q:.2f})")
+
+          # Run full random vibration test
+          print("\nStep 2: Random vibration test (ISO 16750-3 Profile A)")
+          status_log = shaker.run_iso16750_profile_a(
+              duration=3600,  # 1 hour
+              axis="Z"
+          )
+
+          # Export data
+          import pandas as pd
+
+          df = pd.DataFrame([
+              {
+                  'timestamp': s.timestamp.isoformat(),
+                  'frequency_hz': s.frequency,
+                  'control_g_rms': s.control_level,
+                  'response_g_rms': s.response_level,
+                  'abort': s.abort_flag
+              }
+              for s in status_log
+          ])
+
+          df.to_csv('vibration_test_log.csv', index=False)
+          print(f"\nLogged {len(status_log)} data points")
+
+          shaker.close()
+      ```
+
+tags:
+  - testing
+  - vibration
+  - shaker-table
+  - iso-16750
+  - random-vibration
+  - sine-sweep
+  - automotive
+  - validation
+  - mechanical

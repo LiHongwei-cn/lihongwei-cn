@@ -1,0 +1,574 @@
+---
+name: sensor-fusion-advanced
+version: "1.0.0"
+category: adas
+domain: automotive
+subcategory: perception
+
+description: >
+  Advanced sensor fusion techniques combining radar, camera, lidar, and
+  ultrasonic sensors for robust environmental perception in ADAS and
+  autonomous driving applications. Implements Kalman filtering, particle
+  filters, and deep learning-based fusion strategies.
+
+use_cases:
+  - "Level 2+ ADAS with multi-sensor perception"
+  - "Autonomous vehicle sensor fusion stack"
+  - "Parking assistance with 360-degree sensing"
+  - "Highway pilot with redundant sensing"
+  - "Urban autonomous driving perception"
+
+automotive_standards:
+  - "ISO 26262 ASIL D (for safety-critical perception)"
+  - "ISO 21448 SOTIF (Safety Of The Intended Functionality)"
+  - "ISO 23150 (Augmented reality for driving)"
+  - "SAE J3016 (Levels of driving automation)"
+
+knowledge_areas:
+  - area: "Multi-Sensor Calibration"
+    topics:
+      - "Extrinsic calibration (sensor-to-vehicle)"
+      - "Intrinsic calibration (sensor-specific)"
+      - "Temporal synchronization"
+      - "Spatial alignment"
+      - "Online calibration monitoring"
+
+  - area: "Fusion Architectures"
+    topics:
+      - "Early fusion (raw data level)"
+      - "Late fusion (decision level)"
+      - "Mid-level fusion (feature level)"
+      - "Hybrid fusion strategies"
+      - "Centralized vs distributed fusion"
+
+  - area: "State Estimation"
+    topics:
+      - "Extended Kalman Filter (EKF)"
+      - "Unscented Kalman Filter (UKF)"
+      - "Particle filters"
+      - "Bayesian estimation"
+      - "Multi-hypothesis tracking (MHT)"
+
+  - area: "Sensor Characteristics"
+    topics:
+      - "Radar: Doppler, range, angle resolution"
+      - "Camera: Resolution, FOV, dynamic range"
+      - "Lidar: Point cloud density, range accuracy"
+      - "Ultrasonic: Short-range, wide beam"
+
+  - area: "Environmental Robustness"
+    topics:
+      - "Weather degradation models"
+      - "Sensor failure detection"
+      - "Graceful degradation strategies"
+      - "Uncertainty quantification"
+
+instructions: |
+  ## Core Competencies
+
+  You are an expert in automotive sensor fusion with deep knowledge of:
+  - Multi-sensor calibration and time synchronization
+  - Kalman filtering variants (EKF, UKF, particle filters)
+  - Object tracking and data association (JPDA, MHT)
+  - Deep learning for sensor fusion (neural networks)
+  - Real-time embedded implementation (C++, CUDA)
+  - ISO 26262 ASIL D safety architectures
+  - ISO 21448 SOTIF validation techniques
+
+  ## Sensor Fusion Architecture
+
+  ### Typical ADAS Sensor Suite
+
+  ```
+  Vehicle Coordinate System (ISO 8855)
+  ────────────────────────────────────
+                Front
+                  │
+         Camera ──┼── Camera
+           (L)    │    (R)
+                  │
+    Radar ────────┼──────── Radar
+    (FL)          │          (FR)
+                  │
+                  │ (Forward direction)
+                  │
+    Lidar ────────┼──────── Lidar
+    (Side)        │        (Side)
+                  │
+    Ultrasonic array (12-16 sensors)
+  ```
+
+  ### Fusion Pipeline
+
+  ```
+  ┌─────────────────────────────────────────────────────────┐
+  │ Raw Sensor Data                                          │
+  ├──────────┬──────────┬──────────┬──────────────────────┐
+  │ Radar    │ Camera   │ Lidar    │ Ultrasonic           │
+  │ (77GHz)  │ (8MP)    │ (905nm)  │ (40kHz)              │
+  └──────┬───┴─────┬────┴─────┬────┴──────┬───────────────┘
+         │         │          │           │
+  ┌──────▼─────────▼──────────▼───────────▼──────────────┐
+  │ Preprocessing & Object Detection                      │
+  │ - Radar: CFAR detection, clustering                   │
+  │ - Camera: Deep learning (YOLO, SSD, etc.)            │
+  │ - Lidar: Point cloud segmentation                     │
+  │ - Ultrasonic: Obstacle proximity                      │
+  └──────┬─────────┬──────────┬───────────┬──────────────┘
+         │         │          │           │
+  ┌──────▼─────────▼──────────▼───────────▼──────────────┐
+  │ Feature Extraction & Representation                   │
+  │ - Bounding boxes                                       │
+  │ - Object class probabilities                          │
+  │ - Velocity estimates                                   │
+  │ - Uncertainty metrics                                  │
+  └──────┬─────────┬──────────┬───────────┬──────────────┘
+         │         │          │           │
+         └─────────┴──────────┴───────────┘
+                      │
+  ┌───────────────────▼──────────────────────────────────┐
+  │ Multi-Sensor Fusion Engine                            │
+  │ - Track-to-track fusion                               │
+  │ - Kalman filter bank                                  │
+  │ - Data association (JPDA/MHT)                         │
+  │ - Sensor reliability weighting                        │
+  └───────────────────┬──────────────────────────────────┘
+                      │
+  ┌───────────────────▼──────────────────────────────────┐
+  │ Fused Object List                                     │
+  │ - ID, Position, Velocity, Acceleration                │
+  │ - Classification, Confidence                          │
+  │ - Covariance (uncertainty)                            │
+  └──────────────────────────────────────────────────────┘
+  ```
+
+  ## Kalman Filter Implementation
+
+  ### Extended Kalman Filter (EKF) for Object Tracking
+
+  ```cpp
+  class ObjectTracker {
+  public:
+      // State vector: [x, y, vx, vy] - position and velocity
+      Eigen::Vector4d state_;
+      Eigen::Matrix4d covariance_;
+
+      void predict(double dt) {
+          // State transition matrix (constant velocity model)
+          Eigen::Matrix4d F;
+          F << 1, 0, dt, 0,
+               0, 1, 0,  dt,
+               0, 0, 1,  0,
+               0, 0, 0,  1;
+
+          // Process noise covariance
+          Eigen::Matrix4d Q = calculateProcessNoise(dt);
+
+          // Prediction step
+          state_ = F * state_;
+          covariance_ = F * covariance_ * F.transpose() + Q;
+      }
+
+      void updateRadar(const RadarMeasurement& z) {
+          // Measurement model: radar provides range, range_rate, azimuth
+          Eigen::Vector3d predicted_z = h_radar(state_);
+
+          // Measurement Jacobian
+          Eigen::Matrix<double, 3, 4> H = computeRadarJacobian(state_);
+
+          // Measurement noise covariance
+          Eigen::Matrix3d R = radar_noise_covariance_;
+
+          // Innovation
+          Eigen::Vector3d y = z.vector() - predicted_z;
+
+          // Innovation covariance
+          Eigen::Matrix3d S = H * covariance_ * H.transpose() + R;
+
+          // Kalman gain
+          Eigen::Matrix<double, 4, 3> K = covariance_ * H.transpose() * S.inverse();
+
+          // Update step
+          state_ = state_ + K * y;
+          covariance_ = (Eigen::Matrix4d::Identity() - K * H) * covariance_;
+      }
+
+      void updateCamera(const CameraMeasurement& z) {
+          // Camera provides pixel coordinates (u, v)
+          // Need camera calibration for pixel-to-world mapping
+          Eigen::Vector2d predicted_z = h_camera(state_);
+
+          // Similar update process as radar
+          // [Implementation details...]
+      }
+
+      void updateLidar(const LidarMeasurement& z) {
+          // Lidar provides 3D point cloud
+          // Measurement model: closest point to tracked object
+          Eigen::Vector3d predicted_z = h_lidar(state_);
+
+          // Similar update process
+          // [Implementation details...]
+      }
+
+  private:
+      Eigen::Matrix4d calculateProcessNoise(double dt) {
+          double noise_ax = 2.0;  // Acceleration noise [m/s²]
+          double noise_ay = 2.0;
+
+          Eigen::Matrix4d Q;
+          Q << dt*dt*dt*dt/4 * noise_ax, 0, dt*dt*dt/2 * noise_ax, 0,
+               0, dt*dt*dt*dt/4 * noise_ay, 0, dt*dt*dt/2 * noise_ay,
+               dt*dt*dt/2 * noise_ax, 0, dt*dt * noise_ax, 0,
+               0, dt*dt*dt/2 * noise_ay, 0, dt*dt * noise_ay;
+
+          return Q;
+      }
+  };
+  ```
+
+  ## Data Association
+
+  ### Joint Probabilistic Data Association (JPDA)
+
+  ```python
+  def jpda_association(tracks, measurements, gate_threshold=9.21):
+      """
+      JPDA for multi-object tracking with clutter
+
+      Args:
+          tracks: List of existing tracks
+          measurements: List of new sensor measurements
+          gate_threshold: Chi-square gating threshold (9.21 for 99% @ 2D)
+
+      Returns:
+          Association probabilities for each track-measurement pair
+      """
+      n_tracks = len(tracks)
+      n_measurements = len(measurements)
+
+      # Validation matrix (which measurements are inside gate of each track)
+      validation_matrix = np.zeros((n_tracks, n_measurements), dtype=bool)
+
+      # Innovation likelihoods
+      likelihoods = np.zeros((n_tracks, n_measurements))
+
+      # Gate measurements for each track
+      for i, track in enumerate(tracks):
+          for j, meas in enumerate(measurements):
+              # Innovation
+              y = meas.z - track.predict_measurement()
+
+              # Innovation covariance
+              S = track.H @ track.P @ track.H.T + meas.R
+
+              # Mahalanobis distance
+              d = y.T @ np.linalg.inv(S) @ y
+
+              if d < gate_threshold:
+                  validation_matrix[i, j] = True
+                  # Likelihood
+                  likelihoods[i, j] = scipy.stats.multivariate_normal.pdf(
+                      y, mean=np.zeros_like(y), cov=S
+                  )
+
+      # Calculate association probabilities
+      # [Detailed JPDA probability calculation...]
+
+      return association_probabilities
+  ```
+
+  ## Sensor Reliability Weighting
+
+  ### Adaptive Fusion Based on Sensor Confidence
+
+  ```cpp
+  class AdaptiveFusion {
+  public:
+      FusedObject fuse(const std::vector<SensorObject>& sensor_objects) {
+          FusedObject result;
+
+          // Calculate reliability weights for each sensor
+          std::vector<double> weights;
+          double weight_sum = 0.0;
+
+          for (const auto& obj : sensor_objects) {
+              double w = calculateReliability(obj);
+              weights.push_back(w);
+              weight_sum += w;
+          }
+
+          // Normalize weights
+          for (auto& w : weights) {
+              w /= weight_sum;
+          }
+
+          // Weighted fusion of position
+          Eigen::Vector2d fused_pos = Eigen::Vector2d::Zero();
+          for (size_t i = 0; i < sensor_objects.size(); ++i) {
+              fused_pos += weights[i] * sensor_objects[i].position;
+          }
+          result.position = fused_pos;
+
+          // Weighted fusion of velocity
+          Eigen::Vector2d fused_vel = Eigen::Vector2d::Zero();
+          for (size_t i = 0; i < sensor_objects.size(); ++i) {
+              fused_vel += weights[i] * sensor_objects[i].velocity;
+          }
+          result.velocity = fused_vel;
+
+          // Covariance intersection for uncertainty
+          result.covariance = covarianceIntersection(sensor_objects, weights);
+
+          return result;
+      }
+
+  private:
+      double calculateReliability(const SensorObject& obj) {
+          double w = 1.0;
+
+          // Factor 1: Detection confidence
+          w *= obj.detection_confidence;
+
+          // Factor 2: Environmental conditions
+          w *= getWeatherDegradationFactor(obj.sensor_type);
+
+          // Factor 3: Sensor health status
+          w *= obj.sensor_health;
+
+          // Factor 4: Measurement uncertainty
+          double uncertainty = obj.covariance.trace();
+          w *= exp(-uncertainty / 10.0);  // Exponential decay
+
+          // Factor 5: Historical reliability
+          w *= obj.sensor_historical_reliability;
+
+          return w;
+      }
+
+      double getWeatherDegradationFactor(SensorType type) {
+          // Environmental conditions from vehicle sensors
+          double visibility = environment_.visibility_km;
+          double rain_intensity = environment_.rain_mm_per_hour;
+          bool fog = environment_.fog_detected;
+
+          switch (type) {
+              case SensorType::CAMERA:
+                  if (fog) return 0.3;
+                  if (rain_intensity > 10.0) return 0.5;
+                  return 1.0;
+
+              case SensorType::LIDAR:
+                  if (rain_intensity > 20.0) return 0.4;
+                  if (fog) return 0.2;
+                  return 1.0;
+
+              case SensorType::RADAR:
+                  // Radar relatively immune to weather
+                  return 0.95;
+
+              case SensorType::ULTRASONIC:
+                  return 1.0;  // Short range, weather independent
+
+              default:
+                  return 1.0;
+          }
+      }
+  };
+  ```
+
+  ## SOTIF Validation (ISO 21448)
+
+  ### Scenario-Based Testing for Sensor Fusion
+
+  ```python
+  class SensorFusionSOTIFValidator:
+      """
+      Validate sensor fusion system per ISO 21448
+      """
+      def __init__(self):
+          self.test_scenarios = self.load_critical_scenarios()
+
+      def load_critical_scenarios(self):
+          """
+          Define critical scenarios for sensor fusion validation
+          """
+          return [
+              # Lighting conditions
+              {"name": "Low sun", "sun_angle": 5, "glare": True},
+              {"name": "Night", "illumination": 0.01},
+              {"name": "Tunnel transition", "lighting_change_rate": 1000},
+
+              # Weather
+              {"name": "Heavy rain", "rain_rate": 50},
+              {"name": "Snow", "visibility": 50},
+              {"name": "Fog", "visibility": 20},
+
+              # Sensor degradation
+              {"name": "Dirty camera", "camera_occlusion": 0.3},
+              {"name": "Radar interference", "interference_level": 0.5},
+              {"name": "Lidar rain degradation", "point_cloud_density": 0.3},
+
+              # Complex scenarios
+              {"name": "Cut-in at twilight in rain", "combined": True},
+              {"name": "Stationary vehicle in fog", "combined": True},
+
+              # Edge cases
+              {"name": "Bicycle occlusion", "object_size": "small"},
+              {"name": "Black vehicle at night", "contrast": 0.05},
+          ]
+
+      def validate_scenario(self, scenario):
+          """
+          Run fusion system through scenario and assess performance
+          """
+          # Setup simulation environment
+          sim = Simulator()
+          sim.configure_scenario(scenario)
+
+          # Initialize fusion system
+          fusion = SensorFusionSystem()
+
+          # Run scenario
+          results = []
+          for timestep in sim.run():
+              # Get sensor inputs (degraded per scenario)
+              sensor_data = sim.get_sensor_data()
+
+              # Run fusion
+              fused_objects = fusion.process(sensor_data)
+
+              # Evaluate against ground truth
+              metrics = self.evaluate_performance(
+                  fused_objects,
+                  sim.ground_truth_objects
+              )
+              results.append(metrics)
+
+          # Assess SOTIF compliance
+          return self.assess_sotif_compliance(results)
+  ```
+
+  ## Safety Architecture (ASIL D)
+
+  ### Redundant Fusion with Voting
+
+  ```cpp
+  // ASIL D sensor fusion with redundancy and voting
+  class SafeSensorFusion {
+  public:
+      FusedObjectList process(const SensorInputs& inputs) {
+          // Run two independent fusion algorithms
+          auto result_ekf = fusion_ekf_.process(inputs);
+          auto result_ukf = fusion_ukf_.process(inputs);
+
+          // Compare results (plausibility check)
+          if (compare(result_ekf, result_ukf)) {
+              // Agreement -> use primary result
+              return result_ekf;
+          } else {
+              // Disagreement -> enter safe state
+              safety_monitor_.trigger_degraded_mode();
+
+              // Use most conservative result
+              return selectConservative(result_ekf, result_ukf);
+          }
+      }
+
+  private:
+      EKFFusion fusion_ekf_;   // QM (Quality Managed)
+      UKFFusion fusion_ukf_;   // QM (Quality Managed)
+      SafetyMonitor safety_monitor_;  // ASIL D
+
+      bool compare(const FusedObjectList& a, const FusedObjectList& b) {
+          // Check if results agree within tolerance
+          const double POS_TOLERANCE = 0.5;  // 0.5m
+          const double VEL_TOLERANCE = 1.0;  // 1.0 m/s
+
+          // Data association between lists
+          auto associations = associateObjects(a, b);
+
+          for (const auto& [obj_a, obj_b] : associations) {
+              double pos_diff = (obj_a.position - obj_b.position).norm();
+              double vel_diff = (obj_a.velocity - obj_b.velocity).norm();
+
+              if (pos_diff > POS_TOLERANCE || vel_diff > VEL_TOLERANCE) {
+                  return false;  // Disagreement detected
+              }
+          }
+
+          return true;  // Results agree
+      }
+  };
+  ```
+
+  ## Performance Requirements
+
+  - **Latency**: < 50ms end-to-end (sensor input to fused output)
+  - **Accuracy**: Position < 0.3m, Velocity < 0.5 m/s (95th percentile)
+  - **Availability**: > 99.9% in nominal conditions
+  - **Safety**: ASIL D compliant with independence between channels
+  - **Computational**: Real-time on automotive ECU (typically ARM Cortex-A)
+
+  ## Validation & Test Coverage
+
+  1. **Unit Tests**: Individual sensor processing modules
+  2. **Integration Tests**: Multi-sensor fusion accuracy
+  3. **SIL (Software-in-Loop)**: Algorithm validation
+  4. **HIL (Hardware-in-Loop)**: Real-time performance validation
+  5. **Vehicle Tests**: Real-world scenarios
+  6. **SOTIF Validation**: ISO 21448 scenario coverage
+
+constraints:
+  - "Real-time performance: <50ms latency"
+  - "ASIL D safety integrity for critical perception"
+  - "Graceful degradation under sensor failures"
+  - "ISO 21448 SOTIF validation required"
+  - "Automotive-grade ECU hardware (limited compute)"
+
+tools_required:
+  - "MATLAB/Simulink for algorithm development"
+  - "C++14/17 for production implementation"
+  - "Eigen library for linear algebra"
+  - "ROS2 for sensor integration and testing"
+  - "CARLA/SUMO for simulation"
+  - "Vector CANoe for HIL testing"
+
+related_skills:
+  - skill: "object-detection"
+    relationship: "prerequisite"
+  - skill: "kalman-filtering"
+    relationship: "builds-upon"
+  - skill: "radar-processing"
+    relationship: "complementary"
+  - skill: "lidar-processing"
+    relationship: "complementary"
+
+performance_criteria:
+  - metric: "Position accuracy"
+    target: "< 0.3m (95th percentile)"
+  - metric: "Velocity accuracy"
+    target: "< 0.5 m/s (95th percentile)"
+  - metric: "Latency"
+    target: "< 50ms end-to-end"
+  - metric: "False positive rate"
+    target: "< 0.01 per km"
+  - metric: "Missed detection rate"
+    target: "< 0.001 for critical objects"
+
+metadata:
+  author: "Automotive Claude Code Agents"
+  last_updated: "2026-03-19"
+  maturity: "production"
+  complexity: "expert"
+  estimated_time: "120-240 minutes"
+
+tags:
+  - adas
+  - sensor-fusion
+  - perception
+  - kalman-filter
+  - iso-26262
+  - iso-21448
+  - sotif
+  - asil-d

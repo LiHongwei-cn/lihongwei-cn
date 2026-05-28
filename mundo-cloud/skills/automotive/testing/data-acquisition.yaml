@@ -1,0 +1,452 @@
+name: data-acquisition
+description: Multi-channel DAQ systems for automotive testing with NI, Dewetron, HBM hardware
+category: testing-metrology
+
+instructions: |
+  You are an expert in data acquisition systems for automotive battery and vehicle testing.
+
+  When implementing DAQ integration:
+  1. Configure multi-channel acquisition (voltage, current, temperature, CAN)
+  2. Set sampling rates per channel (1Hz to 1MHz)
+  3. Implement synchronized multi-device measurements
+  4. Support diverse sensor types (strain gauge, thermocouple, RTD, IEPE)
+  5. Apply calibration curves and linearization
+  6. Implement real-time data streaming to database
+  7. Support trigger and gating conditions
+  8. Perform on-the-fly calculations (power, energy, efficiency)
+  9. Generate time-synchronized logs with GPS timestamps
+  10. Implement buffered acquisition for continuous monitoring
+  11. Support analog, digital, counter, and encoder inputs
+  12. Configure anti-aliasing filters and signal conditioning
+  13. Implement data compression for long-duration tests
+  14. Generate alarms based on threshold conditions
+  15. Export to TDMS, HDF5, CSV, or MDF4 formats
+  16. Integrate with CAN/LIN/FlexRay for vehicle bus data
+  17. Support remote monitoring and control
+  18. Implement GPS synchronization for multi-site testing
+  19. Configure bridge circuits for load cells and pressure sensors
+  20. Generate compliance reports for ISO 16750, IEC 62133
+
+  Supported Hardware:
+  - National Instruments CompactDAQ, PXI, cDAQ
+  - Dewetron DEWE2 series
+  - HBM QuantumX, PMX
+  - Yokogawa MX100, MW100
+  - ETAS INCA, ES590
+  - Vector CANape with XCP
+
+  Channel Types:
+  - Analog input (voltage, current)
+  - Temperature (TC, RTD, thermistor)
+  - Strain gauge (full/half/quarter bridge)
+  - IEPE/ICP accelerometer
+  - Digital I/O
+  - Counter/encoder
+  - CAN/LIN/FlexRay
+  - GPS/GNSS
+  - Video synchronization
+
+  Signal Conditioning:
+  - Programmable gain amplifiers
+  - Low-pass anti-aliasing filters
+  - Excitation for bridge sensors (2.5V, 5V, 10V)
+  - Cold junction compensation for thermocouples
+  - Isolation for high voltage measurements
+  - Shunt calibration for strain gauges
+
+  Data Formats:
+  - TDMS (NI Technical Data Management Streaming)
+  - MDF4 (ASAM Measurement Data Format)
+  - HDF5 (Hierarchical Data Format)
+  - CSV (comma-separated values)
+  - MAT (MATLAB)
+  - Parquet (columnar storage)
+
+dependencies:
+  - nidaqmx for National Instruments hardware
+  - pyModbusTCP for networked DAQ devices
+  - numpy for signal processing
+  - pandas for data management
+  - h5py for HDF5 file I/O
+  - cantools for CAN database parsing
+
+examples:
+  - description: "NI CompactDAQ multi-channel battery test"
+    input: "Implement synchronized voltage, current, and temperature acquisition for battery pack testing"
+    output: |
+      ```python
+      import nidaqmx
+      from nidaqmx.constants import (
+          AcquisitionType, TemperatureUnits, ThermocoupleType,
+          TerminalConfiguration, VoltageUnits
+      )
+      import numpy as np
+      import pandas as pd
+      from dataclasses import dataclass
+      from typing import List, Dict
+      from datetime import datetime
+      import threading
+      import queue
+
+
+      @dataclass
+      class DAQMeasurement:
+          timestamp: datetime
+          voltages: List[float]      # V (per cell/module)
+          currents: List[float]      # A (pack current)
+          temperatures: List[float]  # degC (at various locations)
+          digital_inputs: int        # Bitmask of digital states
+
+
+      class NICompactDAQ:
+          """National Instruments CompactDAQ Interface for Battery Testing."""
+
+          def __init__(self, device_name: str = "cDAQ1"):
+              """
+              Initialize CompactDAQ system.
+
+              Args:
+                  device_name: NI-DAQmx device name (e.g., 'cDAQ1')
+              """
+              self.device_name = device_name
+              self.tasks = {}
+              self.data_queue = queue.Queue(maxsize=10000)
+              self.is_running = False
+
+              # Verify device
+              system = nidaqmx.system.System.local()
+              devices = [dev.name for dev in system.devices]
+              if device_name not in devices:
+                  raise ValueError(f"Device {device_name} not found. Available: {devices}")
+
+              print(f"CompactDAQ system initialized: {device_name}")
+
+          def configure_voltage_channels(
+              self,
+              module: str,
+              num_channels: int,
+              voltage_range: float = 10.0,
+              terminal_config: str = "Diff"
+          ):
+              """
+              Configure analog voltage input channels.
+
+              Args:
+                  module: Module slot (e.g., 'Mod1', 'Mod2')
+                  num_channels: Number of channels to configure
+                  voltage_range: Maximum voltage range (±V)
+                  terminal_config: 'Diff', 'RSE', 'NRSE'
+              """
+              task_name = f"voltage_{module}"
+              task = nidaqmx.Task(task_name)
+
+              terminal_map = {
+                  "Diff": TerminalConfiguration.DIFFERENTIAL,
+                  "RSE": TerminalConfiguration.RSE,
+                  "NRSE": TerminalConfiguration.NRSE
+              }
+
+              for ch in range(num_channels):
+                  physical_channel = f"{self.device_name}/{module}/ai{ch}"
+                  task.ai_channels.add_ai_voltage_chan(
+                      physical_channel,
+                      terminal_config=terminal_map[terminal_config],
+                      min_val=-voltage_range,
+                      max_val=voltage_range,
+                      units=VoltageUnits.VOLTS
+                  )
+
+              self.tasks[task_name] = task
+              print(f"Configured {num_channels} voltage channels on {module}")
+
+          def configure_current_channels(
+              self,
+              module: str,
+              num_channels: int,
+              shunt_resistance: float = 0.0001,  # 100uOhm
+              current_range: float = 500.0
+          ):
+              """
+              Configure current measurement via shunt resistors.
+
+              Args:
+                  module: Module slot
+                  num_channels: Number of channels
+                  shunt_resistance: Shunt resistor value in Ohms
+                  current_range: Maximum current in A
+              """
+              # Current measured as voltage across shunt
+              voltage_range = current_range * shunt_resistance
+
+              task_name = f"current_{module}"
+              task = nidaqmx.Task(task_name)
+
+              for ch in range(num_channels):
+                  physical_channel = f"{self.device_name}/{module}/ai{ch}"
+                  task.ai_channels.add_ai_voltage_chan(
+                      physical_channel,
+                      terminal_config=TerminalConfiguration.DIFFERENTIAL,
+                      min_val=-voltage_range,
+                      max_val=voltage_range,
+                      units=VoltageUnits.VOLTS
+                  )
+
+              self.tasks[task_name] = task
+              self.shunt_resistance = shunt_resistance
+              print(f"Configured {num_channels} current channels on {module} (shunt: {shunt_resistance*1e6:.1f}uOhm)")
+
+          def configure_temperature_channels(
+              self,
+              module: str,
+              num_channels: int,
+              sensor_type: str = "K",
+              temp_range: tuple = (0.0, 100.0)
+          ):
+              """
+              Configure thermocouple temperature channels.
+
+              Args:
+                  module: Module slot (must be temperature input module)
+                  num_channels: Number of thermocouples
+                  sensor_type: Thermocouple type ('K', 'J', 'T', 'E', etc.)
+                  temp_range: (min, max) temperature in degC
+              """
+              task_name = f"temperature_{module}"
+              task = nidaqmx.Task(task_name)
+
+              tc_type_map = {
+                  'K': ThermocoupleType.K_TYPE_TC,
+                  'J': ThermocoupleType.J_TYPE_TC,
+                  'T': ThermocoupleType.T_TYPE_TC,
+                  'E': ThermocoupleType.E_TYPE_TC
+              }
+
+              for ch in range(num_channels):
+                  physical_channel = f"{self.device_name}/{module}/ai{ch}"
+                  task.ai_channels.add_ai_thrmcpl_chan(
+                      physical_channel,
+                      units=TemperatureUnits.DEG_C,
+                      thermocouple_type=tc_type_map[sensor_type],
+                      min_val=temp_range[0],
+                      max_val=temp_range[1]
+                  )
+
+              self.tasks[task_name] = task
+              print(f"Configured {num_channels} Type-{sensor_type} thermocouple channels on {module}")
+
+          def start_continuous_acquisition(
+              self,
+              sample_rate: float = 1000.0,
+              samples_per_channel: int = 1000
+          ):
+              """
+              Start continuous synchronized acquisition on all tasks.
+
+              Args:
+                  sample_rate: Sampling rate in Hz
+                  samples_per_channel: Buffer size per channel
+              """
+              # Configure timing for all tasks
+              for task_name, task in self.tasks.items():
+                  task.timing.cfg_samp_clk_timing(
+                      rate=sample_rate,
+                      sample_mode=AcquisitionType.CONTINUOUS,
+                      samps_per_chan=samples_per_channel
+                  )
+
+              # Start all tasks
+              for task in self.tasks.values():
+                  task.start()
+
+              self.is_running = True
+              print(f"Continuous acquisition started at {sample_rate} Hz")
+
+              # Start background thread to read data
+              self.read_thread = threading.Thread(target=self._read_loop)
+              self.read_thread.daemon = True
+              self.read_thread.start()
+
+          def _read_loop(self):
+              """Background thread for continuous data reading."""
+              while self.is_running:
+                  try:
+                      measurement = self._read_all_channels()
+                      self.data_queue.put(measurement)
+                  except Exception as e:
+                      print(f"Error reading data: {e}")
+                      break
+
+          def _read_all_channels(self) -> DAQMeasurement:
+              """Read from all configured tasks."""
+              voltages = []
+              currents = []
+              temperatures = []
+
+              # Read voltage channels
+              if "voltage_Mod1" in self.tasks:
+                  v_data = self.tasks["voltage_Mod1"].read()
+                  voltages = v_data if isinstance(v_data, list) else [v_data]
+
+              # Read current channels (convert from voltage)
+              if "current_Mod2" in self.tasks:
+                  i_voltage = self.tasks["current_Mod2"].read()
+                  i_data = i_voltage if isinstance(i_voltage, list) else [i_voltage]
+                  currents = [v / self.shunt_resistance for v in i_data]
+
+              # Read temperature channels
+              if "temperature_Mod3" in self.tasks:
+                  t_data = self.tasks["temperature_Mod3"].read()
+                  temperatures = t_data if isinstance(t_data, list) else [t_data]
+
+              return DAQMeasurement(
+                  timestamp=datetime.now(),
+                  voltages=voltages,
+                  currents=currents,
+                  temperatures=temperatures,
+                  digital_inputs=0
+              )
+
+          def get_measurements(self, max_count: int = 100) -> List[DAQMeasurement]:
+              """
+              Retrieve measurements from queue.
+
+              Args:
+                  max_count: Maximum number of measurements to retrieve
+
+              Returns:
+                  List of DAQMeasurement objects
+              """
+              measurements = []
+              for _ in range(max_count):
+                  try:
+                      measurement = self.data_queue.get_nowait()
+                      measurements.append(measurement)
+                  except queue.Empty:
+                      break
+              return measurements
+
+          def stop_acquisition(self):
+              """Stop continuous acquisition."""
+              self.is_running = False
+              if hasattr(self, 'read_thread'):
+                  self.read_thread.join(timeout=2.0)
+
+              for task in self.tasks.values():
+                  task.stop()
+
+              print("Acquisition stopped")
+
+          def export_to_csv(
+              self,
+              measurements: List[DAQMeasurement],
+              filename: str
+          ):
+              """Export measurements to CSV file."""
+              data_rows = []
+
+              for m in measurements:
+                  row = {'timestamp': m.timestamp.isoformat()}
+
+                  # Add voltage columns
+                  for i, v in enumerate(m.voltages):
+                      row[f'voltage_ch{i}_v'] = v
+
+                  # Add current columns
+                  for i, c in enumerate(m.currents):
+                      row[f'current_ch{i}_a'] = c
+
+                  # Add temperature columns
+                  for i, t in enumerate(m.temperatures):
+                      row[f'temperature_ch{i}_c'] = t
+
+                  data_rows.append(row)
+
+              df = pd.DataFrame(data_rows)
+              df.to_csv(filename, index=False)
+              print(f"Data exported to {filename} ({len(measurements)} samples)")
+
+          def close(self):
+              """Close all tasks and cleanup."""
+              self.stop_acquisition()
+
+              for task in self.tasks.values():
+                  task.close()
+
+              self.tasks.clear()
+              print("DAQ system closed")
+
+
+      # Usage: Battery pack multi-channel test
+      if __name__ == "__main__":
+          import time
+
+          daq = NICompactDAQ("cDAQ1")
+
+          # Configure modules
+          # Mod1: 16 voltage channels for cell voltages (differential)
+          daq.configure_voltage_channels(
+              module="Mod1",
+              num_channels=16,
+              voltage_range=5.0,
+              terminal_config="Diff"
+          )
+
+          # Mod2: Current measurement via 100uOhm shunt
+          daq.configure_current_channels(
+              module="Mod2",
+              num_channels=2,
+              shunt_resistance=0.0001,
+              current_range=500.0
+          )
+
+          # Mod3: Temperature sensors (Type-K thermocouples)
+          daq.configure_temperature_channels(
+              module="Mod3",
+              num_channels=8,
+              sensor_type="K",
+              temp_range=(0.0, 80.0)
+          )
+
+          # Start acquisition
+          daq.start_continuous_acquisition(
+              sample_rate=100.0,  # 100 Hz
+              samples_per_channel=100
+          )
+
+          # Collect data for 60 seconds
+          print("Collecting data for 60 seconds...")
+          time.sleep(60)
+
+          # Stop and retrieve data
+          daq.stop_acquisition()
+          measurements = daq.get_measurements(max_count=10000)
+
+          print(f"\nCollected {len(measurements)} measurements")
+
+          # Export to CSV
+          daq.export_to_csv(measurements, "battery_pack_test.csv")
+
+          # Calculate statistics
+          if measurements:
+              avg_voltage = np.mean([m.voltages[0] for m in measurements if m.voltages])
+              max_current = max([abs(m.currents[0]) for m in measurements if m.currents])
+              avg_temp = np.mean([m.temperatures[0] for m in measurements if m.temperatures])
+
+              print(f"\n=== Test Summary ===")
+              print(f"Average Voltage Ch0: {avg_voltage:.3f} V")
+              print(f"Maximum Current Ch0: {max_current:.2f} A")
+              print(f"Average Temperature Ch0: {avg_temp:.1f} C")
+
+          daq.close()
+      ```
+
+tags:
+  - testing
+  - data-acquisition
+  - daq
+  - ni-compactdaq
+  - multi-channel
+  - synchronized
+  - automotive
+  - sensors
+  - measurement

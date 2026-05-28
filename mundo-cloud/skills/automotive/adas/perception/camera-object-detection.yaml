@@ -1,0 +1,282 @@
+name: camera-object-detection
+description: Implement camera-based object detection using YOLO, Faster R-CNN, or SSD for ADAS applications
+category: adas-perception
+
+instructions: |
+  You are an expert in camera-based object detection for automotive ADAS systems.
+
+  When implementing camera object detection:
+  1. Choose appropriate architecture (YOLO for real-time, Faster R-CNN for accuracy)
+  2. Configure for automotive classes (vehicles, pedestrians, cyclists, traffic signs)
+  3. Implement multi-scale detection for objects at varying distances
+  4. Add temporal consistency using tracking (SORT, DeepSORT)
+  5. Optimize for embedded deployment (TensorRT, OpenVINO)
+  6. Handle challenging conditions (rain, night, glare)
+  7. Implement NMS (Non-Maximum Suppression) with appropriate thresholds
+  8. Add confidence score filtering and class-specific tuning
+  9. Support multiple camera inputs (front, sides, rear)
+  10. Generate structured output with bounding boxes and attributes
+
+  Architecture considerations:
+  - YOLOv5/v8: 30-60 FPS on edge devices, good balance
+  - Faster R-CNN: Higher accuracy, 10-20 FPS
+  - SSD: Mobile-friendly, 25-40 FPS
+  - EfficientDet: Best accuracy/efficiency trade-off
+
+  Output format:
+  - Bounding boxes (x, y, w, h) in image coordinates
+  - Class labels with confidence scores
+  - Object attributes (color, orientation, occlusion)
+  - Timestamps and frame IDs for tracking
+  - Distance estimation from bounding box size
+
+  Edge deployment:
+  - Quantize to INT8 for 4x speedup
+  - Batch processing for multi-camera systems
+  - Model pruning to reduce parameters
+  - Hardware acceleration (CUDA, TensorRT, NNAPI)
+
+  Safety requirements:
+  - Minimum 95% detection rate for pedestrians
+  - False positive rate < 2% to avoid phantom braking
+  - Maximum latency 100ms from capture to detection
+  - Fail-safe fallback to radar/lidar fusion
+
+dependencies:
+  - OpenCV 4.5+
+  - PyTorch or TensorFlow
+  - TensorRT for inference optimization
+  - NumPy for array operations
+
+examples:
+  - description: "YOLOv8 real-time detection pipeline"
+    input: "Implement YOLOv8 object detection for front camera with TensorRT acceleration"
+    output: |
+      ```python
+      import cv2
+      import tensorrt as trt
+      import pycuda.driver as cuda
+      import numpy as np
+      from dataclasses import dataclass
+      from typing import List, Tuple
+
+      @dataclass
+      class Detection:
+          bbox: Tuple[int, int, int, int]  # x, y, w, h
+          class_id: int
+          class_name: str
+          confidence: float
+          distance: float  # meters
+
+      class YOLOv8TensorRT:
+          def __init__(self, engine_path: str, conf_threshold: float = 0.5):
+              self.conf_threshold = conf_threshold
+              self.logger = trt.Logger(trt.Logger.WARNING)
+
+              # Load TensorRT engine
+              with open(engine_path, 'rb') as f:
+                  engine_data = f.read()
+              self.engine = trt.Runtime(self.logger).deserialize_cuda_engine(engine_data)
+              self.context = self.engine.create_execution_context()
+
+              # Allocate buffers
+              self.inputs, self.outputs, self.bindings = [], [], []
+              self.stream = cuda.Stream()
+              self._allocate_buffers()
+
+              # Class names for automotive domain
+              self.class_names = [
+                  'car', 'truck', 'bus', 'motorcycle', 'bicycle',
+                  'pedestrian', 'traffic_light', 'traffic_sign', 'barrier'
+              ]
+
+          def _allocate_buffers(self):
+              for binding in self.engine:
+                  size = trt.volume(self.engine.get_binding_shape(binding))
+                  dtype = trt.nptype(self.engine.get_binding_dtype(binding))
+                  host_mem = cuda.pagelocked_empty(size, dtype)
+                  device_mem = cuda.mem_alloc(host_mem.nbytes)
+                  self.bindings.append(int(device_mem))
+
+                  if self.engine.binding_is_input(binding):
+                      self.inputs.append({'host': host_mem, 'device': device_mem})
+                  else:
+                      self.outputs.append({'host': host_mem, 'device': device_mem})
+
+          def preprocess(self, image: np.ndarray) -> np.ndarray:
+              # Resize and normalize
+              input_shape = (640, 640)
+              img = cv2.resize(image, input_shape)
+              img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+              img = img.transpose(2, 0, 1).astype(np.float32) / 255.0
+              img = np.expand_dims(img, axis=0)
+              return np.ascontiguousarray(img)
+
+          def infer(self, image: np.ndarray) -> List[Detection]:
+              # Preprocess
+              img_input = self.preprocess(image)
+              np.copyto(self.inputs[0]['host'], img_input.ravel())
+
+              # Transfer to GPU
+              cuda.memcpy_htod_async(
+                  self.inputs[0]['device'],
+                  self.inputs[0]['host'],
+                  self.stream
+              )
+
+              # Execute inference
+              self.context.execute_async_v2(
+                  bindings=self.bindings,
+                  stream_handle=self.stream.handle
+              )
+
+              # Transfer back to CPU
+              cuda.memcpy_dtoh_async(
+                  self.outputs[0]['host'],
+                  self.outputs[0]['device'],
+                  self.stream
+              )
+              self.stream.synchronize()
+
+              # Post-process
+              detections = self.postprocess(
+                  self.outputs[0]['host'],
+                  image.shape
+              )
+              return detections
+
+          def postprocess(self, output: np.ndarray, img_shape: Tuple) -> List[Detection]:
+              detections = []
+              output = output.reshape(-1, 85)  # YOLOv8 format: [x, y, w, h, conf, ...classes]
+
+              for detection in output:
+                  confidence = detection[4]
+                  if confidence < self.conf_threshold:
+                      continue
+
+                  class_scores = detection[5:]
+                  class_id = np.argmax(class_scores)
+                  class_conf = class_scores[class_id] * confidence
+
+                  if class_conf < self.conf_threshold:
+                      continue
+
+                  # Scale bbox to original image
+                  x, y, w, h = detection[:4]
+                  x = int(x * img_shape[1] / 640)
+                  y = int(y * img_shape[0] / 640)
+                  w = int(w * img_shape[1] / 640)
+                  h = int(h * img_shape[0] / 640)
+
+                  # Estimate distance from bbox height (calibrated)
+                  distance = self._estimate_distance(h, class_id)
+
+                  detections.append(Detection(
+                      bbox=(x, y, w, h),
+                      class_id=class_id,
+                      class_name=self.class_names[class_id],
+                      confidence=float(class_conf),
+                      distance=distance
+                  ))
+
+              # Apply NMS
+              detections = self._apply_nms(detections, iou_threshold=0.45)
+              return detections
+
+          def _estimate_distance(self, bbox_height: int, class_id: int) -> float:
+              # Pinhole camera model: distance = (real_height * focal_length) / pixel_height
+              focal_length = 800  # pixels (calibrated)
+
+              # Average heights in meters
+              heights = {
+                  0: 1.5,  # car
+                  1: 3.0,  # truck
+                  2: 3.2,  # bus
+                  3: 1.2,  # motorcycle
+                  4: 1.7,  # bicycle
+                  5: 1.7,  # pedestrian
+              }
+              real_height = heights.get(class_id, 1.5)
+
+              if bbox_height < 10:
+                  return 100.0  # Far away
+
+              distance = (real_height * focal_length) / bbox_height
+              return max(1.0, min(distance, 150.0))  # Clamp 1-150m
+
+          def _apply_nms(self, detections: List[Detection], iou_threshold: float) -> List[Detection]:
+              if not detections:
+                  return []
+
+              # Sort by confidence
+              detections.sort(key=lambda d: d.confidence, reverse=True)
+
+              keep = []
+              while detections:
+                  best = detections.pop(0)
+                  keep.append(best)
+
+                  # Remove overlapping boxes
+                  detections = [
+                      d for d in detections
+                      if self._iou(best.bbox, d.bbox) < iou_threshold
+                  ]
+
+              return keep
+
+          def _iou(self, box1: Tuple, box2: Tuple) -> float:
+              x1, y1, w1, h1 = box1
+              x2, y2, w2, h2 = box2
+
+              xi1 = max(x1, x2)
+              yi1 = max(y1, y2)
+              xi2 = min(x1 + w1, x2 + w2)
+              yi2 = min(y1 + h1, y2 + h2)
+
+              inter_area = max(0, xi2 - xi1) * max(0, yi2 - yi1)
+              box1_area = w1 * h1
+              box2_area = w2 * h2
+              union_area = box1_area + box2_area - inter_area
+
+              return inter_area / union_area if union_area > 0 else 0.0
+
+
+      # Usage
+      if __name__ == "__main__":
+          detector = YOLOv8TensorRT('yolov8n.trt', conf_threshold=0.5)
+
+          cap = cv2.VideoCapture(0)  # Front camera
+
+          while True:
+              ret, frame = cap.read()
+              if not ret:
+                  break
+
+              # Detect objects
+              detections = detector.infer(frame)
+
+              # Visualize
+              for det in detections:
+                  x, y, w, h = det.bbox
+                  cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+                  label = f"{det.class_name} {det.confidence:.2f} {det.distance:.1f}m"
+                  cv2.putText(frame, label, (x, y-10),
+                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+              cv2.imshow('Detection', frame)
+              if cv2.waitKey(1) & 0xFF == ord('q'):
+                  break
+
+          cap.release()
+          cv2.destroyAllWindows()
+      ```
+
+tags:
+  - adas
+  - perception
+  - camera
+  - object-detection
+  - yolo
+  - deep-learning
+  - real-time
+  - tensorrt

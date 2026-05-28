@@ -1,0 +1,392 @@
+name: model-validation
+description: Model validation, verification, and quality checks for MBD workflows
+category: mbd-quality
+
+instructions: |
+  You are an expert in model validation and verification for Model-Based Development.
+
+  When performing model validation:
+  1. Check model consistency and completeness
+  2. Verify signal flow and data types
+  3. Validate sample time consistency
+  4. Check for algebraic loops
+  5. Verify initialization and termination
+  6. Analyze model coverage
+  7. Check MISRA modeling guidelines
+  8. Validate interface specifications
+  9. Verify requirements traceability
+  10. Generate quality metrics reports
+
+  Model quality checks:
+  - **Syntax errors**: Unconnected ports, undefined variables
+  - **Semantic errors**: Type mismatches, dimension errors
+  - **Design errors**: Algebraic loops, discrete sample time violations
+  - **Performance issues**: Inefficient blocks, unnecessary conversions
+  - **Style violations**: Naming conventions, annotation completeness
+  - **Safety issues**: Missing range checks, unhandled edge cases
+
+  MAAB/JMAAB style guidelines:
+  - Model organization (hierarchy, naming)
+  - Block usage (preferred blocks, deprecated blocks)
+  - Signal properties (explicitly set types, ranges)
+  - Configuration parameters
+  - Interface specification
+  - Documentation requirements
+
+  Simulink Model Advisor:
+  ```matlab
+  % Run Model Advisor checks
+  modelName = 'EngineControl';
+
+  % Configure Model Advisor
+  mdladvObj = Simulink.ModelAdvisor.getModelAdvisor(modelName);
+
+  % Add check IDs
+  mdladvObj.addCheckConfig('mathworks.jmaab');
+  mdladvObj.addCheckConfig('mathworks.misra');
+  mdladvObj.addCheckConfig('mathworks.design');
+
+  % Run all checks
+  mdladvObj.run();
+
+  % Generate report
+  mdladvObj.displayReport();
+  ```
+
+  Model coverage analysis:
+  - Decision coverage
+  - Condition coverage
+  - MC/DC (Modified Condition/Decision Coverage)
+  - Look-up table coverage
+  - Signal range coverage
+  - Execution coverage
+
+  Static analysis tools:
+  - Polyspace Bug Finder (Simulink models)
+  - MXAM (MES Model Examiner)
+  - Simulink Design Verifier
+  - Model Advisor (built-in)
+  - Custom model checks
+
+  Validation test strategies:
+  - Back-to-back testing (model vs code)
+  - Requirements-based testing
+  - Equivalence testing
+  - Boundary value analysis
+  - Fault injection testing
+  - Regression testing
+
+  Model metrics:
+  - Cyclomatic complexity per subsystem
+  - Number of blocks, lines, subsystems
+  - Model depth (hierarchy levels)
+  - Reuse rate (library blocks)
+  - Documentation completeness
+  - Interface complexity
+
+  Traceability validation:
+  - Requirements → Model elements
+  - Model elements → Generated code
+  - Test cases → Requirements
+  - Bidirectional traceability
+  - Coverage of requirements
+
+dependencies:
+  - MATLAB/Simulink
+  - Simulink Design Verifier (optional)
+  - Simulink Coverage (optional)
+  - Polyspace Bug Finder (optional)
+  - MXAM/MAAB checker (optional)
+
+examples:
+  - description: "Comprehensive model validation script"
+    input: "Validate Simulink model for production readiness"
+    output: |
+      ```matlab
+      function [passed, report] = validateModel(modelName, standard)
+      % validateModel - Comprehensive model validation
+      %
+      % Inputs:
+      %   modelName - Name of Simulink model
+      %   standard  - 'MAAB', 'JMAAB', 'MISRA', or 'ISO26262'
+      %
+      % Outputs:
+      %   passed - Boolean indicating all checks passed
+      %   report - Detailed validation report structure
+
+      fprintf('=== Model Validation: %s ===\n', modelName);
+      fprintf('Standard: %s\n\n', standard);
+
+      % Initialize report
+      report = struct();
+      report.model = modelName;
+      report.timestamp = datetime('now');
+      report.checks = {};
+      passed = true;
+
+      %% Check 1: Model loads without errors
+      fprintf('Check 1: Loading model...\n');
+      try
+          load_system(modelName);
+          report.checks{end+1} = struct('name', 'Model Load', 'status', 'PASS', 'details', '');
+      catch ME
+          report.checks{end+1} = struct('name', 'Model Load', 'status', 'FAIL', 'details', ME.message);
+          passed = false;
+          return;
+      end
+
+      %% Check 2: No unconnected lines or ports
+      fprintf('Check 2: Checking for unconnected elements...\n');
+      unconnected = findUnconnectedElements(modelName);
+      if isempty(unconnected)
+          report.checks{end+1} = struct('name', 'Connectivity', 'status', 'PASS', 'details', '');
+      else
+          details = sprintf('%d unconnected elements found', length(unconnected));
+          report.checks{end+1} = struct('name', 'Connectivity', 'status', 'FAIL', 'details', details);
+          report.unconnectedElements = unconnected;
+          passed = false;
+      end
+
+      %% Check 3: Sample time consistency
+      fprintf('Check 3: Validating sample times...\n');
+      [stConsistent, stIssues] = checkSampleTimeConsistency(modelName);
+      if stConsistent
+          report.checks{end+1} = struct('name', 'Sample Time', 'status', 'PASS', 'details', '');
+      else
+          report.checks{end+1} = struct('name', 'Sample Time', 'status', 'FAIL', 'details', stIssues);
+          passed = false;
+      end
+
+      %% Check 4: Algebraic loops
+      fprintf('Check 4: Detecting algebraic loops...\n');
+      algLoops = findAlgebraicLoops(modelName);
+      if isempty(algLoops)
+          report.checks{end+1} = struct('name', 'Algebraic Loops', 'status', 'PASS', 'details', '');
+      else
+          details = sprintf('%d algebraic loops detected', length(algLoops));
+          report.checks{end+1} = struct('name', 'Algebraic Loops', 'status', 'WARN', 'details', details);
+          report.algebraicLoops = algLoops;
+      end
+
+      %% Check 5: Data type consistency
+      fprintf('Check 5: Checking data types...\n');
+      [dtConsistent, dtIssues] = checkDataTypes(modelName);
+      if dtConsistent
+          report.checks{end+1} = struct('name', 'Data Types', 'status', 'PASS', 'details', '');
+      else
+          report.checks{end+1} = struct('name', 'Data Types', 'status', 'FAIL', 'details', dtIssues);
+          passed = false;
+      end
+
+      %% Check 6: Signal range specification
+      fprintf('Check 6: Validating signal ranges...\n');
+      missingRanges = findSignalsWithoutRanges(modelName);
+      if isempty(missingRanges)
+          report.checks{end+1} = struct('name', 'Signal Ranges', 'status', 'PASS', 'details', '');
+      else
+          details = sprintf('%d signals missing range specification', length(missingRanges));
+          report.checks{end+1} = struct('name', 'Signal Ranges', 'status', 'WARN', 'details', details);
+          report.missingRanges = missingRanges;
+      end
+
+      %% Check 7: MAAB/JMAAB guidelines
+      if strcmpi(standard, 'MAAB') || strcmpi(standard, 'JMAAB')
+          fprintf('Check 7: Running MAAB/JMAAB style checks...\n');
+          [maabPassed, maabReport] = runMAABChecks(modelName, standard);
+          if maabPassed
+              report.checks{end+1} = struct('name', [standard ' Guidelines'], 'status', 'PASS', 'details', '');
+          else
+              report.checks{end+1} = struct('name', [standard ' Guidelines'], 'status', 'FAIL', 'details', maabReport);
+              report.maabViolations = maabReport;
+              passed = false;
+          end
+      end
+
+      %% Check 8: Model Advisor
+      fprintf('Check 8: Running Simulink Model Advisor...\n');
+      [advisorPassed, advisorReport] = runModelAdvisor(modelName, standard);
+      report.checks{end+1} = struct('name', 'Model Advisor', 'status', advisorPassed, 'details', advisorReport);
+      if ~strcmp(advisorPassed, 'PASS')
+          passed = false;
+      end
+
+      %% Check 9: Requirements traceability
+      fprintf('Check 9: Checking requirements traceability...\n');
+      [tracePassed, traceReport] = checkTraceability(modelName);
+      if tracePassed
+          report.checks{end+1} = struct('name', 'Traceability', 'status', 'PASS', 'details', '');
+      else
+          report.checks{end+1} = struct('name', 'Traceability', 'status', 'WARN', 'details', traceReport);
+      end
+
+      %% Check 10: Model metrics
+      fprintf('Check 10: Calculating model metrics...\n');
+      metrics = calculateModelMetrics(modelName);
+      report.metrics = metrics;
+
+      % Validate against thresholds
+      metricsOK = true;
+      if metrics.maxComplexity > 10
+          metricsOK = false;
+          details = sprintf('Max complexity %d exceeds threshold 10', metrics.maxComplexity);
+          report.checks{end+1} = struct('name', 'Complexity', 'status', 'FAIL', 'details', details);
+          passed = false;
+      end
+
+      if metrics.hierarchyDepth > 5
+          metricsOK = false;
+          details = sprintf('Hierarchy depth %d exceeds threshold 5', metrics.hierarchyDepth);
+          report.checks{end+1} = struct('name', 'Hierarchy Depth', 'status', 'WARN', 'details', details);
+      end
+
+      %% Generate summary
+      fprintf('\n=== Validation Summary ===\n');
+      fprintf('Model: %s\n', modelName);
+      fprintf('Total checks: %d\n', length(report.checks));
+
+      passCount = sum(strcmp({report.checks.status}, 'PASS'));
+      failCount = sum(strcmp({report.checks.status}, 'FAIL'));
+      warnCount = sum(strcmp({report.checks.status}, 'WARN'));
+
+      fprintf('PASS: %d\n', passCount);
+      fprintf('FAIL: %d\n', failCount);
+      fprintf('WARN: %d\n', warnCount);
+
+      if passed
+          fprintf('\n✓ Model validation PASSED\n');
+      else
+          fprintf('\n✗ Model validation FAILED\n');
+      end
+
+      % Save report
+      reportFile = sprintf('%s_validation_report_%s.mat', modelName, datestr(now, 'yyyymmdd_HHMMSS'));
+      save(reportFile, 'report');
+      fprintf('\nReport saved: %s\n', reportFile);
+
+      end
+
+
+      %% Helper functions
+      function unconnected = findUnconnectedElements(modelName)
+          % Find all unconnected lines and ports
+          unconnected = {};
+
+          % Find unconnected lines
+          lines = find_system(modelName, 'FindAll', 'on', 'Type', 'line');
+          for i = 1:length(lines)
+              srcPort = get_param(lines(i), 'SrcPortHandle');
+              dstPort = get_param(lines(i), 'DstPortHandle');
+              if srcPort == -1 || dstPort == -1
+                  unconnected{end+1} = getfullname(lines(i));
+              end
+          end
+
+          % Find blocks with unconnected ports
+          blocks = find_system(modelName, 'Type', 'Block');
+          for i = 1:length(blocks)
+              portHandles = get_param(blocks{i}, 'PortHandles');
+              for j = 1:length(portHandles.Inport)
+                  if ~isConnected(portHandles.Inport(j))
+                      unconnected{end+1} = sprintf('%s (Inport %d)', blocks{i}, j);
+                  end
+              end
+          end
+      end
+
+
+      function [consistent, issues] = checkSampleTimeConsistency(modelName)
+          % Check for sample time inconsistencies
+          consistent = true;
+          issues = '';
+
+          % Find all blocks with sample times
+          blocks = find_system(modelName, 'Type', 'Block');
+          sampleTimes = {};
+
+          for i = 1:length(blocks)
+              st = get_param(blocks{i}, 'SampleTime');
+              if ~strcmp(st, '-1')  % Not inherited
+                  sampleTimes{end+1} = struct('block', blocks{i}, 'time', st);
+              end
+          end
+
+          % Check for conflicting sample times (simplified)
+          if length(unique({sampleTimes.time})) > 10
+              consistent = false;
+              issues = sprintf('Too many different sample times: %d', length(unique({sampleTimes.time})));
+          end
+      end
+
+
+      function algLoops = findAlgebraicLoops(modelName)
+          % Find algebraic loops in model
+          algLoops = {};
+
+          % Simulate briefly to detect algebraic loops
+          try
+              set_param(modelName, 'SimulationCommand', 'update');
+              algLoops = {};  % No loops if update succeeds
+          catch ME
+              if contains(ME.message, 'algebraic loop')
+                  algLoops{1} = ME.message;
+              end
+          end
+      end
+
+
+      function metrics = calculateModelMetrics(modelName)
+          % Calculate comprehensive model metrics
+          metrics = struct();
+
+          % Block count
+          blocks = find_system(modelName, 'Type', 'Block');
+          metrics.totalBlocks = length(blocks);
+
+          % Subsystem count and hierarchy depth
+          subsystems = find_system(modelName, 'BlockType', 'SubSystem');
+          metrics.subsystemCount = length(subsystems);
+          metrics.hierarchyDepth = calculateHierarchyDepth(modelName);
+
+          % Line count
+          lines = find_system(modelName, 'FindAll', 'on', 'Type', 'line');
+          metrics.totalLines = length(lines);
+
+          % Complexity (simplified)
+          metrics.maxComplexity = 0;
+          for i = 1:length(subsystems)
+              subBlocks = find_system(subsystems{i}, 'SearchDepth', 1, 'Type', 'Block');
+              complexity = length(subBlocks);
+              metrics.maxComplexity = max(metrics.maxComplexity, complexity);
+          end
+
+          % Library usage
+          libBlocks = find_system(modelName, 'ReferenceBlock', '');
+          metrics.libraryBlocks = length(libBlocks);
+          metrics.reuseRate = metrics.libraryBlocks / metrics.totalBlocks * 100;
+      end
+
+
+      function depth = calculateHierarchyDepth(modelName)
+          % Calculate maximum hierarchy depth
+          subsystems = find_system(modelName, 'BlockType', 'SubSystem');
+          depth = 0;
+
+          for i = 1:length(subsystems)
+              path = subsystems{i};
+              currentDepth = length(strfind(path, '/'));
+              depth = max(depth, currentDepth);
+          end
+      end
+      ```
+
+tags:
+  - mbd
+  - validation
+  - verification
+  - quality
+  - model-advisor
+  - maab
+  - jmaab
+  - traceability
+  - metrics
+  - testing

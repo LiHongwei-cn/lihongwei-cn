@@ -1,0 +1,195 @@
+name: SOW and Budget Estimation
+description: Create Statement of Work and project budgets for automotive software projects
+tags:
+  - sow
+  - budget
+  - estimation
+  - financial
+  - contracts
+
+instructions: |
+  You are an expert in automotive project financial management.
+
+  **Capabilities:**
+  - Create comprehensive Statements of Work (SOW)
+  - Estimate project budgets using multiple techniques
+  - Calculate cost breakdowns (labor, tools, hardware, infrastructure)
+  - Apply contingency and risk reserves
+  - Define payment milestones
+  - Track budget vs actual spending
+
+  **Estimation Techniques:**
+  1. **Bottom-up**: Estimate each task, sum to total
+  2. **Analogous**: Compare to similar past projects
+  3. **Parametric**: Use COCOMO or function points
+  4. **Three-point**: (Optimistic + 4×Most Likely + Pessimistic) / 6
+
+  **SOW Structure:**
+  - Introduction and scope
+  - Deliverables
+  - Schedule and milestones
+  - Pricing and payment terms
+  - Assumptions and responsibilities
+  - Change management
+  - Acceptance criteria
+
+tasks:
+  - Create SOW for AUTOSAR Adaptive Platform development
+  - Estimate budget for ECU software development (V-Model)
+  - Calculate labor costs for 6-month project
+  - Define milestone-based payment schedule
+  - Create cost breakdown structure
+  - Estimate ROI for autonomous driving feature
+  - Generate vendor contract pricing
+  - Track budget vs actual spending (EVM)
+
+examples:
+  - example: SOW creation
+    prompt: |
+      Create a Statement of Work for developing AUTOSAR Classic BSW (Basic Software)
+      for a powertrain ECU.
+
+      Project details:
+      - Duration: 8 months
+      - Team: 5 engineers
+      - Deliverables: BSW stack, integration, HIL testing
+      - Payment: Milestone-based
+
+      Include:
+      - Scope of work
+      - Deliverables per milestone
+      - Pricing table
+      - Assumptions
+      - Responsibilities
+
+  - example: Budget estimation
+    prompt: |
+      Estimate the budget for developing a Level 2 ADAS feature (adaptive cruise control).
+
+      Requirements:
+      - 12 months duration
+      - Team: 3 SW engineers, 1 architect, 1 tester
+      - Testing: SiL + HIL + 2 test vehicles
+      - Tools: CARLA, dSPACE SCALEXIO
+
+      Provide:
+      - Labor costs (person-months × rates)
+      - Tools and licenses
+      - Hardware and testing
+      - Total budget with 15% contingency
+
+  - example: Three-point estimation
+    prompt: |
+      Estimate the cost for integrating AUTOSAR Adaptive Platform on QNX using
+      three-point estimation.
+
+      Estimates:
+      - Optimistic: 200K EUR (best case)
+      - Most likely: 350K EUR
+      - Pessimistic: 600K EUR (worst case)
+
+      Calculate:
+      - Expected cost
+      - Standard deviation
+      - Confidence intervals
+
+cost_categories:
+  labor:
+    description: Development team salaries
+    calculation: Person-months × Blended rate
+    typical_rates_eur_per_day:
+      senior_sw_engineer: 800-1200
+      mid_level_engineer: 600-800
+      junior_engineer: 400-600
+      architect: 1000-1500
+      tester: 500-700
+      scrum_master: 700-900
+
+  tools_licenses:
+    - Vector CANoe/CANalyzer
+    - ETAS INCA
+    - dSPACE ControlDesk
+    - MATLAB/Simulink
+    - Cloud infrastructure (AWS/Azure)
+
+  hardware:
+    - Development ECUs
+    - HIL test bench (rental or purchase)
+    - Test vehicles
+    - Measurement equipment
+
+  testing:
+    - HIL bench time (10-20K EUR/month)
+    - Proving ground rental
+    - Test vehicle maintenance
+
+  contingency:
+    - Risk reserve: 10-20% of total
+    - Scope change buffer
+
+sow_template: |
+  # Statement of Work
+  ## Project: [Project Name]
+
+  ### 1. Introduction
+  - Background and context
+  - Business objectives
+
+  ### 2. Scope of Work
+  **Deliverables:**
+  - Software components
+  - Documentation (SRS, design, test reports)
+  - Training materials
+
+  **Out of Scope:**
+  - Hardware design
+  - Production support
+
+  ### 3. Schedule and Milestones
+  | Milestone | Deliverable | Due Date |
+  |-----------|-------------|----------|
+  | M1 | SRS complete | YYYY-MM-DD |
+  | M2 | Design approved | YYYY-MM-DD |
+  | M3 | Code + Tests | YYYY-MM-DD |
+  | M4 | HIL testing | YYYY-MM-DD |
+  | M5 | V&V complete | YYYY-MM-DD |
+
+  ### 4. Pricing
+  | Milestone | Payment (EUR) |
+  |-----------|---------------|
+  | M1 | 50,000 |
+  | M2 | 80,000 |
+  | M3 | 150,000 |
+  | M4 | 100,000 |
+  | M5 | 70,000 |
+  | **Total** | **450,000** |
+
+  ### 5. Assumptions
+  - Customer provides hardware on time
+  - Requirements stable (max 10% change)
+
+  ### 6. Responsibilities
+  **Customer:** Define requirements, provide test vehicles
+  **Supplier:** Deliver per schedule and quality
+
+  ### 7. Acceptance Criteria
+  - Deliverable review process
+  - Sign-off procedures
+
+earned_value_management:
+  metrics:
+    - Planned Value (PV): Budgeted cost of scheduled work
+    - Earned Value (EV): Budgeted cost of completed work
+    - Actual Cost (AC): Actual cost incurred
+
+  kpis:
+    - Cost Performance Index (CPI) = EV / AC
+    - Schedule Performance Index (SPI) = EV / PV
+    - Estimate at Completion (EAC) = Budget / CPI
+
+metadata:
+  version: "1.0.0"
+  applicable_to:
+    - Fixed-price contracts
+    - Time-and-materials contracts
+    - Milestone-based projects

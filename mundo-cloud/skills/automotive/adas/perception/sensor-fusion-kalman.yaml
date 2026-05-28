@@ -1,0 +1,364 @@
+name: sensor-fusion-kalman
+description: Fuse multi-sensor data (camera, radar, LiDAR) using Extended Kalman Filter (EKF) and Unscented Kalman Filter (UKF)
+category: adas-perception
+
+instructions: |
+  Implement sensor fusion for ADAS using Kalman filtering techniques:
+
+  1. Extended Kalman Filter (EKF) for nonlinear dynamics
+  2. Unscented Kalman Filter (UKF) for highly nonlinear systems
+  3. Multi-sensor data association and track management
+  4. Asynchronous sensor update handling
+  5. Covariance intersection for conservative fusion
+  6. Track-to-track fusion for distributed architectures
+
+  State vector (CTRV model):
+  - Position: (x, y)
+  - Velocity: v
+  - Yaw angle: ψ
+  - Yaw rate: ψ_dot
+
+  Measurement models:
+  - Radar: (range, azimuth, range_rate)
+  - LiDAR: (x, y)
+  - Camera: (x, y) from 3D→2D projection
+
+  Performance requirements:
+  - Update rate: 50 Hz minimum
+  - Position accuracy: < 0.2m RMS
+  - Velocity accuracy: < 0.5 m/s RMS
+  - Track continuity: > 95% in occlusion scenarios
+
+dependencies:
+  - NumPy for matrix operations
+  - SciPy for statistical functions
+  - FilterPy for Kalman implementations
+
+examples:
+  - description: "UKF-based multi-sensor fusion"
+    input: "Fuse radar and LiDAR measurements using UKF"
+    output: |
+      ```python
+      import numpy as np
+      from dataclasses import dataclass
+      from typing import List, Optional, Tuple
+      from enum import Enum
+
+      class SensorType(Enum):
+          RADAR = 1
+          LIDAR = 2
+          CAMERA = 3
+
+      @dataclass
+      class Measurement:
+          timestamp: float
+          sensor_type: SensorType
+          data: np.ndarray
+          covariance: np.ndarray
+
+      @dataclass
+      class TrackState:
+          x: np.ndarray  # State vector [px, py, v, yaw, yaw_rate]
+          P: np.ndarray  # Covariance matrix
+          timestamp: float
+          track_id: int
+
+      class UnscentedKalmanFilter:
+          def __init__(self):
+              # State dimension
+              self.n_x = 5  # [px, py, v, yaw, yaw_rate]
+              self.n_aug = 7  # Augmented with process noise
+
+              # UKF parameters
+              self.lambda_ = 3 - self.n_aug
+              self.alpha = 0.001
+              self.beta = 2.0
+              self.kappa = 0.0
+
+              # Weights
+              self.weights_mean = np.zeros(2 * self.n_aug + 1)
+              self.weights_cov = np.zeros(2 * self.n_aug + 1)
+              self.weights_mean[0] = self.lambda_ / (self.lambda_ + self.n_aug)
+              self.weights_cov[0] = self.weights_mean[0] + (1 - self.alpha**2 + self.beta)
+              self.weights_mean[1:] = 0.5 / (self.lambda_ + self.n_aug)
+              self.weights_cov[1:] = 0.5 / (self.lambda_ + self.n_aug)
+
+              # Process noise
+              self.std_a = 0.5  # m/s^2
+              self.std_yawdd = 0.5  # rad/s^2
+
+          def predict(self, track: TrackState, dt: float) -> TrackState:
+              """Prediction step"""
+              # Create augmented state
+              x_aug = np.zeros(self.n_aug)
+              x_aug[:self.n_x] = track.x
+
+              # Augmented covariance
+              P_aug = np.zeros((self.n_aug, self.n_aug))
+              P_aug[:self.n_x, :self.n_x] = track.P
+              P_aug[5, 5] = self.std_a ** 2
+              P_aug[6, 6] = self.std_yawdd ** 2
+
+              # Generate sigma points
+              sigma_points = self._generate_sigma_points(x_aug, P_aug)
+
+              # Predict sigma points
+              sigma_pred = np.zeros((self.n_x, 2 * self.n_aug + 1))
+              for i in range(2 * self.n_aug + 1):
+                  sigma_pred[:, i] = self._process_model(sigma_points[:, i], dt)
+
+              # Predict mean and covariance
+              x_pred = np.sum(self.weights_mean * sigma_pred, axis=1)
+              P_pred = np.zeros((self.n_x, self.n_x))
+              for i in range(2 * self.n_aug + 1):
+                  diff = sigma_pred[:, i] - x_pred
+                  diff[3] = self._normalize_angle(diff[3])
+                  P_pred += self.weights_cov[i] * np.outer(diff, diff)
+
+              return TrackState(x_pred, P_pred, track.timestamp + dt, track.track_id)
+
+          def update_radar(self, track: TrackState, meas: Measurement) -> TrackState:
+              """Update with radar measurement [range, bearing, range_rate]"""
+              # Generate sigma points from predicted state
+              sigma_points = self._generate_sigma_points(track.x, track.P)
+
+              # Transform to measurement space
+              n_z = 3  # Radar measurement dimension
+              sigma_meas = np.zeros((n_z, 2 * self.n_x + 1))
+
+              for i in range(2 * self.n_x + 1):
+                  px, py, v, yaw, yaw_rate = sigma_points[:, i]
+
+                  # Measurement model
+                  rho = np.sqrt(px**2 + py**2)
+                  phi = np.arctan2(py, px)
+                  rho_dot = (px * np.cos(yaw) * v + py * np.sin(yaw) * v) / rho if rho > 0.001 else 0
+
+                  sigma_meas[:, i] = [rho, phi, rho_dot]
+
+              # Predicted measurement mean
+              z_pred = np.sum(self.weights_mean * sigma_meas, axis=1)
+
+              # Measurement covariance
+              S = meas.covariance.copy()
+              for i in range(2 * self.n_x + 1):
+                  diff = sigma_meas[:, i] - z_pred
+                  diff[1] = self._normalize_angle(diff[1])
+                  S += self.weights_cov[i] * np.outer(diff, diff)
+
+              # Cross-correlation
+              Tc = np.zeros((self.n_x, n_z))
+              for i in range(2 * self.n_x + 1):
+                  state_diff = sigma_points[:, i] - track.x
+                  state_diff[3] = self._normalize_angle(state_diff[3])
+
+                  meas_diff = sigma_meas[:, i] - z_pred
+                  meas_diff[1] = self._normalize_angle(meas_diff[1])
+
+                  Tc += self.weights_cov[i] * np.outer(state_diff, meas_diff)
+
+              # Kalman gain
+              K = Tc @ np.linalg.inv(S)
+
+              # Update state
+              residual = meas.data - z_pred
+              residual[1] = self._normalize_angle(residual[1])
+
+              x_updated = track.x + K @ residual
+              P_updated = track.P - K @ S @ K.T
+
+              return TrackState(x_updated, P_updated, meas.timestamp, track.track_id)
+
+          def update_lidar(self, track: TrackState, meas: Measurement) -> TrackState:
+              """Update with LiDAR measurement [x, y]"""
+              # Simple linear measurement model
+              H = np.array([
+                  [1, 0, 0, 0, 0],
+                  [0, 1, 0, 0, 0]
+              ])
+
+              z_pred = H @ track.x
+              y = meas.data - z_pred
+
+              S = H @ track.P @ H.T + meas.covariance
+              K = track.P @ H.T @ np.linalg.inv(S)
+
+              x_updated = track.x + K @ y
+              P_updated = (np.eye(self.n_x) - K @ H) @ track.P
+
+              return TrackState(x_updated, P_updated, meas.timestamp, track.track_id)
+
+          def _generate_sigma_points(self, x: np.ndarray, P: np.ndarray) -> np.ndarray:
+              """Generate sigma points"""
+              n = len(x)
+              sigma_points = np.zeros((n, 2 * n + 1))
+
+              # Mean
+              sigma_points[:, 0] = x
+
+              # Calculate matrix square root
+              A = np.linalg.cholesky((self.lambda_ + n) * P)
+
+              # Spread sigma points
+              for i in range(n):
+                  sigma_points[:, i + 1] = x + A[:, i]
+                  sigma_points[:, n + i + 1] = x - A[:, i]
+
+              return sigma_points
+
+          def _process_model(self, x_aug: np.ndarray, dt: float) -> np.ndarray:
+              """CTRV motion model"""
+              px, py, v, yaw, yaw_rate, nu_a, nu_yawdd = x_aug
+
+              # Predicted state
+              px_pred = px
+              py_pred = py
+
+              if abs(yaw_rate) > 0.001:
+                  px_pred += v / yaw_rate * (np.sin(yaw + yaw_rate * dt) - np.sin(yaw))
+                  py_pred += v / yaw_rate * (-np.cos(yaw + yaw_rate * dt) + np.cos(yaw))
+              else:
+                  px_pred += v * np.cos(yaw) * dt
+                  py_pred += v * np.sin(yaw) * dt
+
+              v_pred = v
+              yaw_pred = yaw + yaw_rate * dt
+              yaw_rate_pred = yaw_rate
+
+              # Add noise
+              px_pred += 0.5 * dt**2 * np.cos(yaw) * nu_a
+              py_pred += 0.5 * dt**2 * np.sin(yaw) * nu_a
+              v_pred += dt * nu_a
+              yaw_pred += 0.5 * dt**2 * nu_yawdd
+              yaw_rate_pred += dt * nu_yawdd
+
+              return np.array([px_pred, py_pred, v_pred, yaw_pred, yaw_rate_pred])
+
+          def _normalize_angle(self, angle: float) -> float:
+              """Normalize angle to [-pi, pi]"""
+              while angle > np.pi:
+                  angle -= 2 * np.pi
+              while angle < -np.pi:
+                  angle += 2 * np.pi
+              return angle
+
+
+      class MultiSensorTracker:
+          def __init__(self):
+              self.ukf = UnscentedKalmanFilter()
+              self.tracks: List[TrackState] = []
+              self.next_track_id = 0
+
+          def process_measurement(self, meas: Measurement):
+              """Process measurement and update tracks"""
+              # Data association (simplified: nearest neighbor)
+              associated_track = self._associate(meas)
+
+              if associated_track is None:
+                  # Initialize new track
+                  track = self._initialize_track(meas)
+                  self.tracks.append(track)
+              else:
+                  # Predict track to measurement time
+                  dt = meas.timestamp - associated_track.timestamp
+                  predicted = self.ukf.predict(associated_track, dt)
+
+                  # Update with measurement
+                  if meas.sensor_type == SensorType.RADAR:
+                      updated = self.ukf.update_radar(predicted, meas)
+                  elif meas.sensor_type == SensorType.LIDAR:
+                      updated = self.ukf.update_lidar(predicted, meas)
+                  else:
+                      updated = predicted
+
+                  # Replace track
+                  idx = self.tracks.index(associated_track)
+                  self.tracks[idx] = updated
+
+          def _associate(self, meas: Measurement) -> Optional[TrackState]:
+              """Simple nearest neighbor association"""
+              if not self.tracks:
+                  return None
+
+              # Extract position from measurement
+              if meas.sensor_type == SensorType.RADAR:
+                  rho, phi = meas.data[:2]
+                  meas_pos = np.array([rho * np.cos(phi), rho * np.sin(phi)])
+              else:  # LIDAR
+                  meas_pos = meas.data[:2]
+
+              # Find nearest track
+              min_dist = float('inf')
+              nearest_track = None
+
+              for track in self.tracks:
+                  track_pos = track.x[:2]
+                  dist = np.linalg.norm(meas_pos - track_pos)
+
+                  if dist < min_dist and dist < 5.0:  # 5m gating
+                      min_dist = dist
+                      nearest_track = track
+
+              return nearest_track
+
+          def _initialize_track(self, meas: Measurement) -> TrackState:
+              """Initialize new track from measurement"""
+              x = np.zeros(5)
+              P = np.eye(5) * 10  # High initial uncertainty
+
+              if meas.sensor_type == SensorType.RADAR:
+                  rho, phi, rho_dot = meas.data
+                  x[0] = rho * np.cos(phi)
+                  x[1] = rho * np.sin(phi)
+                  x[2] = abs(rho_dot)
+                  x[3] = phi
+              else:  # LIDAR
+                  x[0], x[1] = meas.data[:2]
+                  x[2] = 5.0  # Initial velocity guess
+
+              track_id = self.next_track_id
+              self.next_track_id += 1
+
+              return TrackState(x, P, meas.timestamp, track_id)
+
+          def get_tracks(self) -> List[TrackState]:
+              return self.tracks
+
+
+      # Usage
+      if __name__ == "__main__":
+          tracker = MultiSensorTracker()
+
+          # Simulate measurements
+          radar_meas = Measurement(
+              timestamp=0.1,
+              sensor_type=SensorType.RADAR,
+              data=np.array([50.0, 0.1, -5.0]),  # range, bearing, range_rate
+              covariance=np.diag([0.5, 0.01, 0.5]) ** 2
+          )
+
+          lidar_meas = Measurement(
+              timestamp=0.15,
+              sensor_type=SensorType.LIDAR,
+              data=np.array([49.5, 4.9]),  # x, y
+              covariance=np.diag([0.05, 0.05]) ** 2
+          )
+
+          tracker.process_measurement(radar_meas)
+          tracker.process_measurement(lidar_meas)
+
+          tracks = tracker.get_tracks()
+          print(f"Active tracks: {len(tracks)}")
+          for track in tracks:
+              print(f"Track {track.track_id}: pos=({track.x[0]:.2f}, {track.x[1]:.2f}), vel={track.x[2]:.2f} m/s")
+      ```
+
+tags:
+  - adas
+  - sensor-fusion
+  - kalman-filter
+  - ukf
+  - ekf
+  - tracking
+  - multi-sensor
+  - data-association

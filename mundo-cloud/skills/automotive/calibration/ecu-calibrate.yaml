@@ -1,0 +1,272 @@
+name: "ECU Calibration Skills"
+version: "1.0.0"
+description: "Comprehensive skills for ECU calibration using INCA/XCP"
+category: "calibration"
+
+instructions: |
+  ## ECU Calibration Guide (XCP/INCA/CANape)
+
+  ### Overview
+
+  ECU calibration is the process of tuning software parameters in an electronic control
+  unit to achieve desired vehicle behavior. Parameters such as fuel maps, torque curves,
+  PID gains, and threshold values are adjusted using measurement and calibration (M&C)
+  tools connected via the XCP (Universal Measurement and Calibration Protocol) protocol.
+
+  ### XCP Protocol Architecture
+
+  ```
+  Calibration Tool (Master)          ECU (Slave)
+  ┌──────────────────┐              ┌──────────────────┐
+  │ INCA / CANape    │  XCP on ETH  │  Application SW  │
+  │                  │◄────────────►│  + XCP Slave     │
+  │ A2L Database     │  XCP on CAN  │                  │
+  │ Parameter Editor │  XCP on USB  │  Flash / RAM     │
+  └──────────────────┘              └──────────────────┘
+  ```
+
+  XCP operates in a command-response model where the master sends commands and the
+  slave responds. Key XCP commands include:
+
+  | Command | Code | Purpose |
+  |---------|------|---------|
+  | CONNECT | 0xFF | Establish connection |
+  | DISCONNECT | 0xFE | Close connection |
+  | SET_MTA | 0xF6 | Set memory transfer address |
+  | UPLOAD | 0xF5 | Read data from slave |
+  | DOWNLOAD | 0xF0 | Write data to slave |
+  | GET_DAQ_RESOLUTION_INFO | 0xD9 | Query DAQ capabilities |
+  | ALLOC_DAQ | 0xD5 | Allocate DAQ lists |
+  | START_STOP_DAQ_LIST | 0xDE | Control measurement |
+
+  ### A2L Database Structure
+
+  The ASAP2 (A2L) file is the central description database linking parameter names
+  to ECU memory addresses. Key A2L objects:
+
+  - **MEASUREMENT**: Read-only signals (RPM, temperature, pressure)
+  - **CHARACTERISTIC**: Tunable parameters (maps, curves, scalars)
+  - **COMPU_METHOD**: Conversion formulas (raw to physical values)
+  - **RECORD_LAYOUT**: Memory structure description
+  - **MOD_PAR**: Module parameters (EPK, memory segments)
+
+  A2L parsing example (physical value conversion):
+  ```
+  physical = (raw_value * factor) + offset
+  Example: Temperature = (raw * 0.1) - 40.0  [degC]
+  ```
+
+  ### Calibration Workflow
+
+  1. **Connect**: Establish XCP session with target ECU
+  2. **Load A2L**: Parse the A2L database for address and type information
+  3. **Measure**: Setup DAQ lists to capture real-time signal data
+  4. **Calibrate**: Modify parameters in RAM using DOWNLOAD commands
+  5. **Validate**: Observe system response through measurements
+  6. **Flash**: Program validated calibration to non-volatile memory
+  7. **Verify**: Read back and confirm calibration integrity
+
+  ### DAQ Measurement Configuration
+
+  Data Acquisition (DAQ) enables high-speed, time-synchronized measurement:
+
+  - **DAQ List**: A collection of ODT (Object Descriptor Table) entries
+  - **ODT Entry**: Maps a specific memory address and size for capture
+  - **Event Channel**: Trigger source (e.g., 10ms task, crank angle)
+  - **Prescaler**: Reduce capture rate (every Nth event)
+
+  Typical DAQ rates: 1ms (engine control), 10ms (chassis), 100ms (body)
+
+  ### Parameter Types
+
+  - **Scalar**: Single value (e.g., idle speed setpoint = 800 RPM)
+  - **Curve**: 1D lookup table (e.g., boost pressure vs. RPM)
+  - **Map**: 2D lookup table (e.g., fuel injection vs. RPM and load)
+  - **Value Block**: Array of related values
+  - **ASCII**: String parameters (e.g., calibration version ID)
+
+  ### Calibration Data Formats
+
+  | Format | Extension | Usage |
+  |--------|-----------|-------|
+  | Intel HEX | .hex | Flash programming |
+  | Motorola S-Record | .s19 | Flash programming |
+  | DCM | .dcm | ETAS calibration exchange |
+  | CDF | .cdf | CANape calibration data |
+  | PaCo | .paco | Parameter container (AUTOSAR) |
+
+  ### Safety Considerations
+
+  - Always validate parameter values against min/max limits from A2L
+  - Use write protection for safety-critical parameters (ASIL-rated)
+  - Implement calibration access levels (read-only, limited write, full write)
+  - Log all calibration changes with timestamp, user, old/new values
+  - Perform regression testing after calibration changes
+  - Keep backup of original calibration before modifications
+
+  ### Best Practices
+
+  - Use working page (RAM) for online tuning, reference page (Flash) as baseline
+  - Group related parameters in calibration datasets for version control
+  - Use parameter sweep automation for systematic optimization
+  - Document calibration rationale (why a value was chosen, not just what)
+  - Compare calibration datasets between SW versions to detect unintended changes
+  - Validate measurement system accuracy (sensor scaling, sample rate) before tuning
+  - Use XCP on Ethernet for high-bandwidth DAQ; CAN for simple parameter access
+
+skills:
+  - id: "xcp-connect-ecu"
+    name: "Connect to ECU via XCP"
+    description: "Establish XCP connection for calibration"
+    tags: ["xcp", "calibration", "connection"]
+    implementation: |
+      Connect to ECU using XCP protocol:
+      1. Initialize OpenXCP adapter
+      2. Configure transport (Ethernet/CAN/FlexRay)
+      3. Send CONNECT command with mode
+      4. Parse slave response (MAX_CTO, MAX_DTO)
+      5. Verify resource availability
+      6. Setup DAQ configuration if needed
+      7. Handle connection timeout and retry
+
+      Example:
+      ```python
+      from tools.adapters.calibration.openxcp_adapter import OpenXCPAdapter
+
+      adapter = OpenXCPAdapter()
+      success = adapter.connect("192.168.1.10", port=5555)
+      ```
+
+  - id: "read-calibration-parameter"
+    name: "Read Calibration Parameter"
+    description: "Read parameter value from ECU memory"
+    tags: ["calibration", "read", "parameter"]
+    implementation: |
+      Read calibration parameter:
+      1. Load A2L database for address mapping
+      2. Lookup parameter address and type
+      3. Use XCP SET_MTA to set address
+      4. Send UPLOAD command for data
+      5. Parse response and convert to physical value
+      6. Apply scaling factor and offset
+      7. Validate against min/max limits
+
+  - id: "write-calibration-parameter"
+    name: "Write Calibration Parameter"
+    description: "Modify parameter value in ECU RAM"
+    tags: ["calibration", "write", "parameter"]
+    implementation: |
+      Write calibration parameter:
+      1. Validate new value against constraints
+      2. Convert physical to raw value
+      3. Use XCP SET_MTA to set address
+      4. Send DOWNLOAD command with data
+      5. Verify write success
+      6. Read back for confirmation
+      7. Log calibration change
+
+  - id: "calibration-parameter-sweep"
+    name: "Parameter Sweep Test"
+    description: "Automated parameter variation testing"
+    tags: ["calibration", "automation", "testing"]
+    implementation: |
+      Perform parameter sweep:
+      1. Define parameter and value range
+      2. Setup measurement signals (DAQ)
+      3. For each value in sweep range:
+         - Write parameter value
+         - Wait for settling time
+         - Record measurement data
+         - Check for anomalies
+      4. Analyze results and find optimal value
+      5. Generate calibration report
+
+  - id: "flash-calibration-to-ecu"
+    name: "Flash Calibration Data"
+    description: "Program calibration to non-volatile memory"
+    tags: ["calibration", "flash", "programming"]
+    implementation: |
+      Flash calibration to ECU:
+      1. Export calibration dataset (HEX/S19)
+      2. Verify calibration checksum
+      3. Enter programming session (UDS 0x10 02)
+      4. Unlock security access (UDS 0x27)
+      5. Erase flash sector (UDS 0x31)
+      6. Download calibration (UDS 0x34/0x36)
+      7. Verify programming (UDS 0x37)
+      8. Reset ECU and verify
+
+  - id: "a2l-database-parse"
+    name: "Parse A2L Database"
+    description: "Extract measurement and calibration objects from A2L"
+    tags: ["a2l", "database", "parsing"]
+    implementation: |
+      Parse ASAP2 (A2L) database:
+      1. Read A2L file structure
+      2. Extract MEASUREMENT objects
+      3. Extract CHARACTERISTIC objects
+      4. Parse ADDRESS and DEPOSIT info
+      5. Extract COMPU_METHOD for conversion
+      6. Build symbol table for lookup
+      7. Validate database consistency
+
+  - id: "daq-measurement-setup"
+    name: "Setup DAQ Measurement"
+    description: "Configure data acquisition for signals"
+    tags: ["daq", "measurement", "xcp"]
+    implementation: |
+      Setup XCP DAQ measurement:
+      1. Query DAQ capabilities (GET_DAQ_RESOLUTION_INFO)
+      2. Allocate DAQ lists (ALLOC_DAQ)
+      3. Allocate ODT entries (ALLOC_ODT_ENTRY)
+      4. Configure signal addresses (WRITE_DAQ)
+      5. Set DAQ list mode and priority
+      6. Start measurement (START_STOP_DAQ_LIST)
+      7. Process incoming DAQ packets
+
+  - id: "calibration-dataset-compare"
+    name: "Compare Calibration Datasets"
+    description: "Diff two calibration sets and highlight changes"
+    tags: ["calibration", "compare", "analysis"]
+    implementation: |
+      Compare calibration datasets:
+      1. Load baseline calibration
+      2. Load target calibration
+      3. Find common parameters
+      4. Calculate value differences
+      5. Highlight significant changes
+      6. Generate comparison report
+      7. Export delta calibration
+
+  - id: "adaptive-cruise-control-calibration"
+    name: "Calibrate Adaptive Cruise Control"
+    description: "Domain-specific ACC calibration workflow"
+    tags: ["calibration", "acc", "adas"]
+    implementation: |
+      Calibrate ACC function:
+      1. Load ACC calibration parameters
+      2. Configure following distance thresholds
+      3. Tune acceleration/deceleration curves
+      4. Calibrate radar detection limits
+      5. Test various traffic scenarios
+      6. Optimize comfort vs. safety trade-off
+      7. Validate against requirements
+
+  - id: "engine-torque-model-calibration"
+    name: "Calibrate Engine Torque Model"
+    description: "Calibrate torque maps and limiters"
+    tags: ["calibration", "engine", "powertrain"]
+    implementation: |
+      Calibrate engine torque model:
+      1. Load torque characteristic maps
+      2. Calibrate base torque vs. RPM
+      3. Tune load-dependent correction factors
+      4. Calibrate temperature compensation
+      5. Configure torque limiters (overboost, cat temp)
+      6. Validate on dynamometer
+      7. Optimize for fuel efficiency
+
+metadata:
+  tools: ["INCA", "OpenXCP", "CANape"]
+  protocols: ["XCP_on_ETH", "XCP_on_CAN", "XCP_on_USB"]
+  file_formats: ["A2L", "HEX", "S19", "DCM"]

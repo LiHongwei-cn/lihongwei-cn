@@ -1,0 +1,186 @@
+name: sensor-simulation
+description: Automotive sensor simulation for radar, LiDAR, camera, and ultrasonic sensors
+version: 1.0.0
+category: hil-sil
+
+metadata:
+  author: Automotive Sensor Team
+  tags: [sensor-simulation, radar, lidar, camera, ultrasonic, sensor-fusion]
+  platforms: [CARLA, Gazebo, ANSYS AVxcelerate, IPG SensorSimulation]
+  requires: [python3, open3d, opencv-python, ros2]
+
+parameters:
+  sensor_type:
+    type: string
+    description: Type of sensor to simulate
+    required: true
+    enum: [radar, lidar, camera, ultrasonic, thermal, event-camera]
+
+  sensor_config:
+    type: object
+    description: Sensor-specific configuration
+    required: true
+
+  environment:
+    type: string
+    description: Simulation environment
+    required: true
+    enum: [carla, gazebo, synthetic, recorded]
+
+  noise_model:
+    type: object
+    description: Sensor noise characteristics
+    properties:
+      gaussian_noise:
+        type: float
+      salt_pepper_noise:
+        type: float
+      motion_blur:
+        type: boolean
+      weather_effects:
+        type: boolean
+
+  output_format:
+    type: string
+    description: Output data format
+    enum: [ros2, pcap, raw, custom]
+    default: ros2
+
+instructions:
+  setup_radar:
+    - description: Configure radar sensor parameters
+      commands:
+        - "python3 tools/adapters/hil_sil/sensor_simulator.py --type radar --config {{sensor_config}}"
+
+    - description: Set radar detection parameters
+      commands:
+        - "python3 tools/adapters/hil_sil/radar_simulator.py --range {{sensor_config.range}} --fov {{sensor_config.fov}} --resolution {{sensor_config.resolution}}"
+
+  setup_lidar:
+    - description: Configure LiDAR sensor
+      commands:
+        - "python3 tools/adapters/hil_sil/sensor_simulator.py --type lidar --config {{sensor_config}}"
+
+    - description: Initialize point cloud generation
+      commands:
+        - "python3 tools/adapters/hil_sil/lidar_simulator.py --channels {{sensor_config.channels}} --range {{sensor_config.range}} --points-per-second {{sensor_config.points_per_second}}"
+
+  setup_camera:
+    - description: Configure camera sensor
+      commands:
+        - "python3 tools/adapters/hil_sil/sensor_simulator.py --type camera --config {{sensor_config}}"
+
+    - description: Set image parameters
+      commands:
+        - "python3 tools/adapters/hil_sil/camera_simulator.py --resolution {{sensor_config.resolution}} --fps {{sensor_config.fps}} --fov {{sensor_config.fov}}"
+
+  setup_ultrasonic:
+    - description: Configure ultrasonic array
+      commands:
+        - "python3 tools/adapters/hil_sil/sensor_simulator.py --type ultrasonic --config {{sensor_config}}"
+
+    - description: Set ultrasonic detection cone
+      commands:
+        - "python3 tools/adapters/hil_sil/ultrasonic_simulator.py --range {{sensor_config.range}} --beam-width {{sensor_config.beam_width}}"
+
+  execution:
+    - description: Start sensor data stream
+      commands:
+        - "python3 tools/adapters/hil_sil/sensor_simulator.py --start --output {{output_format}}"
+
+    - description: Apply noise model
+      conditions:
+        - "{{noise_model}} != null"
+      commands:
+        - "python3 tools/adapters/hil_sil/noise_injector.py --apply {{noise_model}}"
+
+    - description: Publish to ROS 2
+      conditions:
+        - "{{output_format}} == 'ros2'"
+      commands:
+        - "ros2 topic pub /sensors/{{sensor_type}}/data sensor_msgs/{{sensor_type}}"
+
+  validation:
+    - description: Visualize sensor output
+      commands:
+        - "python3 tools/visualization/sensor_visualizer.py --sensor {{sensor_type}}"
+
+    - description: Validate sensor accuracy
+      commands:
+        - "python3 tools/analysis/sensor_accuracy_validator.py --ground-truth ground_truth.json"
+
+examples:
+  - name: 77 GHz front radar simulation
+    parameters:
+      sensor_type: radar
+      sensor_config:
+        frequency: 77e9
+        range: 200
+        fov: {horizontal: 30, vertical: 10}
+        resolution: {range: 0.1, velocity: 0.1}
+        detection_threshold: -90
+      environment: carla
+      noise_model:
+        gaussian_noise: 0.05
+        weather_effects: true
+      output_format: ros2
+
+  - name: 64-channel LiDAR simulation
+    parameters:
+      sensor_type: lidar
+      sensor_config:
+        channels: 64
+        range: 100
+        points_per_second: 1000000
+        rotation_frequency: 10
+        upper_fov: 15
+        lower_fov: -25
+      environment: gazebo
+      noise_model:
+        gaussian_noise: 0.02
+      output_format: ros2
+
+  - name: 8MP front camera with HDR
+    parameters:
+      sensor_type: camera
+      sensor_config:
+        resolution: {width: 3840, height: 2160}
+        fps: 30
+        fov: 90
+        hdr: true
+        exposure: auto
+      environment: carla
+      noise_model:
+        gaussian_noise: 0.01
+        motion_blur: true
+      output_format: ros2
+
+  - name: Ultrasonic parking sensor array
+    parameters:
+      sensor_type: ultrasonic
+      sensor_config:
+        range: 5.0
+        beam_width: 70
+        frequency: 40000
+        sensor_count: 12
+      environment: gazebo
+      output_format: ros2
+
+outputs:
+  sensor_data:
+    type: string
+    description: Sensor data stream
+
+  calibration_data:
+    type: object
+    description: Sensor calibration parameters
+
+best_practices:
+  - Calibrate sensors against real hardware data
+  - Model sensor blind spots and occlusions
+  - Include weather effects (rain, fog, snow)
+  - Simulate sensor degradation over time
+  - Validate multi-path reflections for radar
+  - Test sensor fusion across different modalities
+  - Use ground truth for accuracy validation
+  - Model sensor latency and synchronization

@@ -1,0 +1,342 @@
+name: power-analysis
+description: Power measurement and analysis using Yokogawa, Hioki, and Keysight power analyzers for automotive battery testing
+category: testing-metrology
+
+instructions: |
+  You are an expert in power measurement systems for automotive battery testing.
+
+  When implementing power analysis:
+  1. Configure power analyzer for battery voltage ranges (12V-800V DC)
+  2. Set current measurement range (1A-1000A) with appropriate shunts
+  3. Implement high-speed data acquisition (up to 100kHz sampling)
+  4. Calculate power metrics (W, Wh, efficiency, power factor)
+  5. Perform harmonic analysis for AC charging systems
+  6. Measure transient response during load steps
+  7. Implement data logging with timestamp synchronization
+  8. Generate ISO 17025 compliant test reports
+  9. Support multiple measurement modes (RMS, DC, peak)
+  10. Integrate with thermal chambers for temperature correlation
+  11. Implement calibration verification routines
+  12. Handle multi-channel measurements for pack testing
+  13. Calculate battery efficiency metrics (round-trip, charge/discharge)
+  14. Support remote control via SCPI, Modbus, or proprietary protocols
+  15. Generate real-time power graphs and analytics
+
+  Supported Equipment:
+  - Yokogawa WT series (WT1800E, WT5000, WT3000E)
+  - Hioki PW series (PW6001, PW3390, PW8001)
+  - Keysight PA series (PA2201A, PA2203A)
+  - Fluke 1730, 1760 power analyzers
+  - Rohde & Schwarz RTP/RTO oscilloscopes with power analysis
+
+  Measurement Parameters:
+  - Voltage: RMS, DC, peak, crest factor (0.1V - 1000V)
+  - Current: RMS, DC, peak, crest factor (0.01A - 2000A)
+  - Power: Active (W), Reactive (VAR), Apparent (VA)
+  - Energy: Wh, Ah, kWh integrated over time
+  - Efficiency: Charge/discharge efficiency, round-trip
+  - Harmonics: THD, individual harmonics up to 50th order
+  - Frequency: 0.1Hz - 100kHz
+
+  Data Format:
+  - CSV export with configurable sampling rate
+  - Binary waveform capture for transient analysis
+  - Real-time streaming to InfluxDB/Grafana
+  - IEC 61850 protocol for substation integration
+  - Custom JSON format for cloud analytics
+
+  Safety Requirements:
+  - Voltage isolation rated for battery pack voltage + 1000V
+  - Current shunt power rating validated for test profile
+  - Automatic over-range protection and alarms
+  - Emergency stop integration with BMS
+  - Calibration certificates valid and traceable
+  - Regular zero-offset and span calibration
+  - Grounding and shielding per IEC 61010
+
+dependencies:
+  - pyvisa 1.13+ for GPIB/USB/Ethernet instrument control
+  - numpy for signal processing
+  - pandas for data analysis
+  - matplotlib for visualization
+  - python-can for CAN bus integration
+  - modbus-tk for Modbus RTU/TCP communication
+
+examples:
+  - description: "Yokogawa WT1800E power analyzer integration"
+    input: "Implement battery charge/discharge efficiency measurement with Yokogawa WT1800E"
+    output: |
+      ```python
+      import pyvisa
+      import numpy as np
+      import pandas as pd
+      from datetime import datetime
+      from dataclasses import dataclass
+      from typing import List, Optional
+      import time
+
+
+      @dataclass
+      class PowerMeasurement:
+          timestamp: datetime
+          voltage_dc: float  # V
+          current_dc: float  # A
+          power_dc: float    # W
+          energy_wh: float   # Wh
+          charge_ah: float   # Ah
+          efficiency: Optional[float] = None
+
+
+      class YokogawaWT1800E:
+          """Yokogawa WT1800E Power Analyzer Interface."""
+
+          def __init__(self, address: str = "GPIB0::1::INSTR"):
+              """
+              Initialize connection to Yokogawa WT1800E.
+
+              Args:
+                  address: VISA resource address (GPIB, USB, or TCP)
+              """
+              self.rm = pyvisa.ResourceManager()
+              self.instrument = self.rm.open_resource(address)
+              self.instrument.timeout = 10000  # 10s timeout
+
+              # Query identity
+              idn = self.instrument.query("*IDN?")
+              print(f"Connected to: {idn}")
+
+              # Reset and configure
+              self._reset()
+              self._configure_battery_mode()
+
+          def _reset(self):
+              """Reset instrument to known state."""
+              self.instrument.write("*RST")
+              self.instrument.write("*CLS")
+              time.sleep(2)
+
+          def _configure_battery_mode(self):
+              """Configure for DC battery testing."""
+              # Set measurement mode to DC
+              self.instrument.write(":INPUT:MODE DC")
+
+              # Configure Element 1 (Battery)
+              self.instrument.write(":INPUT1:VOLTAGE:RANGE 300")  # 300V range
+              self.instrument.write(":INPUT1:CURRENT:RANGE 50")   # 50A range
+
+              # Set integration mode for energy/charge
+              self.instrument.write(":INTEGRATE:MODE CONTINUOUS")
+              self.instrument.write(":INTEGRATE:TIMER:MODE MANUAL")
+
+              # Configure numeric data format
+              self.instrument.write(":NUMERIC:FORMAT ASCII")
+              self.instrument.write(":NUMERIC:NORMAL:NUMBER 20")  # All parameters
+
+              # Set update rate
+              self.instrument.write(":RATE 50MS")  # 20 Hz sampling
+
+          def set_voltage_range(self, range_v: int):
+              """Set voltage measurement range (V)."""
+              valid_ranges = [15, 30, 60, 150, 300, 600, 1000]
+              if range_v not in valid_ranges:
+                  raise ValueError(f"Invalid range. Choose from {valid_ranges}")
+              self.instrument.write(f":INPUT1:VOLTAGE:RANGE {range_v}")
+
+          def set_current_range(self, range_a: float):
+              """Set current measurement range (A)."""
+              valid_ranges = [0.5, 1, 2, 5, 10, 20, 50, 100]
+              if range_a not in valid_ranges:
+                  raise ValueError(f"Invalid range. Choose from {valid_ranges}")
+              self.instrument.write(f":INPUT1:CURRENT:RANGE {range_a}")
+
+          def start_integration(self):
+              """Start energy/charge integration."""
+              self.instrument.write(":INTEGRATE:START")
+              print("Integration started")
+
+          def stop_integration(self):
+              """Stop energy/charge integration."""
+              self.instrument.write(":INTEGRATE:STOP")
+              print("Integration stopped")
+
+          def reset_integration(self):
+              """Reset integrated values to zero."""
+              self.instrument.write(":INTEGRATE:RESET")
+              print("Integration reset")
+
+          def read_measurement(self) -> PowerMeasurement:
+              """
+              Read current power measurement.
+
+              Returns:
+                  PowerMeasurement with all values
+              """
+              # Query all numeric values
+              data = self.instrument.query(":NUMERIC:NORMAL:VALUE?")
+
+              # Parse response (format: value1,value2,...)
+              values = [float(v) for v in data.split(',')]
+
+              # Extract values based on WT1800E output order
+              voltage_dc = values[0]    # U (V)
+              current_dc = values[1]    # I (A)
+              power_dc = values[2]      # P (W)
+              energy_wh = values[10]    # WP (Wh)
+              charge_ah = values[11]    # q (Ah)
+
+              return PowerMeasurement(
+                  timestamp=datetime.now(),
+                  voltage_dc=voltage_dc,
+                  current_dc=current_dc,
+                  power_dc=power_dc,
+                  energy_wh=energy_wh,
+                  charge_ah=charge_ah
+              )
+
+          def continuous_measurement(
+              self,
+              duration_s: float,
+              interval_s: float = 0.05
+          ) -> List[PowerMeasurement]:
+              """
+              Perform continuous measurement for specified duration.
+
+              Args:
+                  duration_s: Measurement duration in seconds
+                  interval_s: Sampling interval (default 50ms)
+
+              Returns:
+                  List of PowerMeasurement objects
+              """
+              measurements = []
+              start_time = time.time()
+
+              self.reset_integration()
+              self.start_integration()
+
+              while time.time() - start_time < duration_s:
+                  measurement = self.read_measurement()
+                  measurements.append(measurement)
+                  time.sleep(interval_s)
+
+              self.stop_integration()
+              return measurements
+
+          def calculate_efficiency(
+              self,
+              charge_data: List[PowerMeasurement],
+              discharge_data: List[PowerMeasurement]
+          ) -> dict:
+              """
+              Calculate charge/discharge efficiency.
+
+              Args:
+                  charge_data: Measurements during charging
+                  discharge_data: Measurements during discharging
+
+              Returns:
+                  Dictionary with efficiency metrics
+              """
+              # Total energy in (charging)
+              energy_in = charge_data[-1].energy_wh if charge_data else 0
+
+              # Total energy out (discharging)
+              energy_out = abs(discharge_data[-1].energy_wh) if discharge_data else 0
+
+              # Round-trip efficiency
+              efficiency = (energy_out / energy_in * 100) if energy_in > 0 else 0
+
+              # Coulombic efficiency
+              charge_ah = charge_data[-1].charge_ah if charge_data else 0
+              discharge_ah = abs(discharge_data[-1].charge_ah) if discharge_data else 0
+              coulombic_eff = (discharge_ah / charge_ah * 100) if charge_ah > 0 else 0
+
+              return {
+                  'energy_in_wh': energy_in,
+                  'energy_out_wh': energy_out,
+                  'round_trip_efficiency_pct': efficiency,
+                  'charge_ah': charge_ah,
+                  'discharge_ah': discharge_ah,
+                  'coulombic_efficiency_pct': coulombic_eff
+              }
+
+          def export_to_csv(
+              self,
+              measurements: List[PowerMeasurement],
+              filename: str
+          ):
+              """Export measurements to CSV file."""
+              df = pd.DataFrame([
+                  {
+                      'timestamp': m.timestamp.isoformat(),
+                      'voltage_v': m.voltage_dc,
+                      'current_a': m.current_dc,
+                      'power_w': m.power_dc,
+                      'energy_wh': m.energy_wh,
+                      'charge_ah': m.charge_ah
+                  }
+                  for m in measurements
+              ])
+
+              df.to_csv(filename, index=False)
+              print(f"Data exported to {filename}")
+
+          def close(self):
+              """Close instrument connection."""
+              self.instrument.close()
+              self.rm.close()
+
+
+      # Usage example: Battery charge/discharge test
+      if __name__ == "__main__":
+          analyzer = YokogawaWT1800E("GPIB0::1::INSTR")
+
+          # Configure for 400V, 100A battery pack
+          analyzer.set_voltage_range(600)
+          analyzer.set_current_range(100)
+
+          # Charge phase (1 hour at 50A)
+          print("Starting charge phase...")
+          charge_measurements = analyzer.continuous_measurement(
+              duration_s=3600,
+              interval_s=1.0
+          )
+          analyzer.export_to_csv(charge_measurements, "charge_data.csv")
+
+          # Wait for battery to rest
+          time.sleep(300)  # 5 min rest
+
+          # Discharge phase (1 hour at 50A)
+          print("Starting discharge phase...")
+          analyzer.reset_integration()
+          discharge_measurements = analyzer.continuous_measurement(
+              duration_s=3600,
+              interval_s=1.0
+          )
+          analyzer.export_to_csv(discharge_measurements, "discharge_data.csv")
+
+          # Calculate efficiency
+          efficiency = analyzer.calculate_efficiency(
+              charge_measurements,
+              discharge_measurements
+          )
+
+          print("\n=== Battery Efficiency Report ===")
+          print(f"Energy In: {efficiency['energy_in_wh']:.2f} Wh")
+          print(f"Energy Out: {efficiency['energy_out_wh']:.2f} Wh")
+          print(f"Round-trip Efficiency: {efficiency['round_trip_efficiency_pct']:.2f}%")
+          print(f"Coulombic Efficiency: {efficiency['coulombic_efficiency_pct']:.2f}%")
+
+          analyzer.close()
+      ```
+
+tags:
+  - testing
+  - power-analysis
+  - yokogawa
+  - hioki
+  - measurement
+  - battery
+  - efficiency
+  - metrology
+  - scpi

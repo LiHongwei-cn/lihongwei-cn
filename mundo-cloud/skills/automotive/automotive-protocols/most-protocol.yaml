@@ -1,0 +1,389 @@
+name: MOST Protocol
+version: 1.0.0
+category: automotive-protocols
+domain: automotive
+subcategory: communication
+description: Expert skill in MOST (Media Oriented Systems Transport) multimedia network protocol for automotive infotainment systems (150 Mbps).
+use_cases:
+- High-end infotainment system backbone
+- Premium audio distribution (multi-channel)
+- Navigation system integration
+- Rear-seat entertainment systems
+- Camera video streaming (surround view)
+automotive_standards:
+- MOST Specification Rev. 3.0
+- MOST150 (150 Mbps)
+- MOST Cooperation standard
+- ISO 14230 (KWP2000 over MOST)
+instructions: |
+
+  ## Core Competencies
+
+  Expert in MOST protocol for high-bandwidth multimedia automotive networks.
+
+  ### Physical Layer Options
+  - MOST150: 150 Mbps over optical fiber or UTP
+  - MOST25/50: Legacy 25/50 Mbps variants
+  - Ring topology with star topology support
+  - Optical (POF) or electrical (UTP Cat5) media
+  - Maximum 64 devices per ring
+
+  ### Protocol Stack Architecture
+  ```
+  Application Layer
+  ------------------
+  Function Blocks (MOST High Protocol)
+  ------------------
+  Transport Layer (MHP/MEP/MAP)
+  ------------------
+  Network Layer (Message Router)
+  ------------------
+  Data Link Layer (MOST Network Services)
+  ------------------
+  Physical Layer (MOST150 Transceiver)
+  ```
+
+  ### Channel Types
+  - Synchronous: Streaming data (audio/video) - isochronous
+  - Asynchronous: Packet data (control messages)
+  - Control: Network management and addressing
+  - Ethernet: IP packet encapsulation (MOST150 only)
+
+  ### Addressing Scheme
+  - Physical Address: 16-bit node position on ring
+  - Logical Address: Function-based addressing
+  - Group Address: Multicast to multiple nodes
+  - Broadcast Address: All nodes on network
+
+  ### Network Topology
+  ```
+  Head Unit (Master) --> Amplifier --> Display
+        ^                                  |
+        |                                  v
+    USB Hub <-- Rear Seat Controller <-- Camera
+  ```
+
+  ## Design Approach
+
+  1. Network Planning
+     - Define device roles (master, slave, source, sink)
+     - Calculate bandwidth allocation
+     - Plan ring topology and bypass options
+     - Design function catalog
+
+  2. Synchronous Channel Allocation
+     - Audio streaming (stereo/multichannel)
+     - Video channels (camera feeds)
+     - Clock synchronization
+     - Bandwidth reservation
+
+  3. Function Block Implementation
+     - Define MOST Function Catalog (XML)
+     - Implement function interfaces
+     - Register with network master
+     - Handle events and properties
+
+  4. Validation and Testing
+     - Ring integrity verification
+     - Bandwidth utilization analysis
+     - Timing and synchronization tests
+     - Fault recovery testing
+
+  ## Implementation Examples
+
+  ### Network Services Layer
+  ```c
+  // MOST network initialization
+  typedef struct {
+      uint16_t nodeAddress;
+      uint8_t  deviceRole;      // Master/Slave
+      uint16_t syncBandwidth;   // Bytes per frame
+      uint16_t asyncBandwidth;  // Bytes per frame
+  } MOST_NetworkConfig_t;
+
+  void MOST_Init(const MOST_NetworkConfig_t* config) {
+      // Initialize INIC (Intelligent Network Interface Controller)
+      MOST_INIC_Init();
+
+      // Configure network parameters
+      MOST_SetNodeAddress(config->nodeAddress);
+      MOST_SetDeviceRole(config->deviceRole);
+
+      // Allocate bandwidth
+      MOST_AllocateSyncBandwidth(config->syncBandwidth);
+      MOST_AllocateAsyncBandwidth(config->asyncBandwidth);
+
+      // Start network services
+      MOST_NetworkStartup();
+  }
+  ```
+
+  ### Synchronous Audio Streaming
+  ```c
+  // Configure synchronous connection for audio
+  typedef struct {
+      uint16_t sourceAddress;
+      uint16_t sinkAddress;
+      uint16_t connectionLabel;
+      uint8_t  channelCount;    // Stereo = 2, 5.1 = 6
+      uint16_t sampleRate;      // 44.1kHz, 48kHz
+      uint8_t  bitDepth;        // 16, 24 bits
+  } MOST_SyncConnection_t;
+
+  MOST_Status_t MOST_CreateAudioStream(
+      const MOST_SyncConnection_t* conn
+  ) {
+      // Calculate required bandwidth
+      // BW = channels * (sampleRate / 48kHz) * (bitDepth / 8)
+      uint16_t bandwidth = conn->channelCount *
+                          (conn->sampleRate / 48000) *
+                          (conn->bitDepth / 8);
+
+      // Allocate synchronous channel
+      uint16_t channelId = MOST_AllocateSyncChannel(
+          conn->sourceAddress,
+          conn->sinkAddress,
+          bandwidth
+      );
+
+      // Configure audio parameters
+      MOST_ConfigureAudioStream(
+          channelId,
+          conn->channelCount,
+          conn->sampleRate,
+          conn->bitDepth
+      );
+
+      // Start streaming
+      return MOST_StartSyncConnection(channelId);
+  }
+  ```
+
+  ### Function Block Interface
+  ```c
+  // MOST Function Block for audio amplifier
+  typedef struct {
+      uint8_t  volume;          // 0-100
+      int8_t   balance;         // -50 to +50
+      int8_t   fader;           // -50 to +50
+      uint8_t  bass;            // 0-100
+      uint8_t  treble;          // 0-100
+      bool     mute;
+  } AudioAmp_FBlock_t;
+
+  // Function IDs
+  #define FBLOCK_AUDIO_AMP    0x22
+  #define FUNC_SET_VOLUME     0x100
+  #define FUNC_SET_BALANCE    0x101
+  #define FUNC_SET_MUTE       0x102
+
+  // Handle function block message
+  void AudioAmp_ProcessMessage(
+      uint16_t functionId,
+      uint8_t* data,
+      uint16_t length
+  ) {
+      switch (functionId) {
+          case FUNC_SET_VOLUME:
+              if (length >= 1) {
+                  audioAmp.volume = data[0];
+                  DSP_SetVolume(audioAmp.volume);
+                  AudioAmp_SendStatus(FUNC_SET_VOLUME, STATUS_OK);
+              }
+              break;
+
+          case FUNC_SET_BALANCE:
+              if (length >= 1) {
+                  audioAmp.balance = (int8_t)data[0];
+                  DSP_SetBalance(audioAmp.balance);
+                  AudioAmp_SendStatus(FUNC_SET_BALANCE, STATUS_OK);
+              }
+              break;
+
+          case FUNC_SET_MUTE:
+              if (length >= 1) {
+                  audioAmp.mute = data[0];
+                  DSP_SetMute(audioAmp.mute);
+                  AudioAmp_SendStatus(FUNC_SET_MUTE, STATUS_OK);
+              }
+              break;
+      }
+  }
+  ```
+
+  ### Asynchronous Message Handling
+  ```c
+  // Send control message
+  typedef struct {
+      uint16_t targetAddress;
+      uint16_t functionBlockId;
+      uint16_t functionId;
+      uint8_t  opType;          // Set/Get/Status/Error
+      uint8_t  data[MAX_PAYLOAD];
+      uint16_t dataLength;
+  } MOST_ControlMessage_t;
+
+  MOST_Status_t MOST_SendControlMessage(
+      const MOST_ControlMessage_t* msg
+  ) {
+      // Build MOST control message
+      uint8_t msgBuffer[256];
+      uint16_t idx = 0;
+
+      // Addressing
+      msgBuffer[idx++] = (msg->targetAddress >> 8) & 0xFF;
+      msgBuffer[idx++] = msg->targetAddress & 0xFF;
+
+      // Function Block and Instance
+      msgBuffer[idx++] = (msg->functionBlockId >> 8) & 0xFF;
+      msgBuffer[idx++] = msg->functionBlockId & 0xFF;
+
+      // Function ID
+      msgBuffer[idx++] = (msg->functionId >> 8) & 0xFF;
+      msgBuffer[idx++] = (msg->functionId >> 4) & 0xFF;
+      msgBuffer[idx++] = (msg->functionId & 0x0F) | (msg->opType << 4);
+
+      // Payload
+      memcpy(&msgBuffer[idx], msg->data, msg->dataLength);
+      idx += msg->dataLength;
+
+      // Send via asynchronous channel
+      return MOST_TransmitAsync(msgBuffer, idx);
+  }
+  ```
+
+  ### Network Management
+  ```c
+  // MOST network master responsibilities
+  void MOST_MasterTasks(void) {
+      static uint32_t lastCheck = 0;
+      uint32_t currentTime = GetTickCount();
+
+      // Periodic tasks (every 100ms)
+      if (currentTime - lastCheck >= 100) {
+          // Check ring stability
+          if (!MOST_IsRingLocked()) {
+              MOST_ReconfigureRing();
+          }
+
+          // Monitor bandwidth utilization
+          uint16_t syncUsage = MOST_GetSyncBandwidthUsage();
+          uint16_t asyncUsage = MOST_GetAsyncBandwidthUsage();
+
+          if (syncUsage > 90) {
+              LogWarning("Sync bandwidth near capacity");
+          }
+
+          // Update network topology
+          MOST_UpdateNodeList();
+
+          lastCheck = currentTime;
+      }
+  }
+  ```
+
+  ## Use Case: Premium Infotainment System
+
+  ### Network Components
+  ```
+  [Head Unit - Master]
+    |
+    +-- [Amplifier] (8-channel audio sink)
+    +-- [Front Display] (video + control)
+    +-- [Rear Display 1] (video + control)
+    +-- [Rear Display 2] (video + control)
+    +-- [Surround View Camera Hub] (4x video sources)
+    +-- [Navigation ECU] (data + control)
+    +-- [USB Media Hub]
+  ```
+
+  ### Bandwidth Allocation (MOST150)
+  - Synchronous (Audio):
+    - 8ch x 48kHz x 24-bit = 1.152 Mbps
+  - Synchronous (Video):
+    - 4x cameras 720p30 H.264 = ~16 Mbps
+    - 2x rear displays 1080p60 = ~20 Mbps
+  - Asynchronous (Control): ~5 Mbps
+  - Ethernet (Navigation): ~10 Mbps
+  - **Total**: ~52 Mbps (34% utilization)
+
+  ### Function Catalog Example
+  ```xml
+  <FunctionCatalog>
+    <Device Name="Amplifier" Address="0x0101">
+      <FunctionBlock ID="0x22" Name="AudioAmplifier">
+        <Function ID="0x100" Name="SetVolume">
+          <Parameter Name="Volume" Type="uint8" Range="0-100"/>
+        </Function>
+        <Function ID="0x101" Name="SetBalance">
+          <Parameter Name="Balance" Type="int8" Range="-50,50"/>
+        </Function>
+        <Property ID="0x200" Name="CurrentVolume" Type="uint8"/>
+        <Property ID="0x201" Name="ChannelStatus" Type="bitfield"/>
+      </FunctionBlock>
+    </Device>
+  </FunctionCatalog>
+  ```
+
+  ## Deliverables
+
+  - MOST network design document
+  - Function catalog (XML)
+  - Bandwidth allocation spreadsheet
+  - Node configuration files
+  - Driver/middleware implementation
+  - Streaming protocol handlers
+  - Test specifications
+  - Timing analysis report
+
+  ## Common Issues and Solutions
+
+  ### Ring Instability
+  - Check optical fiber quality and connectors
+  - Verify bypass activation in case of node failure
+  - Monitor light power levels
+  - Ensure proper grounding for electrical MOST
+
+  ### Synchronous Streaming Glitches
+  - Verify clock synchronization
+  - Check bandwidth oversubscription
+  - Monitor buffer underruns/overruns
+  - Validate sample rate conversion
+
+  ### Control Message Timeouts
+  - Check asynchronous channel congestion
+  - Verify message routing tables
+  - Monitor retry mechanisms
+  - Validate function block registration
+
+  ### Audio Quality Issues
+  - Check for clock drift between source/sink
+  - Verify bit depth and sample rate matching
+  - Monitor jitter on synchronous channel
+  - Validate DSP configuration
+
+constraints:
+- Ring topology limits (64 devices max)
+- Bandwidth allocation for sync channels
+- Optical fiber installation requirements
+- Master/slave role configuration
+- Function catalog compliance
+tools_required:
+- MOST network analyzer (K2L OptoLyzer)
+- Function catalog editor (MOST Cooperation tools)
+- Audio/video test equipment
+- Optical power meter
+- Network simulation tools
+metadata:
+  author: Automotive Claude Code Agents
+  last_updated: '2026-03-19'
+  maturity: production
+  complexity: advanced
+tags:
+- automotive
+- most
+- multimedia
+- infotainment
+- audio-streaming
+- video-streaming
+- optical-network

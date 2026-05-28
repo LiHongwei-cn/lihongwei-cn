@@ -1,0 +1,142 @@
+name: hil-setup
+description: Hardware-in-the-Loop testbench configuration and setup for dSPACE, NI, ETAS, and Vector platforms
+version: 1.0.0
+category: hil-sil
+
+metadata:
+  author: Automotive HIL Team
+  tags: [hil, hardware-in-loop, dspace, ni-pxi, etas, vector, testbench]
+  platforms: [dSPACE SCALEXIO, NI PXI, ETAS LABCAR, Vector VT System]
+  requires: [python3, can-utils, socket-can, test-automation]
+
+parameters:
+  platform:
+    type: string
+    description: HIL platform type
+    required: true
+    enum: [dspace-scalexio, ni-pxi, etas-labcar, vector-vt, custom]
+
+  ecu_type:
+    type: string
+    description: ECU under test
+    required: true
+    enum: [bms, inverter, tcm, bcm, gateway, adas-ecu, domain-controller]
+
+  interface_config:
+    type: object
+    description: Hardware interface configuration
+    properties:
+      can_channels:
+        type: array
+        description: CAN bus channels
+      flexray_channels:
+        type: array
+        description: FlexRay channels
+      lin_channels:
+        type: array
+        description: LIN channels
+      ethernet_ports:
+        type: array
+        description: Automotive Ethernet ports
+      analog_inputs:
+        type: integer
+        description: Number of analog input channels
+      digital_io:
+        type: integer
+        description: Number of digital I/O channels
+
+  test_scenario:
+    type: string
+    description: Test scenario configuration file
+    required: false
+
+instructions:
+  setup:
+    - description: Configure HIL platform connection
+      commands:
+        - "python3 tools/adapters/hil_sil/{{platform}}_adapter.py --check-connection"
+        - "python3 tools/adapters/hil_sil/{{platform}}_adapter.py --configure {{interface_config}}"
+
+    - description: Load ECU software to HIL platform
+      commands:
+        - "python3 tools/adapters/hil_sil/{{platform}}_adapter.py --load-ecu {{ecu_type}}"
+
+    - description: Initialize CAN/FlexRay/LIN interfaces
+      commands:
+        - "sudo ip link set can0 type can bitrate 500000"
+        - "sudo ip link set can0 up"
+        - "cansend can0 123#DEADBEEF"
+
+    - description: Configure I/O channels and signal routing
+      commands:
+        - "python3 tools/adapters/hil_sil/{{platform}}_adapter.py --configure-io {{interface_config}}"
+
+    - description: Load test scenario and stimulation profiles
+      commands:
+        - "python3 tools/adapters/hil_sil/{{platform}}_adapter.py --load-scenario {{test_scenario}}"
+
+  validation:
+    - description: Verify HIL platform readiness
+      commands:
+        - "python3 tools/adapters/hil_sil/{{platform}}_adapter.py --validate"
+
+    - description: Run loopback tests on all interfaces
+      commands:
+        - "python3 tests/hil/loopback_test.py --platform {{platform}}"
+
+    - description: Check signal integrity and timing
+      commands:
+        - "python3 tests/hil/signal_integrity_test.py"
+
+examples:
+  - name: Setup dSPACE SCALEXIO for BMS testing
+    parameters:
+      platform: dspace-scalexio
+      ecu_type: bms
+      interface_config:
+        can_channels: [0, 1, 2]
+        analog_inputs: 32
+        digital_io: 64
+      test_scenario: tests/scenarios/bms_charge_discharge.yaml
+
+  - name: Configure NI PXI for TCM HIL
+    parameters:
+      platform: ni-pxi
+      ecu_type: tcm
+      interface_config:
+        can_channels: [0, 1]
+        flexray_channels: [0]
+        analog_inputs: 16
+      test_scenario: tests/scenarios/tcm_shift_logic.yaml
+
+  - name: Setup ETAS LABCAR for gateway testing
+    parameters:
+      platform: etas-labcar
+      ecu_type: gateway
+      interface_config:
+        can_channels: [0, 1, 2, 3, 4]
+        ethernet_ports: [eth0, eth1]
+        lin_channels: [0, 1]
+
+outputs:
+  hil_config:
+    type: object
+    description: HIL platform configuration
+
+  interface_status:
+    type: object
+    description: Status of all hardware interfaces
+
+  readiness_report:
+    type: string
+    description: HIL testbench readiness validation report
+
+best_practices:
+  - Always verify hardware connections before powering ECU
+  - Use proper termination resistors for CAN/FlexRay networks
+  - Calibrate analog inputs before critical measurements
+  - Monitor ECU temperature during extended test runs
+  - Save test configurations for reproducibility
+  - Document all cable connections and pinouts
+  - Use differential probing for high-speed signals
+  - Implement emergency stop procedures for safety-critical tests

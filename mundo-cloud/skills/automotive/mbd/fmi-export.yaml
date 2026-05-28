@@ -1,0 +1,427 @@
+name: fmi-model-exchange
+description: FMI (Functional Mock-up Interface) export and co-simulation for MBD
+category: mbd-integration
+
+instructions: |
+  You are an expert in FMI (Functional Mock-up Interface) for model exchange and co-simulation.
+
+  When working with FMI:
+  1. Export models as FMU (Functional Mock-up Units)
+  2. Configure FMI 2.0 or FMI 3.0 standard
+  3. Choose Model Exchange (ME) or Co-Simulation (CS) mode
+  4. Define model interface (inputs, outputs, parameters)
+  5. Set up co-simulation master algorithms
+  6. Handle variable dependencies and causality
+  7. Configure step size and extrapolation
+  8. Test FMU compliance with FMU Checker
+  9. Integrate FMUs in multi-domain simulations
+  10. Debug FMU integration issues
+
+  FMI modes:
+  - **Model Exchange (ME)**: Solver in master, model provides derivatives
+  - **Co-Simulation (CS)**: Model includes solver, black-box interface
+  - **Hybrid**: Support both ME and CS
+
+  FMU structure:
+  ```
+  ModelName.fmu (ZIP archive)
+    ├── modelDescription.xml      # Interface definition
+    ├── binaries/
+    │   ├── linux64/
+    │   │   └── ModelName.so
+    │   ├── win64/
+    │   │   └── ModelName.dll
+    │   └── darwin64/
+    │       └── ModelName.dylib
+    ├── sources/                  # Optional C sources
+    │   ├── ModelName.c
+    │   └── ModelName.h
+    └── resources/                # Optional data files
+        └── data.csv
+  ```
+
+  modelDescription.xml:
+  - Model metadata (name, version, GUID)
+  - Variable definitions (inputs, outputs, states, parameters)
+  - Causality and variability
+  - Dependencies between variables
+  - Default experiment settings
+  - Unit definitions
+
+  Simulink FMU export:
+  ```matlab
+  % Export Simulink model as FMU
+  modelName = 'BatteryModel';
+
+  % Configure for Co-Simulation
+  set_param(modelName, 'GenerateCoSimulationFMU', 'on');
+  set_param(modelName, 'FMUVersion', '2.0');
+  set_param(modelName, 'IncludeSourceCode', 'on');
+
+  % Export
+  exportToFMU(modelName, ...
+      'FMUType', 'CoSimulation', ...
+      'FMUVersion', '2.0', ...
+      'OutputDirectory', 'fmu_export');
+  ```
+
+  OpenModelica FMU export:
+  ```modelica
+  // Export Modelica model as FMU
+  loadFile("BatteryModel.mo");
+  buildModelFMU(BatteryModel,
+    version="2.0",
+    fmuType="cs",  // or "me"
+    platforms={"linux64", "win64"}
+  );
+  ```
+
+  Python FMI simulation:
+  ```python
+  from fmpy import read_model_description, extract, simulate_fmu
+  from fmpy.util import plot_result
+
+  fmu_filename = 'BatteryModel.fmu'
+
+  # Read model description
+  model_description = read_model_description(fmu_filename)
+
+  # Extract FMU
+  unzipdir = extract(fmu_filename)
+
+  # Simulate
+  result = simulate_fmu(
+      fmu_filename,
+      start_time=0.0,
+      stop_time=100.0,
+      step_size=0.01,
+      validate=True,
+      start_values={'SOC': 0.8},
+      output=['SOC', 'voltage', 'temperature']
+  )
+
+  # Plot
+  plot_result(result)
+  ```
+
+  Co-simulation master:
+  - **Fixed-step**: Constant communication step
+  - **Variable-step**: Adaptive step size
+  - **Gauss-Seidel**: Sequential coupling
+  - **Jacobi**: Parallel coupling with extrapolation
+
+  Variable causality:
+  - **input**: Set by master
+  - **output**: Computed by FMU
+  - **parameter**: Tunable constant
+  - **calculatedParameter**: Derived from parameters
+  - **local**: Internal variable
+
+  Variable variability:
+  - **constant**: Never changes
+  - **fixed**: Set during initialization
+  - **tunable**: Can change during simulation
+  - **discrete**: Changes only at events
+  - **continuous**: Continuously changing
+
+  FMU testing tools:
+  - FMU Checker: Validate FMU compliance
+  - FMPy: Python FMI library
+  - PyFMI: Python FMI library (JModelica)
+  - dSPACE VEOS: Co-simulation platform
+  - ETAS COSYM: Co-simulation tool
+
+dependencies:
+  - FMI Standard 2.0 or 3.0
+  - FMPy (Python FMI library)
+  - FMU Checker (validation)
+  - C compiler (for FMU build)
+  - MATLAB/Simulink or OpenModelica (export)
+
+examples:
+  - description: "Export Simulink model as FMU 2.0"
+    input: "Create FMU for battery model with co-simulation interface"
+    output: |
+      ```matlab
+      % Script: export_battery_fmu.m
+      % Export battery model as FMI 2.0 Co-Simulation FMU
+
+      modelName = 'BatteryModel';
+
+      % Open model
+      load_system(modelName);
+
+      % Configure for FMU export
+      set_param(modelName, 'SystemTargetFile', 'ert.tlc');
+      set_param(modelName, 'TargetLang', 'C');
+
+      % FMU-specific settings
+      set_param(modelName, 'GenerateCoSimulationFMU', 'on');
+      set_param(modelName, 'FMUVersion', '2.0');
+      set_param(modelName, 'IncludeSourceCode', 'on');
+      set_param(modelName, 'GenerateModelDescription', 'on');
+
+      % Solver configuration (for Co-Simulation)
+      set_param(modelName, 'Solver', 'FixedStepDiscrete');
+      set_param(modelName, 'FixedStep', '0.01');
+
+      % Interface configuration
+      % Mark Inports as FMU inputs
+      inports = find_system(modelName, 'SearchDepth', 1, 'BlockType', 'Inport');
+      for i = 1:length(inports)
+          set_param(inports{i}, 'FMUCausality', 'input');
+      end
+
+      % Mark Outports as FMU outputs
+      outports = find_system(modelName, 'SearchDepth', 1, 'BlockType', 'Outport');
+      for i = 1:length(outports)
+          set_param(outports{i}, 'FMUCausality', 'output');
+      end
+
+      % Mark block parameters as tunable FMU parameters
+      maskParams = get_param(modelName, 'MaskNames');
+      for i = 1:length(maskParams)
+          set_param(modelName, 'FMUParameterTunability', 'tunable');
+      end
+
+      % Export FMU
+      fprintf('Exporting FMU...\n');
+      outputDir = 'fmu_export';
+      mkdir(outputDir);
+
+      % Build FMU
+      slbuild(modelName);
+
+      % Copy FMU to output directory
+      fmuFile = sprintf('%s.fmu', modelName);
+      copyfile(fullfile('slprj', 'ert', '_sharedutils', fmuFile), ...
+               fullfile(outputDir, fmuFile));
+
+      fprintf('FMU exported: %s\n', fullfile(outputDir, fmuFile));
+
+      % Validate FMU
+      fprintf('\nValidating FMU with FMU Checker...\n');
+      system(sprintf('fmuCheck.linux64 -h 0.01 -s 10 %s/%s', outputDir, fmuFile));
+
+      % Display modelDescription.xml
+      fprintf('\n=== Model Description ===\n');
+      unzip(fullfile(outputDir, fmuFile), fullfile(outputDir, 'extracted'));
+      xmlFile = fullfile(outputDir, 'extracted', 'modelDescription.xml');
+      type(xmlFile);
+      ```
+
+  - description: "Co-simulation with multiple FMUs"
+    input: "Simulate battery and motor FMUs together with Python"
+    output: |
+      ```python
+      #!/usr/bin/env python3
+      """
+      Multi-FMU Co-Simulation
+      Simulate battery and motor FMUs with fixed-step Gauss-Seidel coupling
+      """
+
+      import numpy as np
+      import matplotlib.pyplot as plt
+      from fmpy import read_model_description, extract
+      from fmpy.fmi2 import FMU2Slave
+      from dataclasses import dataclass
+      from typing import List
+
+
+      @dataclass
+      class FMUInstance:
+          """FMU instance wrapper"""
+          name: str
+          fmu_path: str
+          fmu: FMU2Slave
+          inputs: dict
+          outputs: dict
+
+
+      class CoSimulationMaster:
+          """Fixed-step Gauss-Seidel co-simulation master"""
+
+          def __init__(self, step_size: float = 0.01):
+              self.step_size = step_size
+              self.fmu_instances: List[FMUInstance] = []
+              self.time = 0.0
+
+          def add_fmu(self, name: str, fmu_path: str, inputs: dict, outputs: dict):
+              """Add FMU to co-simulation"""
+              # Read model description
+              model_desc = read_model_description(fmu_path)
+
+              # Extract FMU
+              unzipdir = extract(fmu_path)
+
+              # Instantiate FMU
+              fmu = FMU2Slave(
+                  guid=model_desc.guid,
+                  unzipDirectory=unzipdir,
+                  modelIdentifier=model_desc.coSimulation.modelIdentifier,
+                  instanceName=name
+              )
+
+              # Setup
+              fmu.instantiate()
+              fmu.setupExperiment(startTime=0.0)
+              fmu.enterInitializationMode()
+              fmu.exitInitializationMode()
+
+              # Store instance
+              instance = FMUInstance(
+                  name=name,
+                  fmu_path=fmu_path,
+                  fmu=fmu,
+                  inputs=inputs,
+                  outputs=outputs
+              )
+              self.fmu_instances.append(instance)
+
+              print(f"Added FMU: {name}")
+
+          def connect(self, src_fmu: str, src_var: str, dst_fmu: str, dst_var: str):
+              """Define connection between FMUs"""
+              # This will be handled in step() method
+              pass
+
+          def step(self):
+              """Execute one co-simulation step (Gauss-Seidel)"""
+              # Sequential evaluation order
+              for instance in self.fmu_instances:
+                  # Set inputs (from other FMUs' outputs)
+                  for var_name, var_ref in instance.inputs.items():
+                      # Get value from source FMU (simplified - assume previous step)
+                      value = self._get_connected_value(instance.name, var_name)
+                      if value is not None:
+                          instance.fmu.setReal([var_ref], [value])
+
+                  # Step FMU
+                  instance.fmu.doStep(
+                      currentCommunicationPoint=self.time,
+                      communicationStepSize=self.step_size
+                  )
+
+                  # Read outputs
+                  for var_name, var_ref in instance.outputs.items():
+                      value = instance.fmu.getReal([var_ref])[0]
+                      # Store for next FMU
+                      self._store_output(instance.name, var_name, value)
+
+              self.time += self.step_size
+
+          def _get_connected_value(self, fmu_name: str, var_name: str):
+              """Get value from connected output (simplified)"""
+              # In real implementation, maintain connection map
+              return 0.0
+
+          def _store_output(self, fmu_name: str, var_name: str, value: float):
+              """Store output value for connections"""
+              pass
+
+          def simulate(self, stop_time: float):
+              """Run co-simulation"""
+              num_steps = int(stop_time / self.step_size)
+
+              # Storage for results
+              results = {inst.name: {var: [] for var in inst.outputs}
+                        for inst in self.fmu_instances}
+              time_points = []
+
+              print(f"\nStarting co-simulation...")
+              print(f"Stop time: {stop_time}s, Step size: {self.step_size}s")
+
+              for step in range(num_steps):
+                  self.step()
+
+                  # Store results
+                  time_points.append(self.time)
+                  for instance in self.fmu_instances:
+                      for var_name, var_ref in instance.outputs.items():
+                          value = instance.fmu.getReal([var_ref])[0]
+                          results[instance.name][var_name].append(value)
+
+                  if step % 1000 == 0:
+                      print(f"Progress: {self.time:.2f}s / {stop_time}s")
+
+              print("Co-simulation complete")
+
+              return time_points, results
+
+          def cleanup(self):
+              """Terminate all FMUs"""
+              for instance in self.fmu_instances:
+                  instance.fmu.terminate()
+                  instance.fmu.freeInstance()
+
+
+      # Example usage
+      if __name__ == "__main__":
+          # Create co-simulation master
+          master = CoSimulationMaster(step_size=0.01)
+
+          # Add battery FMU
+          master.add_fmu(
+              name='Battery',
+              fmu_path='BatteryModel.fmu',
+              inputs={'current': 0},  # Value reference
+              outputs={'voltage': 1, 'SOC': 2}
+          )
+
+          # Add motor FMU
+          master.add_fmu(
+              name='Motor',
+              fmu_path='MotorModel.fmu',
+              inputs={'voltage': 0, 'torqueLoad': 1},
+              outputs={'current': 2, 'speed': 3}
+          )
+
+          # Define connections (battery.voltage -> motor.voltage, etc.)
+          # In real implementation, maintain connection graph
+
+          # Simulate
+          time, results = master.simulate(stop_time=100.0)
+
+          # Cleanup
+          master.cleanup()
+
+          # Plot results
+          fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+
+          axes[0, 0].plot(time, results['Battery']['voltage'])
+          axes[0, 0].set_xlabel('Time [s]')
+          axes[0, 0].set_ylabel('Battery Voltage [V]')
+          axes[0, 0].grid(True)
+
+          axes[0, 1].plot(time, results['Battery']['SOC'])
+          axes[0, 1].set_xlabel('Time [s]')
+          axes[0, 1].set_ylabel('Battery SOC')
+          axes[0, 1].grid(True)
+
+          axes[1, 0].plot(time, results['Motor']['current'])
+          axes[1, 0].set_xlabel('Time [s]')
+          axes[1, 0].set_ylabel('Motor Current [A]')
+          axes[1, 0].grid(True)
+
+          axes[1, 1].plot(time, results['Motor']['speed'])
+          axes[1, 1].set_xlabel('Time [s]')
+          axes[1, 1].set_ylabel('Motor Speed [RPM]')
+          axes[1, 1].grid(True)
+
+          plt.tight_layout()
+          plt.savefig('cosim_results.png', dpi=300)
+          plt.show()
+
+          print("\nResults saved: cosim_results.png")
+      ```
+
+tags:
+  - mbd
+  - fmi
+  - fmu
+  - co-simulation
+  - model-exchange
+  - multi-domain
+  - integration
+  - interoperability
+  - automotive

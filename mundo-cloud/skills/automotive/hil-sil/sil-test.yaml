@@ -1,0 +1,186 @@
+name: sil-test
+description: Software-in-the-Loop testing for ECU software validation without hardware
+version: 1.0.0
+category: hil-sil
+
+metadata:
+  author: Automotive SIL Team
+  tags: [sil, software-in-loop, virtual-ecu, simulation, model-based-testing]
+  platforms: [QEMU, Docker, CANoe, vTESTstudio]
+  requires: [qemu-system-arm, docker, python3, can-utils]
+
+parameters:
+  ecu_software:
+    type: string
+    description: Path to ECU binary or container image
+    required: true
+
+  architecture:
+    type: string
+    description: Target ECU architecture
+    required: true
+    enum: [arm-cortex-m4, arm-cortex-a53, powerpc-e200, x86_64, tricore-tc39x]
+
+  simulation_mode:
+    type: string
+    description: SIL simulation mode
+    required: true
+    enum: [qemu, docker, canoe, vteststudio, custom]
+
+  network_config:
+    type: object
+    description: Virtual network configuration
+    properties:
+      vcan_interfaces:
+        type: array
+        description: Virtual CAN interfaces
+      socket_can:
+        type: boolean
+        description: Enable SocketCAN emulation
+      ethernet_bridge:
+        type: string
+        description: Ethernet bridge interface
+
+  test_suite:
+    type: string
+    description: Test suite to execute
+    required: true
+
+  coverage_analysis:
+    type: boolean
+    description: Enable code coverage analysis
+    default: true
+
+  fault_injection:
+    type: boolean
+    description: Enable fault injection scenarios
+    default: false
+
+instructions:
+  setup:
+    - description: Create virtual ECU environment
+      commands:
+        - "python3 tools/adapters/hil_sil/qemu_adapter.py --create-vm {{architecture}}"
+        - "python3 tools/adapters/hil_sil/qemu_adapter.py --load-binary {{ecu_software}}"
+
+    - description: Configure virtual CAN network
+      commands:
+        - "sudo modprobe vcan"
+        - "sudo ip link add dev vcan0 type vcan"
+        - "sudo ip link set up vcan0"
+        - "sudo ip link add dev vcan1 type vcan"
+        - "sudo ip link set up vcan1"
+
+    - description: Start virtual ECU simulation
+      commands:
+        - "python3 tools/adapters/hil_sil/{{simulation_mode}}_adapter.py --start {{ecu_software}}"
+
+    - description: Initialize network stack and routing
+      commands:
+        - "python3 tools/adapters/hil_sil/network_simulator.py --configure {{network_config}}"
+
+  execution:
+    - description: Load test scenarios
+      commands:
+        - "python3 tests/sil/test_runner.py --suite {{test_suite}}"
+
+    - description: Execute functional tests
+      commands:
+        - "pytest tests/sil/functional/ -v --cov={{ecu_software}}"
+
+    - description: Run regression tests
+      commands:
+        - "pytest tests/sil/regression/ -v --junitxml=results/sil_regression.xml"
+
+    - description: Perform fault injection tests
+      conditions:
+        - "{{fault_injection}} == true"
+      commands:
+        - "python3 tests/sil/fault_injection.py --target {{ecu_software}}"
+
+  analysis:
+    - description: Generate code coverage report
+      conditions:
+        - "{{coverage_analysis}} == true"
+      commands:
+        - "gcov {{ecu_software}}"
+        - "lcov --capture --directory . --output-file coverage.info"
+        - "genhtml coverage.info --output-directory coverage_html"
+
+    - description: Analyze execution traces
+      commands:
+        - "python3 tools/analysis/trace_analyzer.py --input sil_traces.log"
+
+    - description: Generate test report
+      commands:
+        - "python3 tools/reporting/sil_report_generator.py --results results/"
+
+  cleanup:
+    - description: Stop virtual ECU
+      commands:
+        - "python3 tools/adapters/hil_sil/{{simulation_mode}}_adapter.py --stop"
+
+    - description: Remove virtual network interfaces
+      commands:
+        - "sudo ip link set down vcan0"
+        - "sudo ip link delete vcan0"
+        - "sudo ip link set down vcan1"
+        - "sudo ip link delete vcan1"
+
+examples:
+  - name: Run BMS SIL test with QEMU
+    parameters:
+      ecu_software: build/bms_application.elf
+      architecture: arm-cortex-m4
+      simulation_mode: qemu
+      network_config:
+        vcan_interfaces: [vcan0, vcan1]
+        socket_can: true
+      test_suite: tests/sil/bms_comprehensive.yaml
+      coverage_analysis: true
+      fault_injection: true
+
+  - name: Docker-based gateway ECU testing
+    parameters:
+      ecu_software: docker://gateway-ecu:latest
+      architecture: x86_64
+      simulation_mode: docker
+      network_config:
+        vcan_interfaces: [vcan0, vcan1, vcan2, vcan3]
+        ethernet_bridge: br0
+      test_suite: tests/sil/gateway_routing.yaml
+      coverage_analysis: true
+
+  - name: CANoe SIL simulation for TCM
+    parameters:
+      ecu_software: models/tcm_model.vtt
+      architecture: tricore-tc39x
+      simulation_mode: canoe
+      test_suite: tests/sil/tcm_state_machine.yaml
+
+outputs:
+  test_results:
+    type: object
+    description: Detailed test execution results
+
+  coverage_report:
+    type: string
+    description: Code coverage analysis report
+
+  execution_traces:
+    type: string
+    description: Execution traces for debugging
+
+  performance_metrics:
+    type: object
+    description: Timing and performance metrics
+
+best_practices:
+  - Always validate virtual ECU boot before testing
+  - Use deterministic timing for reproducible results
+  - Monitor CPU and memory usage of virtual ECU
+  - Save execution traces for failed test cases
+  - Compare SIL results with HIL validation
+  - Automate regression testing in CI/CD pipeline
+  - Use symbolic execution for edge case discovery
+  - Document all deviations from real hardware behavior

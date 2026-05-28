@@ -1,0 +1,204 @@
+name: vil-test
+description: Vehicle-in-the-Loop testing with complete vehicle simulation and sensor emulation
+version: 1.0.0
+category: hil-sil
+
+metadata:
+  author: Automotive VIL Team
+  tags: [vil, vehicle-in-loop, carla, gazebo, vehicle-dynamics, sensor-simulation]
+  platforms: [CARLA, Gazebo, IPG CarMaker, VI-grade, ANSYS AVxcelerate]
+  requires: [python3, ros2, carla-simulator, gazebo, sensor-fusion]
+
+parameters:
+  simulator:
+    type: string
+    description: Vehicle simulation platform
+    required: true
+    enum: [carla, gazebo, carmaker, vigrade, avxcelerate]
+
+  vehicle_model:
+    type: string
+    description: Vehicle dynamics model
+    required: true
+
+  scenario_file:
+    type: string
+    description: Driving scenario configuration
+    required: true
+
+  sensor_suite:
+    type: object
+    description: Sensor configuration
+    properties:
+      cameras:
+        type: array
+        description: Camera sensors
+      lidars:
+        type: array
+        description: LiDAR sensors
+      radars:
+        type: array
+        description: Radar sensors
+      ultrasonics:
+        type: array
+        description: Ultrasonic sensors
+      gps:
+        type: boolean
+        description: GPS/GNSS sensor
+      imu:
+        type: boolean
+        description: IMU sensor
+
+  ecu_integration:
+    type: array
+    description: ECUs to integrate in VIL loop
+    items:
+      type: string
+
+  real_time_factor:
+    type: float
+    description: Real-time simulation factor
+    default: 1.0
+
+  data_recording:
+    type: boolean
+    description: Enable sensor data recording
+    default: true
+
+instructions:
+  setup:
+    - description: Initialize vehicle simulator
+      commands:
+        - "python3 tools/adapters/hil_sil/{{simulator}}_adapter.py --init"
+        - "python3 tools/adapters/hil_sil/{{simulator}}_adapter.py --load-vehicle {{vehicle_model}}"
+
+    - description: Configure sensor suite
+      commands:
+        - "python3 tools/adapters/hil_sil/sensor_simulator.py --configure {{sensor_suite}}"
+
+    - description: Load driving scenario
+      commands:
+        - "python3 tools/adapters/hil_sil/{{simulator}}_adapter.py --load-scenario {{scenario_file}}"
+
+    - description: Setup ECU integration bridges
+      commands:
+        - "python3 tools/adapters/hil_sil/vil_bridge.py --connect-ecus {{ecu_integration}}"
+
+    - description: Initialize ROS 2 communication stack
+      commands:
+        - "source /opt/ros/humble/setup.bash"
+        - "ros2 launch vil_simulation vil_bridge.launch.py"
+
+  execution:
+    - description: Start vehicle simulation
+      commands:
+        - "python3 tools/adapters/hil_sil/{{simulator}}_adapter.py --start --real-time-factor {{real_time_factor}}"
+
+    - description: Run sensor data collection
+      conditions:
+        - "{{data_recording}} == true"
+      commands:
+        - "ros2 bag record -a -o vil_sensor_data"
+
+    - description: Execute scenario-based tests
+      commands:
+        - "python3 tests/vil/scenario_executor.py --scenario {{scenario_file}}"
+
+    - description: Monitor ECU responses
+      commands:
+        - "python3 tests/vil/ecu_monitor.py --ecus {{ecu_integration}}"
+
+  validation:
+    - description: Analyze sensor fusion accuracy
+      commands:
+        - "python3 tools/analysis/sensor_fusion_validator.py --data vil_sensor_data"
+
+    - description: Validate vehicle dynamics behavior
+      commands:
+        - "python3 tools/analysis/dynamics_validator.py --reference {{vehicle_model}}"
+
+    - description: Check ECU decision quality
+      commands:
+        - "python3 tests/vil/decision_quality_checker.py --results vil_results/"
+
+    - description: Generate VIL test report
+      commands:
+        - "python3 tools/reporting/vil_report_generator.py --output vil_report.html"
+
+  cleanup:
+    - description: Stop simulation
+      commands:
+        - "python3 tools/adapters/hil_sil/{{simulator}}_adapter.py --stop"
+
+    - description: Archive sensor data
+      commands:
+        - "tar -czf vil_sensor_data_$(date +%Y%m%d_%H%M%S).tar.gz vil_sensor_data/"
+
+examples:
+  - name: CARLA-based ADAS VIL testing
+    parameters:
+      simulator: carla
+      vehicle_model: models/sedan_adas.json
+      scenario_file: scenarios/urban_intersection.xosc
+      sensor_suite:
+        cameras: [front_cam, rear_cam, surround_view]
+        lidars: [roof_lidar_64]
+        radars: [front_radar_77ghz, corner_radars]
+        ultrasonics: [uss_array_12]
+        gps: true
+        imu: true
+      ecu_integration: [adas-ecu, gateway, bcm]
+      real_time_factor: 1.0
+      data_recording: true
+
+  - name: Gazebo EV battery management VIL
+    parameters:
+      simulator: gazebo
+      vehicle_model: models/ev_sedan.sdf
+      scenario_file: scenarios/range_test_highway.yaml
+      sensor_suite:
+        cameras: [front_cam]
+        gps: true
+        imu: true
+      ecu_integration: [bms, inverter, gateway]
+      real_time_factor: 5.0
+      data_recording: true
+
+  - name: IPG CarMaker autonomous parking
+    parameters:
+      simulator: carmaker
+      vehicle_model: models/luxury_sedan_4wd.xml
+      scenario_file: scenarios/parking_garage_l4.scn
+      sensor_suite:
+        cameras: [surround_view_4cam]
+        ultrasonics: [uss_array_16]
+        radars: [corner_radars_4]
+      ecu_integration: [adas-ecu, parking-assist, gateway]
+      real_time_factor: 0.5
+
+outputs:
+  simulation_results:
+    type: object
+    description: Complete simulation results
+
+  sensor_data:
+    type: string
+    description: Recorded sensor data path
+
+  ecu_logs:
+    type: object
+    description: ECU communication logs
+
+  validation_report:
+    type: string
+    description: VIL validation report
+
+best_practices:
+  - Synchronize sensor timestamps across all devices
+  - Use GPU acceleration for camera/LiDAR rendering
+  - Validate sensor models against real-world data
+  - Test edge cases like sensor occlusion and weather
+  - Monitor simulation performance and adjust real-time factor
+  - Use standardized scenario formats (OpenSCENARIO, OpenDRIVE)
+  - Implement deterministic random seed for reproducibility
+  - Compare VIL results with real vehicle test drives

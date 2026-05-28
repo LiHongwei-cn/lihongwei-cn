@@ -1,0 +1,71 @@
+name: lane-detection
+description: Lane detection and tracking using computer vision and deep learning for lane keeping assist
+category: adas-perception
+
+instructions: |
+  Implement lane detection for ADAS:
+
+  Classical methods:
+  - Canny edge detection
+  - Hough transform for line detection
+  - RANSAC for curve fitting
+  - Inverse perspective mapping (IPM)
+
+  Deep learning:
+  - Semantic segmentation (U-Net, SegNet)
+  - Instance segmentation for multi-lane
+  - Polynomial fitting on detected pixels
+  - SCNN (Spatial CNN) for lane detection
+
+  Output representation:
+  - Polynomial coefficients (3rd order)
+  - Lateral offset from lane center
+  - Lane curvature radius
+  - Lane width
+  - Confidence scores
+
+  Performance:
+  - Detection range: 3-60 meters
+  - Update rate: 30 Hz
+  - Accuracy: < 10cm lateral error
+  - Handle occlusion and worn markings
+
+dependencies:
+  - OpenCV for image processing
+  - PyTorch/TensorFlow for DL
+  - NumPy for curve fitting
+
+examples:
+  - description: "Classical lane detection pipeline"
+    input: "Detect lane lines using IPM and Hough transform"
+    output: |
+      ```python
+      import cv2
+      import numpy as np
+
+      class LaneDetector:
+          def __init__(self):
+              self.roi_vertices = np.array([[(0, 720), (640, 450), (1280, 450), (1280, 720)]])
+
+          def detect_lanes(self, image):
+              gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+              blur = cv2.GaussianBlur(gray, (5, 5), 0)
+              edges = cv2.Canny(blur, 50, 150)
+
+              masked = self.region_of_interest(edges)
+              lines = cv2.HoughLinesP(masked, 1, np.pi/180, 50, minLineLength=100, maxLineGap=50)
+
+              return lines
+
+          def region_of_interest(self, img):
+              mask = np.zeros_like(img)
+              cv2.fillPoly(mask, self.roi_vertices, 255)
+              return cv2.bitwise_and(img, mask)
+      ```
+
+tags:
+  - adas
+  - perception
+  - lane-detection
+  - computer-vision
+  - lane-keeping
