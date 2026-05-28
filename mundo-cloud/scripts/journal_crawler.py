@@ -14,8 +14,9 @@ try:
     USE_SCRAPLING = True
 except ImportError:
     import requests
-    from xml.etree import ElementTree as ET
     USE_SCRAPLING = False
+
+import xml.etree.ElementTree as ET
 
 # 期刊RSS源配置
 JOURNAL_FEEDS = {
@@ -81,6 +82,9 @@ def fetch_rss_scrapling(url):
     """使用Scrapling抓取RSS"""
     try:
         page = Fetcher.get(url, timeout=30)
+        # Scrapling使用body属性而不是text
+        if hasattr(page, 'body') and page.body:
+            return str(page.body)
         return page.text
     except Exception as e:
         print(f"  Scrapling抓取失败: {e}")
@@ -109,45 +113,96 @@ def fetch_rss(url):
 
 
 def parse_rss_xml(xml_content):
-    """解析RSS XML，提取文章信息"""
+    """解析RSS XML，提取文章信息（支持RSS 2.0、Atom、RDF格式）"""
     articles = []
-    try:
-        root = ET.fromstring(xml_content)
-        
-        # 处理Atom格式
-        ns = {'atom': 'http://www.w3.org/2005/Atom'}
-        entries = root.findall('.//atom:entry', ns)
-        if entries:
-            for entry in entries:
-                title = entry.find('atom:title', ns)
-                link = entry.find('atom:link', ns)
-                summary = entry.find('atom:summary', ns)
-                published = entry.find('atom:published', ns) or entry.find('atom:updated', ns)
-                
-                articles.append({
-                    'title': title.text.strip() if title is not None else '',
-                    'link': link.get('href', '') if link is not None else '',
-                    'summary': summary.text.strip() if summary is not None else '',
-                    'published': published.text.strip() if published is not None else ''
-                })
-            return articles
-        
-        # 处理RSS 2.0格式
-        items = root.findall('.//item')
-        for item in items:
-            title = item.find('title')
-            link = item.find('link')
-            description = item.find('description')
-            pub_date = item.find('pubDate')
+    
+    # 首先尝试用正则提取（更可靠处理CDATA等）
+    import re
+    
+    def clean_cdata(text):
+        """清理CDATA标签"""
+        if not text:
+            return ''
+        # 先清理HTML实体
+        text = re.sub(r'&lt;', '<', text)
+        text = re.sub(r'&gt;', '>', text)
+        text = re.sub(r'&amp;', '&', text)
+        text = re.sub(r'&quot;', '"', text)
+        text = re.sub(r'&#39;', "'", text)
+        # 再移除CDATA标签
+        text = re.sub(r'<!\[CDATA\[(.*?)\]\]>', r'\1', text, flags=re.DOTALL)
+        # 清理空白
+        text = ' '.join(text.split())
+        return text.strip()
+    
+    # 提取所有文章链接（RDF格式）
+    rdf_links = re.findall(r'rdf:resource="(https://www\.nature\.com/articles/[^"]+)"', xml_content)
+    
+    # 提取标题（处理CDATA）
+    titles = re.findall(r'<title[^>]*>(.*?)</title>', xml_content, re.DOTALL)
+    
+    # 提取描述（处理CDATA）
+    descriptions = re.findall(r'<description[^>]*>(.*?)</description>', xml_content, re.DOTALL)
+    
+    # 提取pubDate
+    pub_dates = re.findall(r'<pubDate[^>]*>([^<]+)</pubDate>', xml_content)
+    
+    # 提取dc:date（RDF格式）
+    dc_dates = re.findall(r'<dc:date[^>]*>([^<]+)</dc:date>', xml_content)
+    
+    # 组合数据
+    if rdf_links:
+        # RDF格式
+        for i, link in enumerate(rdf_links[:20]):  # 限制最多20篇
+            title = titles[i + 2] if i + 2 < len(titles) else f"Article {i + 1}"  # 跳过channel标题
+            desc = descriptions[i + 1] if i + 1 < len(descriptions) else ''
+            pub_date = dc_dates[i] if i < len(dc_dates) else ''
             
             articles.append({
-                'title': title.text.strip() if title is not None else '',
-                'link': link.text.strip() if link is not None else '',
-                'summary': description.text.strip()[:500] if description is not None else '',
-                'published': pub_date.text.strip() if pub_date is not None else ''
+                'title': clean_cdata(title),
+                'link': link,
+                'summary': clean_cdata(desc)[:500] if desc else '',
+                'published': pub_date
             })
-    except ET.ParseError as e:
-        print(f"  XML解析错误: {e}")
+    else:
+        # 尝试标准XML解析
+        try:
+            root = ET.fromstring(xml_content)
+            
+            # 处理Atom格式
+            ns = {'atom': 'http://www.w3.org/2005/Atom'}
+            entries = root.findall('.//atom:entry', ns)
+            if entries:
+                for entry in entries[:20]:
+                    title = entry.find('atom:title', ns)
+                    link = entry.find('atom:link', ns)
+                    summary = entry.find('atom:summary', ns)
+                    published = entry.find('atom:published', ns) or entry.find('atom:updated', ns)
+                    
+                    articles.append({
+                        'title': clean_cdata(title.text) if title is not None else '',
+                        'link': link.get('href', '') if link is not None else '',
+                        'summary': clean_cdata(summary.text)[:500] if summary is not None else '',
+                        'published': published.text.strip() if published is not None else ''
+                    })
+                return articles
+            
+            # 处理RSS 2.0格式
+            items = root.findall('.//item')
+            for item in items[:20]:
+                title = item.find('title')
+                link = item.find('link')
+                description = item.find('description')
+                pub_date = item.find('pubDate')
+                
+                articles.append({
+                    'title': clean_cdata(title.text) if title is not None else '',
+                    'link': link.text.strip() if link is not None else '',
+                    'summary': clean_cdata(description.text)[:500] if description is not None else '',
+                    'published': pub_date.text.strip() if pub_date is not None else ''
+                })
+        except ET.ParseError as e:
+            print(f"  XML解析错误: {e}")
     
     return articles
 

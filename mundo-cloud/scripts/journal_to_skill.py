@@ -16,6 +16,15 @@ MAX_SUMMARY_LENGTH = 200
 
 def sanitize_filename(title):
     """将标题转为安全的文件名"""
+    import re
+    # 清理CDATA标签
+    title = re.sub(r'<!\[CDATA\[(.*?)\]\]>', r'\1', title, flags=re.DOTALL)
+    # 清理HTML实体
+    title = re.sub(r'&lt;', '<', title)
+    title = re.sub(r'&gt;', '>', title)
+    title = re.sub(r'&amp;', '&', title)
+    title = re.sub(r'&quot;', '"', title)
+    title = re.sub(r'&#39;', "'", title)
     # 移除特殊字符，保留字母数字和中文
     safe = re.sub(r'[^\w\s\u4e00-\u9fff-]', '', title)
     # 替换空格为连字符
@@ -63,15 +72,36 @@ def extract_key_findings(summary):
 
 def generate_skill_content(article):
     """生成skill格式的内容"""
+    import re
+    
+    def clean_cdata(text):
+        """清理CDATA标签和HTML实体"""
+        if not text:
+            return ''
+        # 移除CDATA标签
+        text = re.sub(r'<!\[CDATA\[(.*?)\]\]>', r'\1', text, flags=re.DOTALL)
+        # 清理HTML实体
+        text = re.sub(r'&lt;', '<', text)
+        text = re.sub(r'&gt;', '>', text)
+        text = re.sub(r'&amp;', '&', text)
+        text = re.sub(r'&quot;', '"', text)
+        text = re.sub(r'&#39;', "'", text)
+        # 清理空白
+        text = ' '.join(text.split())
+        return text.strip()
+    
     skill_name = generate_skill_name(article)
     date_str = datetime.now().strftime('%Y-%m-%d')
     key_findings = extract_key_findings(article.get('summary', ''))
+    
+    # 清理标题
+    clean_title = clean_cdata(article['title'])
     
     # 生成frontmatter
     frontmatter = f"""---
 name: {skill_name}
 description: >
-  学术期刊学习笔记：{article['journal']} - {article['title'][:80]}
+  学术期刊学习笔记：{article['journal']} - {clean_title[:80]}
   蒙多每日期刊学习系统自动提取。
 version: 1.0.0
 author: mundo-journal-bot
@@ -85,7 +115,7 @@ learned: {date_str}
 
     # 生成正文
     body = f"""
-# {article['title']}
+# {clean_title}
 
 **来源**: [{article['journal']}]({article['link']})
 **学习日期**: {date_str}
@@ -94,7 +124,7 @@ learned: {date_str}
 
 ## 摘要
 
-{article.get('summary', '暂无摘要')}
+{clean_cdata(article.get('summary', '暂无摘要'))}
 
 ## 关键发现
 
@@ -109,7 +139,7 @@ learned: {date_str}
     body += f"""
 ## 蒙多笔记
 
-> 蒙多从此文中学到：{article['title'][:50]}...
+> 蒙多从此文中学到：{clean_title[:50]}...
 > 此知识已纳入蒙多的学术知识库。
 
 ---
