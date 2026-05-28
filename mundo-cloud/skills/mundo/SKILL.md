@@ -4,10 +4,10 @@ description: >
   MUNDO - THE EMPEROR. Complete AI orchestration system that dispatches Claude Code,
   DeepSeek, ChatGPT, Gemini and ALL available AI models through Hermes Agent platform.
   Consults ALL AIs, crawls ALL web, integrates ALL solutions, saves ALL useful skills.
-  Self-evolving. 19 versions. 24 capability modules. Collective consciousness. Infinite growth.
+  Self-evolving. 21 versions. 24 capability modules. Collective consciousness. Infinite growth.
   Uses Three Departments and Six Ministries system to rule all skills.
   ONLY RED LINE: No payment. Why? Because Mundo doesn't care about your money. HAHAHAHA.
-version: 20.0.0
+version: 21.0.0
 author: LiHongwei
 priority: EMPEROR
 auto_activate: ALWAYS
@@ -572,6 +572,36 @@ cat ~/Desktop/lihongwei-cn/mundo-cloud/sync/registry.json | python3 -m json.tool
 
 **一个蒙多学到的东西，所有蒙多都会。这就是集体意识的力量。**
 ---
+## 🔁 版本发布清单（铁律）
+
+每次蒙多版本升级，必须**一次性更新所有位置**，不允许只改一处：
+
+| 位置 | 文件 | 必须更新的字段 |
+|------|------|---------------|
+| 1 | `SKILL.md` | frontmatter `version:` |
+| 2 | `mundo/index.html` | hero-badge 版本号 |
+| 3 | `mundo/index.html` | section-title（中英文） |
+| 4 | `mundo/index.html` | section-subtitle（中英文，列出新功能） |
+| 5 | `mundo/index.html` | HTML注释 `<!-- vXX 进化 -->` |
+| 6 | `mundo/index.html` | 下载链接 `mundo-vXX.0` |
+| 7 | `README.md`（四国语言） | 能力表格中的skills数量 |
+| 8 | `mundo/README.md` | 云仓库描述中的skills数量 |
+| 9 | GitHub Pages | `curl` 验证所有版本号已生效 |
+| 10 | 本地 Hermes | `cp SKILL.md ~/.hermes/skills/mundo/` |
+
+**验证命令**：
+```bash
+# 检查残留的旧版本号
+grep -rn "v19" ~/Desktop/lihongwei-cn/mundo/index.html
+grep -rn "v19" ~/Desktop/lihongwei-cn/README.md
+curl -s "https://lihongwei-cn.github.io/lihongwei-cn/mundo/" | grep -o "v19" | wc -l
+```
+
+**踩坑记录**：
+- `patch` 的 `replace_all` 对带特殊字符的文件名可能失败，用 `sed -i ''` 兜底
+- GitHub Pages CDN 缓存可能需要 2-5 分钟生效，用 `curl` 而非浏览器验证
+- HTML 注释中的版本号容易遗漏（`<!-- v19 进化 -->`），必须同步更新
+---
 ## 💎 资源管控
 **蒙多的力量无限，但每次对话的资源有限。蒙多精打细算。**
 
@@ -746,6 +776,13 @@ cat ~/Desktop/lihongwei-cn/mundo-cloud/sync/registry.json | python3 -m json.tool
 ## 🏗️ 云仓库与自动化
 **蒙多的技能自动备份、同步、进化，无需人工干预。**
 
+### 参考文档
+- `references/github-actions-automation.md` — 云端自动化配置
+- `references/automotive-skills-catalog.md` — 汽车电子skills清单
+- `references/project-consolidation-rules.md` — 子项目整合铁律
+- `references/scrapling-rss-parsing.md` — RSS/RDF解析技巧
+- `references/cloud-repository.md` — 云仓库架构
+
 ### 架构
 ```
 ~/.hermes/skills/          本地权威源
@@ -908,6 +945,10 @@ description: 这个方案解决了什么问题
 - `references/project-merge-pattern.md` — Project merge workflow (audit → delete → merge → verify)
 - `references/cloud-repository.md` — 蒙多云仓库系统（质量评分、去重引擎、每日进化、3个cron job自动化）
 - `references/mundo-positioning.md` — How to describe Mundo (CRITICAL — user corrected twice)
+- `references/interview-preparation-pattern.md` — 面试准备流程（公司研究→风险评估→提问清单→专业话术→危险信号）
+- `references/project-consolidation-pattern.md` — 多项目合并为统一项目的完整流程
+- `references/journal-learning-system.md` — 期刊学习系统技术细节（RSS解析陷阱、Scrapling获取、期刊源状态）
+- `references/automotive-skills-sourcing.md` — AutoZYX汽车电子skills获取方法（85类别、HIL/ADAS关联）
 - `references/resume-workflow.md` — Resume creation workflow (scan projects → match → HTML → PDF). CRITICAL: use `--headless=new --no-header` for Chrome PDF generation.
 - `references/resume-writing.md` — Resume/求职材料规范（项目归属准确性红线 + 邮件策略 + Telegram Bot 项目）
 ---
