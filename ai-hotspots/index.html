@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AI 热点日报 - 蒙多每日自动学习">
+<title>AI 热点日报</title>
+<style>
+:root {
+  --bg: #0d0d16;
+  --surface: rgba(255,255,255,0.03);
+  --surface-hover: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.05);
+  --border-hover: rgba(255,255,255,0.1);
+  --text: #e8e8ed;
+  --dim: rgba(255,255,255,0.42);
+  --faint: rgba(255,255,255,0.18);
+  --accent: #818cf8;
+  --accent-glow: rgba(129,140,248,0.15);
+  --green: #34d399;
+  --yellow: #fbbf24;
+  --pink: #f472b6;
+  --blue: #60a5fa;
+  --orange: #fb923c;
+  --cyan: #22d3ee;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 40px 24px 60px;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: -30%; left: -10%;
+  width: 120%; height: 130%;
+  background:
+    radial-gradient(ellipse at 30% 0%, rgba(99,102,241,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 70%, rgba(168,85,247,0.05) 0%, transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container {
+  max-width: 880px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* 头部 */
+.header {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: 750;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+
+.header h1 span {
+  background: linear-gradient(135deg, var(--accent), var(--pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header p {
+  font-size: 14px;
+  color: var(--dim);
+}
+
+.header .badge {
+  display: inline-block;
+  background: rgba(52,211,153,0.15);
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-top: 10px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--dim);
+  text-decoration: none;
+  font-size: 13px;
+  margin-bottom: 24px;
+  transition: color 0.2s;
+}
+
+.back-link:hover { color: var(--accent); }
+
+/* 统计栏 */
+.stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  flex: 1;
+  min-width: 120px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+}
+
+.stat-num {
+  font-size: 28px;
+  font-weight: 750;
+  background: linear-gradient(135deg, var(--accent), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--dim);
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+}
+
+/* 日期选择 */
+.date-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.date-nav button {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.date-nav button:hover {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.date-nav .date-display {
+  flex: 1;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* 分类区块 */
+.category {
+  margin-bottom: 24px;
+}
+
+.category-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.category-title .count {
+  background: rgba(255,255,255,0.06);
+  color: var(--dim);
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.hotspot-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hotspot-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 12px 16px;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.hotspot-item:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+  transform: translateX(4px);
+}
+
+.hotspot-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.hotspot-item:hover .hotspot-icon { transform: scale(1.1); }
+
+.hotspot-icon.anthropic { background: rgba(217,119,87,0.15); }
+.hotspot-icon.openai { background: rgba(16,163,127,0.15); }
+.hotspot-icon.google { background: rgba(66,133,244,0.15); }
+.hotspot-icon.meta { background: rgba(0,122,255,0.15); }
+.hotspot-icon.hf { background: rgba(255,213,0,0.15); }
+.hotspot-icon.midjourney { background: rgba(255,255,255,0.1); }
+.hotspot-icon.runway { background: rgba(139,92,246,0.15); }
+.hotspot-icon.x { background: rgba(255,255,255,0.08); }
+.hotspot-icon.blog { background: rgba(52,211,153,0.15); }
+.hotspot-icon.default { background: rgba(255,255,255,0.06); }
+
+.hotspot-body { flex: 1; min-width: 0; }
+
+.hotspot-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hotspot-source {
+  font-size: 11px;
+  color: var(--faint);
+}
+
+.hotspot-arrow {
+  color: var(--faint);
+  font-size: 14px;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.hotspot-item:hover .hotspot-arrow { color: var(--accent); }
+
+/* 底部 */
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  color: var(--faint);
+  font-size: 12px;
+}
+
+.footer a {
+  color: var(--dim);
+  text-decoration: none;
+}
+
+.footer a:hover { color: var(--accent); }
+
+/* 响应式 */
+@media (max-width: 600px) {
+  body { padding: 24px 16px 40px; }
+  .header h1 { font-size: 22px; }
+  .stats { gap: 10px; }
+  .stat-card { padding: 12px; min-width: 80px; }
+  .stat-num { font-size: 22px; }
+  .hotspot-item { padding: 10px 12px; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.category { animation: fadeUp 0.5s ease both; }
+.category:nth-child(1) { animation-delay: 0.05s; }
+.category:nth-child(2) { animation-delay: 0.1s; }
+.category:nth-child(3) { animation-delay: 0.15s; }
+.category:nth-child(4) { animation-delay: 0.2s; }
+.category:nth-child(5) { animation-delay: 0.25s; }
+.category:nth-child(6) { animation-delay: 0.3s; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <a href="../" class="back-link">← 返回主页</a>
+
+  <div class="header">
+    <h1><span>AI 热点日报</span></h1>
+    <p>蒙多每日自动学习 · Scrapling 抓取 · 每天 9:03 更新</p>
+    <div class="badge">我是蒙多！蒙多想去哪就去哪！</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-num" id="total-days">1</div>
+      <div class="stat-label">已学习天数</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="total-hotspots">25</div>
+      <div class="stat-label">热点总数</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="total-sources">15+</div>
+      <div class="stat-label">信息源</div>
+    </div>
+  </div>
+
+  <div class="date-nav">
+    <button id="prev-day" title="前一天">‹</button>
+    <div class="date-display" id="date-display">2026-05-28</div>
+    <button id="next-day" title="后一天">›</button>
+  </div>
+
+  <div id="hotspot-content">
+    <!-- 动态加载 -->
+  </div>
+
+  <div class="footer">
+    <p>数据来源：<a href="https://aihot.virxact.com/" target="_blank">aihot.virxact.com</a> · 蒙多跨界学习引擎</p>
+    <p style="margin-top:6px;">每天自动抓取 + 分析 + 同步 GitHub</p>
+  </div>
+</div>
+
+<script>
+// 热点数据（由 Python 脚本自动生成）
+const HOTSPOT_DATA = {
+  "2026-05-28": {
+    "date": "2026-05-28",
+    "source": "https://aihot.virxact.com/",
+    "count": 25,
+    "hotspots": [
+      {
+        "title": "Anthropic：Research（发表成果 · 网页）",
+        "link": "https://www.anthropic.com/research/coding-agents-social-sciences",
+        "source": "article"
+      },
+      {
+        "title": "OpenAI：官网动态（RSS · 排除企业/客户案例）",
+        "link": "https://openai.com/index/cisco",
+        "source": "article"
+      },
+      {
+        "title": "Claude：Blog（网页）",
+        "link": "https://claude.com/blog/using-llms-to-secure-source-code",
+        "source": "article"
+      },
+      {
+        "title": "Meta Engineering Blog（RSS）",
+        "link": "https://engineering.fb.com/2026/05/26/ml-applications/silvertorch-index-as-model-new-retrieval-paradigm-recommendation-systems",
+        "source": "article"
+      },
+      {
+        "title": "Tomer Tunguz 博客（VC 分析）",
+        "link": "https://www.tomtunguz.com/harnessing-ai",
+        "source": "article"
+      },
+      {
+        "title": "Midjourney：Updates（RSS）",
+        "link": "https://updates.midjourney.com/web-updates-5",
+        "source": "article"
+      },
+      {
+        "title": "OpenAI Developers",
+        "link": "https://x.com/OpenAIDevs/status/2059703536825565499",
+        "source": "article"
+      },
+      {
+        "title": "OpenCode",
+        "link": "https://x.com/opencode/status/2059696100626297225",
+        "source": "article"
+      },
+      {
+        "title": "Hao AI Lab",
+        "link": "https://x.com/haoailab/status/2059695648103112946",
+        "source": "article"
+      },
+      {
+        "title": "Replit ⠕",
+        "link": "https://x.com/Replit/status/2059688584899154134",
+        "source": "article"
+      },
+      {
+        "title": "Google Developers Blog（RSS）",
+        "link": "https://developers.googleblog.com/the-latest-updates-to-google-pay",
+        "source": "article"
+      },
+      {
+        "title": "Rohan Paul",
+        "link": "https://x.com/rohanpaul_ai/status/2059689400267939925",
+        "source": "article"
+      },
+      {
+        "title": "Simon Willison 博客",
+        "link": "https://simonwillison.net/2026/May/27/product-market-fit",
+        "source": "article"
+      },
+      {
+        "title": "Google Research：Blog（网页）",
+        "link": "https://research.google/blog/private-analytics-via-zero-trust-aggregation",
+        "source": "article"
+      },
+      {
+        "title": "Hugging Face：Blog（RSS）",
+        "link": "https://huggingface.co/blog/ibm-research/itbench-aa",
+        "source": "article"
+      },
+      {
+        "title": "Chubby♨️",
+        "link": "https://x.com/kimmonismus/status/2059668961181004275",
+        "source": "article"
+      },
+      {
+        "title": "Perplexity",
+        "link": "https://x.com/perplexity_ai/status/2059664738087469511",
+        "source": "article"
+      },
+      {
+        "title": "Claude",
+        "link": "https://x.com/claudeai/status/2059662933924123044",
+        "source": "article"
+      },
+      {
+        "title": "Runway：News（网页）",
+        "link": "https://runwayml.com/news/mcp",
+        "source": "article"
+      },
+      {
+        "title": "The Verge：AI（RSS）",
+        "link": "https://www.theverge.com/ai-artificial-intelligence/937933/pope-ai-encyclical-tech-industry-reactions",
+        "source": "article"
+      },
+      {
+        "title": "歸藏(guizang.ai)",
+        "link": "https://x.com/op7418/status/2059587983289016348",
+        "source": "article"
+      },
+      {
+        "title": "HuggingFace Daily Papers（社区热门论文）",
+        "link": "https://arxiv.org/abs/2605.27295",
+        "source": "article"
+      },
+      {
+        "title": "IT之家（RSS）",
+        "link": "https://www.ithome.com/0/956/021.htm",
+        "source": "article"
+      },
+      {
+        "title": "Alibaba Cloud",
+        "link": "https://x.com/alibaba_cloud/status/2059509714854007181",
+        "source": "article"
+      },
+      {
+        "title": "Claude Code：GitHub Releases（RSS）",
+        "link": "https://github.com/anthropics/claude-code/releases/tag/v2.1.152",
+        "source": "article"
+      }
+    ],
+    "crawled_at": "2026-05-28T10:02:36.335025"
+  }
+};
+
+// 图标映射
+function getIcon(title) {
+  const t = title.toLowerCase();
+  if (t.includes('anthropic') || t.includes('claude')) return { icon: '🧠', cls: 'anthropic' };
+  if (t.includes('openai') || t.includes('chatgpt')) return { icon: '🤖', cls: 'openai' };
+  if (t.includes('google') || t.includes('deepmind')) return { icon: '🔍', cls: 'google' };
+  if (t.includes('meta') || t.includes('llama')) return { icon: '📘', cls: 'meta' };
+  if (t.includes('hugging') || t.includes('hf')) return { icon: '🤗', cls: 'hf' };
+  if (t.includes('midjourney')) return { icon: '🎨', cls: 'midjourney' };
+  if (t.includes('runway')) return { icon: '🎬', cls: 'runway' };
+  if (t.includes('x.com') || t.includes('twitter')) return { icon: '𝕏', cls: 'x' };
+  if (t.includes('blog') || t.includes('博客')) return { icon: '📝', cls: 'blog' };
+  return { icon: '⚡', cls: 'default' };
+}
+
+// 分类
+function categorize(title) {
+  const t = title.toLowerCase();
+  if (t.includes('research') || t.includes('paper') || t.includes('arxiv') || t.includes('研究')) return '📄 研究论文';
+  if (t.includes('release') || t.includes('launch') || t.includes('发布') || t.includes('v2') || t.includes('v3')) return '🚀 模型发布';
+  if (t.includes('update') || t.includes('版本') || t.includes('更新')) return '🔧 工具更新';
+  if (t.includes('blog') || t.includes('博客')) return '📝 博客文章';
+  if (t.includes('rss')) return '📡 RSS 订阅';
+  return '🌐 综合资讯';
+}
+
+// 渲染
+function renderHotspots(data) {
+  if (!data) {
+    document.getElementById('hotspot-content').innerHTML =
+      '<div style="text-align:center;color:var(--dim);padding:40px;">暂无数据</div>';
+    return;
+  }
+
+  const grouped = {};
+  data.hotspots.forEach(h => {
+    const cat = categorize(h.title);
+    if (!grouped[cat]) grouped[cat] = [];
+    grouped[cat].push(h);
+  });
+
+  let html = '';
+  Object.entries(grouped).forEach(([cat, items]) => {
+    html += `<div class="category">`;
+    html += `<div class="category-title">${cat} <span class="count">${items.length}</span></div>`;
+    html += `<div class="hotspot-list">`;
+    items.forEach(h => {
+      const { icon, cls } = getIcon(h.title);
+      const displayTitle = h.title.replace(/（.*?）/g, '').trim();
+      html += `
+        <a href="${h.link}" target="_blank" class="hotspot-item">
+          <div class="hotspot-icon ${cls}">${icon}</div>
+          <div class="hotspot-body">
+            <div class="hotspot-title">${displayTitle}</div>
+            <div class="hotspot-source">${h.source || ''}</div>
+          </div>
+          <span class="hotspot-arrow">→</span>
+        </a>`;
+    });
+    html += `</div></div>`;
+  });
+
+  document.getElementById('hotspot-content').innerHTML = html;
+
+  // 更新统计
+  document.getElementById('total-hotspots').textContent = data.hotspots.length;
+  document.getElementById('date-display').textContent = data.date;
+}
+
+// 日期导航
+const dates = Object.keys(HOTSPOT_DATA).sort().reverse();
+let currentIdx = 0;
+
+document.getElementById('prev-day').addEventListener('click', () => {
+  if (currentIdx < dates.length - 1) {
+    currentIdx++;
+    renderHotspots(HOTSPOT_DATA[dates[currentIdx]]);
+  }
+});
+
+document.getElementById('next-day').addEventListener('click', () => {
+  if (currentIdx > 0) {
+    currentIdx--;
+    renderHotspots(HOTSPOT_DATA[dates[currentIdx]]);
+  }
+});
+
+// 初始化
+document.getElementById('total-days').textContent = dates.length;
+if (dates.length > 0) {
+  renderHotspots(HOTSPOT_DATA[dates[0]]);
+}
+</script>
+
+</body>
+</html>

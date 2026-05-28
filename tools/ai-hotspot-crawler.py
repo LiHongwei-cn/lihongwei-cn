@@ -141,6 +141,14 @@ def update_hotspot_index():
     print(f"  索引已更新，共 {len(index)} 天记录")
 
 
+def update_webpage():
+    """更新网页"""
+    import subprocess
+    script = PROJECT_ROOT / "tools" / "update-hotspot-page.py"
+    if script.exists():
+        subprocess.run([sys.executable, str(script)], cwd=str(PROJECT_ROOT))
+
+
 def main():
     """主函数"""
     print("=" * 50)
@@ -155,6 +163,7 @@ def main():
 
     save_daily_hotspots(hotspots)
     update_hotspot_index()
+    update_webpage()
 
     # 输出摘要供蒙多分析
     print("\n" + "=" * 50)
