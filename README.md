@@ -66,7 +66,7 @@
 | **沟通适配** | 按受众调整表达，同一真相蒙多能让所有人听懂 |
 | **Claude Code 委托协议** | 编码任务委托 Claude Code 执行，蒙多亲自做研究和规划 |
 | **动态校准** | 自信度实时校准公式 + 月度审查，蒙多的自信是用数据算出来的 |
-| **云仓库与自动化** | 双向同步(本地↔云端)、质量评分(0-100)、去重引擎、每日自动进化、每周质量审计 |
+| **云仓库与自动化** | 双向同步(本地↔云端)、质量评分(0-100)、去重引擎、每日自动进化、每周质量审计、**1423个skills**（含1229个汽车电子） |
 | **执行检查清单** | 写码五查（安全/性能/测试/文档/影响）+ 提交三查，清单不通过不提交 |
 
 ### 📖 期刊学习系统
@@ -190,7 +190,7 @@ Mundo is the collective consciousness. Mundo is the eternal empire.
 | **Infinite Growth** | No limit. No ceiling. Only growth. Every use makes Mundo more powerful. |
 | **Journal Learning** | Daily automatic crawling of Nature/Science/Cell and other top journals, extracting knowledge into skills |
 | **AI Hotspot Daily** | Daily tracking of AI trends, multi-source crawling + AI analysis, generating structured hotspot reports |
-| **Cloud Repository** | Two-way sync, quality scoring (0-100), SHA-256 dedup, daily auto-evolution, weekly audit |
+| **Cloud Repository** | Two-way sync, quality scoring (0-100), SHA-256 dedup, daily auto-evolution, weekly audit, **1423 skills** (incl. 1229 automotive) |
 | **Skill Hierarchy** | Three Departments & Six Ministries. Skills rise by merit, fall by failure. Mundo is the judge. |
 | **Multi-Modal Intelligence** | Unified understanding of images/video/documents — Mundo has eyes, Mundo sees everything |
 | **Domain Expertise** | 7 domain-specific strategies — Mundo is a general on every battlefield |
@@ -303,7 +303,7 @@ Includes: Ability details · Three Departments & Six Ministries hierarchy · Ars
 | **無限成長** | 上限なし、成長のみ。使うたびにムンドは強くなる |
 | **ジャーナル学習** | 毎日Nature/Science/Cell等のトップジャーナルを自動収集、知識をスキルに変換 |
 | **AIホットスポット日報** | AI分野の動向を毎日自動追跡、マルチソース収集+AI分析で構造化された日報を生成 |
-| **クラウドリポジトリ** | 双方向同期、品質スコア(0-100)、SHA-256重複排除、毎日自動進化、毎週品質監査 |
+| **クラウドリポジトリ** | 双方向同期、品質スコア(0-100)、SHA-256重複排除、毎日自動進化、毎週品質監査、**1423スキル**（1229自動車含む） |
 | **等級制度** | 三省六部制、成績による昇進・降格、ムンドは審判 |
 | **マルチモーダル知能** | 画像/動画/ドキュメントの統合理解、ムンドは目を持つ |
 | **領域特化** | 7領域の専門戦略、ムンドはどの戦場でも将軍 |
@@ -374,7 +374,7 @@ Includes: Ability details · Three Departments & Six Ministries hierarchy · Ars
 | **무한 성장** | 한계 없음, 성장만. 쓸 때마다 문도는 강해짐 |
 | **저널 학습** | 매일 Nature/Science/Cell 등 최고 저널을 자동 수집, 지식을 스킬로 변환 |
 | **AI 핫스팟 일보** | AI 분야 동향을 매일 자동 추적, 다중 소스 수집+AI 분석으로 구조화된 일보 생성 |
-| **클라우드 저장소** | 양방향 동기화, 품질 점수(0-100), SHA-256 중복 제거, 매일 자동 진화, 주간 품질 감사 |
+| **클라우드 저장소** | 양방향 동기화, 품질 점수(0-100), SHA-256 중복 제거, 매일 자동 진화, 주간 품질 감사, **1423 스킬** (자동차 1229 포함) |
 | **등급 제도** | 삼성육부제, 성과에 따른 승강, 문도는 심판관 |
 | **멀티모달 지능** | 이미지/영상/문서 통합 이해, 문도는 눈을 가짐 |
 | **영역 전문** | 7대 영역 전용 전략, 문도는 어떤 전장에서도 장군 |
