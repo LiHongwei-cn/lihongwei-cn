@@ -1,6 +1,139 @@
 {
   "entries": [
     {
+      "timestamp": "2026-05-28T10:32:19Z",
+      "action": "sync",
+      "synced_count": 18,
+      "skills": [
+        {
+          "skill": "mundo",
+          "from_version": "0.1",
+          "to_version": "19.2",
+          "score": 86,
+          "content_hash": "82d7cbdab95c8a3aebe86dac230ec0a09651c687fb637c3b02dd2eddeab03dd6"
+        },
+        {
+          "skill": "cc-switch-sync",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 69,
+          "content_hash": "8072b854b78f62004ef49396054e5f9cb454da38b112054c9345c802a661ecba"
+        },
+        {
+          "skill": "cua-driver",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 63,
+          "content_hash": "5c0e46c628d02e6a4596fbad53ff2235820d21754f4f96454a900e90d7f96125"
+        },
+        {
+          "skill": "doc-coauthoring",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 30,
+          "content_hash": "2e47d78846faeea4a56e9809c52700087a15a2155a3f293a3efbaded81398ef4"
+        },
+        {
+          "skill": "dogfood",
+          "from_version": "0.0",
+          "to_version": "1.0",
+          "score": 65,
+          "content_hash": "36b1a710c61727c2be3c43ba20d68605cfed199afc90e27bde9746f4b80b91dd"
+        },
+        {
+          "skill": "matlab-debugging",
+          "from_version": "0.0",
+          "to_version": "2.0",
+          "score": 73,
+          "content_hash": "944c8d1eff24583259ef70dcc449caad03731691e10427f43d0536ea46d5ffee"
+        },
+        {
+          "skill": "matlab-design-digital-filter",
+          "from_version": "0.0",
+          "to_version": "1.1",
+          "score": 47,
+          "content_hash": "87e170d39d0d060bc5cb7ef618e9d0cdd8999af36e11dcfa05352ee36cc6d259"
+        },
+        {
+          "skill": "matlab-live-script",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 58,
+          "content_hash": "db3f21553c23550a429cf7a4121e57d33a4a64869a3249d474e4c83a01d5ae9f"
+        },
+        {
+          "skill": "matlab-modernize-code",
+          "from_version": "0.0",
+          "to_version": "1.0",
+          "score": 73,
+          "content_hash": "6c4844bc0bb88656c8b0b25b0dde7ddbda35cdd07e996c051493a5f0d3839524"
+        },
+        {
+          "skill": "matlab-optimize-performance",
+          "from_version": "0.0",
+          "to_version": "1.0",
+          "score": 65,
+          "content_hash": "ca620b1f485d88dc1956332b6b03cfef2c9dffce0185fd8b3da7bd516fb74e5f"
+        },
+        {
+          "skill": "matlab-performance-optimizer",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 56,
+          "content_hash": "fdfb01a54521af5c0200115a032e000c8fdcd7e0f7f48598318e68174b36dbb5"
+        },
+        {
+          "skill": "matlab-review-code",
+          "from_version": "0.0",
+          "to_version": "1.0",
+          "score": 73,
+          "content_hash": "6c7f54a6d9719a0c2faad6cff5134ee04dcd0cb8db27743fa03a25230e6c54b1"
+        },
+        {
+          "skill": "matlab-simulink-generator",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 76,
+          "content_hash": "82e03b8c6dba7178481d050ff2e2238408b23c2839c9b45e75fcb1e4581b3c22"
+        },
+        {
+          "skill": "matlab-test-generator",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 56,
+          "content_hash": "6f1b73109c042365662abae63eeb2c1fe428a0dcc183a141ef7c9c52f248c9c2"
+        },
+        {
+          "skill": "matlab-testing",
+          "from_version": "0.0",
+          "to_version": "1.0",
+          "score": 73,
+          "content_hash": "85dfe6f02e091cf730354c534bdce04f0faf30b7b1fbacef520e220422b0acce"
+        },
+        {
+          "skill": "matlab-uihtml-app-builder",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 48,
+          "content_hash": "5a586aee322c08e82bd9cd53eb9dc32a41eb639f960e9362831fc8431574fc11"
+        },
+        {
+          "skill": "yuanbao",
+          "from_version": "0.0",
+          "to_version": "1.0",
+          "score": 70,
+          "content_hash": "239e4875f511124fab06e94ff21511fd8f857554c6ffd82dfb796ed275b4ff32"
+        },
+        {
+          "skill": "蒙多",
+          "from_version": "0.0",
+          "to_version": "16.0",
+          "score": 86,
+          "content_hash": "dee79f9848a051ed276ae6d12e3ec6f926162d2436428c4eac94b32bd474b4b6"
+        }
+      ]
+    },
+    {
       "timestamp": "2026-05-27T10:16:05Z",
       "action": "sync",
       "synced_count": 15,
