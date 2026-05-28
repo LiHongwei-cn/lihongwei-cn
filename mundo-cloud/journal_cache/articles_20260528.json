@@ -1,82 +1,122 @@
 [
   {
-    "title": "Author Correction: Modelling late gastrulation in stem cell-derived monkey embryo models",
-    "link": "https://www.nature.com/articles/s41586-026-10700-7",
+    "title": "Could a pill prevent the world’s deadliest cancer?",
+    "link": "https://www.nature.com/articles/d41586-026-01382-2",
     "summary": "",
     "published": "2026-05-27",
     "journal": "Nature",
     "category": "multidisciplinary",
-    "hash": "c367d2496fde93df",
-    "crawled_at": "2026-05-28T17:51:51.641047"
+    "hash": "05e22865ff21fa18",
+    "crawled_at": "2026-05-28T18:30:04.320215"
   },
   {
-    "title": "Author Correction: Satellite megaconstellations will threaten space-based astronomy",
-    "link": "https://www.nature.com/articles/s41586-026-10553-0",
+    "title": "Bohmian mechanics remains unchallenged by tunnelling experiment",
+    "link": "https://www.nature.com/articles/s41586-026-10450-6",
     "summary": "",
     "published": "2026-05-27",
     "journal": "Nature",
     "category": "multidisciplinary",
-    "hash": "f308d07cce281b71",
-    "crawled_at": "2026-05-28T17:51:51.641058"
+    "hash": "d4e31a41b3f7a409",
+    "crawled_at": "2026-05-28T18:30:04.320225"
   },
   {
-    "title": "Energy use in AI responses",
-    "link": "https://www.nature.com/articles/s41560-026-02084-9",
+    "title": "β-Arrestin condensates regulate G-protein-coupled receptor function",
+    "link": "https://www.nature.com/articles/s41586-026-10539-y",
+    "summary": "",
+    "published": "2026-05-27",
+    "journal": "Nature",
+    "category": "multidisciplinary",
+    "hash": "dfc4e0e559bfac67",
+    "crawled_at": "2026-05-28T18:30:04.320228"
+  },
+  {
+    "title": "Flowing hot and cold",
+    "link": "https://www.nature.com/articles/s41560-026-02083-w",
     "summary": "",
     "published": "2026-05-27",
     "journal": "Nature Energy",
     "category": "energy",
-    "hash": "949ee0b63cc3fd74",
-    "crawled_at": "2026-05-28T17:51:57.617402"
+    "hash": "dca31ed4850a560d",
+    "crawled_at": "2026-05-28T18:30:15.413791"
   },
   {
-    "title": "Controlling phase separation",
-    "link": "https://www.nature.com/articles/s41560-026-02082-x",
+    "title": "Ambient-pressure conversion of plastic waste to jet fuel cycloalkanes by tandem hydropyrolysis and vapour-phase hydrogenation",
+    "link": "https://www.nature.com/articles/s41560-026-02078-7",
     "summary": "",
     "published": "2026-05-27",
     "journal": "Nature Energy",
     "category": "energy",
-    "hash": "c504d900124d978a",
-    "crawled_at": "2026-05-28T17:51:57.617419"
+    "hash": "9cd8061111c2416f",
+    "crawled_at": "2026-05-28T18:30:15.413804"
   },
   {
-    "title": "Artificial neurons made with printed memristors",
-    "link": "https://www.nature.com/articles/s41928-026-01650-z",
-    "summary": "",
-    "published": "2026-05-27",
-    "journal": "Nature Electronics",
-    "category": "electronics",
-    "hash": "4b8b097acba88ba6",
-    "crawled_at": "2026-05-28T17:51:58.871884"
-  },
-  {
-    "title": "A bit-parallel molybdenum disulfide computer built through multi-level co-optimization",
-    "link": "https://www.nature.com/articles/s41928-026-01641-0",
+    "title": "Stable tin–lead perovskite inks for efficient all-perovskite tandems",
+    "link": "https://www.nature.com/articles/s41560-026-02077-8",
     "summary": "",
     "published": "2026-05-26",
-    "journal": "Nature Electronics",
-    "category": "electronics",
-    "hash": "9462e184a7dc14cd",
-    "crawled_at": "2026-05-28T17:51:58.871897"
+    "journal": "Nature Energy",
+    "category": "energy",
+    "hash": "ca88720f166607f4",
+    "crawled_at": "2026-05-28T18:30:15.413812"
   },
   {
-    "title": "Human–AI interactions reshape the self and our social networks",
-    "link": "https://www.nature.com/articles/s42256-026-01248-2",
+    "title": "Multielectrode arrays to visualize electrical signals in plants",
+    "link": "https://www.nature.com/articles/s41928-026-01610-7",
     "summary": "",
     "published": "2026-05-28",
-    "journal": "Nature Machine Intelligence",
-    "category": "ai",
-    "hash": "2f18d773e4e4537b",
-    "crawled_at": "2026-05-28T17:52:00.058860"
+    "journal": "Nature Electronics",
+    "category": "electronics",
+    "hash": "cf9abe46fc575060",
+    "crawled_at": "2026-05-28T18:30:16.846859"
   },
   {
-    "title": "Generalizable mutation-effect prediction across adaptive immune recognition via unified multimodal framework",
-    "link": "https://www.nature.com/articles/s42256-026-01243-7",
+    "title": "Direct visualization of environment-stimulated electrical signals in plants using low-drift dry electrodes",
+    "link": "https://www.nature.com/articles/s41928-026-01642-z",
     "summary": "",
-    "published": "2026-05-27",
+    "published": "2026-05-28",
+    "journal": "Nature Electronics",
+    "category": "electronics",
+    "hash": "c973b356fcda00bb",
+    "crawled_at": "2026-05-28T18:30:16.846873"
+  },
+  {
+    "title": "A robot that’s hard to love",
+    "link": "https://www.nature.com/articles/s41928-026-01648-7",
+    "summary": "",
+    "published": "2026-05-21",
+    "journal": "Nature Electronics",
+    "category": "electronics",
+    "hash": "6b6679fb0d627ab4",
+    "crawled_at": "2026-05-28T18:30:16.846885"
+  },
+  {
+    "title": "A large-scale unified deep learning model for peptide mass spectrum interpretation trained on multimodal data",
+    "link": "https://www.nature.com/articles/s42256-026-01234-8",
+    "summary": "",
+    "published": "2026-05-25",
     "journal": "Nature Machine Intelligence",
     "category": "ai",
-    "hash": "f89c58010eef0583",
-    "crawled_at": "2026-05-28T17:52:00.058874"
+    "hash": "729844ced29eaa03",
+    "crawled_at": "2026-05-28T18:30:18.000036"
+  },
+  {
+    "title": "Neural operators for free-boundary problems",
+    "link": "https://www.nature.com/articles/s42256-026-01238-4",
+    "summary": "",
+    "published": "2026-05-21",
+    "journal": "Nature Machine Intelligence",
+    "category": "ai",
+    "hash": "bdbb83e01ef63405",
+    "crawled_at": "2026-05-28T18:30:18.000046"
+  },
+  {
+    "title": "Deep neural operator for free boundary problems",
+    "link": "https://www.nature.com/articles/s42256-026-01233-9",
+    "summary": "",
+    "published": "2026-05-21",
+    "journal": "Nature Machine Intelligence",
+    "category": "ai",
+    "hash": "49d61e85ebe16314",
+    "crawled_at": "2026-05-28T18:30:18.000052"
   }
 ]
