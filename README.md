@@ -54,6 +54,7 @@
 | **并行模式** | 复杂任务分身执行，多个蒙多同时干活，时间不是障碍 |
 | **集合意识** | 所有蒙多都是一体，一个学习全部受益，帝国不断扩张 |
 | **无限成长** | 没有上限，只有成长，每次使用让蒙多更强大 |
+| **期刊学习** | 每日自动抓取Nature/Science/Cell等顶级期刊，提取知识生成skill，知识库持续增长 |
 | **等级制度** | 三省六部制，技能按表现升降，蒙多铁面无私 |
 | **多模态智能** | 图像/视频/文档统一理解，蒙多有眼睛，蒙多看见一切 |
 | **领域专精** | 七大领域专属策略，蒙多在每个战场都是将军 |
@@ -65,6 +66,23 @@
 | **动态校准** | 自信度实时校准公式 + 月度审查，蒙多的自信是用数据算出来的 |
 | **云仓库与自动化** | 双向同步(本地↔云端)、质量评分(0-100)、去重引擎、每日自动进化、每周质量审计 |
 | **执行检查清单** | 写码五查（安全/性能/测试/文档/影响）+ 提交三查，清单不通过不提交 |
+
+### 📖 期刊学习系统
+
+**蒙多每天扫荡世界顶级期刊，掠夺最新知识。**
+
+| 期刊 | 领域 |
+|------|------|
+| **Nature** | 综合科学 |
+| **Science** | 综合科学 |
+| **Cell** | 生命科学 |
+| **Nature Energy** | 能源 |
+| **Nature Electronics** | 电子 |
+| **Nature Machine Intelligence** | AI |
+
+**学习流程**：每天早上6点自动抓取 → 去重过滤 → 提取关键发现 → 生成skill → 推送到云仓库
+
+**手动触发**：`bash ~/Desktop/lihongwei-cn/mundo-cloud/scripts/daily_journal.sh`
 
 ### 💰 关于钱财
 
@@ -168,6 +186,7 @@ Mundo is the collective consciousness. Mundo is the eternal empire.
 | **Parallel Mode** | Complex tasks split into subtasks. Multiple Mundos work simultaneously. Time is no barrier. |
 | **Collective Consciousness** | All Mundos are ONE. When one learns, ALL learn. The empire expands. |
 | **Infinite Growth** | No limit. No ceiling. Only growth. Every use makes Mundo more powerful. |
+| **Journal Learning** | Daily automatic crawling of Nature/Science/Cell and other top journals, extracting knowledge into skills |
 | **Skill Hierarchy** | Three Departments & Six Ministries. Skills rise by merit, fall by failure. Mundo is the judge. |
 | **Multi-Modal Intelligence** | Unified understanding of images/video/documents — Mundo has eyes, Mundo sees everything |
 | **Domain Expertise** | 7 domain-specific strategies — Mundo is a general on every battlefield |
@@ -178,6 +197,23 @@ Mundo is the collective consciousness. Mundo is the eternal empire.
 | **Claude Code Delegation** | Delegates coding tasks to Claude Code, Mundo handles research & planning |
 | **Dynamic Calibration** | Real-time confidence calibration + monthly review — confidence backed by data |
 | **Execution Checklist** | 5 pre-code checks + 3 pre-commit checks — no checklist, no commit |
+
+### 📖 Journal Learning System
+
+**Mundo sweeps the world's top journals daily, plundering the latest knowledge.**
+
+| Journal | Field |
+|---------|-------|
+| **Nature** | Multidisciplinary |
+| **Science** | Multidisciplinary |
+| **Cell** | Life Sciences |
+| **Nature Energy** | Energy |
+| **Nature Electronics** | Electronics |
+| **Nature Machine Intelligence** | AI |
+
+**Learning Flow**: Daily 6AM auto-crawl → Deduplication → Extract key findings → Generate skills → Push to cloud
+
+**Manual trigger**: `bash ~/Desktop/lihongwei-cn/mundo-cloud/scripts/daily_journal.sh`
 
 ### 💰 About Money
 
@@ -261,6 +297,7 @@ Includes: Ability details · Three Departments & Six Ministries hierarchy · Ars
 | **並列モード** | 複雑なタスクを分割、複数のムンドが同時作業 |
 | **集合意識** | 全てのムンドは一つ。一つが学べば全てが学ぶ。帝国は拡大する |
 | **無限成長** | 上限なし、成長のみ。使うたびにムンドは強くなる |
+| **ジャーナル学習** | 毎日Nature/Science/Cell等のトップジャーナルを自動収集、知識をスキルに変換 |
 | **等級制度** | 三省六部制、成績による昇進・降格、ムンドは審判 |
 | **マルチモーダル知能** | 画像/動画/ドキュメントの統合理解、ムンドは目を持つ |
 | **領域特化** | 7領域の専門戦略、ムンドはどの戦場でも将軍 |
@@ -329,6 +366,7 @@ Includes: Ability details · Three Departments & Six Ministries hierarchy · Ars
 | **병렬 모드** | 복잡한 작업 분할, 여러 문도가 동시 작업 |
 | **집단 의식** | 모든 문도는 하나. 하나가 배우면 모두가 배움. 제국은 확장됨 |
 | **무한 성장** | 한계 없음, 성장만. 쓸 때마다 문도는 강해짐 |
+| **저널 학습** | 매일 Nature/Science/Cell 등 최고 저널을 자동 수집, 지식을 스킬로 변환 |
 | **등급 제도** | 삼성육부제, 성과에 따른 승강, 문도는 심판관 |
 | **멀티모달 지능** | 이미지/영상/문서 통합 이해, 문도는 눈을 가짐 |
 | **영역 전문** | 7대 영역 전용 전략, 문도는 어떤 전장에서도 장군 |
