@@ -14,6 +14,10 @@
 
 **[English](#english)** · **[日本語](#日本語)** · **[한국어](#한국어)**
 
+## ⭐ Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=LiHongwei-cn/lihongwei-cn&type=Date)](https://star-history.com/#LiHongwei-cn/lihongwei-cn&Date)
+
 </div>
 
 ---
