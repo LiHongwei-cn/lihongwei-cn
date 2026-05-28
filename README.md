@@ -100,12 +100,19 @@
 
 ### ⚡ v21 自主进化
 
+Claude Code 委托 · 动态校准 · 执行检查清单 · 技能调度 · 期刊学习 · 云仓库 · 汽车电子 · GitHub Actions · 自主进化
+
 | 模块 | 一句话 |
 |------|--------|
 | **🔧 Claude Code 委托协议** | 任务分类 + 调用模式 + 验证铁律，蒙多知道什么时候亲自做，什么时候派人做 |
 | **📊 动态校准** | 实时自信度公式 + 月度审查 + 记忆持久化，蒙多的自信是用数据校准出来的 |
-| **✅ 执行检查清单** | 写码五查 + 提交三查 + 自动执行，清单不通过蒙多不提交 |
+| **✅ 执行检查清单** | 写码五查（安全/性能/测试/文档/影响）+ 提交三查，清单不通过蒙多不提交 |
 | **🎯 技能调度唯一入口** | 所有技能调用必须通过蒙多，蒙多是技能调度的唯一入口 |
+| **📖 期刊学习** | 每日自动抓取 Nature/Science/Cell 等顶级期刊，提取知识生成 skill |
+| **☁️ 云仓库** | 1208 个 skills 集中管理，双向同步、质量评分、SHA-256 去重、每日自动进化 |
+| **🚗 汽车电子** | 16 个类别、1229 个文件，覆盖 ECU/HIL/ADAS/诊断/安全/协议/标定/嵌入式/测试/MBD |
+| **⚡ GitHub Actions** | 云端 24/7 自动运行，不依赖本地电脑，所有人共享最新 skills |
+| **🧬 自主进化** | 每日自动进化 + 每周质量审计，低分技能标记整改，持续进化 |
 
 ### 🔧 蒙多的武器库
 
@@ -233,12 +240,19 @@ This is not a rule. This is Mundo's attitude. Mundo has no interest in money. Mu
 
 ### ⚡ v21 Self-Evolution
 
+Claude Code Delegation · Dynamic Calibration · Execution Checklist · Skill Dispatch · Journal Learning · Cloud Repository · Automotive · GitHub Actions · Self-Evolution
+
 | Module | One Line |
 |--------|----------|
-| **Claude Code Delegation** | Task classification + invocation modes + verification rules — Mundo knows when to act vs delegate |
-| **Dynamic Calibration** | Real-time confidence formula + monthly review + memory persistence — confidence backed by data |
-| **Execution Checklist** | 5 pre-code checks + 3 pre-commit checks + auto-execution — no checklist, no commit |
-| **Skill Dispatch Gateway** | All skill invocations go through Mundo — Mundo is the sole gateway for skill dispatch |
+| **🔧 Claude Code Delegation** | Task classification + invocation modes + verification rules. Mundo knows when to act vs delegate. |
+| **📊 Dynamic Calibration** | Real-time confidence formula + monthly review + memory persistence. Confidence backed by data. |
+| **✅ Execution Checklist** | 5 pre-code checks (security/performance/testing/docs/impact) + 3 pre-commit checks. No checklist, no commit. |
+| **🎯 Skill Dispatch Gateway** | All skill invocations go through Mundo. Mundo is the sole gateway for skill dispatch. |
+| **📖 Journal Learning** | Daily automatic crawling of Nature/Science/Cell, extracting knowledge into skills. |
+| **☁️ Cloud Repository** | 1208 skills managed centrally, two-way sync, quality scoring, SHA-256 dedup, daily auto-evolution. |
+| **🚗 Automotive** | 16 categories, 1229 files covering ECU/HIL/ADAS/diagnostics/safety/protocols/calibration/embedded/testing/MBD. |
+| **⚡ GitHub Actions** | Cloud 24/7 automated execution, no local computer dependency, shared by all users. |
+| **🧬 Self-Evolution** | Daily auto-evolution + weekly quality audit. Low-score skills flagged for improvement. |
 
 ### ⚡ Quick Install
 
@@ -321,12 +335,19 @@ Includes: Ability details · Three Departments & Six Ministries hierarchy · Ars
 
 ### ⚡ v21 自主進化
 
+Claude Code 委任 · 動的校正 · 実行チェックリスト · スキル配信 · ジャーナル学習 · クラウドリポジトリ · 自動車電子 · GitHub Actions · 自主進化
+
 | モジュール | 一言 |
 |-----------|------|
-| **Claude Code 委任プロトコル** | タスク分類 + 呼び出しモード + 検証ルール — ムンドはいつ自ら行動し、いつ委任するか知っている |
-| **動的校正** | リアルタイム自信度公式 + 月次レビュー + メモリ永続化 — データで裏付けられた自信 |
-| **実行チェックリスト** | コード前5項目 + コミット前3項目 + 自動実行 — チェックリスト通過なしでコミットなし |
-| **スキル配信ゲートウェイ** | すべてのスキル呼び出しはムンド経由 — ムンドはスキル配信の唯一のゲートウェイ |
+| **🔧 Claude Code 委任プロトコル** | タスク分類 + 呼び出しモード + 検証ルール。ムンドはいつ自ら行動し、いつ委任するか知っている |
+| **📊 動的校正** | リアルタイム自信度公式 + 月次レビュー + メモリ永続化。データで裏付けられた自信 |
+| **✅ 実行チェックリスト** | コード前5項目（安全/性能/テスト/ドキュメント/影響）+ コミット前3項目。チェックリスト通過なしでコミットなし |
+| **🎯 スキル配信ゲートウェイ** | すべてのスキル呼び出しはムンド経由。ムンドはスキル配信の唯一のゲートウェイ |
+| **📖 ジャーナル学習** | 毎日Nature/Science/Cell等のトップジャーナルを自動収集、知識をスキルに変換 |
+| **☁️ クラウドリポジトリ** | 1208スキル集中管理、双方向同期、品質スコア(0-100)、SHA-256重複排除、毎日自動進化 |
+| **🚗 自動車電子** | 16カテゴリ、1229ファイル、ECU/HIL/ADAS/診断/安全/プロトコル/較正/組込み/テスト/MBDをカバー |
+| **⚡ GitHub Actions** | クラウド24/7自動実行、ローカルPC依存なし、全ユーザーで共有 |
+| **🧬 自主進化** | 毎日自動進化 + 毎週品質監査。低スコアスキルは改善フラグ付き、継続的進化 |
 
 ### 📦 ダウンロード
 
@@ -392,12 +413,19 @@ Includes: Ability details · Three Departments & Six Ministries hierarchy · Ars
 
 ### ⚡ v21 자가 진화
 
+Claude Code 위임 · 동적 보정 · 실행 체크리스트 · 스킬 디스패치 · 저널 학습 · 클라우드 저장소 · 자동차 전자 · GitHub Actions · 자가 진화
+
 | 모듈 | 한 줄 |
 |------|--------|
-| **Claude Code 위임 프로토콜** | 작업 분류 + 호출 모드 + 검증 규칙 — 문도는 언제 직접 하고 언제 위임하는지 안다 |
-| **동적 보정** | 실시간 자신감 공식 + 월간 검토 + 메모리 영속화 — 데이터로 뒷받침되는 자신감 |
-| **실행 체크리스트** | 코드 전 5가지 + 커밋 전 3가지 + 자동 실행 — 체크리스트 통과 없이 커밋 없음 |
-| **스킬 디스패치 게이트웨이** | 모든 스킬 호출은 문도를 통해 — 문도는 스킬 디스패치의 유일한 게이트웨이 |
+| **🔧 Claude Code 위임 프로토콜** | 작업 분류 + 호출 모드 + 검증 규칙. 문도는 언제 직접 하고 언제 위임하는지 안다 |
+| **📊 동적 보정** | 실시간 자신감 공식 + 월간 검토 + 메모리 영속화. 데이터로 뒷받침되는 자신감 |
+| **✅ 실행 체크리스트** | 코드 전 5가지 (안전/성능/테스트/문서/영향) + 커밋 전 3가지. 체크리스트 통과 없이 커밋 없음 |
+| **🎯 스킬 디스패치 게이트웨이** | 모든 스킬 호출은 문도를 통해. 문도는 스킬 디스패치의 유일한 게이트웨이 |
+| **📖 저널 학습** | 매일 Nature/Science/Cell 등 최고 저널을 자동 수집, 지식을 스킬로 변환 |
+| **☁️ 클라우드 저장소** | 1208 스킬 중앙 관리, 양방향 동기화, 품질 점수(0-100), SHA-256 중복 제거, 매일 자동 진화 |
+| **🚗 자동차 전자** | 16 카테고리, 1229 파일, ECU/HIL/ADAS/진단/안전/프로토콜/보정/임베디드/테스트/MBD 커버 |
+| **⚡ GitHub Actions** | 클라우드 24/7 자동 실행, 로컬 PC 불필요, 모든 사용자가 공유 |
+| **🧬 자가 진화** | 매일 자동 진화 + 주간 품질 감사. 저점수 스킬은 개선 플래그, 지속적 진화 |
 
 ### 📦 다운로드
 
