@@ -660,18 +660,20 @@ description: 这个方案解决了什么问题
 
 ### 升级后全量同步（铁律）
 
-每次蒙多版本升级，必须完成以下全部步骤才算完成：
+**每次蒙多版本升级，必须完成以下全部步骤才算完成：**
 
-1. `~/.hermes/skills/mundo/SKILL.md` — 源文件更新
+1. `~/.hermes/skills/mundo/SKILL.md` — 源文件更新（版本号 frontmatter）
 2. `global-specs/skills/蒙多/SKILL.md` — 仓库副本
 3. `skills/mundo/SKILL.md` — 仓库副本
-4. `README.md` — 四国语言（中/英/日/韩）能力表 + 版本 + 下载链接
+4. `README.md` — 四国语言能力表 + 版本 + 下载链接（grep 所有 v旧版本 替换为 v新版本）
 5. `skills/index.html` — 能力卡片 + 下载链接
 6. `mundo/index.html` — hero badge + 能力卡片 + 下载链接
 7. `references/evolution-log.md` — 新增版本记录
-8. Git commit + push
+8. `bash tools/package_mundo.sh v新版本` — 打包三平台 zip
+9. `gh release create mundo-v新版本 mundo-cloud/dist/v新版本/*.zip` — 创建 GitHub Release
+10. Git commit + push（含 dist/ zip 文件）
 
-**跳过 4-6 任何一步 = 升级未完成。用户会发现。**
+**跳过 4-6 任何一步 = 升级未完成。跳过 8-9 = 下载链接 404。用户会发现。**
 ---
 ## 🎯 使用场景
 
@@ -726,28 +728,30 @@ description: 这个方案解决了什么问题
 - ❌ "呕心沥血之作"（用户明确要求删除）
 - ❌ "基于 Hermes Agent 开源框架开发"
 - ❌ "独立开发 AI Agent 架构"
+**每次蒙多版本升级，必须完成以下全部步骤才算完成：**
 
-**必须同步的目标（每次蒙多升级）：**
-1. `~/.hermes/skills/mundo/SKILL.md` — 源文件
+1. `~/.hermes/skills/mundo/SKILL.md` — 源文件更新（版本号 frontmatter）
 2. `global-specs/skills/蒙多/SKILL.md` — 仓库副本
 3. `skills/mundo/SKILL.md` — 仓库副本
-4. `README.md` — 四国语言
-5. `skills/index.html` — 能力卡片
-6. `mundo/index.html` — 项目页面
-7. `references/evolution-log.md` — 版本记录
-8. Git commit + push
+4. `README.md` — 四国语言能力表 + 版本 + 下载链接（grep 所有 v旧版本 替换为 v新版本）
+5. `skills/index.html` — 能力卡片 + 下载链接
+6. `mundo/index.html` — hero badge + 能力卡片 + 下载链接
+7. `references/evolution-log.md` — 新增版本记录
+8. `bash tools/package_mundo.sh v新版本` — 打包三平台 zip
+9. `gh release create mundo-v新版本 mundo-cloud/dist/v新版本/*.zip` — 创建 GitHub Release
+10. Git commit + push（含 dist/ zip 文件）
 
-## References
+**跳过 4-6 任何一步 = 升级未完成。跳过 8-9 = 下载链接 404。用户会发现。**
 
 - `references/iteration-checklist.md` — How to update Mundo (sync targets, feature preservation, style guide)
 - `references/parallel-audit.md` — Mundo parallel audit mode
 - `references/site-audit-pattern.md` — Full site audit pattern
 - `references/mundo-optimization-playbook.md` — Full optimization workflow (audit → Claude Code → verify → sync)
 - `references/project-merge-pattern.md` — Project merge workflow (audit → delete → merge → verify)
-- `references/cloud-repository.md` — 蒙多云仓库系统（质量评分、去重引擎、每日进化、提交流程）
+- `references/cloud-repository.md` — 蒙多云仓库系统（质量评分、去重引擎、每日进化、3个cron job自动化）
 - `references/mundo-positioning.md` — How to describe Mundo (CRITICAL — user corrected twice)
-- `references/resume-workflow.md` — Resume creation workflow (scan projects → match → HTML → PDF)
-- `references/resume-writing.md` — Resume/求职材料规范（项目归属准确性红线 + 邮件策略）
+- `references/resume-workflow.md` — Resume creation workflow (scan projects → match → HTML → PDF). CRITICAL: use `--headless=new --no-header` for Chrome PDF generation.
+- `references/resume-writing.md` — Resume/求职材料规范（项目归属准确性红线 + 邮件策略 + Telegram Bot 项目）
 ---
 ## Changelog
 

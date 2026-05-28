@@ -14,16 +14,14 @@
 | **使用/配置** | 只是用了某个工具 | "熟练使用 [工具名]" |
 | **开源贡献** | 给别人的项目提了 PR | "参与 [项目名] 开源贡献" |
 
-### 用户实际项目清单（2026-05 确认）
+### 用户实际项目清单（2026-05-27 更新）
 
 **用户独立开发的：**
-- MATLAB 仿真工具包（9 个脚本 + utils + GitHub Pages 页面）
-- 蒙多（Mundo）AI 技能系统（基于 Hermes Agent 框架，19 个版本迭代）
-- 家庭血压监测微信小程序（FastAPI + SQLite + DeepSeek）
-- GitHub Pages 项目展示系统（15+ 子页面，纯手写 HTML/CSS）
-- ADAS HIL 测试 Demo（7 个 MATLAB 文件）
-- 蒙多云仓库系统（质量评分 + 去重 + 每日进化）
-- 各种启动脚本、工具脚本
+- MATLAB AI 仿真工具包（9 个仿真脚本 + ADAS HIL Demo + utils + 一键启动脚本 + GitHub Pages 展示页 + 安装包自动打包）
+- 蒙多（Mundo）AI 智能编排系统（基于 Hermes Agent 平台，v19.2，24 个能力模块 + 云仓库自动化系统）
+- 蒙多 Telegram Bot（跨界学习引擎：GitHub+SO 并行搜索、图片理解、22 项测试全通过）
+- 家庭血压监测微信小程序（FastAPI + SQLite + DeepSeek API）
+- 蒙多云仓库系统（质量评分 + SHA-256 去重 + 每日自动进化 + 每周质量审计 + 32 个技能入库）
 
 **用户使用但不是用户开发的：**
 - Hermes Agent（开源框架，用户是使用者和 Skill 开发者）
@@ -61,8 +59,10 @@
 
 **正确的写法：**
 - ✅ "基于开源 Hermes Agent 框架，设计并迭代 19 个版本的 AI 技能系统"
+- ✅ "基于开源 Hermes Agent 框架，设计并迭代 19 个版本的 AI 智能编排系统，含云仓库自动化"
 - ✅ "熟练使用 Claude Code 进行代码生成和自动化脚本编写"
 - ✅ "独立开发 MATLAB 仿真工具包，9 个仿真脚本，全部兼容 R2016b"
+- ✅ "独立开发蒙多 Telegram Bot，集成跨界学习引擎（GitHub+SO 并行搜索、图片理解），22 项测试全通过"
 
 ## 求职邮件策略
 
@@ -75,9 +75,12 @@
 
 ```bash
 # HTML → PDF（macOS Chrome headless）
+# 必须加 --no-header，否则页眉出现 URL 编码乱码、页脚出现日期时间
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
-  --headless --print-to-pdf="output.pdf" --no-margins \
+  --headless=new --print-to-pdf="output.pdf" --no-margins --no-header \
   "file:///path/to/resume.html"
 ```
+
+**Pitfall**: `--headless`（旧版）中文可能渲染异常，用 `--headless=new`。不加 `--no-header` 用户会看到乱码（URL 编码路径）。
 
 生成后删除中间 HTML 文件。

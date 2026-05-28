@@ -7,10 +7,16 @@
 1. `~/.hermes/skills/mundo/SKILL.md` — Local Hermes skill (the source of truth)
 2. `global-specs/skills/蒙多/SKILL.md` — Repository copy
 3. `skills/mundo/SKILL.md` — Another repository copy
-4. `README.md` — Four languages (中/英/日/韩), all features listed
+4. `README.md` — Four languages (中/英/日/韩), all features listed + version + download links
 5. `skills/index.html` — Skills page, all features as cards
-6. GitHub Release — New tag with zip package
-7. Download links in README and skills page must point to new release
+6. `mundo/index.html` — Hero badge + capability cards + download links
+7. `references/evolution-log.md` — Add version entry
+8. `bash tools/package_mundo.sh v新版本` — Build three-platform zips
+9. `gh release create mundo-v新版本 mundo-cloud/dist/v新版本/*.zip` — Create GitHub Release
+10. Git commit + push (including dist/ zips)
+
+**铁律：步骤 8-9 不做 = 下载链接是死链。README/index.html 指向不存在的 Release = 404。**
+**铁律：grep 所有 v旧版本 替换为 v新版本，不能只改一处。**
 
 ## Feature Preservation Rules (CRITICAL)
 
