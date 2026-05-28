@@ -138,9 +138,9 @@ hermes skills install mundo
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v19.2-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-macos.zip) |
-| Windows | [mundo-v19.2-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-windows.zip) |
-| Linux | [mundo-v19.2-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-linux.zip) |
+| macOS | [mundo-v21.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-macos.zip) |
+| Windows | [mundo-v21.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-windows.zip) |
+| Linux | [mundo-v21.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-linux.zip) |
 
 ### 🌐 更多详细内容
 
@@ -251,9 +251,9 @@ hermes skills install mundo
 
 | Platform | Download |
 |----------|----------|
-| macOS | [mundo-v19.2-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-macos.zip) |
-| Windows | [mundo-v19.2-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-windows.zip) |
-| Linux | [mundo-v19.2-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-linux.zip) |
+| macOS | [mundo-v21.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-macos.zip) |
+| Windows | [mundo-v21.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-windows.zip) |
+| Linux | [mundo-v21.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-linux.zip) |
 
 ### 🌐 Full Documentation
 
@@ -328,9 +328,9 @@ Includes: Ability details · Three Departments & Six Ministries hierarchy · Ars
 
 | プラットフォーム | ダウンロード |
 |-----------------|-------------|
-| macOS | [mundo-v19.2-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-macos.zip) |
-| Windows | [mundo-v19.2-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-windows.zip) |
-| Linux | [mundo-v19.2-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-linux.zip) |
+| macOS | [mundo-v21.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-macos.zip) |
+| Windows | [mundo-v21.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-windows.zip) |
+| Linux | [mundo-v21.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-linux.zip) |
 
 ---
 
@@ -399,9 +399,9 @@ Includes: Ability details · Three Departments & Six Ministries hierarchy · Ars
 
 | 플랫폼 | 다운로드 |
 |--------|----------|
-| macOS | [mundo-v19.2-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-macos.zip) |
-| Windows | [mundo-v19.2-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-windows.zip) |
-| Linux | [mundo-v19.2-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v19.2/mundo-v19.2-linux.zip) |
+| macOS | [mundo-v21.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-macos.zip) |
+| Windows | [mundo-v21.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-windows.zip) |
+| Linux | [mundo-v21.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-linux.zip) |
 
 ---
 
