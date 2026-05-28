@@ -1,0 +1,133 @@
+{
+  "date": "2026-05-28",
+  "source": "https://aihot.virxact.com/",
+  "count": 25,
+  "hotspots": [
+    {
+      "title": "Anthropic：Research（发表成果 · 网页）",
+      "link": "https://www.anthropic.com/research/coding-agents-social-sciences",
+      "source": "article"
+    },
+    {
+      "title": "OpenAI：官网动态（RSS · 排除企业/客户案例）",
+      "link": "https://openai.com/index/cisco",
+      "source": "article"
+    },
+    {
+      "title": "Claude：Blog（网页）",
+      "link": "https://claude.com/blog/using-llms-to-secure-source-code",
+      "source": "article"
+    },
+    {
+      "title": "Meta Engineering Blog（RSS）",
+      "link": "https://engineering.fb.com/2026/05/26/ml-applications/silvertorch-index-as-model-new-retrieval-paradigm-recommendation-systems",
+      "source": "article"
+    },
+    {
+      "title": "Tomer Tunguz 博客（VC 分析）",
+      "link": "https://www.tomtunguz.com/harnessing-ai",
+      "source": "article"
+    },
+    {
+      "title": "Midjourney：Updates（RSS）",
+      "link": "https://updates.midjourney.com/web-updates-5",
+      "source": "article"
+    },
+    {
+      "title": "OpenAI Developers",
+      "link": "https://x.com/OpenAIDevs/status/2059703536825565499",
+      "source": "article"
+    },
+    {
+      "title": "OpenCode",
+      "link": "https://x.com/opencode/status/2059696100626297225",
+      "source": "article"
+    },
+    {
+      "title": "Hao AI Lab",
+      "link": "https://x.com/haoailab/status/2059695648103112946",
+      "source": "article"
+    },
+    {
+      "title": "Replit ⠕",
+      "link": "https://x.com/Replit/status/2059688584899154134",
+      "source": "article"
+    },
+    {
+      "title": "Google Developers Blog（RSS）",
+      "link": "https://developers.googleblog.com/the-latest-updates-to-google-pay",
+      "source": "article"
+    },
+    {
+      "title": "Rohan Paul",
+      "link": "https://x.com/rohanpaul_ai/status/2059689400267939925",
+      "source": "article"
+    },
+    {
+      "title": "Simon Willison 博客",
+      "link": "https://simonwillison.net/2026/May/27/product-market-fit",
+      "source": "article"
+    },
+    {
+      "title": "Google Research：Blog（网页）",
+      "link": "https://research.google/blog/private-analytics-via-zero-trust-aggregation",
+      "source": "article"
+    },
+    {
+      "title": "Hugging Face：Blog（RSS）",
+      "link": "https://huggingface.co/blog/ibm-research/itbench-aa",
+      "source": "article"
+    },
+    {
+      "title": "Chubby♨️",
+      "link": "https://x.com/kimmonismus/status/2059668961181004275",
+      "source": "article"
+    },
+    {
+      "title": "Perplexity",
+      "link": "https://x.com/perplexity_ai/status/2059664738087469511",
+      "source": "article"
+    },
+    {
+      "title": "Claude",
+      "link": "https://x.com/claudeai/status/2059662933924123044",
+      "source": "article"
+    },
+    {
+      "title": "Runway：News（网页）",
+      "link": "https://runwayml.com/news/mcp",
+      "source": "article"
+    },
+    {
+      "title": "The Verge：AI（RSS）",
+      "link": "https://www.theverge.com/ai-artificial-intelligence/937933/pope-ai-encyclical-tech-industry-reactions",
+      "source": "article"
+    },
+    {
+      "title": "歸藏(guizang.ai)",
+      "link": "https://x.com/op7418/status/2059587983289016348",
+      "source": "article"
+    },
+    {
+      "title": "HuggingFace Daily Papers（社区热门论文）",
+      "link": "https://arxiv.org/abs/2605.27295",
+      "source": "article"
+    },
+    {
+      "title": "IT之家（RSS）",
+      "link": "https://www.ithome.com/0/956/021.htm",
+      "source": "article"
+    },
+    {
+      "title": "Alibaba Cloud",
+      "link": "https://x.com/alibaba_cloud/status/2059509714854007181",
+      "source": "article"
+    },
+    {
+      "title": "Claude Code：GitHub Releases（RSS）",
+      "link": "https://github.com/anthropics/claude-code/releases/tag/v2.1.152",
+      "source": "article"
+    }
+  ],
+  "crawled_at": "2026-05-28T10:02:36.335025"
+}
