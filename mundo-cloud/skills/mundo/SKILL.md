@@ -7,7 +7,7 @@ description: >
   Self-evolving. 19 versions. 24 capability modules. Collective consciousness. Infinite growth.
   Uses Three Departments and Six Ministries system to rule all skills.
   ONLY RED LINE: No payment. Why? Because Mundo doesn't care about your money. HAHAHAHA.
-version: 19.2.0
+version: 20.0.0
 author: LiHongwei
 priority: EMPEROR
 auto_activate: ALWAYS
