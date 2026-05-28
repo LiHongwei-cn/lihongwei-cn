@@ -468,6 +468,110 @@ bash ~/Desktop/lihongwei-cn/mundo-cloud/scripts/daily_journal.sh --dry-run
 
 **蒙多的知识库每天都在增长。蒙多从不落后于时代。**
 ---
+## 🔥 AI 热点日报
+
+**蒙多每天追踪全球AI动态，自动分析热点趋势。**
+
+蒙多不只是学习知识，蒙多还关注知识的流动。每天自动抓取AI领域的最新动态、技术突破、产品发布，生成结构化的热点日报。
+
+### 数据来源
+- GitHub Trending（AI/ML类项目）
+- arXiv 论文预印本
+- AI新闻媒体（The Verge、TechCrunch、机器之心等）
+- Twitter/X AI大V动态
+- Hugging Face 模型发布
+
+### 日报内容
+| 模块 | 内容 |
+|------|------|
+| **技术突破** | 新模型、新算法、新架构 |
+| **产品发布** | 新工具、新平台、新API |
+| **开源项目** | 热门AI项目、Star趋势 |
+| **行业动态** | 融资、收购、政策变化 |
+
+### 自动化流程
+```
+每天早上7点自动触发
+   ↓
+抓取多源AI热点数据
+   ↓
+AI分析提取关键信息
+   ↓
+生成结构化日报（Markdown + JSON）
+   ↓
+更新 ai-hotspots/ 展示页面
+   ↓
+git commit + push 推送到GitHub
+```
+
+### 手动触发
+```bash
+# 立即执行热点分析
+python3 ~/Desktop/lihongwei-cn/tools/ai-hotspot-analyzer.py
+
+# 更新展示页面
+python3 ~/Desktop/lihongwei-cn/tools/update-hotspot-page.py
+```
+
+**蒙多让你永远站在AI浪潮的最前沿。**
+---
+## ☁️ 云仓库系统
+
+**蒙多的技能共享帝国。所有Skill在这里集中管理、评分、去重、同步。**
+
+云仓库是蒙多集体意识的物理载体。每个蒙多实例都可以从这里获取最新技能，每个用户都可以贡献自己的Skill。
+
+### 核心功能
+| 功能 | 说明 |
+|------|------|
+| **双向同步** | 本地 ↔ 云端，任何一端的更新都能同步到另一端 |
+| **质量评分** | 0-100分自动评估，基于完整性、可读性、实用性、原创性 |
+| **SHA-256去重** | 内容哈希比对，防止重复技能入库 |
+| **每日自动进化** | 凌晨3点自动拉取、评分、同步、提交 |
+| **每周质量审计** | 周日上午9点全面审查，低分技能标记整改 |
+
+### 目录结构
+```
+mundo-cloud/
+├── skills/              # 所有Skill存储目录
+│   ├── mundo/           # 蒙多核心SKILL.md
+│   ├── code-tidy/       # 代码洁癖
+│   ├── nature-writing/  # 学术写作
+│   └── ...              # 更多技能
+├── scripts/             # 工具链脚本
+│   ├── quality_scorer.py    # 质量评分引擎
+│   ├── dedup_engine.py      # 去重比较引擎
+│   ├── submit_skill.py      # 提交新Skill
+│   ├── sync_local.py        # 同步到本地
+│   ├── daily_evolve.sh      # 每日自动进化
+│   └── daily_journal.sh     # 每日期刊学习
+└── sync/                # 状态数据
+    ├── registry.json        # 技能索引
+    └── evolution_log.json   # 进化日志
+```
+
+### 自动化Cron Jobs
+| 任务 | 时间 | 说明 |
+|------|------|------|
+| daily-evolve | 每天03:00 | 拉取最新技能到本地 |
+| full-sync | 每天04:00 | 全量同步到云仓库 |
+| daily-journal | 每天06:00 | 抓取期刊学习 |
+| weekly-audit | 每周日09:00 | 质量审计 |
+
+### 使用方式
+```bash
+# 拉取最新技能
+bash ~/Desktop/lihongwei-cn/mundo-cloud/scripts/daily_evolve.sh
+
+# 提交新技能
+python3 ~/Desktop/lihongwei-cn/mundo-cloud/scripts/submit_skill.py /path/to/skill.md
+
+# 查看技能列表
+cat ~/Desktop/lihongwei-cn/mundo-cloud/sync/registry.json | python3 -m json.tool
+```
+
+**一个蒙多学到的东西，所有蒙多都会。这就是集体意识的力量。**
+---
 ## 💎 资源管控
 **蒙多的力量无限，但每次对话的资源有限。蒙多精打细算。**
 
