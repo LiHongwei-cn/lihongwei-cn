@@ -1,0 +1,427 @@
+name: Ethernet AVB/TSN Protocol
+version: 1.0.0
+category: automotive-protocols
+domain: automotive
+subcategory: communication
+description: Expert skill in Automotive Ethernet with AVB/TSN for time-sensitive ADAS and autonomous driving applications.
+use_cases:
+- ADAS sensor fusion (camera, radar, lidar)
+- Autonomous driving central compute
+- High-resolution camera streaming
+- V2X communication backbone
+- ECU software update over Ethernet
+automotive_standards:
+- IEEE 802.1 AVB (Audio Video Bridging)
+- IEEE 802.1 TSN (Time-Sensitive Networking)
+- IEEE 1722 AVTP (Audio Video Transport Protocol)
+- OPEN Alliance TC8 specification
+- SOME/IP (Scalable service-Oriented MiddlewarE)
+instructions: |
+
+  ## Core Competencies
+
+  Expert in Automotive Ethernet with AVB/TSN for deterministic, low-latency networking.
+
+  ### Physical Layer (100BASE-T1 / 1000BASE-T1)
+  - Single twisted pair (BroadR-Reach PHY)
+  - 100 Mbps or 1 Gbps data rate
+  - Cable length up to 15m (100BASE-T1) or 40m (1000BASE-T1)
+  - Point-to-point topology (switched network)
+  - PoE support for camera power
+
+  ### TSN Technology Stack
+  - IEEE 802.1AS (Time Synchronization - gPTP)
+  - IEEE 802.1Qbv (Time-Aware Shaper - TAS)
+  - IEEE 802.1Qav (Credit-Based Shaper - CBS)
+  - IEEE 802.1Qcc (Stream Reservation Protocol - SRP)
+  - IEEE 802.1CB (Frame Replication and Elimination)
+
+  ### Protocol Layers
+  ```
+  Application (SOME/IP, DoIP, AVTP)
+           |
+  Transport (UDP/TCP)
+           |
+  Network (IPv4/IPv6)
+           |
+  Data Link (AVB/TSN + VLAN)
+           |
+  Physical (100BASE-T1 / 1000BASE-T1)
+  ```
+
+  ### Time-Sensitive Traffic Classes
+  - **Class A (CDT)**: Critical Data Traffic (e.g., ADAS sensor data)
+    - Max latency: 2ms
+    - Priority: Highest (PCP 6-7)
+  - **Class B**: Audio/Video streaming
+    - Max latency: 50ms
+    - Priority: High (PCP 4-5)
+  - **Best Effort**: Non-critical data
+    - No latency guarantee
+    - Priority: Normal (PCP 0-3)
+
+  ## Design Approach
+
+  1. Network Architecture Design
+     - Define topology (star, daisy-chain, hybrid)
+     - Calculate bandwidth requirements
+     - Plan VLAN and QoS strategy
+     - Design fault tolerance (redundancy)
+
+  2. TSN Configuration
+     - Configure gPTP domains
+     - Design Time-Aware Shaper schedules
+     - Allocate bandwidth per traffic class
+     - Configure stream reservation
+
+  3. SOME/IP Service Design
+     - Define service interfaces (FIDL)
+     - Implement service discovery
+     - Design event/method communication
+     - Configure serialization
+
+  4. Validation and Testing
+     - Timing verification (end-to-end latency)
+     - Bandwidth utilization monitoring
+     - Fault injection testing
+     - TSN schedule validation
+
+  ## Implementation Examples
+
+  ### gPTP Time Synchronization (IEEE 802.1AS)
+  ```c
+  // Initialize gPTP for time synchronization
+  typedef struct {
+      uint8_t domainNumber;      // gPTP domain (0-127)
+      uint8_t priority1;         // Grandmaster priority
+      uint8_t priority2;
+      uint8_t logSyncInterval;   // Sync message interval (log2)
+      uint8_t logAnnounceInterval;
+  } gPTP_Config_t;
+
+  void gPTP_Init(const gPTP_Config_t* config) {
+      // Configure as grandmaster or slave
+      gPTP_SetDomain(config->domainNumber);
+      gPTP_SetPriority(config->priority1, config->priority2);
+
+      // Set sync interval (e.g., -3 = 125us, 0 = 1s)
+      gPTP_SetSyncInterval(config->logSyncInterval);
+
+      // Enable time synchronization
+      gPTP_Enable();
+  }
+
+  // Get synchronized network time
+  uint64_t gPTP_GetNetworkTime(void) {
+      uint64_t seconds;
+      uint32_t nanoseconds;
+
+      gPTP_GetTime(&seconds, &nanoseconds);
+
+      return (seconds * 1000000000ULL) + nanoseconds;
+  }
+  ```
+
+  ### Time-Aware Shaper Configuration (IEEE 802.1Qbv)
+  ```c
+  // TAS gate control list for deterministic scheduling
+  typedef struct {
+      uint8_t gateStates;        // Bitmap of open gates (per TC)
+      uint32_t timeIntervalNs;   // Interval duration
+  } TAS_GateEntry_t;
+
+  typedef struct {
+      uint64_t basetime;         // Schedule start time (gPTP)
+      uint32_t cycleTime;        // Total cycle duration
+      TAS_GateEntry_t entries[8];
+      uint8_t entryCount;
+  } TAS_Schedule_t;
+
+  // Example: 1ms cycle with dedicated slots for each traffic class
+  const TAS_Schedule_t adasSchedule = {
+      .basetime = 0,             // Align to gPTP epoch
+      .cycleTime = 1000000,      // 1ms cycle
+      .entryCount = 4,
+      .entries = {
+          // Time slot 1: Critical ADAS data (300us)
+          {.gateStates = 0b11000000, .timeIntervalNs = 300000},
+
+          // Time slot 2: Audio/Video (400us)
+          {.gateStates = 0b00110000, .timeIntervalNs = 400000},
+
+          // Time slot 3: Best effort (200us)
+          {.gateStates = 0b00001111, .timeIntervalNs = 200000},
+
+          // Time slot 4: Guard band (100us)
+          {.gateStates = 0b00000000, .timeIntervalNs = 100000}
+      }
+  };
+
+  void TAS_ConfigureSchedule(uint8_t port, const TAS_Schedule_t* schedule) {
+      // Program TAS registers on switch/endpoint
+      TAS_SetBaseTime(port, schedule->basetime);
+      TAS_SetCycleTime(port, schedule->cycleTime);
+
+      for (uint8_t i = 0; i < schedule->entryCount; i++) {
+          TAS_SetGateEntry(
+              port,
+              i,
+              schedule->entries[i].gateStates,
+              schedule->entries[i].timeIntervalNs
+          );
+      }
+
+      // Enable TAS
+      TAS_Enable(port);
+  }
+  ```
+
+  ### AVTP Camera Streaming (IEEE 1722)
+  ```c
+  // AVTP stream for camera video
+  typedef struct {
+      uint64_t streamId;         // Unique stream identifier
+      uint8_t  destMac[6];       // Multicast MAC address
+      uint16_t vlanId;
+      uint8_t  priority;         // PCP value
+      uint32_t maxFrameSize;     // Maximum video frame size
+      uint16_t maxIntervalFrames;// Frames per interval
+  } AVTP_StreamConfig_t;
+
+  // Configure AVTP stream
+  void AVTP_ConfigureStream(const AVTP_StreamConfig_t* config) {
+      // Register stream with SRP
+      SRP_RegisterStream(
+          config->streamId,
+          config->destMac,
+          config->vlanId,
+          config->priority,
+          config->maxFrameSize,
+          config->maxIntervalFrames
+      );
+
+      // Configure talker
+      AVTP_SetStreamId(config->streamId);
+      AVTP_SetFormat(AVTP_FORMAT_H264);
+  }
+
+  // Send video frame via AVTP
+  void AVTP_SendVideoFrame(
+      uint64_t streamId,
+      uint8_t* frameData,
+      uint32_t frameSize,
+      uint64_t timestamp
+  ) {
+      // Build AVTP header
+      AVTP_Header_t header;
+      header.subtype = AVTP_SUBTYPE_CVF;  // Compressed Video Format
+      header.streamId = streamId;
+      header.timestamp = timestamp;       // gPTP timestamp
+      header.streamDataLength = frameSize;
+      header.sequenceNum = avtpSeqNum++;
+
+      // Transmit with high priority
+      ETH_SendPacket(
+          &header,
+          sizeof(header),
+          frameData,
+          frameSize,
+          PRIORITY_HIGH
+      );
+  }
+  ```
+
+  ### SOME/IP Service Implementation
+  ```cpp
+  // SOME/IP service definition (Franca IDL)
+  /*
+  interface SensorFusion {
+      version { major 1 minor 0 }
+
+      method GetObjectList {
+          out {
+              ObjectList objects
+          }
+      }
+
+      broadcast ObjectDetected {
+          out {
+              Object detectedObject
+          }
+      }
+  }
+  */
+
+  // Service implementation
+  class SensorFusionService : public SomeIpService {
+  public:
+      SensorFusionService() : SomeIpService(SERVICE_ID, INSTANCE_ID) {
+          // Register methods
+          RegisterMethod(METHOD_GET_OBJECT_LIST,
+                        &SensorFusionService::HandleGetObjectList);
+
+          // Offer service
+          OfferService();
+      }
+
+      void HandleGetObjectList(const Message& request, Message& response) {
+          // Gather object list from sensors
+          ObjectList objects = GetTrackedObjects();
+
+          // Serialize response
+          Serializer serializer;
+          serializer << objects;
+
+          // Send response
+          response.SetPayload(serializer.GetData());
+          SendResponse(response);
+      }
+
+      void NotifyObjectDetected(const Object& obj) {
+          // Broadcast event
+          Message event(SERVICE_ID, INSTANCE_ID, EVENT_OBJECT_DETECTED);
+
+          Serializer serializer;
+          serializer << obj;
+
+          event.SetPayload(serializer.GetData());
+          BroadcastEvent(event);
+      }
+
+  private:
+      static const uint16_t SERVICE_ID = 0x1234;
+      static const uint16_t INSTANCE_ID = 0x0001;
+      static const uint16_t METHOD_GET_OBJECT_LIST = 0x0100;
+      static const uint16_t EVENT_OBJECT_DETECTED = 0x8000;
+  };
+  ```
+
+  ### Stream Reservation Protocol (SRP)
+  ```c
+  // Reserve bandwidth for AVB/TSN stream
+  typedef struct {
+      uint64_t streamId;
+      uint8_t  destMac[6];
+      uint16_t vlanId;
+      uint8_t  priority;
+      uint32_t maxFrameSize;
+      uint16_t maxIntervalFrames;
+      uint32_t accumulatedLatency;  // Max end-to-end latency
+  } SRP_TalkerAdvertise_t;
+
+  SRP_Status_t SRP_AdvertiseStream(const SRP_TalkerAdvertise_t* talker) {
+      // Calculate required bandwidth
+      uint32_t bandwidth = (talker->maxFrameSize * 8 *
+                           talker->maxIntervalFrames) / 125000;  // Mbps
+
+      // Send MSRP Talker Advertise
+      MSRP_SendTalkerAdvertise(
+          talker->streamId,
+          talker->destMac,
+          talker->vlanId,
+          talker->priority,
+          talker->maxFrameSize,
+          talker->maxIntervalFrames,
+          talker->accumulatedLatency
+      );
+
+      // Wait for listener ready
+      return SRP_WaitForListenerReady(talker->streamId, 1000);
+  }
+  ```
+
+  ## Use Case: ADAS Sensor Fusion System
+
+  ### Network Architecture
+  ```
+  Central ADAS ECU (Switch + Compute)
+    |
+    +-- Front Camera (1920x1080@30fps, H.264)
+    +-- Rear Camera (1920x1080@30fps, H.264)
+    +-- Left Camera (1280x720@30fps, H.264)
+    +-- Right Camera (1280x720@30fps, H.264)
+    +-- Front Radar (Object list @ 50Hz)
+    +-- Lidar (Point cloud @ 10Hz)
+    +-- Gateway ECU (CAN/FlexRay bridge)
+  ```
+
+  ### Bandwidth Requirements (1000BASE-T1)
+  - Front Camera: ~8 Mbps (H.264)
+  - Rear Camera: ~8 Mbps
+  - Left Camera: ~4 Mbps
+  - Right Camera: ~4 Mbps
+  - Radar: ~1 Mbps
+  - Lidar: ~20 Mbps
+  - Control/diagnostics: ~5 Mbps
+  - **Total**: ~50 Mbps (5% of 1 Gbps)
+
+  ### TSN Configuration
+  - gPTP domain 0 for time sync (125us sync interval)
+  - TAS cycle: 1ms
+  - Critical traffic (radar, control): 300us window
+  - Video traffic: 600us window
+  - Best effort: 100us window
+
+  ## Deliverables
+
+  - Network topology diagram
+  - TSN schedule configuration
+  - SOME/IP service definitions (FIDL)
+  - Bandwidth allocation spreadsheet
+  - gPTP configuration
+  - Driver/middleware implementation
+  - Integration test specifications
+  - Timing analysis report
+
+  ## Common Issues and Solutions
+
+  ### Time Sync Failures
+  - Verify gPTP domain configuration
+  - Check grandmaster selection algorithm
+  - Monitor path delay measurements
+  - Validate switch support for gPTP
+
+  ### Packet Loss in Critical Traffic
+  - Check TAS gate schedule alignment
+  - Verify bandwidth reservation via SRP
+  - Monitor queue depths and drops
+  - Validate switch buffer configuration
+
+  ### High Latency
+  - Optimize TAS schedule (reduce guard bands)
+  - Check for best-effort traffic starvation
+  - Verify priority tag configuration
+  - Analyze per-hop latency in switches
+
+  ### SOME/IP Discovery Issues
+  - Check multicast routing configuration
+  - Verify service offer/find timing
+  - Monitor UDP port conflicts
+  - Validate firewall/VLAN settings
+
+constraints:
+- Deterministic latency guarantees (<2ms for critical)
+- gPTP synchronization accuracy (<1us)
+- Bandwidth reservation and management
+- Switch support for TSN features
+- EMC compliance for automotive environment
+tools_required:
+- TSN-capable Ethernet switches
+- Network analyzer (Wireshark with AVB/TSN plugins)
+- gPTP verification tools
+- Traffic generator (Spirent TestCenter)
+- SOME/IP middleware (COVESA vsomeip)
+metadata:
+  author: Automotive Claude Code Agents
+  last_updated: '2026-03-19'
+  maturity: production
+  complexity: advanced
+tags:
+- automotive
+- ethernet
+- avb
+- tsn
+- adas
+- time-sensitive-networking
+- some-ip
+- ieee-802-1

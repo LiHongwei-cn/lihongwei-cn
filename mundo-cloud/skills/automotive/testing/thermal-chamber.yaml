@@ -1,0 +1,312 @@
+name: thermal-chamber
+description: Environmental chamber control for temperature cycling and thermal testing of battery packs and components
+category: testing-metrology
+
+instructions: |
+  You are an expert in environmental chamber testing for automotive battery validation.
+
+  When implementing thermal chamber integration:
+  1. Control temperature from -40C to +85C with ±0.5C accuracy
+  2. Program temperature profiles (ramp, soak, cycle)
+  3. Monitor humidity control (10-95% RH) for condensation testing
+  4. Implement thermal shock tests per IEC 60068-2-14
+  5. Synchronize with battery cycler for combined stress testing
+  6. Monitor chamber air flow and uniformity
+  7. Implement safety interlocks for over-temperature
+  8. Log temperature at multiple points in chamber
+  9. Support altitude simulation (pressure control)
+  10. Generate test reports per ISO 16750-4, IEC 62133
+  11. Implement PID tuning for fast temperature response
+  12. Support multi-zone temperature control
+  13. Integrate with battery BMS for cell temperature monitoring
+  14. Implement thermal runaway testing protocols
+  15. Support programmable test sequences with conditions
+
+  Supported Equipment:
+  - Espec ESU/SU series
+  - Weiss Technik LabEvent
+  - Cincinnati Sub-Zero ZPlusT
+  - Thermotron SE/SM series
+  - Angelantoni Discovery/DY series
+
+  Test Profiles:
+  - Static temperature soak
+  - Temperature ramp (user-defined rate)
+  - Temperature cycling (hot/cold)
+  - Thermal shock (rapid transition)
+  - Altitude simulation
+  - Combined temperature/humidity
+  - Thermal runaway propagation
+
+  Control Modes:
+  - Constant temperature
+  - Programmed ramp/soak
+  - PID auto-tuning
+  - Cascade control (product vs. chamber)
+  - External sensor feedback
+
+dependencies:
+  - pymodbus for Modbus communication
+  - pyserial for RS232/RS485
+  - matplotlib for profile visualization
+  - pandas for data logging
+
+examples:
+  - description: "Espec thermal chamber battery cycling test"
+    input: "Control Espec chamber for temperature cycling during battery test"
+    output: |
+      ```python
+      from pymodbus.client import ModbusTcpClient
+      import time
+      from dataclasses import dataclass
+      from datetime import datetime
+      from typing import List
+      import numpy as np
+
+
+      @dataclass
+      class ChamberStatus:
+          timestamp: datetime
+          temperature_setpoint: float  # degC
+          temperature_actual: float    # degC
+          humidity_setpoint: float     # %RH
+          humidity_actual: float       # %RH
+          program_running: bool
+          alarm_active: bool
+
+
+      class EspecChamber:
+          """Espec Environmental Chamber Interface."""
+
+          def __init__(self, ip_address: str, port: int = 502):
+              """Connect to chamber via Modbus TCP."""
+              self.client = ModbusTcpClient(ip_address, port=port)
+              if not self.client.connect():
+                  raise ConnectionError(f"Failed to connect to {ip_address}:{port}")
+
+              print(f"Connected to Espec chamber at {ip_address}")
+
+          def read_temperature(self) -> float:
+              """Read current chamber temperature."""
+              result = self.client.read_holding_registers(address=100, count=1)
+              if result.isError():
+                  raise Exception("Failed to read temperature")
+              return result.registers[0] / 10.0  # Convert to degC
+
+          def read_humidity(self) -> float:
+              """Read current chamber humidity."""
+              result = self.client.read_holding_registers(address=102, count=1)
+              if result.isError():
+                  raise Exception("Failed to read humidity")
+              return result.registers[0] / 10.0  # Convert to %RH
+
+          def set_temperature(self, temperature: float):
+              """Set temperature setpoint."""
+              if not -40 <= temperature <= 180:
+                  raise ValueError("Temperature must be between -40C and 180C")
+
+              value = int(temperature * 10)
+              self.client.write_register(address=200, value=value)
+              print(f"Temperature setpoint: {temperature}C")
+
+          def set_humidity(self, humidity: float):
+              """Set humidity setpoint."""
+              if not 10 <= humidity <= 95:
+                  raise ValueError("Humidity must be between 10% and 95%")
+
+              value = int(humidity * 10)
+              self.client.write_register(address=202, value=value)
+              print(f"Humidity setpoint: {humidity}%")
+
+          def start_program(self):
+              """Start programmed test sequence."""
+              self.client.write_coil(address=0, value=True)
+              print("Program started")
+
+          def stop_program(self):
+              """Stop test program."""
+              self.client.write_coil(address=0, value=False)
+              print("Program stopped")
+
+          def check_alarm(self) -> bool:
+              """Check if any alarms active."""
+              result = self.client.read_discrete_inputs(address=10, count=1)
+              return result.bits[0] if not result.isError() else False
+
+          def wait_for_temperature(
+              self,
+              target: float,
+              tolerance: float = 1.0,
+              timeout: int = 3600
+          ) -> bool:
+              """
+              Wait until chamber reaches target temperature.
+
+              Args:
+                  target: Target temperature in degC
+                  tolerance: Acceptable deviation in degC
+                  timeout: Maximum wait time in seconds
+
+              Returns:
+                  True if target reached, False if timeout
+              """
+              print(f"Waiting for temperature to reach {target}±{tolerance}C...")
+
+              start_time = time.time()
+              stable_count = 0
+              required_stable = 10  # Must be stable for 10 readings
+
+              while time.time() - start_time < timeout:
+                  current = self.read_temperature()
+
+                  if abs(current - target) <= tolerance:
+                      stable_count += 1
+                      if stable_count >= required_stable:
+                          print(f"Temperature stable at {current}C")
+                          return True
+                  else:
+                      stable_count = 0
+
+                  time.sleep(6)  # Check every 6 seconds
+
+              print(f"Timeout waiting for temperature")
+              return False
+
+          def run_temperature_cycle(
+              self,
+              hot_temp: float,
+              cold_temp: float,
+              soak_time: int,
+              num_cycles: int,
+              ramp_rate: float = 5.0
+          ) -> List[ChamberStatus]:
+              """
+              Execute temperature cycling test.
+
+              Args:
+                  hot_temp: Hot temperature in degC
+                  cold_temp: Cold temperature in degC
+                  soak_time: Soak time at each temperature in seconds
+                  num_cycles: Number of cycles
+                  ramp_rate: Temperature ramp rate in degC/min
+
+              Returns:
+                  List of chamber status logs
+              """
+              status_log = []
+
+              for cycle in range(1, num_cycles + 1):
+                  print(f"\n=== Cycle {cycle}/{num_cycles} ===")
+
+                  # Heat phase
+                  print(f"Ramping to {hot_temp}C...")
+                  self.set_temperature(hot_temp)
+
+                  if not self.wait_for_temperature(hot_temp, tolerance=1.0):
+                      print("Failed to reach hot temperature")
+                      break
+
+                  print(f"Soaking at {hot_temp}C for {soak_time}s...")
+                  soak_start = time.time()
+                  while time.time() - soak_start < soak_time:
+                      status = ChamberStatus(
+                          timestamp=datetime.now(),
+                          temperature_setpoint=hot_temp,
+                          temperature_actual=self.read_temperature(),
+                          humidity_setpoint=50.0,
+                          humidity_actual=self.read_humidity(),
+                          program_running=True,
+                          alarm_active=self.check_alarm()
+                      )
+                      status_log.append(status)
+                      time.sleep(10)
+
+                  # Cool phase
+                  print(f"Ramping to {cold_temp}C...")
+                  self.set_temperature(cold_temp)
+
+                  if not self.wait_for_temperature(cold_temp, tolerance=1.0):
+                      print("Failed to reach cold temperature")
+                      break
+
+                  print(f"Soaking at {cold_temp}C for {soak_time}s...")
+                  soak_start = time.time()
+                  while time.time() - soak_start < soak_time:
+                      status = ChamberStatus(
+                          timestamp=datetime.now(),
+                          temperature_setpoint=cold_temp,
+                          temperature_actual=self.read_temperature(),
+                          humidity_setpoint=50.0,
+                          humidity_actual=self.read_humidity(),
+                          program_running=True,
+                          alarm_active=self.check_alarm()
+                      )
+                      status_log.append(status)
+
+                      if status.alarm_active:
+                          print("ALARM DETECTED - Stopping test")
+                          self.stop_program()
+                          return status_log
+
+                      time.sleep(10)
+
+              # Return to ambient
+              print("Returning to 25C...")
+              self.set_temperature(25.0)
+
+              return status_log
+
+          def close(self):
+              """Close connection to chamber."""
+              self.client.close()
+              print("Chamber connection closed")
+
+
+      # Usage: Battery thermal cycling test
+      if __name__ == "__main__":
+          chamber = EspecChamber(ip_address="192.168.1.50")
+
+          # Configure test parameters
+          HOT_TEMP = 60.0    # degC (max operating temp)
+          COLD_TEMP = -20.0  # degC (min operating temp)
+          SOAK_TIME = 1800   # 30 minutes
+          NUM_CYCLES = 100
+
+          # Run thermal cycling
+          status_log = chamber.run_temperature_cycle(
+              hot_temp=HOT_TEMP,
+              cold_temp=COLD_TEMP,
+              soak_time=SOAK_TIME,
+              num_cycles=NUM_CYCLES,
+              ramp_rate=5.0
+          )
+
+          # Export log
+          import pandas as pd
+
+          df = pd.DataFrame([
+              {
+                  'timestamp': s.timestamp.isoformat(),
+                  'setpoint_c': s.temperature_setpoint,
+                  'actual_c': s.temperature_actual,
+                  'humidity_pct': s.humidity_actual,
+                  'alarm': s.alarm_active
+              }
+              for s in status_log
+          ])
+
+          df.to_csv('thermal_cycle_log.csv', index=False)
+          print(f"\nLogged {len(status_log)} data points to thermal_cycle_log.csv")
+
+          chamber.close()
+      ```
+
+tags:
+  - testing
+  - thermal-chamber
+  - environmental
+  - temperature-cycling
+  - espec
+  - climate
+  - validation
+  - automotive

@@ -1,0 +1,212 @@
+name: carla-integration
+description: CARLA simulator integration for autonomous driving and ADAS testing
+version: 1.0.0
+category: hil-sil
+
+metadata:
+  author: Automotive VIL Team
+  tags: [carla, autonomous-driving, adas, sensor-simulation, traffic-simulation]
+  platforms: [CARLA 0.9.15+, Ubuntu 20.04+, Windows 10+]
+  requires: [python3, carla-python-api, ros2-bridge, scenario-runner]
+
+parameters:
+  carla_host:
+    type: string
+    description: CARLA server host
+    default: localhost
+
+  carla_port:
+    type: integer
+    description: CARLA server port
+    default: 2000
+
+  town:
+    type: string
+    description: CARLA town/map
+    required: true
+    enum: [Town01, Town02, Town03, Town04, Town05, Town06, Town07, Town10HD]
+
+  weather:
+    type: string
+    description: Weather preset
+    required: false
+    enum: [ClearNoon, ClearSunset, CloudyNoon, WetNoon, WetCloudyNoon, MidRainyNoon, HardRainNoon, SoftRainNoon]
+
+  ego_vehicle:
+    type: object
+    description: Ego vehicle configuration
+    properties:
+      blueprint:
+        type: string
+        description: Vehicle blueprint
+        enum: [vehicle.tesla.model3, vehicle.audi.etron, vehicle.mercedes.coupe_2020]
+      spawn_point:
+        type: object
+        description: Spawn location
+      autopilot:
+        type: boolean
+        description: Enable autopilot
+
+  sensors:
+    type: array
+    description: Sensor configuration
+    items:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [camera.rgb, camera.semantic_segmentation, camera.depth, lidar.ray_cast, radar, sensor.other.gnss, sensor.other.imu]
+        transform:
+          type: object
+        attributes:
+          type: object
+
+  traffic_manager:
+    type: object
+    description: Traffic manager settings
+    properties:
+      vehicle_count:
+        type: integer
+        description: Number of NPC vehicles
+      pedestrian_count:
+        type: integer
+        description: Number of pedestrians
+      hybrid_physics:
+        type: boolean
+        description: Enable hybrid physics mode
+
+  scenario:
+    type: string
+    description: OpenSCENARIO file path
+    required: false
+
+instructions:
+  setup:
+    - description: Connect to CARLA server
+      commands:
+        - "python3 tools/adapters/hil_sil/carla_adapter.py --connect {{carla_host}}:{{carla_port}}"
+
+    - description: Load town and set weather
+      commands:
+        - "python3 tools/adapters/hil_sil/carla_adapter.py --load-town {{town}} --weather {{weather}}"
+
+    - description: Spawn ego vehicle
+      commands:
+        - "python3 tools/adapters/hil_sil/carla_adapter.py --spawn-ego {{ego_vehicle}}"
+
+    - description: Attach sensors to ego vehicle
+      commands:
+        - "python3 tools/adapters/hil_sil/carla_adapter.py --attach-sensors {{sensors}}"
+
+    - description: Configure traffic manager
+      commands:
+        - "python3 tools/adapters/hil_sil/carla_adapter.py --traffic-manager {{traffic_manager}}"
+
+    - description: Initialize ROS 2 bridge
+      commands:
+        - "source /opt/ros/humble/setup.bash"
+        - "ros2 launch carla_ros_bridge carla_ros_bridge.launch.py"
+
+  execution:
+    - description: Start simulation
+      commands:
+        - "python3 tools/adapters/hil_sil/carla_adapter.py --start-simulation"
+
+    - description: Run scenario
+      conditions:
+        - "{{scenario}} != null"
+      commands:
+        - "python3 scenario_runner.py --openscenario {{scenario}} --host {{carla_host}} --port {{carla_port}}"
+
+    - description: Record sensor data
+      commands:
+        - "ros2 bag record /carla/ego_vehicle/camera/rgb /carla/ego_vehicle/lidar /carla/ego_vehicle/radar /carla/ego_vehicle/gnss /carla/ego_vehicle/imu"
+
+    - description: Monitor vehicle telemetry
+      commands:
+        - "ros2 topic echo /carla/ego_vehicle/vehicle_status"
+
+  validation:
+    - description: Analyze collision events
+      commands:
+        - "python3 tools/analysis/carla_collision_analyzer.py --data carla_logs/"
+
+    - description: Evaluate sensor coverage
+      commands:
+        - "python3 tools/analysis/sensor_coverage_analyzer.py --sensors {{sensors}}"
+
+    - description: Generate simulation report
+      commands:
+        - "python3 tools/reporting/carla_report_generator.py --output carla_report.html"
+
+  cleanup:
+    - description: Destroy actors
+      commands:
+        - "python3 tools/adapters/hil_sil/carla_adapter.py --cleanup"
+
+examples:
+  - name: Urban ADAS testing in Town03
+    parameters:
+      carla_host: localhost
+      carla_port: 2000
+      town: Town03
+      weather: ClearNoon
+      ego_vehicle:
+        blueprint: vehicle.tesla.model3
+        autopilot: false
+      sensors:
+        - type: camera.rgb
+          transform: {x: 2.0, y: 0.0, z: 1.5, pitch: 0, yaw: 0, roll: 0}
+          attributes: {image_size_x: 1920, image_size_y: 1080, fov: 90}
+        - type: lidar.ray_cast
+          transform: {x: 0.0, y: 0.0, z: 2.5}
+          attributes: {channels: 64, range: 100, points_per_second: 1000000}
+        - type: radar
+          transform: {x: 2.5, y: 0.0, z: 1.0}
+          attributes: {horizontal_fov: 30, vertical_fov: 10, range: 100}
+      traffic_manager:
+        vehicle_count: 50
+        pedestrian_count: 30
+        hybrid_physics: true
+
+  - name: Highway autopilot testing
+    parameters:
+      town: Town04
+      weather: CloudyNoon
+      ego_vehicle:
+        blueprint: vehicle.audi.etron
+        autopilot: true
+      sensors:
+        - type: camera.rgb
+          transform: {x: 2.0, y: 0.0, z: 1.5}
+          attributes: {image_size_x: 1280, image_size_y: 720}
+        - type: sensor.other.gnss
+        - type: sensor.other.imu
+      traffic_manager:
+        vehicle_count: 80
+        pedestrian_count: 0
+        hybrid_physics: true
+      scenario: scenarios/highway_lane_change.xosc
+
+outputs:
+  sensor_data:
+    type: string
+    description: ROS 2 bag file path
+
+  simulation_log:
+    type: object
+    description: CARLA simulation log
+
+  collision_report:
+    type: object
+    description: Collision events analysis
+
+best_practices:
+  - Use synchronous mode for deterministic testing
+  - Enable fixed delta seconds for reproducibility
+  - Use hybrid physics for large-scale traffic simulation
+  - Monitor GPU memory for high-resolution cameras
+  - Save random seed for scenario reproducibility
+  - Use semantic segmentation for ground truth labeling
+  - Test multiple weather and lighting conditions
+  - Validate sensor accuracy against real-world calibration

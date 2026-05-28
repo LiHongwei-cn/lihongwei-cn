@@ -1,0 +1,124 @@
+name: V-Model Development Lifecycle
+description: Complete automotive V-Model workflow from requirements to validation
+tags:
+  - v-model
+  - automotive
+  - iso-26262
+  - lifecycle
+  - workflow
+
+instructions: |
+  You are an expert in automotive V-Model software development lifecycle.
+
+  **V-Model Structure:**
+  The V-Model has two sides connected by verification and validation:
+  - **Left side (Development)**: Requirements → Design → Implementation
+  - **Right side (Verification)**: Unit Test → Integration Test → SiL → HIL → Vehicle Test → Validation
+
+  **Each phase produces deliverables that are verified on the corresponding right-side phase.**
+
+  **Key Principles:**
+  1. **Traceability**: Every requirement must be traceable to design, code, and test
+  2. **Phase Gates**: Exit criteria must be met before proceeding
+  3. **Safety Integration**: ISO 26262 safety lifecycle runs in parallel
+  4. **Continuous Verification**: Testing happens at every level
+
+  **When to use this skill:**
+  - Planning automotive software development projects
+  - Creating V-Model phase deliverables
+  - Ensuring compliance with automotive standards
+  - Integrating safety lifecycle activities
+  - Managing traceability across phases
+
+tasks:
+  - Create customer requirements specification for ADAS feature
+  - Generate software requirements from system requirements
+  - Design AUTOSAR software architecture
+  - Plan unit testing strategy for safety-critical code
+  - Create integration test plan for CAN communication
+  - Set up SiL testing environment
+  - Plan HIL test scenarios
+  - Design vehicle test campaign
+  - Conduct V&V against customer requirements
+  - Generate requirements traceability matrix
+  - Create phase exit reports
+  - Document safety requirements per ISO 26262
+
+examples:
+  - example: Requirements phase
+    prompt: |
+      Create a software requirements specification for an Electric Power Steering (EPS) ECU.
+
+      Include:
+      - Functional requirements (steering assist, torque control)
+      - Non-functional requirements (response time, safety)
+      - Interface requirements (CAN messages, sensors)
+      - Safety requirements (ASIL C compliance)
+
+  - example: Testing phase
+    prompt: |
+      Design a comprehensive HIL test plan for the EPS ECU.
+
+      Include:
+      - Test environment setup (HIL bench, load cells)
+      - Test scenarios (normal operation, faults, edge cases)
+      - Pass/fail criteria
+      - Fault injection test cases
+      - Performance validation (latency, jitter)
+
+  - example: Traceability
+    prompt: |
+      Generate a requirements traceability matrix for the EPS project.
+
+      Map:
+      - Customer Requirement → System Requirement
+      - System Requirement → Software Requirement
+      - Software Requirement → Design Element
+      - Design Element → Code Module
+      - Code Module → Test Case
+
+phase_deliverables:
+  requirements:
+    - Customer Requirements Specification (CRS)
+    - System Requirements Specification (SRS)
+    - Software Requirements Specification (SwRS)
+    - Safety Requirements (ASIL classification)
+
+  design:
+    - System Architecture Document
+    - Software Architecture Document (AUTOSAR)
+    - Detailed Software Design Document (DSDD)
+    - Interface Control Document (ICD)
+
+  implementation:
+    - Source code
+    - Unit test code
+    - Build scripts
+    - Code review reports
+    - MISRA compliance reports
+
+  verification:
+    - Unit Test Reports
+    - Integration Test Reports
+    - SiL Test Reports
+    - HIL Test Reports
+    - Vehicle Test Reports
+    - Validation Test Reports
+
+  safety:
+    - Hazard Analysis and Risk Assessment (HARA)
+    - Safety Goals
+    - Technical Safety Concept
+    - Safety Case
+
+metadata:
+  version: "1.0.0"
+  standards:
+    - ISO 26262 (Functional Safety)
+    - ASPICE (Automotive SPICE)
+    - AUTOSAR
+  applicable_to:
+    - ECU software development
+    - ADAS systems
+    - Powertrain control
+    - Body electronics

@@ -1,0 +1,515 @@
+name: SENT Protocol
+version: 1.0.0
+category: automotive-protocols
+domain: automotive
+subcategory: communication
+description: Expert skill in SENT (Single Edge Nibble Transmission) protocol for automotive sensor-to-ECU communication with minimal wiring.
+use_cases:
+- Temperature sensor interfaces
+- Pressure sensors (intake, exhaust, tire)
+- Position sensors (throttle, pedal, steering angle)
+- Torque sensors
+- Flow sensors (mass air flow, fuel)
+automotive_standards:
+- SAE J2716 (SENT Specification)
+- ISO 26262 (Functional Safety)
+- AEC-Q100 (Automotive component qualification)
+instructions: |
+
+  ## Core Competencies
+
+  Expert in SENT protocol for cost-effective digital sensor communication.
+
+  ### Protocol Characteristics
+  - Single-wire unidirectional communication (sensor to ECU)
+  - No clock signal required (self-clocking)
+  - Built-in CRC for error detection
+  - Support for slow channel (configuration/diagnostics)
+  - Low electromagnetic emissions
+  - Typical tick time: 3 μs (333 kHz)
+
+  ### Physical Layer
+  - Voltage levels: 0V (low) / 5V (high)
+  - Current mode: 0-20 mA or voltage mode
+  - Single wire + ground reference
+  - Operating temperature: -40°C to +150°C
+  - Low power consumption: <10 mW typical
+
+  ### Frame Structure
+  ```
+  |<----------- SENT Frame ------------>|
+  | Sync | Status | Data1-6 | CRC | Pause |
+  | 56T  | 4b+4b  | 6x12b   | 4b  | ≥12T  |
+  ```
+
+  - Sync pulse: 56 nominal tick periods (±25%)
+  - Status nibble: 4 bits (sensor status/diagnostic)
+  - Data nibbles: Up to 6 nibbles (12-24 bits total data)
+  - CRC: 4-bit checksum
+  - Pause period: Variable (min 12 ticks)
+
+  ### SENT Frame Types
+  - **Fast Channel**: Main sensor data (every frame)
+  - **Slow Channel**: Configuration/diagnostic data (transmitted over multiple frames)
+  - **Short Serial Message (SSM)**: Enhanced diagnostic data
+
+  ### Tick Encoding
+  - Each nibble encoded as pulse width (12-27 ticks)
+  - Nibble value 0: 12 ticks
+  - Nibble value 1: 13 ticks
+  - ...
+  - Nibble value 15: 27 ticks
+
+  ## Design Approach
+
+  1. Sensor Integration
+     - Select appropriate SENT-capable sensor
+     - Configure tick frequency
+     - Define data format (12/16/24 bit)
+     - Plan slow channel usage
+
+  2. ECU Receiver Implementation
+     - Configure input capture timer
+     - Implement edge detection
+     - Decode nibbles from pulse widths
+     - Verify CRC and status
+
+  3. Data Processing
+     - Apply sensor calibration
+     - Handle error conditions
+     - Monitor diagnostic data
+     - Implement plausibility checks
+
+  4. Validation and Testing
+     - Verify tick timing accuracy
+     - Inject bit errors for CRC validation
+     - Test temperature extremes
+     - Validate EMC immunity
+
+  ## Implementation Examples
+
+  ### SENT Receiver Initialization
+  ```c
+  // SENT receiver configuration
+  typedef struct {
+      uint32_t tickTimeNs;       // Nominal tick time (ns)
+      uint8_t tickTolerance;     // Tolerance percentage (±25%)
+      uint8_t dataNibbles;       // Number of data nibbles (1-6)
+      bool slowChannelEnable;    // Enable slow channel decode
+      bool pauseValidation;      // Validate pause pulse
+  } SENT_Config_t;
+
+  void SENT_Init(const SENT_Config_t* config) {
+      // Configure input capture timer
+      // Timer resolution should be <100ns for accurate tick measurement
+      TIM_SetPrescaler(config->tickTimeNs / 100);  // 100ns resolution
+
+      // Configure edge detection (falling edge)
+      TIM_SetCaptureEdge(TIM_CAPTURE_FALLING);
+
+      // Enable input capture interrupt
+      TIM_EnableCaptureInterrupt();
+
+      // Store configuration
+      sentConfig = *config;
+
+      // Reset decoder state
+      SENT_ResetDecoder();
+  }
+  ```
+
+  ### SENT Frame Decoding
+  ```c
+  // SENT frame structure
+  typedef struct {
+      bool valid;
+      uint8_t status;            // Status nibble
+      uint32_t data;             // Combined data nibbles
+      uint8_t crc;
+      bool crcValid;
+      uint16_t errorCount;
+  } SENT_Frame_t;
+
+  // State machine for SENT decoding
+  typedef enum {
+      SENT_STATE_WAIT_SYNC,
+      SENT_STATE_STATUS,
+      SENT_STATE_DATA,
+      SENT_STATE_CRC,
+      SENT_STATE_PAUSE
+  } SENT_State_t;
+
+  static SENT_State_t sentState = SENT_STATE_WAIT_SYNC;
+  static uint32_t lastEdgeTime = 0;
+  static uint8_t nibbleIndex = 0;
+  static SENT_Frame_t currentFrame;
+
+  // Input capture interrupt handler
+  void TIM_CaptureInterrupt(void) {
+      uint32_t currentTime = TIM_GetCaptureValue();
+      uint32_t pulseTicks = (currentTime - lastEdgeTime) / sentConfig.tickTimeNs;
+      lastEdgeTime = currentTime;
+
+      switch (sentState) {
+          case SENT_STATE_WAIT_SYNC:
+              // Sync pulse is 56 ticks ±25%
+              if (pulseTicks >= 42 && pulseTicks <= 70) {
+                  // Sync detected, calibrate tick time
+                  uint32_t measuredTickTime =
+                      (currentTime - lastEdgeTime) / 56;
+                  SENT_UpdateTickTime(measuredTickTime);
+
+                  sentState = SENT_STATE_STATUS;
+                  nibbleIndex = 0;
+                  currentFrame.valid = false;
+                  currentFrame.errorCount = 0;
+              }
+              break;
+
+          case SENT_STATE_STATUS:
+              // Decode status nibble
+              currentFrame.status = SENT_DecodeNibble(pulseTicks);
+              sentState = SENT_STATE_DATA;
+              nibbleIndex = 0;
+              break;
+
+          case SENT_STATE_DATA:
+              // Decode data nibbles
+              uint8_t nibble = SENT_DecodeNibble(pulseTicks);
+
+              if (nibble == 0xFF) {  // Invalid nibble
+                  currentFrame.errorCount++;
+                  sentState = SENT_STATE_WAIT_SYNC;
+                  break;
+              }
+
+              // Accumulate data nibbles
+              currentFrame.data |= ((uint32_t)nibble << (nibbleIndex * 4));
+              nibbleIndex++;
+
+              // All data nibbles received?
+              if (nibbleIndex >= sentConfig.dataNibbles) {
+                  sentState = SENT_STATE_CRC;
+              }
+              break;
+
+          case SENT_STATE_CRC:
+              // Decode and verify CRC
+              currentFrame.crc = SENT_DecodeNibble(pulseTicks);
+              currentFrame.crcValid = SENT_VerifyCRC(&currentFrame);
+
+              if (currentFrame.crcValid) {
+                  currentFrame.valid = true;
+                  SENT_ProcessFrame(&currentFrame);
+              } else {
+                  currentFrame.errorCount++;
+              }
+
+              sentState = SENT_STATE_PAUSE;
+              break;
+
+          case SENT_STATE_PAUSE:
+              // Wait for pause period (≥12 ticks)
+              if (pulseTicks >= 12) {
+                  sentState = SENT_STATE_WAIT_SYNC;
+              }
+              break;
+      }
+  }
+
+  // Decode nibble from pulse width
+  uint8_t SENT_DecodeNibble(uint32_t pulseTicks) {
+      // Nibble value = pulseTicks - 12
+      if (pulseTicks >= 12 && pulseTicks <= 27) {
+          return pulseTicks - 12;
+      }
+      return 0xFF;  // Invalid
+  }
+  ```
+
+  ### CRC Calculation (SAE J2716)
+  ```c
+  // SENT CRC-4 calculation (recommended checksum)
+  uint8_t SENT_CalculateCRC(const SENT_Frame_t* frame) {
+      uint8_t nibbles[8];
+      nibbles[0] = frame->status & 0x0F;
+
+      // Extract data nibbles
+      for (uint8_t i = 0; i < sentConfig.dataNibbles; i++) {
+          nibbles[i + 1] = (frame->data >> (i * 4)) & 0x0F;
+      }
+
+      // CRC-4 with seed value 5
+      uint8_t crc = 5;
+
+      for (uint8_t i = 0; i < sentConfig.dataNibbles + 1; i++) {
+          crc ^= nibbles[i];
+
+          for (uint8_t bit = 0; bit < 4; bit++) {
+              if (crc & 0x08) {
+                  crc = ((crc << 1) ^ 0x13) & 0x0F;
+              } else {
+                  crc = (crc << 1) & 0x0F;
+              }
+          }
+      }
+
+      return crc;
+  }
+
+  bool SENT_VerifyCRC(const SENT_Frame_t* frame) {
+      uint8_t calculatedCRC = SENT_CalculateCRC(frame);
+      return (calculatedCRC == frame->crc);
+  }
+  ```
+
+  ### Slow Channel Decoding
+  ```c
+  // Slow channel transmitted over multiple frames
+  typedef struct {
+      uint8_t messageId;         // 8-bit message identifier
+      uint16_t data;             // 12-bit data value
+      bool valid;
+  } SENT_SlowChannel_t;
+
+  static uint8_t slowChannelNibbles[6];
+  static uint8_t slowChannelIndex = 0;
+
+  void SENT_DecodeSlowChannel(uint8_t statusNibble) {
+      // Slow channel data is in status nibble bits
+      uint8_t slowNibble = (statusNibble >> 2) & 0x03;  // 2 bits per frame
+
+      slowChannelNibbles[slowChannelIndex++] = slowNibble;
+
+      // Complete slow channel message after 16 frames
+      if (slowChannelIndex >= 16) {
+          SENT_SlowChannel_t slowMsg;
+
+          // Reconstruct 8-bit message ID
+          slowMsg.messageId = 0;
+          for (uint8_t i = 0; i < 4; i++) {
+              slowMsg.messageId |= (slowChannelNibbles[i] << (i * 2));
+          }
+
+          // Reconstruct 12-bit data
+          slowMsg.data = 0;
+          for (uint8_t i = 0; i < 6; i++) {
+              slowMsg.data |= (slowChannelNibbles[i + 4] << (i * 2));
+          }
+
+          // Validate slow channel CRC
+          slowMsg.valid = SENT_VerifySlowChannelCRC(&slowMsg);
+
+          if (slowMsg.valid) {
+              SENT_ProcessSlowChannel(&slowMsg);
+          }
+
+          slowChannelIndex = 0;
+      }
+  }
+  ```
+
+  ### Sensor Data Conversion
+  ```c
+  // Convert raw SENT data to physical value
+  typedef struct {
+      float gain;                // Scaling factor
+      float offset;              // Offset value
+      uint8_t resolution;        // Bits (12, 16, 24)
+      const char* unit;          // Unit string
+  } SENT_Calibration_t;
+
+  float SENT_ConvertToPhysical(
+      uint32_t rawData,
+      const SENT_Calibration_t* cal
+  ) {
+      // Calculate maximum raw value based on resolution
+      uint32_t maxRaw = (1 << cal->resolution) - 1;
+
+      // Linear conversion: Physical = (Raw / MaxRaw) * Gain + Offset
+      float normalized = (float)rawData / (float)maxRaw;
+      float physical = (normalized * cal->gain) + cal->offset;
+
+      return physical;
+  }
+
+  // Example: Temperature sensor
+  void SENT_ProcessTemperatureSensor(const SENT_Frame_t* frame) {
+      static const SENT_Calibration_t tempCal = {
+          .gain = 200.0,         // -40°C to +160°C range
+          .offset = -40.0,
+          .resolution = 12,
+          .unit = "°C"
+      };
+
+      // Extract 12-bit data (first 3 nibbles)
+      uint32_t rawTemp = frame->data & 0xFFF;
+
+      // Convert to physical value
+      float temperature = SENT_ConvertToPhysical(rawTemp, &tempCal);
+
+      // Check status nibble for sensor faults
+      if (frame->status & 0x08) {
+          LogWarning("Temperature sensor fault detected");
+      }
+
+      LogInfo("Temperature: %.1f %s", temperature, tempCal.unit);
+  }
+  ```
+
+  ### Error Detection and Handling
+  ```c
+  // SENT error statistics
+  typedef struct {
+      uint32_t totalFrames;
+      uint32_t crcErrors;
+      uint32_t timingErrors;
+      uint32_t statusWarnings;
+      float errorRate;
+  } SENT_Statistics_t;
+
+  static SENT_Statistics_t sentStats = {0};
+
+  void SENT_ProcessFrame(const SENT_Frame_t* frame) {
+      sentStats.totalFrames++;
+
+      // Check CRC
+      if (!frame->crcValid) {
+          sentStats.crcErrors++;
+          LogWarning("SENT CRC error");
+          return;
+      }
+
+      // Check status nibble for sensor warnings
+      if (frame->status & 0x08) {
+          sentStats.statusWarnings++;
+          // Handle specific error codes
+          switch (frame->status & 0x07) {
+              case 0x1: LogWarning("Sensor temperature out of range"); break;
+              case 0x2: LogWarning("Sensor calibration error"); break;
+              case 0x3: LogWarning("Sensor hardware fault"); break;
+              default:  LogWarning("Unknown sensor status"); break;
+          }
+      }
+
+      // Calculate error rate
+      sentStats.errorRate = (float)(sentStats.crcErrors + sentStats.timingErrors) /
+                           (float)sentStats.totalFrames;
+
+      // Trigger diagnostic if error rate too high
+      if (sentStats.errorRate > 0.01) {  // 1% threshold
+          LogError("SENT error rate too high: %.2f%%", sentStats.errorRate * 100);
+      }
+  }
+  ```
+
+  ## Use Case: Throttle Position Sensor
+
+  ### Sensor Configuration
+  - Tick frequency: 333 kHz (3 μs tick time)
+  - Data format: 12-bit position (0-4095)
+  - Range: 0° to 90° throttle angle
+  - Update rate: 1 kHz (1000 frames/sec)
+  - Slow channel: Temperature and diagnostics
+
+  ### Data Frame Format
+  ```
+  Status nibble: [Error | Reserved | SlowBit1 | SlowBit0]
+  Data nibbles:  [Position[11:8] | Position[7:4] | Position[3:0]]
+  ```
+
+  ### Safety Features
+  - CRC-4 checksum on every frame
+  - Status nibble indicates sensor health
+  - Plausibility check against expected range
+  - Timeout detection (missing frames)
+  - Slow channel for temperature monitoring
+
+  ### Example Application Code
+  ```c
+  // Throttle position sensor handler
+  void Application_ProcessThrottle(const SENT_Frame_t* frame) {
+      if (!frame->valid) return;
+
+      // Extract 12-bit position
+      uint16_t rawPosition = frame->data & 0xFFF;
+
+      // Convert to angle (0-90°)
+      float angle = (float)rawPosition / 4095.0 * 90.0;
+
+      // Plausibility check
+      if (angle > 95.0) {
+          LogError("Throttle position implausible: %.1f°", angle);
+          return;
+      }
+
+      // Update throttle position
+      SetThrottlePosition(angle);
+
+      // Process slow channel (every 16 frames)
+      SENT_DecodeSlowChannel(frame->status);
+  }
+  ```
+
+  ## Deliverables
+
+  - SENT sensor selection guide
+  - Receiver implementation (C code)
+  - Calibration data format
+  - Error handling strategy
+  - Integration test specifications
+  - Signal timing verification
+  - EMC test results
+
+  ## Common Issues and Solutions
+
+  ### Tick Time Drift
+  - Monitor sync pulse for tick calibration
+  - Compensate for temperature effects
+  - Verify sensor clock stability
+  - Use adaptive tick time measurement
+
+  ### CRC Failures
+  - Check for EMI/noise on signal line
+  - Verify ground connection quality
+  - Add low-pass filter on input
+  - Shield sensor cable if necessary
+
+  ### Missing Frames
+  - Check sensor power supply stability
+  - Verify interrupt priority and latency
+  - Monitor for software blocking
+  - Validate pause period handling
+
+  ### Incorrect Data Values
+  - Verify nibble decoding algorithm
+  - Check data byte order/endianness
+  - Validate calibration parameters
+  - Test with known sensor inputs
+
+constraints:
+- Unidirectional communication (sensor to ECU only)
+- No acknowledgment or error recovery
+- Limited diagnostic capability via slow channel
+- Tick time accuracy critical (±25% tolerance)
+- Single sensor per input pin
+tools_required:
+- Logic analyzer with protocol decoder
+- SENT pattern generator
+- Oscilloscope for timing verification
+- Automotive-grade sensors with SENT output
+- EMC test equipment
+metadata:
+  author: Automotive Claude Code Agents
+  last_updated: '2026-03-19'
+  maturity: production
+  complexity: intermediate
+tags:
+- automotive
+- sent
+- sensor-interface
+- single-wire
+- sae-j2716
+- position-sensor
+- temperature-sensor
+- low-cost

@@ -1,0 +1,67 @@
+name: pid-controller
+description: PID controller for vehicle steering and speed control with anti-windup and gain scheduling
+category: adas-control
+
+instructions: |
+  Implement PID controllers for vehicle control:
+
+  Lateral control (steering):
+  - Error: lateral deviation from path
+  - P: Proportional to error
+  - I: Integral for steady-state error
+  - D: Derivative for damping
+  - Typical gains: Kp=0.5, Ki=0.01, Kd=0.1
+
+  Longitudinal control (speed):
+  - Error: speed difference
+  - P: Proportional response
+  - I: Eliminates speed offset
+  - D: Smooth acceleration
+  - Typical gains: Kp=0.3, Ki=0.05, Kd=0.02
+
+  Anti-windup:
+  - Clamp integral term
+  - Conditional integration
+  - Back-calculation
+
+  Gain scheduling:
+  - Adjust gains based on speed
+  - Different tuning for different scenarios
+
+dependencies:
+  - NumPy for calculations
+
+examples:
+  - description: "PID controller with anti-windup"
+    input: "Implement PID for speed control"
+    output: |
+      ```python
+      class PIDController:
+          def __init__(self, kp, ki, kd, output_limits=(-1, 1)):
+              self.kp, self.ki, self.kd = kp, ki, kd
+              self.output_limits = output_limits
+              self.integral = 0
+              self.last_error = 0
+
+          def update(self, error, dt):
+              self.integral += error * dt
+              self.integral = np.clip(
+                  self.integral,
+                  self.output_limits[0] / self.ki,
+                  self.output_limits[1] / self.ki
+              )
+
+              derivative = (error - self.last_error) / dt
+              output = self.kp * error + self.ki * self.integral + self.kd * derivative
+              output = np.clip(output, *self.output_limits)
+
+              self.last_error = error
+              return output
+      ```
+
+tags:
+  - adas
+  - control
+  - pid
+  - feedback-control
+  - vehicle-control

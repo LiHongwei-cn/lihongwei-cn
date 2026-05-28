@@ -1,0 +1,445 @@
+name: LVDS Protocol
+version: 1.0.0
+category: automotive-protocols
+domain: automotive
+subcategory: communication
+description: Expert skill in LVDS (Low-Voltage Differential Signaling) for high-speed camera and display interfaces in automotive applications.
+use_cases:
+- Camera sensor interfaces (MIPI CSI-2 over LVDS)
+- Display panel connections (instrument cluster, HUD)
+- High-resolution video transmission
+- Radar sensor data interfaces
+- Lidar data transmission
+automotive_standards:
+- ANSI/TIA/EIA-644-A (LVDS Standard)
+- MIPI CSI-2 (Camera Serial Interface)
+- FPD-Link (Flat Panel Display Link)
+- OpenLDI (Open LVDS Display Interface)
+instructions: |
+
+  ## Core Competencies
+
+  Expert in LVDS for high-speed differential signaling in automotive applications.
+
+  ### Physical Layer Characteristics
+  - Differential voltage: 247-454 mV (nominal 350 mV)
+  - Common-mode voltage: 1.2V typical
+  - Data rates: 155 Mbps to 1.2 Gbps per lane
+  - Low power consumption: ~3.5mW per driver
+  - Excellent EMI performance (differential cancellation)
+  - Point-to-point or multi-drop topologies
+
+  ### Signal Characteristics
+  - Differential impedance: 100 ohms ±10%
+  - Rise/fall time: <500ps (typical 200ps)
+  - Propagation delay: ~50ps/inch on PCB
+  - Maximum cable length: 10m (shielded twisted pair)
+  - Skew tolerance: ±350ps between lanes
+
+  ### LVDS Applications in Automotive
+  1. **Camera Interfaces**
+     - Raw Bayer sensor data (MIPI CSI-2)
+     - YUV422/RGB888 video formats
+     - 1-4 data lanes + clock lane
+     - Typical: 720p@30fps = 1 lane, 1080p@60fps = 4 lanes
+
+  2. **Display Interfaces**
+     - FPD-Link (Texas Instruments)
+     - OpenLDI for LCD panels
+     - Instrument cluster displays
+     - Head-up display (HUD) units
+
+  3. **Sensor Data**
+     - Radar digital interface
+     - Lidar point cloud transmission
+     - High-speed ADC data
+
+  ## Design Approach
+
+  1. Signal Integrity Design
+     - Differential pair routing (100 ohm impedance)
+     - Length matching between pairs (±5 mils)
+     - Controlled impedance PCB stackup
+     - Minimize vias and stubs
+
+  2. Serializer/Deserializer Selection
+     - Choose appropriate SerDes chipset
+     - Calculate required bandwidth
+     - Plan for FEC (Forward Error Correction)
+     - Consider diagnostic features
+
+  3. EMC/EMI Mitigation
+     - Common-mode choke on cable
+     - Proper grounding and shielding
+     - Spread spectrum clocking
+     - PCB layer stackup optimization
+
+  4. Validation and Testing
+     - Eye diagram analysis
+     - Jitter and skew measurement
+     - BER (Bit Error Rate) testing
+     - EMI radiated emissions testing
+
+  ## Implementation Examples
+
+  ### LVDS Driver Configuration
+  ```c
+  // LVDS transmitter initialization
+  typedef struct {
+      uint8_t laneCount;         // 1-4 lanes
+      uint32_t bitRate;          // Mbps per lane
+      bool spreadSpectrum;       // SSC for EMI reduction
+      uint8_t outputSwing;       // 250mV, 300mV, 350mV, 400mV
+      bool termination;          // 100 ohm termination
+  } LVDS_TxConfig_t;
+
+  void LVDS_InitTransmitter(const LVDS_TxConfig_t* config) {
+      // Configure PLL for desired bit rate
+      uint32_t pllFreq = config->bitRate * config->laneCount;
+      LVDS_SetPLLFrequency(pllFreq);
+
+      // Enable spread spectrum if requested
+      if (config->spreadSpectrum) {
+          LVDS_EnableSSC(SSC_CENTER_SPREAD, SSC_MODULATION_0_5_PERCENT);
+      }
+
+      // Configure output swing
+      LVDS_SetOutputSwing(config->outputSwing);
+
+      // Enable differential termination
+      if (config->termination) {
+          LVDS_EnableTermination(TERMINATION_100_OHM);
+      }
+
+      // Configure lane mapping
+      for (uint8_t lane = 0; lane < config->laneCount; lane++) {
+          LVDS_MapLane(lane, LANE_ENABLED);
+      }
+
+      // Enable transmitter
+      LVDS_Enable(LVDS_TX);
+  }
+  ```
+
+  ### MIPI CSI-2 over LVDS (Camera Interface)
+  ```c
+  // MIPI CSI-2 camera configuration
+  typedef struct {
+      uint8_t dataLanes;         // 1-4 data lanes
+      uint32_t pixelClock;       // MHz
+      uint16_t width;            // Pixels
+      uint16_t height;           // Lines
+      uint8_t bitsPerPixel;      // 8, 10, 12, 16
+      uint8_t virtualChannel;    // 0-3
+  } CSI2_CameraConfig_t;
+
+  void CSI2_ConfigureCamera(const CSI2_CameraConfig_t* config) {
+      // Calculate required lane data rate
+      // rate = (width * height * bpp * fps) / lanes
+      uint32_t bytesPerFrame = config->width * config->height *
+                               config->bitsPerPixel / 8;
+      uint32_t laneDataRate = (bytesPerFrame * 30) / config->dataLanes;
+
+      // Configure D-PHY (LVDS physical layer)
+      CSI2_ConfigureDPhy(config->dataLanes, laneDataRate);
+
+      // Configure CSI-2 receiver
+      CSI2_SetVirtualChannel(config->virtualChannel);
+      CSI2_SetDataType(CSI2_DT_RAW10);  // For 10-bit Bayer
+      CSI2_SetImageSize(config->width, config->height);
+
+      // Enable lanes
+      for (uint8_t lane = 0; lane < config->dataLanes; lane++) {
+          CSI2_EnableLane(lane);
+      }
+
+      // Start receiving
+      CSI2_StartReceive();
+  }
+
+  // CSI-2 packet reception handler
+  void CSI2_ReceiveFrame(uint8_t* frameBuffer, uint32_t bufferSize) {
+      // Wait for frame start (FS) packet
+      CSI2_Packet_t packet;
+      while (1) {
+          if (CSI2_ReceivePacket(&packet) == CSI2_OK) {
+              if (packet.dataType == CSI2_DT_FRAME_START) {
+                  break;
+              }
+          }
+      }
+
+      // Receive line packets
+      uint32_t offset = 0;
+      uint16_t linesReceived = 0;
+
+      while (linesReceived < imageHeight) {
+          if (CSI2_ReceivePacket(&packet) == CSI2_OK) {
+              if (packet.dataType == CSI2_DT_RAW10) {
+                  // Copy pixel data
+                  memcpy(&frameBuffer[offset],
+                         packet.payload,
+                         packet.wordCount);
+                  offset += packet.wordCount;
+                  linesReceived++;
+              } else if (packet.dataType == CSI2_DT_FRAME_END) {
+                  break;
+              }
+          }
+      }
+
+      // Signal frame complete
+      CSI2_FrameComplete(frameBuffer, offset);
+  }
+  ```
+
+  ### FPD-Link Display Interface
+  ```c
+  // FPD-Link III serializer configuration
+  typedef struct {
+      uint16_t displayWidth;
+      uint16_t displayHeight;
+      uint8_t colorDepth;        // 18 or 24 bits
+      uint32_t pixelClock;       // MHz
+      bool backChannel;          // Enable I2C/control back channel
+  } FPDLink_DisplayConfig_t;
+
+  void FPDLink_ConfigureDisplay(const FPDLink_DisplayConfig_t* config) {
+      // Calculate serialized data rate
+      uint32_t dataRate = config->pixelClock * config->colorDepth;
+
+      // Configure serializer (DS90UB913A-Q1 or similar)
+      FPDLink_SerializerInit();
+
+      // Set pixel format
+      if (config->colorDepth == 18) {
+          FPDLink_SetPixelFormat(FPDLINK_RGB666);
+      } else {
+          FPDLink_SetPixelFormat(FPDLINK_RGB888);
+      }
+
+      // Configure timing
+      FPDLink_SetDisplayTiming(
+          config->displayWidth,
+          config->displayHeight,
+          config->pixelClock
+      );
+
+      // Enable back channel for touchscreen/I2C
+      if (config->backChannel) {
+          FPDLink_EnableBackChannel(BACK_CHANNEL_I2C);
+      }
+
+      // Enable serializer output
+      FPDLink_EnableOutput();
+  }
+
+  // FPD-Link deserializer (at display side)
+  void FPDLink_DeserializerInit(void) {
+      // Configure deserializer (DS90UB914A-Q1 or similar)
+      FPDLink_DeserInit();
+
+      // Auto-detect incoming signal
+      FPDLink_AutoDetectFormat();
+
+      // Configure LCD output interface
+      FPDLink_SetOutputInterface(OUTPUT_PARALLEL_RGB);
+
+      // Enable pattern generation for testing
+      FPDLink_EnableTestPattern(PATTERN_COLORBAR);
+
+      // Wait for lock
+      while (!FPDLink_IsLocked()) {
+          DelayMs(10);
+      }
+
+      // Disable test pattern
+      FPDLink_DisableTestPattern();
+  }
+  ```
+
+  ### LVDS Receiver with Error Detection
+  ```c
+  // LVDS receiver with link monitoring
+  typedef struct {
+      bool locked;
+      uint32_t bitErrors;
+      uint32_t frameErrors;
+      int8_t signalStrength;     // dBm
+      uint32_t jitterPs;         // Picoseconds
+  } LVDS_RxStatus_t;
+
+  LVDS_RxStatus_t LVDS_GetReceiverStatus(void) {
+      LVDS_RxStatus_t status = {0};
+
+      // Check clock/data lock
+      status.locked = LVDS_IsClockLocked() && LVDS_IsDataLocked();
+
+      // Read error counters
+      status.bitErrors = LVDS_ReadRegister(REG_BIT_ERROR_COUNT);
+      status.frameErrors = LVDS_ReadRegister(REG_FRAME_ERROR_COUNT);
+
+      // Measure signal strength
+      status.signalStrength = LVDS_MeasureSignalStrength();
+
+      // Measure jitter
+      status.jitterPs = LVDS_MeasureJitter();
+
+      return status;
+  }
+
+  // Automatic link recovery
+  void LVDS_MonitorLink(void) {
+      static uint32_t lastErrorCount = 0;
+      LVDS_RxStatus_t status = LVDS_GetReceiverStatus();
+
+      if (!status.locked) {
+          LogError("LVDS link lost - attempting recovery");
+          LVDS_ResetReceiver();
+          return;
+      }
+
+      // Check for increasing error rate
+      if (status.bitErrors > lastErrorCount + 100) {
+          LogWarning("LVDS bit errors detected: %d", status.bitErrors);
+
+          // Attempt equalization adjustment
+          LVDS_AdjustEqualization();
+      }
+
+      lastErrorCount = status.bitErrors;
+  }
+  ```
+
+  ### Signal Integrity Verification
+  ```c
+  // Built-in self-test (BIST) pattern generation
+  typedef enum {
+      BIST_PRBS7,      // Pseudo-random 2^7-1
+      BIST_PRBS23,     // Pseudo-random 2^23-1
+      BIST_PRBS31,     // Pseudo-random 2^31-1
+      BIST_FIXED_0,    // All zeros
+      BIST_FIXED_1,    // All ones
+      BIST_ALTERNATE   // 10101010...
+  } LVDS_BIST_Pattern_t;
+
+  void LVDS_RunBIST(LVDS_BIST_Pattern_t pattern, uint32_t durationMs) {
+      // Enable BIST pattern generator
+      LVDS_EnableBIST(pattern);
+
+      // Wait for test duration
+      DelayMs(durationMs);
+
+      // Disable BIST
+      LVDS_DisableBIST();
+
+      // Read results
+      uint32_t bitErrors = LVDS_GetBISTErrors();
+      uint32_t totalBits = LVDS_GetBISTBitCount();
+
+      float ber = (float)bitErrors / (float)totalBits;
+
+      LogInfo("BIST complete: BER = %e (%d errors in %d bits)",
+              ber, bitErrors, totalBits);
+
+      // BER should be < 1e-12 for reliable operation
+      if (ber > 1e-9) {
+          LogError("BIST failed: BER too high");
+      }
+  }
+  ```
+
+  ## Use Case: Surround View Camera System
+
+  ### System Architecture
+  ```
+  Central ECU (SoC with 4x CSI-2 inputs)
+    |
+    +-- Front Camera (LVDS 4-lane) - 1920x1080@30fps
+    +-- Rear Camera (LVDS 4-lane) - 1920x1080@30fps
+    +-- Left Camera (LVDS 2-lane) - 1280x720@30fps
+    +-- Right Camera (LVDS 2-lane) - 1280x720@30fps
+  ```
+
+  ### Camera Configuration
+  - Front/Rear: 4 data lanes @ 800 Mbps/lane
+  - Left/Right: 2 data lanes @ 800 Mbps/lane
+  - RAW10 Bayer format (10 bits/pixel)
+  - Virtual channels 0-3 for each camera
+
+  ### PCB Design Considerations
+  - Differential pair routing: 5 mil trace/5 mil space
+  - Length matching: ±5 mils within pair, ±50 mils between pairs
+  - Reference plane: Solid ground plane under LVDS traces
+  - Via minimization: Use layer transitions sparingly
+  - Impedance control: 100 ohms differential ±10%
+
+  ### Cable Specifications
+  - Micro-coaxial cable (e.g., I-PEX CABLINE)
+  - Impedance: 100 ohms differential
+  - Length: <30cm typical
+  - Shielding: Aluminum-mylar wrap + drain wire
+  - Connectors: High-speed mating (>1 Gbps rated)
+
+  ## Deliverables
+
+  - LVDS link design specification
+  - PCB layout guidelines and stackup
+  - SerDes configuration code
+  - Signal integrity simulation results
+  - Eye diagram test reports
+  - EMI test results
+  - Integration test specifications
+
+  ## Common Issues and Solutions
+
+  ### Poor Eye Diagram Quality
+  - Check PCB trace impedance (should be 100Ω ±10%)
+  - Verify length matching between differential pairs
+  - Reduce via count and stubs
+  - Check termination resistors (100Ω, 1%)
+
+  ### Clock/Data Lock Failures
+  - Verify PLL lock at transmitter
+  - Check for cable discontinuities
+  - Ensure common-mode voltage within spec
+  - Validate spread spectrum settings match
+
+  ### High Bit Error Rate
+  - Improve cable shielding/grounding
+  - Adjust receiver equalization
+  - Reduce crosstalk between lanes
+  - Check for power supply noise
+
+  ### EMI Emissions Failures
+  - Add common-mode choke on cable
+  - Enable spread spectrum clocking
+  - Improve PCB ground plane integrity
+  - Use shielded cables with proper grounding
+
+constraints:
+- Point-to-point topology (no multi-drop in high-speed)
+- Differential impedance 100 ohms ±10%
+- Maximum cable length ~10m (shielded)
+- Rise time <500ps requires careful PCB design
+- Temperature stability critical for automotive
+tools_required:
+- High-speed oscilloscope (>5 GHz BW)
+- TDR for impedance measurement
+- BERT (Bit Error Rate Tester)
+- Signal integrity simulator (HyperLynx, ADS)
+- EMI test chamber
+metadata:
+  author: Automotive Claude Code Agents
+  last_updated: '2026-03-19'
+  maturity: production
+  complexity: advanced
+tags:
+- automotive
+- lvds
+- differential-signaling
+- camera-interface
+- mipi-csi2
+- fpd-link
+- high-speed-design
+- signal-integrity

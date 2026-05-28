@@ -1,0 +1,119 @@
+name: gazebo-integration
+description: Gazebo/ROS 2 integration for robotic vehicle and sensor simulation
+version: 1.0.0
+category: hil-sil
+
+metadata:
+  author: Automotive VIL Team
+  tags: [gazebo, ros2, sensor-simulation, vehicle-dynamics, sdf]
+  platforms: [Gazebo Garden/Harmonic, ROS 2 Humble/Iron]
+  requires: [gazebo, ros2, gz-sim, ros-gz-bridge]
+
+parameters:
+  gazebo_version:
+    type: string
+    description: Gazebo version
+    required: true
+    enum: [garden, harmonic, classic-11]
+
+  world_file:
+    type: string
+    description: SDF world file path
+    required: true
+
+  robot_model:
+    type: string
+    description: Robot/vehicle URDF or SDF model
+    required: true
+
+  plugins:
+    type: array
+    description: Gazebo plugins to load
+    items:
+      type: string
+      enum: [diff_drive, ackermann_steering, imu, gps, lidar, camera, depth_camera, rgbd_camera]
+
+  ros2_bridge:
+    type: boolean
+    description: Enable ROS 2 bridge
+    default: true
+
+  real_time_factor:
+    type: float
+    description: Real-time update rate
+    default: 1.0
+
+  physics_engine:
+    type: string
+    description: Physics engine
+    enum: [ode, bullet, dart, simbody]
+    default: ode
+
+instructions:
+  setup:
+    - description: Source ROS 2 environment
+      commands:
+        - "source /opt/ros/humble/setup.bash"
+
+    - description: Launch Gazebo with world file
+      commands:
+        - "gz sim {{world_file}} -r"
+
+    - description: Spawn robot model
+      commands:
+        - "ros2 run gazebo_ros spawn_entity.py -file {{robot_model}} -entity ego_vehicle"
+
+    - description: Start ROS 2 bridge
+      conditions:
+        - "{{ros2_bridge}} == true"
+      commands:
+        - "ros2 run ros_gz_bridge parameter_bridge /model/ego_vehicle/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist"
+
+    - description: Configure physics engine
+      commands:
+        - "python3 tools/adapters/hil_sil/gazebo_adapter.py --set-physics {{physics_engine}}"
+
+  execution:
+    - description: Control vehicle via ROS 2
+      commands:
+        - "ros2 topic pub /model/ego_vehicle/cmd_vel geometry_msgs/Twist '{linear: {x: 2.0}}'"
+
+    - description: Monitor sensor topics
+      commands:
+        - "ros2 topic list | grep /sensors"
+        - "ros2 topic echo /sensors/lidar/points"
+
+    - description: Record simulation data
+      commands:
+        - "ros2 bag record -a -o gazebo_simulation"
+
+  validation:
+    - description: Check TF tree
+      commands:
+        - "ros2 run tf2_tools view_frames"
+
+    - description: Visualize in RViz
+      commands:
+        - "rviz2 -d config/gazebo_visualization.rviz"
+
+examples:
+  - name: EV with LiDAR simulation
+    parameters:
+      gazebo_version: harmonic
+      world_file: worlds/urban_street.sdf
+      robot_model: models/ev_sedan.urdf
+      plugins: [ackermann_steering, imu, gps, lidar, camera]
+      ros2_bridge: true
+      real_time_factor: 1.0
+
+outputs:
+  simulation_data:
+    type: string
+    description: ROS 2 bag file
+
+best_practices:
+  - Use SDF format for complex sensor configurations
+  - Enable GPU-accelerated ray tracing for LiDAR
+  - Monitor physics update rate for real-time performance
+  - Use Gazebo Transport for inter-process communication
+  - Validate sensor TF frames before testing

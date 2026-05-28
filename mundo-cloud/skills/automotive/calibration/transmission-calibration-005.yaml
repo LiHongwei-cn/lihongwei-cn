@@ -1,0 +1,69 @@
+name: transmission-calibration-005
+version: 1.0.0
+category: calibration
+domain: automotive
+subcategory: transmission-calibration
+description: Expert skill in transmission calibration focusing on calibration domain
+  applications.
+use_cases:
+- CALIBRATION system development
+- Transmission Calibration optimization
+- Production ECU implementation
+automotive_standards:
+- ISO 26262
+- ASPICE Level 3
+- AUTOSAR 4.4
+- ISO 21434
+instructions: '
+
+  ## Core Competencies
+
+
+  Expert in transmission calibration for automotive calibration systems.
+
+
+  ## Approach
+
+
+  1. Analyze requirements against automotive standards
+
+  2. Design solution following AUTOSAR patterns
+
+  3. Implement with safety and security considerations
+
+  4. Validate per ISO 26262 requirements
+
+
+  ## Deliverables
+
+
+  - Technical specification
+
+  - Implementation (C/C++/Model)
+
+  - Test cases and results
+
+  - Safety documentation
+
+  '
+constraints:
+- ISO 26262 functional safety compliance
+- Real-time performance requirements
+- Resource constraints (CPU/Memory)
+- AUTOSAR architecture adherence
+tools_required:
+- MATLAB/Simulink
+- Vector CANoe/CANalyzer
+- Static analyzer (Polyspace/Klocwork)
+- AUTOSAR toolchain
+metadata:
+  author: Automotive Claude Code Agents
+  last_updated: '2026-03-19'
+  maturity: production
+  complexity: intermediate
+tags:
+- automotive
+- calibration
+- transmission-calibration
+- iso-26262
+- autosar

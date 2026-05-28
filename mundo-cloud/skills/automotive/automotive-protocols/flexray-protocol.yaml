@@ -1,0 +1,240 @@
+name: FlexRay Protocol
+version: 1.0.0
+category: automotive-protocols
+domain: automotive
+subcategory: communication
+description: Expert skill in FlexRay high-speed deterministic automotive bus protocol (10 Mbps) for safety-critical X-by-wire systems.
+use_cases:
+- X-by-wire systems (steer-by-wire, brake-by-wire)
+- ADAS sensor fusion and coordination
+- Powertrain control in hybrid/electric vehicles
+- Chassis dynamics and stability control
+- Production ECU implementation with AUTOSAR
+automotive_standards:
+- ISO 17458 (FlexRay Communications System)
+- ISO 26262 (Functional Safety)
+- AUTOSAR 4.4
+- ASPICE Level 3
+instructions: |
+
+  ## Core Competencies
+
+  Expert in FlexRay protocol for deterministic, fault-tolerant automotive communication.
+
+  ### Physical Layer
+  - Dual-channel redundant communication (Channel A/B)
+  - Differential signaling at 10 Mbps
+  - Bus Guardian for fault isolation
+  - Star, bus, or hybrid topologies
+  - Cable length up to 24m per segment
+
+  ### Data Link Layer
+  - Static and dynamic segments
+  - Time Division Multiple Access (TDMA)
+  - Cycle time: 1-16 ms (configurable)
+  - Frame size: 0-254 bytes payload
+  - CRC and frame checksums
+
+  ### Communication Cycle Structure
+  ```
+  |<------- Communication Cycle ------->|
+  | Static | Dynamic | Symbol | NIT     |
+  | Segment| Segment | Window | (Idle)  |
+  ```
+
+  - Static Segment: Guaranteed deterministic slots
+  - Dynamic Segment: Flexible priority-based transmission
+  - Symbol Window: Network management
+  - Network Idle Time (NIT): Clock synchronization
+
+  ### Timing and Synchronization
+  - Global time synchronization across all nodes
+  - Offset and rate correction
+  - Maximum drift tolerance: 1500 ppm
+  - Startup and wakeup procedures
+  - Coldstart vs. non-coldstart nodes
+
+  ### Configuration Parameters
+  - Slot assignment (static/dynamic)
+  - Payload length per slot
+  - Base cycle multiplier
+  - Action point offsets
+  - Bus Guardian parameters
+
+  ## Design Approach
+
+  1. Network Planning
+     - Define communication matrix
+     - Calculate bandwidth requirements
+     - Assign static/dynamic slots
+     - Configure redundancy strategy
+
+  2. Cluster Configuration
+     - Set global cycle parameters
+     - Configure clock synchronization
+     - Define startup sequence
+     - Set Bus Guardian parameters
+
+  3. Node Implementation
+     - Configure Communication Controller (CC)
+     - Implement AUTOSAR FlexRay Driver
+     - Define frame triggering
+     - Implement error handling
+
+  4. Validation and Testing
+     - Timing verification (WCET analysis)
+     - Fault injection testing
+     - Startup sequence validation
+     - Load and stress testing
+
+  ## Implementation Examples
+
+  ### Static Slot Configuration (AUTOSAR)
+  ```c
+  // FlexRay static slot transmission
+  const Fr_LPduType staticPdu = {
+      .FrameId = 10,              // Static slot ID
+      .Channel = FR_CHANNEL_AB,   // Both channels
+      .CycleRepetition = 1,       // Every cycle
+      .CycleOffset = 0,
+      .Payload = 16,              // 16 bytes (8 words)
+      .HeaderCRC = 0x1A3          // Calculated CRC
+  };
+
+  // Transmit in static slot
+  Std_ReturnType result = Fr_TransmitTxLPdu(
+      0,                          // Controller ID
+      10,                         // Frame ID
+      txData,                     // Payload pointer
+      16                          // Length
+  );
+  ```
+
+  ### Dynamic Slot Usage
+  ```c
+  // Dynamic segment configuration
+  const Fr_DynamicSlotConfig_t dynConfig = {
+      .SlotId = 50,               // Dynamic slot start
+      .PayloadLength = 32,
+      .MinislotCount = 20,        // Number of minislots
+      .Priority = 5               // Transmission priority
+  };
+
+  // Conditional transmission in dynamic segment
+  if (Fr_CheckTxLPduStatus(0, 50) == FR_TRANSMITTED) {
+      Fr_TransmitTxLPdu(0, 50, dynamicData, 32);
+  }
+  ```
+
+  ### Startup Sequence
+  ```c
+  // FlexRay startup procedure
+  void FlexRay_Startup(void) {
+      // Initialize Communication Controller
+      Fr_Init(&Fr_Config);
+
+      // Configure cluster parameters
+      Fr_ControllerInit(0);
+
+      // Start communication (coldstart node)
+      Fr_StartCommunication(0);
+
+      // Wait for normal active state
+      Fr_PocStateType pocState;
+      do {
+          Fr_GetPOCStatus(0, &pocState);
+      } while (pocState != FR_POCSTATE_NORMAL_ACTIVE);
+  }
+  ```
+
+  ### Bus Guardian Configuration
+  ```c
+  // Bus Guardian prevents babbling idiot
+  const Fr_BusGuardianConfig_t bgConfig = {
+      .GuardianEnable = TRUE,
+      .ActionPointOffset = 5,     // Macroticks before slot start
+      .MaxTxDuration = 50,        // Maximum transmission time
+      .MinislotDuration = 2       // Minislot size (macroticks)
+  };
+  ```
+
+  ## Use Case: Steer-by-Wire System
+
+  ### Network Architecture
+  ```
+  Steering ECU (Coldstart) <--Channel A/B--> Actuator ECU 1
+                          <--Channel A/B--> Actuator ECU 2
+                          <--Channel A/B--> Sensor ECU
+  ```
+
+  ### Communication Matrix
+  | Slot | Sender       | Data             | Cycle | Size |
+  |------|--------------|------------------|-------|------|
+  | 1    | Steering ECU | Steering Angle   | 5ms   | 16B  |
+  | 2    | Sensor ECU   | Torque Sensor    | 5ms   | 8B   |
+  | 3    | Actuator 1   | Position Status  | 5ms   | 12B  |
+  | 4    | Actuator 2   | Position Status  | 5ms   | 12B  |
+  | 50+  | All          | Diagnostics      | 20ms  | 32B  |
+
+  ### Safety Considerations
+  - ASIL-D rated communication
+  - Dual-channel redundancy with voting
+  - Sequence counter for frame freshness
+  - CRC calculation for data integrity
+  - Timeout supervision on critical signals
+
+  ## Deliverables
+
+  - FlexRay cluster specification (FIBEX XML)
+  - Node configuration files (AUTOSAR)
+  - Communication matrix documentation
+  - Driver implementation (C/C++)
+  - Timing analysis report (WCET)
+  - Integration test specifications
+  - Safety documentation (ISO 26262)
+
+  ## Common Issues and Solutions
+
+  ### Startup Failures
+  - Check coldstart node configuration
+  - Verify sync frame offsets
+  - Ensure clock tolerance within spec
+  - Validate Bus Guardian timing
+
+  ### Communication Errors
+  - Monitor slot boundary violations
+  - Check CRC errors in frames
+  - Verify payload length configuration
+  - Analyze bus load in dynamic segment
+
+  ### Timing Violations
+  - Reduce static segment load
+  - Optimize dynamic slot allocation
+  - Adjust action point offsets
+  - Verify interrupt latencies
+
+constraints:
+- ISO 26262 ASIL-D functional safety compliance
+- Deterministic timing guarantees (< 1ms jitter)
+- Redundant dual-channel architecture
+- Bus Guardian fault isolation
+- Global time synchronization accuracy
+tools_required:
+- Vector CANoe with FlexRay option
+- AUTOSAR FlexRay Stack
+- FIBEX database editor
+- Network calculator tool
+- Oscilloscope for physical layer debugging
+metadata:
+  author: Automotive Claude Code Agents
+  last_updated: '2026-03-19'
+  maturity: production
+  complexity: advanced
+tags:
+- automotive
+- flexray
+- deterministic
+- x-by-wire
+- iso-17458
+- autosar
+- safety-critical

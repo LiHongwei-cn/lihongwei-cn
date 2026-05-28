@@ -1,0 +1,59 @@
+name: can-bus-testing
+description: CAN bus communication testing and validation for automotive networks
+version: 1.0.0
+category: hil-sil
+
+metadata:
+  author: Automotive Test Team
+  tags: [hil, sil, can, can-fd, network-testing]
+  platforms: [HIL, SIL, VIL]
+  requires: [python3, can-utils, socket-can]
+
+parameters:
+  can_interface:
+    type: string
+    description: CAN interface name
+    required: true
+    default: can0
+
+  bitrate:
+    type: integer
+    description: CAN bitrate (bps)
+    required: true
+    enum: [125000, 250000, 500000, 1000000]
+
+  test_type:
+    type: string
+    description: Type of CAN test
+    required: true
+    enum: [loopback, bus-load, error-injection, timing, compliance]
+
+  dbc_file:
+    type: string
+    description: CAN database file
+    required: false
+
+instructions:
+  setup:
+    - description: Configure CAN interface
+      commands:
+        - "sudo ip link set {{can_interface}} type can bitrate {{bitrate}}"
+        - "sudo ip link set up {{can_interface}}"
+
+  execution:
+    - description: Execute CAN bus tests
+      commands:
+        - "python3 tests/can_testing/test_runner.py --interface {{can_interface}} --test {{test_type}} --dbc {{dbc_file}}"
+
+  validation:
+    - description: Validate CAN communication
+      commands:
+        - "candump {{can_interface}} -n 100 > can_dump.log"
+        - "python3 tests/can_testing/validator.py --log can_dump.log"
+
+examples:
+  - name: CAN bus loopback test
+    parameters:
+      can_interface: can0
+      bitrate: 500000
+      test_type: loopback

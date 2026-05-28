@@ -1,0 +1,266 @@
+name: lidar-point-cloud-processing
+description: Process LiDAR point clouds for object detection, segmentation, and 3D scene understanding using PointNet, VoxelNet, or PointPillars
+category: adas-perception
+
+instructions: |
+  You are an expert in LiDAR point cloud processing for autonomous driving.
+
+  When implementing LiDAR processing:
+  1. Load and preprocess point cloud data (PCD, BIN formats)
+  2. Apply ground plane removal (RANSAC, region growing)
+  3. Perform voxelization or pillarization for efficient processing
+  4. Implement 3D object detection (PointPillars, SECOND, PointRCNN)
+  5. Semantic segmentation for drivable areas, lanes, obstacles
+  6. Cluster points into objects using DBSCAN or Euclidean clustering
+  7. Extract bounding boxes with orientation estimation
+  8. Handle multi-frame temporal consistency
+  9. Optimize for real-time performance (50ms latency target)
+  10. Generate high-quality 3D representations for fusion
+
+  Processing pipeline:
+  - Point cloud acquisition (Velodyne, Ouster, Livox formats)
+  - ROI filtering (remove distant/irrelevant points)
+  - Ground segmentation
+  - Voxelization (0.05-0.2m resolution)
+  - Feature extraction
+  - 3D object detection
+  - Tracking and prediction
+
+  Algorithms:
+  - PointPillars: Fast, pillar-based encoding
+  - SECOND: Sparse convolutions for 3D
+  - PointRCNN: Two-stage detector
+  - CenterPoint: Anchor-free detection
+  - PointNet++: Deep learning on raw points
+
+  Performance targets:
+  - Detection range: 0.5m to 150m
+  - Point density: 64-128 beams typical
+  - Frame rate: 10-20 Hz
+  - Latency: < 100ms end-to-end
+  - mAP > 0.75 for vehicle detection
+
+dependencies:
+  - Open3D for point cloud operations
+  - PyTorch for deep learning
+  - CUDA for GPU acceleration
+  - PCL (Point Cloud Library) for C++ implementation
+
+examples:
+  - description: "PointPillars-based 3D object detection"
+    input: "Implement PointPillars for real-time 3D vehicle detection from LiDAR"
+    output: |
+      ```python
+      import numpy as np
+      import open3d as o3d
+      from sklearn.cluster import DBSCAN
+      from dataclasses import dataclass
+      from typing import List, Tuple
+
+      @dataclass
+      class BBox3D:
+          center: np.ndarray  # (x, y, z)
+          size: np.ndarray    # (l, w, h)
+          heading: float      # rotation around z-axis
+          class_name: str
+          confidence: float
+
+      class LiDARProcessor:
+          def __init__(self, config: dict):
+              self.voxel_size = config.get('voxel_size', 0.05)
+              self.x_range = config.get('x_range', (-50, 50))
+              self.y_range = config.get('y_range', (-50, 50))
+              self.z_range = config.get('z_range', (-3, 5))
+              self.ground_threshold = config.get('ground_threshold', 0.2)
+
+          def process_point_cloud(self, points: np.ndarray) -> List[BBox3D]:
+              """
+              Process point cloud and detect 3D objects
+              points: Nx4 array (x, y, z, intensity)
+              """
+              # 1. ROI filtering
+              points = self._filter_roi(points)
+
+              # 2. Ground removal
+              ground_mask = self._remove_ground_ransac(points[:, :3])
+              obstacle_points = points[~ground_mask]
+
+              # 3. Clustering
+              clusters = self._cluster_points(obstacle_points[:, :3])
+
+              # 4. Bounding box estimation
+              bboxes = []
+              for cluster_points in clusters:
+                  if len(cluster_points) < 10:  # Minimum points
+                      continue
+
+                  bbox = self._fit_bounding_box(cluster_points)
+                  if bbox:
+                      bboxes.append(bbox)
+
+              return bboxes
+
+          def _filter_roi(self, points: np.ndarray) -> np.ndarray:
+              """Filter points within region of interest"""
+              mask = (
+                  (points[:, 0] >= self.x_range[0]) & (points[:, 0] <= self.x_range[1]) &
+                  (points[:, 1] >= self.y_range[0]) & (points[:, 1] <= self.y_range[1]) &
+                  (points[:, 2] >= self.z_range[0]) & (points[:, 2] <= self.z_range[1])
+              )
+              return points[mask]
+
+          def _remove_ground_ransac(self, points: np.ndarray, iterations: int = 100) -> np.ndarray:
+              """RANSAC-based ground plane removal"""
+              best_inliers = None
+              max_inliers = 0
+
+              for _ in range(iterations):
+                  # Randomly sample 3 points
+                  sample_idx = np.random.choice(len(points), 3, replace=False)
+                  sample_points = points[sample_idx]
+
+                  # Fit plane: ax + by + cz + d = 0
+                  v1 = sample_points[1] - sample_points[0]
+                  v2 = sample_points[2] - sample_points[0]
+                  normal = np.cross(v1, v2)
+                  normal /= np.linalg.norm(normal)
+
+                  d = -np.dot(normal, sample_points[0])
+
+                  # Calculate distances
+                  distances = np.abs(np.dot(points, normal) + d)
+
+                  # Count inliers
+                  inliers = distances < self.ground_threshold
+                  num_inliers = np.sum(inliers)
+
+                  if num_inliers > max_inliers:
+                      max_inliers = num_inliers
+                      best_inliers = inliers
+
+              return best_inliers if best_inliers is not None else np.zeros(len(points), dtype=bool)
+
+          def _cluster_points(self, points: np.ndarray, eps: float = 0.5, min_samples: int = 10) -> List[np.ndarray]:
+              """DBSCAN clustering"""
+              if len(points) == 0:
+                  return []
+
+              clustering = DBSCAN(eps=eps, min_samples=min_samples).fit(points)
+              labels = clustering.labels_
+
+              clusters = []
+              for label in set(labels):
+                  if label == -1:  # Noise
+                      continue
+                  cluster_mask = labels == label
+                  clusters.append(points[cluster_mask])
+
+              return clusters
+
+          def _fit_bounding_box(self, points: np.ndarray) -> BBox3D:
+              """Fit oriented bounding box to point cluster"""
+              if len(points) < 3:
+                  return None
+
+              # Use PCA to find principal axes
+              mean = np.mean(points, axis=0)
+              centered = points - mean
+
+              cov = np.cov(centered.T)
+              eigenvalues, eigenvectors = np.linalg.eigh(cov)
+
+              # Sort by eigenvalue (largest first)
+              idx = eigenvalues.argsort()[::-1]
+              eigenvectors = eigenvectors[:, idx]
+
+              # Transform to principal axes
+              transformed = centered @ eigenvectors
+
+              # Find min/max along each axis
+              min_coords = np.min(transformed, axis=0)
+              max_coords = np.max(transformed, axis=0)
+              size = max_coords - min_coords
+
+              # Calculate center in original coordinates
+              box_center_local = (min_coords + max_coords) / 2
+              center = box_center_local @ eigenvectors.T + mean
+
+              # Heading angle (rotation around z-axis)
+              heading = np.arctan2(eigenvectors[1, 0], eigenvectors[0, 0])
+
+              # Classify object based on size
+              class_name = self._classify_by_size(size)
+
+              return BBox3D(
+                  center=center,
+                  size=size,
+                  heading=heading,
+                  class_name=class_name,
+                  confidence=0.8  # Simplified
+              )
+
+          def _classify_by_size(self, size: np.ndarray) -> str:
+              """Simple size-based classification"""
+              l, w, h = size
+
+              if l > 3 and w > 1.5:
+                  return 'car'
+              elif l > 6:
+                  return 'truck'
+              elif l < 2 and w < 1:
+                  return 'pedestrian'
+              elif l < 2.5 and w < 1.5:
+                  return 'bicycle'
+              else:
+                  return 'unknown'
+
+          def visualize(self, points: np.ndarray, bboxes: List[BBox3D]):
+              """Visualize point cloud and bounding boxes"""
+              pcd = o3d.geometry.PointCloud()
+              pcd.points = o3d.utility.Vector3dVector(points[:, :3])
+
+              geometries = [pcd]
+
+              for bbox in bboxes:
+                  # Create oriented bounding box
+                  R = o3d.geometry.get_rotation_matrix_from_axis_angle([0, 0, bbox.heading])
+                  obb = o3d.geometry.OrientedBoundingBox(bbox.center, R, bbox.size)
+                  obb.color = (1, 0, 0)
+                  geometries.append(obb)
+
+              o3d.visualization.draw_geometries(geometries)
+
+
+      # Usage
+      if __name__ == "__main__":
+          # Load LiDAR data (example: KITTI format)
+          points = np.fromfile('000000.bin', dtype=np.float32).reshape(-1, 4)
+
+          config = {
+              'voxel_size': 0.05,
+              'x_range': (-50, 50),
+              'y_range': (-25, 25),
+              'z_range': (-3, 5),
+              'ground_threshold': 0.2
+          }
+
+          processor = LiDARProcessor(config)
+          bboxes = processor.process_point_cloud(points)
+
+          print(f"Detected {len(bboxes)} objects:")
+          for i, bbox in enumerate(bboxes):
+              print(f"  {i+1}. {bbox.class_name} at {bbox.center} (conf={bbox.confidence:.2f})")
+
+          # Visualize
+          processor.visualize(points, bboxes)
+      ```
+
+tags:
+  - adas
+  - perception
+  - lidar
+  - point-cloud
+  - 3d-detection
+  - clustering
+  - ransac
+  - real-time

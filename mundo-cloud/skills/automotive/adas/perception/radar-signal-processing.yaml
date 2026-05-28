@@ -1,0 +1,316 @@
+name: radar-signal-processing
+description: Process automotive radar signals using CFAR detection, Doppler processing, and angle estimation
+category: adas-perception
+
+instructions: |
+  You are an expert in automotive radar signal processing for ADAS applications.
+
+  When implementing radar signal processing:
+  1. Apply FFT-based range-Doppler processing
+  2. Implement CFAR (Constant False Alarm Rate) detection
+  3. Perform angle estimation using MUSIC or beamforming
+  4. Extract target parameters (range, velocity, azimuth, elevation)
+  5. Apply clutter filtering for static objects
+  6. Implement multi-target tracking
+  7. Handle interference mitigation
+  8. Optimize for real-time processing on automotive ECUs
+  9. Support different radar types (77 GHz FMCW, 24 GHz)
+  10. Generate detection lists with covariance matrices
+
+  Processing chain:
+  1. ADC data acquisition (complex I/Q samples)
+  2. Range FFT (chirp processing)
+  3. Doppler FFT (across chirps)
+  4. CFAR detection (2D CA-CFAR or OS-CFAR)
+  5. Angle estimation (MUSIC, beamforming)
+  6. Target clustering and grouping
+  7. Tracking and association
+
+  CFAR algorithms:
+  - CA-CFAR: Cell Averaging, good for uniform clutter
+  - OS-CFAR: Ordered Statistics, robust to multi-targets
+  - GO-CFAR: Greatest Of, for edge detection
+  - SO-CFAR: Smallest Of, for homogeneous background
+
+  Angle estimation methods:
+  - Digital beamforming (DBF): Fast, moderate resolution
+  - MUSIC: High resolution, computationally intensive
+  - Bartlett: Simple, low resolution
+  - Capon: Adaptive, good for interference rejection
+
+  Performance metrics:
+  - Detection probability > 99% for vehicles at 150m
+  - False alarm rate < 10^-6
+  - Range resolution: 0.1-1m (depends on bandwidth)
+  - Velocity resolution: 0.1-0.5 m/s
+  - Angle accuracy: ±1° azimuth, ±2° elevation
+
+dependencies:
+  - NumPy for FFT and linear algebra
+  - SciPy for signal processing
+  - C++ FFTW for production optimization
+
+examples:
+  - description: "77 GHz FMCW radar processing with CA-CFAR"
+    input: "Implement radar signal processor for 77 GHz radar with 4 RX channels"
+    output: |
+      ```python
+      import numpy as np
+      from scipy import signal
+      from scipy.linalg import eigh
+      from dataclasses import dataclass
+      from typing import List, Tuple
+
+      @dataclass
+      class RadarTarget:
+          range_m: float
+          velocity_mps: float
+          azimuth_deg: float
+          elevation_deg: float
+          rcs_dbsm: float  # Radar cross-section
+          snr_db: float
+
+      class FMCWRadarProcessor:
+          def __init__(self, config: dict):
+              # Radar parameters
+              self.num_chirps = config.get('num_chirps', 128)
+              self.num_samples = config.get('num_samples', 256)
+              self.num_rx = config.get('num_rx', 4)
+              self.num_tx = config.get('num_tx', 3)
+
+              # Physical parameters
+              self.start_freq = config.get('start_freq', 77e9)  # Hz
+              self.bandwidth = config.get('bandwidth', 4e9)     # Hz
+              self.chirp_time = config.get('chirp_time', 40e-6) # seconds
+              self.sample_rate = config.get('sample_rate', 10e6) # Hz
+              self.lambda_c = 3e8 / self.start_freq  # Wavelength
+
+              # Antenna geometry (ULA - Uniform Linear Array)
+              self.rx_spacing = self.lambda_c / 2  # Half wavelength
+              self.rx_positions = np.arange(self.num_rx) * self.rx_spacing
+
+              # Derived parameters
+              self.range_resolution = 3e8 / (2 * self.bandwidth)
+              self.max_range = self.range_resolution * self.num_samples / 2
+              self.velocity_resolution = self.lambda_c / (2 * self.chirp_time * self.num_chirps)
+              self.max_velocity = self.velocity_resolution * self.num_chirps / 2
+
+              # CFAR parameters
+              self.cfar_guard_cells = 4
+              self.cfar_train_cells = 12
+              self.cfar_threshold_db = 10  # dB above noise floor
+
+              print(f"Radar Configuration:")
+              print(f"  Range resolution: {self.range_resolution:.2f} m")
+              print(f"  Max range: {self.max_range:.2f} m")
+              print(f"  Velocity resolution: {self.velocity_resolution:.2f} m/s")
+              print(f"  Max velocity: {self.max_velocity:.2f} m/s")
+
+          def process_frame(self, adc_data: np.ndarray) -> List[RadarTarget]:
+              """
+              Process one radar frame
+              adc_data: shape (num_rx, num_chirps, num_samples) complex
+              """
+              # 1. Range FFT
+              range_fft = np.fft.fft(adc_data, axis=2)
+              range_fft = range_fft[:, :, :self.num_samples//2]  # Keep positive frequencies
+
+              # 2. Doppler FFT
+              doppler_fft = np.fft.fftshift(
+                  np.fft.fft(range_fft, axis=1),
+                  axes=1
+              )
+
+              # 3. Average across RX antennas for initial detection
+              range_doppler_map = np.mean(np.abs(doppler_fft), axis=0)
+
+              # 4. CFAR detection
+              detections = self._ca_cfar_2d(range_doppler_map)
+
+              # 5. Angle estimation for each detection
+              targets = []
+              for range_idx, doppler_idx in detections:
+                  # Extract signal across RX antennas
+                  rx_signal = doppler_fft[:, doppler_idx, range_idx]
+
+                  # Estimate angle using MUSIC
+                  azimuth = self._music_angle_estimation(rx_signal)
+
+                  # Calculate physical parameters
+                  range_m = range_idx * self.range_resolution
+                  velocity_mps = (doppler_idx - self.num_chirps//2) * self.velocity_resolution
+                  snr_db = self._calculate_snr(range_doppler_map, range_idx, doppler_idx)
+                  rcs_dbsm = self._estimate_rcs(range_m, snr_db)
+
+                  targets.append(RadarTarget(
+                      range_m=range_m,
+                      velocity_mps=velocity_mps,
+                      azimuth_deg=azimuth,
+                      elevation_deg=0.0,  # Simplified: single elevation plane
+                      rcs_dbsm=rcs_dbsm,
+                      snr_db=snr_db
+                  ))
+
+              return targets
+
+          def _ca_cfar_2d(self, range_doppler_map: np.ndarray) -> List[Tuple[int, int]]:
+              """2D Cell-Averaging CFAR detection"""
+              detections = []
+
+              guard = self.cfar_guard_cells
+              train = self.cfar_train_cells
+              margin = guard + train
+
+              threshold_linear = 10 ** (self.cfar_threshold_db / 10)
+
+              for range_idx in range(margin, range_doppler_map.shape[1] - margin):
+                  for doppler_idx in range(margin, range_doppler_map.shape[0] - margin):
+                      # Cell under test (CUT)
+                      cut_value = range_doppler_map[doppler_idx, range_idx]
+
+                      # Extract training cells (excluding guard cells and CUT)
+                      window = range_doppler_map[
+                          doppler_idx - margin : doppler_idx + margin + 1,
+                          range_idx - margin : range_idx + margin + 1
+                      ]
+
+                      # Create mask to exclude guard region
+                      mask = np.ones_like(window, dtype=bool)
+                      mask[
+                          train : train + 2*guard + 1,
+                          train : train + 2*guard + 1
+                      ] = False
+
+                      # Calculate noise level from training cells
+                      training_cells = window[mask]
+                      noise_level = np.mean(training_cells)
+
+                      # Detection threshold
+                      threshold = noise_level * threshold_linear
+
+                      # Check if CUT exceeds threshold
+                      if cut_value > threshold:
+                          # Peak detection: ensure it's local maximum
+                          local_region = range_doppler_map[
+                              doppler_idx-1:doppler_idx+2,
+                              range_idx-1:range_idx+2
+                          ]
+                          if cut_value == np.max(local_region):
+                              detections.append((range_idx, doppler_idx))
+
+              return detections
+
+          def _music_angle_estimation(self, rx_signal: np.ndarray, num_sources: int = 1) -> float:
+              """MUSIC algorithm for angle estimation"""
+              # Covariance matrix
+              R = np.outer(rx_signal, np.conj(rx_signal))
+
+              # Eigenvalue decomposition
+              eigenvalues, eigenvectors = eigh(R)
+
+              # Sort in descending order
+              idx = np.argsort(eigenvalues)[::-1]
+              eigenvalues = eigenvalues[idx]
+              eigenvectors = eigenvectors[:, idx]
+
+              # Noise subspace (assuming num_sources = 1)
+              noise_subspace = eigenvectors[:, num_sources:]
+
+              # MUSIC spectrum
+              angles = np.linspace(-90, 90, 181)
+              spectrum = np.zeros(len(angles))
+
+              for i, angle in enumerate(angles):
+                  # Steering vector
+                  theta_rad = np.deg2rad(angle)
+                  a = np.exp(-1j * 2 * np.pi * self.rx_positions * np.sin(theta_rad) / self.lambda_c)
+
+                  # MUSIC pseudo-spectrum
+                  denominator = np.abs(a.conj() @ noise_subspace @ noise_subspace.conj().T @ a)
+                  spectrum[i] = 1.0 / (denominator + 1e-10)
+
+              # Find peak
+              peak_idx = np.argmax(spectrum)
+              azimuth = angles[peak_idx]
+
+              return azimuth
+
+          def _calculate_snr(self, range_doppler_map: np.ndarray, range_idx: int, doppler_idx: int) -> float:
+              """Calculate SNR in dB"""
+              signal_power = range_doppler_map[doppler_idx, range_idx] ** 2
+
+              # Estimate noise from neighboring cells
+              window = range_doppler_map[
+                  max(0, doppler_idx-10) : doppler_idx+10,
+                  max(0, range_idx-10) : range_idx+10
+              ]
+              noise_power = np.median(window) ** 2
+
+              snr_linear = signal_power / (noise_power + 1e-10)
+              snr_db = 10 * np.log10(snr_linear)
+
+              return snr_db
+
+          def _estimate_rcs(self, range_m: float, snr_db: float) -> float:
+              """Estimate radar cross-section (simplified radar equation)"""
+              # Simplified: RCS ∝ SNR × R^4
+              # This is a rough estimate; real implementation needs calibration
+              rcs_linear = (10 ** (snr_db / 10)) * (range_m ** 4) / 1e10
+              rcs_dbsm = 10 * np.log10(rcs_linear + 1e-10)
+              return rcs_dbsm
+
+
+      # Usage example
+      if __name__ == "__main__":
+          config = {
+              'num_chirps': 128,
+              'num_samples': 256,
+              'num_rx': 4,
+              'num_tx': 3,
+              'start_freq': 77e9,
+              'bandwidth': 4e9,
+              'chirp_time': 40e-6,
+              'sample_rate': 10e6
+          }
+
+          processor = FMCWRadarProcessor(config)
+
+          # Simulate ADC data (normally from hardware)
+          adc_data = np.random.randn(4, 128, 256) + 1j * np.random.randn(4, 128, 256)
+
+          # Add synthetic target at 50m, 10 m/s, 15° azimuth
+          target_range_idx = int(50 / processor.range_resolution)
+          target_doppler_idx = int(10 / processor.velocity_resolution) + 64
+          target_angle = np.deg2rad(15)
+
+          # Steering vector for target angle
+          steering = np.exp(-1j * 2 * np.pi * processor.rx_positions * np.sin(target_angle) / processor.lambda_c)
+
+          for rx_idx in range(4):
+              adc_data[rx_idx, :, target_range_idx] += 100 * steering[rx_idx] * np.exp(
+                  1j * 2 * np.pi * np.arange(128) * 10 / (processor.velocity_resolution * 128)
+              )
+
+          # Process frame
+          targets = processor.process_frame(adc_data)
+
+          print(f"\nDetected {len(targets)} targets:")
+          for i, target in enumerate(targets):
+              print(f"  Target {i+1}:")
+              print(f"    Range: {target.range_m:.2f} m")
+              print(f"    Velocity: {target.velocity_mps:.2f} m/s")
+              print(f"    Azimuth: {target.azimuth_deg:.2f}°")
+              print(f"    RCS: {target.rcs_dbsm:.2f} dBsm")
+              print(f"    SNR: {target.snr_db:.2f} dB")
+      ```
+
+tags:
+  - adas
+  - perception
+  - radar
+  - signal-processing
+  - cfar
+  - fmcw
+  - angle-estimation
+  - music
+  - real-time

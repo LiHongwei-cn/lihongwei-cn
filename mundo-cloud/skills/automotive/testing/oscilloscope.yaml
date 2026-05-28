@@ -1,0 +1,432 @@
+name: oscilloscope
+description: Oscilloscope measurements for battery waveform analysis using Keysight, Tektronix, Rohde & Schwarz scopes
+category: testing-metrology
+
+instructions: |
+  You are an expert in oscilloscope measurements for automotive battery and power electronics testing.
+
+  When implementing oscilloscope integration:
+  1. Configure channels for voltage/current probes (4-16 channels)
+  2. Set appropriate timebase (ns to hours)
+  3. Implement trigger conditions (edge, pulse, pattern, CAN)
+  4. Capture transient events (inrush, switching, faults)
+  5. Measure ripple voltage and current
+  6. Perform FFT analysis for noise characterization
+  7. Decode serial protocols (CAN, LIN, I2C, SPI)
+  8. Measure rise/fall times, overshoot, ringing
+  9. Capture single-shot events with deep memory
+  10. Generate statistical analysis (histogram, trends)
+  11. Support differential probes for high voltage
+  12. Implement segmented memory for long captures
+  13. Export waveforms in CSV, binary, or image format
+  14. Synchronize with power analyzer for correlation
+  15. Measure EMI/EMC emissions
+
+  Supported Equipment:
+  - Keysight DSOX/MSOX series (3000T, 4000, 6000)
+  - Tektronix MSO/DPO series (4000, 5000, 6000)
+  - Rohde & Schwarz RTO/RTP series
+  - Lecroy WaveSurfer/WaveRunner
+  - Yokogawa DLM series
+
+  Measurement Types:
+  - Voltage ripple (mV resolution on DC)
+  - Current ripple (with current probes)
+  - Switching noise and transients
+  - Gate drive signals (MOSFETs/IGBTs)
+  - Serial protocol decoding
+  - Power supply rejection ratio
+  - Frequency spectrum (FFT)
+  - Phase relationships
+
+  Probes and Accessories:
+  - Passive 10:1 probes (up to 300V)
+  - High voltage differential probes (1000V+)
+  - Current probes (AC/DC, 1mA to 1000A)
+  - Rogowski coils for high current
+  - Near-field EMI probes
+  - CAN/LIN/FlexRay protocol decoders
+
+  Trigger Modes:
+  - Edge trigger (rising/falling)
+  - Pulse width trigger
+  - Runt pulse detection
+  - Pattern trigger (digital channels)
+  - CAN/LIN message trigger
+  - Timeout trigger
+  - Sequential trigger (A then B)
+
+dependencies:
+  - pyvisa for SCPI control
+  - numpy for waveform processing
+  - scipy for signal analysis
+  - matplotlib for visualization
+  - struct for binary waveform decoding
+
+examples:
+  - description: "Keysight MSOX4154A oscilloscope waveform capture"
+    input: "Capture and analyze battery voltage ripple with Keysight scope"
+    output: |
+      ```python
+      import pyvisa
+      import numpy as np
+      import matplotlib.pyplot as plt
+      from dataclasses import dataclass
+      from typing import List, Tuple
+      import struct
+
+
+      @dataclass
+      class Waveform:
+          data: np.ndarray      # Voltage/current values
+          time: np.ndarray      # Time axis
+          sample_rate: float    # Hz
+          vertical_scale: float # V/div
+          timebase: float       # s/div
+          trigger_time: float   # Trigger point in time array
+
+
+      class KeysightMSOX4154A:
+          """Keysight MSOX4154A Oscilloscope Interface."""
+
+          def __init__(self, address: str = "TCPIP0::192.168.1.10::INSTR"):
+              """Initialize oscilloscope connection."""
+              self.rm = pyvisa.ResourceManager()
+              self.scope = self.rm.open_resource(address)
+              self.scope.timeout = 10000
+              self.scope.chunk_size = 20480000  # For large waveforms
+
+              idn = self.scope.query("*IDN?")
+              print(f"Connected to: {idn}")
+
+              self._reset()
+
+          def _reset(self):
+              """Reset scope to default state."""
+              self.scope.write("*RST")
+              self.scope.write("*CLS")
+              self.scope.write(":STOP")
+
+          def configure_channel(
+              self,
+              channel: int,
+              scale: float,
+              offset: float = 0.0,
+              coupling: str = "DC",
+              probe_ratio: float = 1.0
+          ):
+              """
+              Configure oscilloscope channel.
+
+              Args:
+                  channel: Channel number (1-4)
+                  scale: Vertical scale in V/div
+                  offset: Vertical offset in V
+                  coupling: AC, DC, or DCLimit
+                  probe_ratio: Probe attenuation (1, 10, 100, 1000)
+              """
+              self.scope.write(f":CHAN{channel}:DISP ON")
+              self.scope.write(f":CHAN{channel}:SCAL {scale}")
+              self.scope.write(f":CHAN{channel}:OFFS {offset}")
+              self.scope.write(f":CHAN{channel}:COUP {coupling}")
+              self.scope.write(f":CHAN{channel}:PROB {probe_ratio}")
+
+              print(f"Ch{channel}: {scale}V/div, {coupling} coupling, {probe_ratio}:1 probe")
+
+          def set_timebase(self, scale: float, position: float = 0.0):
+              """
+              Set horizontal timebase.
+
+              Args:
+                  scale: Time per division in seconds
+                  position: Horizontal position (trigger point) in seconds
+              """
+              self.scope.write(f":TIM:SCAL {scale}")
+              self.scope.write(f":TIM:POS {position}")
+
+              print(f"Timebase: {scale}s/div, position: {position}s")
+
+          def set_trigger(
+              self,
+              source: str = "CHAN1",
+              level: float = 0.0,
+              edge: str = "POS",
+              mode: str = "EDGE"
+          ):
+              """
+              Configure trigger.
+
+              Args:
+                  source: Trigger source (CHAN1-4, EXT, LINE)
+                  level: Trigger level in V
+                  edge: POS (rising), NEG (falling), EITH (either)
+                  mode: EDGE, PULS (pulse), GLIT (glitch), PATT (pattern)
+              """
+              self.scope.write(f":TRIG:MODE {mode}")
+              self.scope.write(f":TRIG:EDGE:SOUR {source}")
+              self.scope.write(f":TRIG:EDGE:LEV {level}")
+              self.scope.write(f":TRIG:EDGE:SLOP {edge}")
+
+              print(f"Trigger: {source}, {level}V, {edge} edge")
+
+          def single_acquisition(self, timeout: int = 10):
+              """
+              Acquire single waveform (stop after trigger).
+
+              Args:
+                  timeout: Maximum wait time for trigger in seconds
+              """
+              self.scope.write(":SING")  # Single acquisition mode
+              print("Waiting for trigger...")
+
+              # Wait for acquisition complete
+              start_time = time.time()
+              while True:
+                  status = int(self.scope.query(":OPER:COND?"))
+                  if (status & 0x0008) == 0:  # Bit 3: Running
+                      break
+                  if time.time() - start_time > timeout:
+                      print("Trigger timeout")
+                      return False
+                  time.sleep(0.1)
+
+              print("Acquisition complete")
+              return True
+
+          def get_waveform(self, channel: int = 1) -> Waveform:
+              """
+              Download waveform data from oscilloscope.
+
+              Args:
+                  channel: Channel number (1-4)
+
+              Returns:
+                  Waveform object with data and metadata
+              """
+              # Set waveform source
+              self.scope.write(f":WAV:SOUR CHAN{channel}")
+
+              # Set waveform format to WORD (16-bit)
+              self.scope.write(":WAV:FORM WORD")
+              self.scope.write(":WAV:BYT LSBF")  # Least significant byte first
+
+              # Get preamble (metadata)
+              preamble = self.scope.query(":WAV:PRE?").split(',')
+
+              format_type = int(preamble[0])      # 0=BYTE, 1=WORD, 4=ASCII
+              acq_type = int(preamble[1])         # 0=NORMAL, 1=PEAK, 2=AVERAGE
+              points = int(preamble[2])           # Number of points
+              count = int(preamble[3])            # Always 1
+              x_increment = float(preamble[4])    # Time between points
+              x_origin = float(preamble[5])       # Time of first point
+              x_reference = float(preamble[6])    # Reference point
+              y_increment = float(preamble[7])    # Voltage per LSB
+              y_origin = float(preamble[8])       # Voltage at center
+              y_reference = float(preamble[9])    # Reference level
+
+              # Request waveform data
+              self.scope.write(":WAV:DATA?")
+              raw_data = self.scope.read_raw()
+
+              # Parse header: #8NNNNNNNN<data>
+              # #8 means 8 digits follow with byte count
+              header_len = 2 + int(raw_data[1:2])
+              byte_count = int(raw_data[2:header_len])
+              wave_data = raw_data[header_len:header_len + byte_count]
+
+              # Convert binary data to voltage array
+              num_points = len(wave_data) // 2
+              raw_values = struct.unpack(f'<{num_points}h', wave_data)  # Little-endian signed shorts
+
+              # Convert to voltage
+              voltage_data = np.array([
+                  ((val - y_reference) * y_increment) + y_origin
+                  for val in raw_values
+              ])
+
+              # Create time axis
+              time_data = np.arange(points) * x_increment + x_origin
+
+              # Get current settings
+              vertical_scale = float(self.scope.query(f":CHAN{channel}:SCAL?"))
+              timebase = float(self.scope.query(":TIM:SCAL?"))
+
+              return Waveform(
+                  data=voltage_data,
+                  time=time_data,
+                  sample_rate=1.0 / x_increment,
+                  vertical_scale=vertical_scale,
+                  timebase=timebase,
+                  trigger_time=0.0  # Trigger at center
+              )
+
+          def measure_ripple(self, channel: int = 1) -> dict:
+              """
+              Measure voltage ripple on DC signal.
+
+              Args:
+                  channel: Channel number
+
+              Returns:
+                  Dictionary with ripple measurements
+              """
+              # Set measurement source
+              self.scope.write(f":MEAS:SOUR CHAN{channel}")
+
+              # Measure DC level (average)
+              dc_level = float(self.scope.query(":MEAS:VAV? DISP"))
+
+              # Measure peak-to-peak ripple
+              vpp = float(self.scope.query(":MEAS:VPP? DISP"))
+
+              # Measure RMS ripple (AC coupled)
+              vrms = float(self.scope.query(":MEAS:VAC? DISP"))
+
+              # Measure frequency
+              freq = float(self.scope.query(":MEAS:FREQ? DISP"))
+
+              return {
+                  'dc_level_v': dc_level,
+                  'ripple_pk_pk_v': vpp,
+                  'ripple_rms_v': vrms,
+                  'ripple_freq_hz': freq,
+                  'ripple_percent': (vpp / dc_level * 100) if dc_level != 0 else 0
+              }
+
+          def measure_switching_transient(
+              self,
+              channel: int = 1
+          ) -> dict:
+              """
+              Measure switching transient characteristics.
+
+              Returns:
+                  Dictionary with rise time, overshoot, ringing
+              """
+              self.scope.write(f":MEAS:SOUR CHAN{channel}")
+
+              rise_time = float(self.scope.query(":MEAS:RIS? DISP"))
+              fall_time = float(self.scope.query(":MEAS:FALL? DISP"))
+              overshoot = float(self.scope.query(":MEAS:OVER? DISP"))
+              preshoot = float(self.scope.query(":MEAS:PRE? DISP"))
+
+              return {
+                  'rise_time_s': rise_time,
+                  'fall_time_s': fall_time,
+                  'overshoot_pct': overshoot,
+                  'preshoot_pct': preshoot
+              }
+
+          def perform_fft(self, waveform: Waveform) -> Tuple[np.ndarray, np.ndarray]:
+              """
+              Perform FFT analysis on waveform.
+
+              Args:
+                  waveform: Waveform object
+
+              Returns:
+                  Tuple of (frequencies, magnitudes) in Hz and V
+              """
+              # Compute FFT
+              fft_result = np.fft.fft(waveform.data)
+              fft_magnitude = np.abs(fft_result) / len(waveform.data)
+
+              # Frequency axis
+              frequencies = np.fft.fftfreq(len(waveform.data), 1.0 / waveform.sample_rate)
+
+              # Return only positive frequencies
+              positive_freq_idx = frequencies >= 0
+              return frequencies[positive_freq_idx], fft_magnitude[positive_freq_idx]
+
+          def export_waveform_csv(self, waveform: Waveform, filename: str):
+              """Export waveform to CSV file."""
+              data = np.column_stack((waveform.time, waveform.data))
+              np.savetxt(
+                  filename,
+                  data,
+                  delimiter=',',
+                  header='Time(s),Voltage(V)',
+                  comments=''
+              )
+              print(f"Waveform exported to {filename}")
+
+          def close(self):
+              """Close scope connection."""
+              self.scope.close()
+              self.rm.close()
+
+
+      # Usage: Measure battery voltage ripple
+      if __name__ == "__main__":
+          import time
+
+          scope = KeysightMSOX4154A("TCPIP0::192.168.1.10::INSTR")
+
+          # Configure for ripple measurement on 400V battery
+          scope.configure_channel(
+              channel=1,
+              scale=50.0,       # 50V/div for 400V DC
+              offset=-400.0,    # Shift DC level off-screen
+              coupling="AC",    # AC coupling to see ripple only
+              probe_ratio=100   # 100:1 high voltage probe
+          )
+
+          scope.set_timebase(scale=10e-6)  # 10us/div for switching noise
+
+          scope.set_trigger(
+              source="CHAN1",
+              level=0.0,
+              edge="POS"
+          )
+
+          # Acquire waveform
+          if scope.single_acquisition(timeout=10):
+              waveform = scope.get_waveform(channel=1)
+              scope.export_waveform_csv(waveform, "battery_ripple.csv")
+
+              # Measure ripple
+              ripple = scope.measure_ripple(channel=1)
+              print("\n=== Ripple Measurement ===")
+              print(f"DC Level: {ripple['dc_level_v']:.2f} V")
+              print(f"Ripple Vpp: {ripple['ripple_pk_pk_v']:.3f} V")
+              print(f"Ripple RMS: {ripple['ripple_rms_v']:.3f} V")
+              print(f"Ripple %: {ripple['ripple_percent']:.2f} %")
+              print(f"Frequency: {ripple['ripple_freq_hz']:.1f} Hz")
+
+              # FFT analysis
+              freqs, mags = scope.perform_fft(waveform)
+
+              # Plot
+              fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8))
+
+              ax1.plot(waveform.time * 1e6, waveform.data * 1e3)
+              ax1.set_xlabel('Time (us)')
+              ax1.set_ylabel('Voltage (mV)')
+              ax1.set_title('Battery Voltage Ripple')
+              ax1.grid(True)
+
+              ax2.semilogy(freqs / 1e3, mags * 1e3)
+              ax2.set_xlabel('Frequency (kHz)')
+              ax2.set_ylabel('Magnitude (mV)')
+              ax2.set_title('FFT Spectrum')
+              ax2.grid(True)
+              ax2.set_xlim([0, 500])  # 0-500kHz
+
+              plt.tight_layout()
+              plt.savefig('ripple_analysis.png', dpi=300)
+              print("Analysis plot saved to ripple_analysis.png")
+
+          scope.close()
+      ```
+
+tags:
+  - testing
+  - oscilloscope
+  - waveform
+  - ripple
+  - transient
+  - keysight
+  - tektronix
+  - measurement
+  - fft
+  - emi

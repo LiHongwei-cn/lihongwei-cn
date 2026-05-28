@@ -1,0 +1,236 @@
+name: path-planning-astar
+description: Implement global and local path planning using A*, RRT, RRT*, and Hybrid A* algorithms for autonomous navigation
+category: adas-planning
+
+instructions: |
+  Implement path planning algorithms for ADAS and autonomous driving:
+
+  Global planning (A*, Dijkstra):
+  - Grid-based or graph-based search
+  - Heuristic design for optimality
+  - Handle static obstacles and road networks
+
+  Local planning (RRT, RRT*):
+  - Real-time dynamic obstacle avoidance
+  - Kinematic feasibility constraints
+  - Continuous replanning at 10 Hz
+
+  Hybrid A*:
+  - Combines discrete grid search with continuous state space
+  - Considers vehicle kinematics (turning radius, nonholonomic constraints)
+  - Optimal for parking and low-speed maneuvers
+
+  Optimization criteria:
+  - Minimize path length
+  - Smooth curvature (passenger comfort)
+  - Safety margins from obstacles
+  - Computational efficiency (< 100ms per plan)
+
+dependencies:
+  - NumPy, SciPy for computations
+  - NetworkX for graph algorithms
+  - Matplotlib for visualization
+
+examples:
+  - description: "Hybrid A* for parking maneuvers"
+    input: "Implement Hybrid A* path planner considering vehicle kinematics"
+    output: |
+      ```python
+      import numpy as np
+      import heapq
+      from dataclasses import dataclass, field
+      from typing import List, Tuple, Optional
+
+      @dataclass(order=True)
+      class Node:
+          f_score: float
+          x: float = field(compare=False)
+          y: float = field(compare=False)
+          theta: float = field(compare=False)
+          g_score: float = field(compare=False)
+          parent: Optional['Node'] = field(compare=False, default=None)
+
+      class HybridAStar:
+          def __init__(self, grid_map: np.ndarray, resolution: float = 0.5):
+              self.grid_map = grid_map
+              self.resolution = resolution
+              self.x_min, self.y_min = 0, 0
+              self.x_max = grid_map.shape[1] * resolution
+              self.y_max = grid_map.shape[0] * resolution
+
+              # Vehicle parameters
+              self.wheelbase = 2.7  # meters
+              self.max_steer = np.deg2rad(35)
+              self.motion_primitives = self._generate_motion_primitives()
+
+          def _generate_motion_primitives(self) -> List[Tuple[float, float]]:
+              """Generate discrete motion primitives (steer, distance)"""
+              primitives = []
+              steer_angles = [-self.max_steer, -self.max_steer/2, 0, self.max_steer/2, self.max_steer]
+              distances = [self.resolution, self.resolution * 2]
+
+              for steer in steer_angles:
+                  for dist in distances:
+                      primitives.append((steer, dist))
+                      primitives.append((steer, -dist))  # Reverse
+
+              return primitives
+
+          def plan(self, start: Tuple[float, float, float],
+                  goal: Tuple[float, float, float]) -> Optional[List[Tuple[float, float, float]]]:
+              """
+              Plan path from start to goal
+              States: (x, y, theta)
+              """
+              start_node = Node(
+                  f_score=self._heuristic(start, goal),
+                  x=start[0], y=start[1], theta=start[2],
+                  g_score=0.0
+              )
+
+              open_set = [start_node]
+              closed_set = set()
+
+              while open_set:
+                  current = heapq.heappop(open_set)
+
+                  # Check if goal reached
+                  if self._is_goal(current, goal):
+                      return self._reconstruct_path(current)
+
+                  # Add to closed set
+                  state_key = self._discretize_state(current.x, current.y, current.theta)
+                  if state_key in closed_set:
+                      continue
+                  closed_set.add(state_key)
+
+                  # Expand neighbors
+                  for neighbor in self._get_neighbors(current):
+                      if not self._is_valid(neighbor):
+                          continue
+
+                      neighbor_key = self._discretize_state(neighbor.x, neighbor.y, neighbor.theta)
+                      if neighbor_key in closed_set:
+                          continue
+
+                      # Calculate f_score
+                      h_score = self._heuristic((neighbor.x, neighbor.y, neighbor.theta), goal)
+                      neighbor.f_score = neighbor.g_score + h_score
+
+                      heapq.heappush(open_set, neighbor)
+
+              return None  # No path found
+
+          def _get_neighbors(self, node: Node) -> List[Node]:
+              """Generate successor nodes using motion primitives"""
+              neighbors = []
+
+              for steer, dist in self.motion_primitives:
+                  # Kinematic bicycle model
+                  x_new = node.x + dist * np.cos(node.theta)
+                  y_new = node.y + dist * np.sin(node.theta)
+                  theta_new = node.theta + dist / self.wheelbase * np.tan(steer)
+
+                  # Normalize angle
+                  theta_new = np.arctan2(np.sin(theta_new), np.cos(theta_new))
+
+                  # Cost: penalize turning and reversing
+                  cost = abs(dist)
+                  if dist < 0:
+                      cost *= 2  # Reversing penalty
+                  cost += abs(steer) * 0.1  # Steering penalty
+
+                  neighbor = Node(
+                      f_score=0,  # Will be calculated later
+                      x=x_new,
+                      y=y_new,
+                      theta=theta_new,
+                      g_score=node.g_score + cost,
+                      parent=node
+                  )
+                  neighbors.append(neighbor)
+
+              return neighbors
+
+          def _is_valid(self, node: Node) -> bool:
+              """Check if node is collision-free and within bounds"""
+              if node.x < self.x_min or node.x >= self.x_max:
+                  return False
+              if node.y < self.y_min or node.y >= self.y_max:
+                  return False
+
+              # Check collision
+              grid_x = int(node.x / self.resolution)
+              grid_y = int(node.y / self.resolution)
+
+              if self.grid_map[grid_y, grid_x] > 0:
+                  return False
+
+              return True
+
+          def _is_goal(self, node: Node, goal: Tuple[float, float, float]) -> bool:
+              """Check if node is close enough to goal"""
+              dist = np.hypot(node.x - goal[0], node.y - goal[1])
+              angle_diff = abs(node.theta - goal[2])
+              angle_diff = min(angle_diff, 2 * np.pi - angle_diff)
+
+              return dist < 1.0 and angle_diff < np.deg2rad(15)
+
+          def _heuristic(self, state: Tuple[float, float, float],
+                        goal: Tuple[float, float, float]) -> float:
+              """Heuristic: Euclidean distance + orientation difference"""
+              dist = np.hypot(state[0] - goal[0], state[1] - goal[1])
+              angle_diff = abs(state[2] - goal[2])
+              angle_diff = min(angle_diff, 2 * np.pi - angle_diff)
+
+              return dist + angle_diff * 5.0
+
+          def _discretize_state(self, x: float, y: float, theta: float) -> Tuple[int, int, int]:
+              """Discretize continuous state for closed set"""
+              grid_x = int(x / self.resolution)
+              grid_y = int(y / self.resolution)
+              grid_theta = int(theta / np.deg2rad(15))  # 15° resolution
+
+              return (grid_x, grid_y, grid_theta)
+
+          def _reconstruct_path(self, node: Node) -> List[Tuple[float, float, float]]:
+              """Reconstruct path from goal to start"""
+              path = []
+              current = node
+
+              while current is not None:
+                  path.append((current.x, current.y, current.theta))
+                  current = current.parent
+
+              return list(reversed(path))
+
+
+      # Usage
+      if __name__ == "__main__":
+          # Create occupancy grid (0=free, 1=occupied)
+          grid_map = np.zeros((100, 100))
+          grid_map[30:70, 30:40] = 1  # Obstacle
+
+          planner = HybridAStar(grid_map, resolution=0.5)
+
+          start = (5.0, 5.0, 0.0)  # x, y, theta
+          goal = (45.0, 45.0, np.pi/2)
+
+          path = planner.plan(start, goal)
+
+          if path:
+              print(f"Path found with {len(path)} waypoints")
+              for i, (x, y, theta) in enumerate(path[::10]):  # Print every 10th
+                  print(f"  {i}: ({x:.2f}, {y:.2f}, {np.rad2deg(theta):.1f}°)")
+          else:
+              print("No path found")
+      ```
+
+tags:
+  - adas
+  - planning
+  - path-planning
+  - a-star
+  - hybrid-a-star
+  - motion-planning
+  - autonomous-driving

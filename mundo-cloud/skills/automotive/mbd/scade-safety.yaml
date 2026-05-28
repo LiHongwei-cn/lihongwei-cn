@@ -1,0 +1,417 @@
+name: scade-safety-critical
+description: Ansys SCADE Suite for safety-critical code generation (ISO 26262, DO-178C)
+category: mbd-safety-critical
+
+instructions: |
+  You are an expert in Ansys SCADE Suite for safety-critical automotive software development.
+
+  When using SCADE for safety-critical applications:
+  1. Design using SCADE graphical language (Safe State Machines, Data Flow)
+  2. Apply formal verification with SCADE Design Verifier
+  3. Generate qualified code with SCADE KCG (Qualified Code Generator)
+  4. Perform model coverage analysis
+  5. Generate certification artifacts (DO-178C, ISO 26262)
+  6. Apply safety patterns (redundancy, monitoring, degradation)
+  7. Configure Ada or C code generation
+  8. Create test harnesses with SCADE Test
+  9. Document safety requirements traceability
+  10. Validate against ASIL-D requirements
+
+  SCADE model structure:
+  - Root operator with inputs/outputs
+  - State machines for mode management
+  - Data flow for functional logic
+  - Formal properties for verification
+  - Safety monitors and assertions
+  - Qualified libraries usage
+
+  SCADE language features:
+  - Synchronous dataflow paradigm
+  - Deterministic execution
+  - No dynamic memory allocation
+  - No recursion
+  - Bounded loops only
+  - Strong typing with subranges
+  - Clock calculus for multi-rate systems
+
+  Safety design patterns:
+  ```scade
+  /* Dual-channel monitoring pattern */
+  node DualChannelMonitor(
+    input1: real;
+    input2: real;
+    tolerance: real)
+  returns (
+    output: real;
+    error: bool)
+  let
+    output = (input1 + input2) / 2.0;
+    error = abs(input1 - input2) > tolerance;
+
+    /* Safety assertion */
+    assert not error;
+  tel
+  ```
+
+  SCADE KCG code generation:
+  - Qualified for ISO 26262 ASIL-D
+  - Qualified for DO-178C DAL-A
+  - Deterministic execution
+  - MISRA C:2012 compliant
+  - Stack usage analysis
+  - WCET analysis integration
+
+  Formal verification:
+  - Automatic proof of assertions
+  - Invariant checking
+  - Reachability analysis
+  - Dead code detection
+  - Division by zero prevention
+  - Array bounds checking
+
+  Model coverage:
+  - MC/DC (Modified Condition/Decision Coverage)
+  - Decision coverage
+  - Statement coverage
+  - Condition coverage
+  - Integration with SCADE Test
+
+  Certification artifacts:
+  - Software Accomplishment Summary (SAS)
+  - Tool Qualification Data
+  - Requirements Traceability Matrix
+  - Verification Results
+  - Code Review Records
+
+dependencies:
+  - Ansys SCADE Suite 2023R1+
+  - SCADE KCG (Qualified Code Generator)
+  - SCADE Design Verifier
+  - SCADE Test (optional)
+  - SCADE Display (HMI, optional)
+
+examples:
+  - description: "ASIL-D brake-by-wire controller"
+    input: "Design brake-by-wire controller with dual redundancy and formal verification"
+    output: |
+      ```scade
+      /* BrakeByWire.xscade
+       * ASIL-D Brake-by-Wire Controller
+       * ISO 26262 compliant design with dual redundancy
+       */
+
+      package BrakeByWire
+
+      /* Type definitions */
+      type Pressure = real { range: 0.0 .. 300.0 };  /* bar */
+      type Torque = real { range: -500.0 .. 500.0 }; /* Nm */
+      type Speed = real { range: 0.0 .. 400.0 };     /* km/h */
+      type ErrorCode = enum { NO_ERROR, SENSOR_FAULT, ACTUATOR_FAULT, CRITICAL_FAULT };
+
+      /* Safety constants */
+      const MAX_PRESSURE_DIFF: Pressure = 5.0;
+      const DEGRADED_MODE_PRESSURE: Pressure = 150.0;
+      const EMERGENCY_PRESSURE: Pressure = 250.0;
+
+      /* Root controller operator */
+      node BrakeController(
+        /* Inputs - dual redundant sensors */
+        pedalPosition_Ch1: real;       /* 0.0-1.0 */
+        pedalPosition_Ch2: real;
+        wheelSpeed_FL_Ch1: Speed;
+        wheelSpeed_FL_Ch2: Speed;
+        wheelSpeed_FR_Ch1: Speed;
+        wheelSpeed_FR_Ch2: Speed;
+        wheelSpeed_RL_Ch1: Speed;
+        wheelSpeed_RL_Ch2: Speed;
+        wheelSpeed_RR_Ch1: Speed;
+        wheelSpeed_RR_Ch2: Speed;
+        systemEnable: bool)
+      returns (
+        /* Outputs - brake commands */
+        brakePressure_FL: Pressure;
+        brakePressure_FR: Pressure;
+        brakePressure_RL: Pressure;
+        brakePressure_RR: Pressure;
+        errorStatus: ErrorCode;
+        degradedMode: bool)
+      var
+        pedalPosition: real;
+        pedalError: bool;
+        vehicleSpeed: Speed;
+        speedError: bool;
+        requestedPressure: Pressure;
+        absActive: bool;
+        sm_state: States;
+      let
+        /* Dual-channel monitoring for pedal */
+        (pedalPosition, pedalError) =
+          DualChannelMonitor(pedalPosition_Ch1, pedalPosition_Ch2, 0.05);
+
+        /* Dual-channel monitoring for wheel speeds */
+        (vehicleSpeed, speedError) = VehicleSpeedEstimator(
+          wheelSpeed_FL_Ch1, wheelSpeed_FL_Ch2,
+          wheelSpeed_FR_Ch1, wheelSpeed_FR_Ch2,
+          wheelSpeed_RL_Ch1, wheelSpeed_RL_Ch2,
+          wheelSpeed_RR_Ch1, wheelSpeed_RR_Ch2);
+
+        /* State machine for mode management */
+        sm_state = BrakeStateMachine(systemEnable, pedalError, speedError);
+
+        /* Brake pressure calculation */
+        requestedPressure = match sm_state with
+          | NORMAL_MODE -> pedalPosition * EMERGENCY_PRESSURE
+          | DEGRADED_MODE -> min(pedalPosition * DEGRADED_MODE_PRESSURE, DEGRADED_MODE_PRESSURE)
+          | SAFE_STATE -> 0.0
+          | EMERGENCY_BRAKE -> EMERGENCY_PRESSURE
+        end;
+
+        /* ABS controller */
+        (brakePressure_FL, brakePressure_FR, brakePressure_RL, brakePressure_RR, absActive) =
+          ABSController(requestedPressure, wheelSpeed_FL_Ch1, wheelSpeed_FR_Ch1,
+                       wheelSpeed_RL_Ch1, wheelSpeed_RR_Ch1, vehicleSpeed);
+
+        /* Error status */
+        errorStatus = if pedalError or speedError then
+                       if sm_state = SAFE_STATE then CRITICAL_FAULT
+                       else SENSOR_FAULT
+                     else NO_ERROR;
+
+        degradedMode = (sm_state = DEGRADED_MODE);
+
+        /* Safety assertions */
+        assert (brakePressure_FL >= 0.0 and brakePressure_FL <= EMERGENCY_PRESSURE);
+        assert (brakePressure_FR >= 0.0 and brakePressure_FR <= EMERGENCY_PRESSURE);
+        assert (brakePressure_RL >= 0.0 and brakePressure_RL <= EMERGENCY_PRESSURE);
+        assert (brakePressure_RR >= 0.0 and brakePressure_RR <= EMERGENCY_PRESSURE);
+        assert (errorStatus = CRITICAL_FAULT => (sm_state = SAFE_STATE));
+
+      tel
+
+
+      /* Dual-channel monitoring */
+      node DualChannelMonitor(
+        input1: real;
+        input2: real;
+        tolerance: real)
+      returns (
+        output: real;
+        error: bool)
+      let
+        output = (input1 + input2) / 2.0;
+        error = abs(input1 - input2) > tolerance;
+
+        /* Formal property: output is average when no error */
+        assert (not error => output = (input1 + input2) / 2.0);
+      tel
+
+
+      /* State machine */
+      type States = enum { INIT, NORMAL_MODE, DEGRADED_MODE, SAFE_STATE, EMERGENCY_BRAKE };
+
+      node BrakeStateMachine(
+        enable: bool;
+        sensorFault: bool;
+        criticalFault: bool)
+      returns (
+        state: States)
+      let
+        state = INIT -> if criticalFault then SAFE_STATE
+                        else if sensorFault then DEGRADED_MODE
+                        else if enable then NORMAL_MODE
+                        else INIT;
+
+        /* Safety property: critical fault leads to safe state */
+        assert (criticalFault => state = SAFE_STATE);
+      tel
+
+
+      /* ABS Controller */
+      node ABSController(
+        requestedPressure: Pressure;
+        wheelSpeed_FL: Speed;
+        wheelSpeed_FR: Speed;
+        wheelSpeed_RL: Speed;
+        wheelSpeed_RR: Speed;
+        vehicleSpeed: Speed)
+      returns (
+        pressure_FL: Pressure;
+        pressure_FR: Pressure;
+        pressure_RL: Pressure;
+        pressure_RR: Pressure;
+        absActive: bool)
+      var
+        slip_FL, slip_FR, slip_RL, slip_RR: real;
+        abs_FL, abs_FR, abs_RL, abs_RR: bool;
+      let
+        /* Calculate wheel slip */
+        slip_FL = if vehicleSpeed > 5.0 then
+                   (vehicleSpeed - wheelSpeed_FL) / vehicleSpeed
+                 else 0.0;
+
+        slip_FR = if vehicleSpeed > 5.0 then
+                   (vehicleSpeed - wheelSpeed_FR) / vehicleSpeed
+                 else 0.0;
+
+        slip_RL = if vehicleSpeed > 5.0 then
+                   (vehicleSpeed - wheelSpeed_RL) / vehicleSpeed
+                 else 0.0;
+
+        slip_RR = if vehicleSpeed > 5.0 then
+                   (vehicleSpeed - wheelSpeed_RR) / vehicleSpeed
+                 else 0.0;
+
+        /* ABS activation (slip > 15%) */
+        abs_FL = slip_FL > 0.15;
+        abs_FR = slip_FR > 0.15;
+        abs_RL = slip_RL > 0.15;
+        abs_RR = slip_RR > 0.15;
+
+        /* Modulate pressure */
+        pressure_FL = if abs_FL then requestedPressure * 0.7 else requestedPressure;
+        pressure_FR = if abs_FR then requestedPressure * 0.7 else requestedPressure;
+        pressure_RL = if abs_RL then requestedPressure * 0.7 else requestedPressure;
+        pressure_RR = if abs_RR then requestedPressure * 0.7 else requestedPressure;
+
+        absActive = abs_FL or abs_FR or abs_RL or abs_RR;
+
+        /* Safety assertions */
+        assert (pressure_FL <= requestedPressure);
+        assert (pressure_FR <= requestedPressure);
+        assert (pressure_RL <= requestedPressure);
+        assert (pressure_RR <= requestedPressure);
+
+      tel
+
+
+      /* Vehicle speed estimator from 4 wheels */
+      node VehicleSpeedEstimator(
+        wFL1, wFL2, wFR1, wFR2, wRL1, wRL2, wRR1, wRR2: Speed)
+      returns (
+        speed: Speed;
+        error: bool)
+      var
+        wFL, wFR, wRL, wRR: Speed;
+        eFL, eFR, eRL, eRR: bool;
+      let
+        (wFL, eFL) = DualChannelMonitor(wFL1, wFL2, 2.0);
+        (wFR, eFR) = DualChannelMonitor(wFR1, wFR2, 2.0);
+        (wRL, eRL) = DualChannelMonitor(wRL1, wRL2, 2.0);
+        (wRR, eRR) = DualChannelMonitor(wRR1, wRR2, 2.0);
+
+        /* Take median of 4 wheels */
+        speed = (wFL + wFR + wRL + wRR) / 4.0;
+
+        error = eFL or eFR or eRL or eRR;
+      tel
+
+      end BrakeByWire
+      ```
+
+  - description: "SCADE KCG code generation script"
+    input: "Generate qualified C code from SCADE model with certification artifacts"
+    output: |
+      ```bash
+      #!/bin/bash
+      # generate_qualified_code.sh
+      # Generate ISO 26262 ASIL-D qualified code from SCADE model
+
+      MODEL_NAME="BrakeByWire"
+      SCADE_PROJECT="${MODEL_NAME}.etp"
+      OUTPUT_DIR="generated_code"
+      CERT_DIR="certification_artifacts"
+
+      echo "=== SCADE Qualified Code Generation ==="
+      echo "Model: ${MODEL_NAME}"
+      echo "Target: ISO 26262 ASIL-D"
+
+      # Clean previous build
+      rm -rf ${OUTPUT_DIR} ${CERT_DIR}
+      mkdir -p ${OUTPUT_DIR} ${CERT_DIR}
+
+      # Design verification (formal proof)
+      echo ""
+      echo "Step 1: Running SCADE Design Verifier..."
+      scade -verif ${SCADE_PROJECT} \
+        -node ${MODEL_NAME}::BrakeController \
+        -proof auto \
+        -report ${CERT_DIR}/verification_report.html
+
+      if [ $? -ne 0 ]; then
+        echo "ERROR: Verification failed - check formal properties"
+        exit 1
+      fi
+
+      # Generate code with KCG
+      echo ""
+      echo "Step 2: Generating qualified C code with SCADE KCG..."
+      scade -code ${SCADE_PROJECT} \
+        -node ${MODEL_NAME}::BrakeController \
+        -outdir ${OUTPUT_DIR} \
+        -target C \
+        -qual ISO26262 \
+        -asil ASIL_D \
+        -misra 2012 \
+        -opt none \
+        -metrics \
+        -traceability
+
+      # Code metrics analysis
+      echo ""
+      echo "Step 3: Analyzing code metrics..."
+      scade -metrics ${OUTPUT_DIR}/${MODEL_NAME}.c \
+        -report ${CERT_DIR}/code_metrics.xml
+
+      # Generate test procedures
+      echo ""
+      echo "Step 4: Generating MC/DC test procedures..."
+      scade -test ${SCADE_PROJECT} \
+        -node ${MODEL_NAME}::BrakeController \
+        -coverage mcdc \
+        -outdir ${CERT_DIR}/test_procedures
+
+      # Generate traceability matrix
+      echo ""
+      echo "Step 5: Generating requirements traceability..."
+      scade -trace ${SCADE_PROJECT} \
+        -requirements requirements.reqif \
+        -output ${CERT_DIR}/traceability_matrix.html
+
+      # Generate qualification artifacts
+      echo ""
+      echo "Step 6: Generating tool qualification data..."
+      scade -qualkit \
+        -standard ISO26262 \
+        -asil ASIL_D \
+        -output ${CERT_DIR}/qualification_kit
+
+      # Summary report
+      echo ""
+      echo "=== Code Generation Summary ==="
+      echo "Generated files:"
+      ls -lh ${OUTPUT_DIR}/
+
+      echo ""
+      echo "Certification artifacts:"
+      ls -lh ${CERT_DIR}/
+
+      echo ""
+      echo "Code metrics:"
+      grep -A 10 "Cyclomatic Complexity" ${CERT_DIR}/code_metrics.xml || echo "See ${CERT_DIR}/code_metrics.xml"
+
+      echo ""
+      echo "✓ Qualified code generation complete"
+      echo "Review certification artifacts in: ${CERT_DIR}/"
+      ```
+
+tags:
+  - mbd
+  - scade
+  - safety-critical
+  - iso-26262
+  - do-178c
+  - asil-d
+  - formal-verification
+  - qualified-code
+  - certification
+  - automotive

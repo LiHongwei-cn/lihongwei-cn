@@ -1,0 +1,522 @@
+name: openmodelica-simulation
+description: OpenModelica opensource modeling and simulation for automotive systems
+category: mbd-opensource
+
+instructions: |
+  You are an expert in OpenModelica for automotive system modeling and simulation.
+
+  When using OpenModelica for automotive modeling:
+  1. Use Modelica Standard Library (MSL) components
+  2. Create custom automotive component libraries
+  3. Configure solver settings for stiff/non-stiff systems
+  4. Implement physical modeling (mechanical, thermal, electrical)
+  5. Apply FMI export for co-simulation
+  6. Generate C code from Modelica models
+  7. Create parameter sweep and optimization studies
+  8. Validate models with test data
+  9. Export results for post-processing
+  10. Document model assumptions and limitations
+
+  Modelica model structure:
+  ```modelica
+  model BatteryCell
+    "Electric vehicle battery cell model with thermal effects"
+
+    // Parameters
+    parameter Real capacity = 50.0 "Battery capacity [Ah]";
+    parameter Real nominalVoltage = 3.7 "Nominal voltage [V]";
+    parameter Real internalResistance = 0.01 "Internal resistance [Ohm]";
+    parameter Real thermalMass = 100.0 "Thermal mass [J/K]";
+    parameter Real heatTransferCoeff = 10.0 "Heat transfer coefficient [W/K]";
+
+    // Variables
+    Real voltage(start=nominalVoltage) "Terminal voltage [V]";
+    Real current "Current [A] (positive = charging)";
+    Real SOC(start=0.8) "State of charge [0-1]";
+    Real temperature(start=298.15) "Cell temperature [K]";
+    Real power "Power [W]";
+    Real heatGeneration "Internal heat generation [W]";
+
+    // Equations
+  equation
+    // Electrical model
+    voltage = nominalVoltage + SOC*0.3 - current*internalResistance;
+    power = voltage * current;
+
+    // SOC calculation
+    der(SOC) = -current / (capacity * 3600);
+
+    // Thermal model
+    heatGeneration = current^2 * internalResistance;
+    thermalMass * der(temperature) = heatGeneration -
+                                      heatTransferCoeff * (temperature - 298.15);
+
+    // Constraints
+    assert(SOC >= 0.0 and SOC <= 1.0, "SOC out of range");
+    assert(temperature >= 253.15 and temperature <= 333.15,
+           "Temperature out of safe range");
+
+  end BatteryCell;
+  ```
+
+  OpenModelica simulation workflow:
+  1. Create model file (.mo)
+  2. Load Modelica Standard Library
+  3. Check model (checkModel)
+  4. Simulate with appropriate solver
+  5. Plot results
+  6. Export data for analysis
+
+  OMShell scripting:
+  ```modelica
+  // Load model
+  loadFile("BatteryPack.mo");
+  loadModel(Modelica);
+
+  // Check model syntax
+  checkModel(BatteryPack);
+
+  // Set simulation parameters
+  simulate(BatteryPack,
+    startTime=0,
+    stopTime=1000,
+    numberOfIntervals=10000,
+    method="dassl",  // or "euler", "rungekutta", "cvode"
+    tolerance=1e-6,
+    outputFormat="csv"
+  );
+
+  // Plot results
+  plot({SOC, temperature, voltage}, title="Battery Simulation");
+  ```
+
+  Python OMPython interface:
+  ```python
+  from OMPython import OMCSessionZMQ
+
+  omc = OMCSessionZMQ()
+
+  # Load model
+  omc.sendExpression("loadFile('BatteryPack.mo')")
+  omc.sendExpression("loadModel(Modelica)")
+
+  # Simulate
+  result = omc.sendExpression("""
+    simulate(BatteryPack,
+      startTime=0, stopTime=1000,
+      numberOfIntervals=10000,
+      method='dassl')
+  """)
+
+  # Read results
+  import DyMat
+  data = DyMat.DyMatFile('BatteryPack_res.mat')
+  soc = data.data('SOC')
+  time = data.abscissa('SOC')
+  ```
+
+  Automotive libraries:
+  - VehicleInterfaces: Standard interface library
+  - PowerTrain: Engine, transmission, driveline
+  - Chassis: Suspension, steering, brakes
+  - Electrical: Battery, motor, power electronics
+  - Thermal: Cooling, HVAC, thermal management
+  - Control: Controllers, state machines
+
+  FMI export for co-simulation:
+  - Generate FMU (Functional Mock-up Unit)
+  - Model Exchange or Co-Simulation FMU
+  - Import into other tools (MATLAB, dSPACE, Simulink)
+  - Hardware-in-the-loop integration
+
+  Advanced features:
+  - State events for hybrid systems
+  - External C functions
+  - Optimization with OpenModelica Optimizer
+  - Sensitivity analysis
+  - Parameter estimation from test data
+  - Linearization for control design
+
+dependencies:
+  - OpenModelica 1.20+ (opensource)
+  - OMPython for Python interface
+  - DyMat for result processing
+  - Modelica Standard Library 4.0+
+  - OMEdit GUI (optional)
+
+examples:
+  - description: "Electric vehicle powertrain model"
+    input: "Create complete EV powertrain model with battery, motor, and regenerative braking"
+    output: |
+      ```modelica
+      package EVPowertrain
+        "Electric Vehicle Powertrain Library"
+
+        model EVPowertrainComplete
+          "Complete EV powertrain with battery, motor, and vehicle dynamics"
+
+          // Components
+          BatteryPack battery(
+            numberOfCells=96,
+            cellCapacity=50.0,
+            nominalVoltage=355.2
+          );
+
+          ElectricMotor motor(
+            maxPower=150000,  // 150 kW
+            maxTorque=310,    // 310 Nm
+            maxSpeed=15000    // 15000 RPM
+          );
+
+          SingleSpeedGearbox gearbox(
+            ratio=9.0,
+            efficiency=0.97
+          );
+
+          VehicleDynamics vehicle(
+            mass=1800,           // 1800 kg
+            frontalArea=2.3,     // 2.3 m^2
+            dragCoeff=0.25,      // Cd
+            rollingResistance=0.01,
+            wheelRadius=0.34     // meters
+          );
+
+          RegenerativeBraking regenBrake(
+            maxRegenPower=50000,  // 50 kW max regen
+            efficiency=0.85
+          );
+
+          DriverInput driver;
+
+          // Connections
+        equation
+          connect(battery.powerOut, motor.powerIn);
+          connect(motor.torqueOut, gearbox.torqueIn);
+          connect(gearbox.torqueOut, vehicle.driveTorque);
+          connect(vehicle.speed, motor.speedFeedback);
+          connect(driver.throttle, motor.throttleCmd);
+          connect(driver.brake, regenBrake.brakeCmd);
+          connect(regenBrake.regenPower, battery.chargePower);
+
+        end EVPowertrainComplete;
+
+
+        model BatteryPack
+          "Lithium-ion battery pack model"
+
+          parameter Integer numberOfCells = 96;
+          parameter Real cellCapacity = 50.0 "Cell capacity [Ah]";
+          parameter Real nominalVoltage = 3.7 "Cell nominal voltage [V]";
+
+          Real packVoltage "Total pack voltage [V]";
+          Real packCurrent "Pack current [A]";
+          Real SOC(start=0.9) "State of charge [0-1]";
+          Real power "Power [W]";
+          Real energy "Energy content [Wh]";
+          Real temperature(start=298.15) "Average temperature [K]";
+
+          connector PowerOut
+            flow Real current;
+            Real voltage;
+          end PowerOut;
+
+          PowerOut powerOut;
+
+        equation
+          // Pack voltage (series connection)
+          packVoltage = numberOfCells * nominalVoltage * (0.9 + 0.2*SOC);
+          packCurrent = powerOut.current;
+          powerOut.voltage = packVoltage;
+
+          // Power calculation
+          power = packVoltage * packCurrent;
+
+          // SOC dynamics
+          der(SOC) = -packCurrent / (numberOfCells * cellCapacity * 3600);
+
+          // Energy content
+          energy = SOC * numberOfCells * cellCapacity * nominalVoltage;
+
+          // Simple thermal model
+          der(temperature) = (packCurrent^2 * 0.05 - 10*(temperature-298.15))/1000;
+
+          // Constraints
+          assert(SOC >= 0.1 and SOC <= 1.0, "Battery SOC limits violated");
+          assert(temperature <= 333.15, "Battery over-temperature");
+
+        end BatteryPack;
+
+
+        model ElectricMotor
+          "PMSM electric motor model with efficiency map"
+
+          parameter Real maxPower = 150000 "Maximum power [W]";
+          parameter Real maxTorque = 310 "Maximum torque [Nm]";
+          parameter Real maxSpeed = 15000 "Maximum speed [RPM]";
+
+          Real torque "Output torque [Nm]";
+          Real speed "Motor speed [RPM]";
+          Real power "Electrical power [W]";
+          Real efficiency "Motor efficiency [0-1]";
+          Real throttleCmd "Throttle command [0-1]";
+
+          connector PowerIn
+            flow Real current;
+            Real voltage;
+          end PowerIn;
+
+          PowerIn powerIn;
+
+        equation
+          // Speed-torque characteristic
+          if speed < 5000 then
+            torque = throttleCmd * maxTorque;  // Constant torque region
+          else
+            torque = throttleCmd * (maxPower * 60 / (2*3.14159*speed));  // Constant power
+          end if;
+
+          // Efficiency map (simplified)
+          efficiency = 0.75 + 0.20 * (speed/maxSpeed) - 0.15 * (throttleCmd)^2;
+          efficiency = max(0.5, min(0.96, efficiency));
+
+          // Power calculation
+          power = torque * speed * 2 * 3.14159 / 60;
+          powerIn.current = power / (powerIn.voltage * efficiency);
+
+          // Speed limit
+          assert(speed <= maxSpeed, "Motor over-speed");
+
+        end ElectricMotor;
+
+
+        model VehicleDynamics
+          "Longitudinal vehicle dynamics"
+
+          parameter Real mass = 1800 "Vehicle mass [kg]";
+          parameter Real frontalArea = 2.3 "Frontal area [m^2]";
+          parameter Real dragCoeff = 0.25 "Drag coefficient";
+          parameter Real rollingResistance = 0.01;
+          parameter Real wheelRadius = 0.34 "Wheel radius [m]";
+
+          Real velocity(start=0) "Vehicle velocity [m/s]";
+          Real acceleration "Acceleration [m/s^2]";
+          Real driveTorque "Drive torque at wheels [Nm]";
+          Real dragForce "Aerodynamic drag [N]";
+          Real rollingForce "Rolling resistance [N]";
+          Real driveForce "Driving force [N]";
+          Real distance(start=0) "Distance traveled [m]";
+          Real speed "Speed [km/h]";
+
+        equation
+          // Forces
+          dragForce = 0.5 * 1.225 * dragCoeff * frontalArea * velocity^2;
+          rollingForce = mass * 9.81 * rollingResistance;
+          driveForce = driveTorque / wheelRadius;
+
+          // Dynamics
+          acceleration = (driveForce - dragForce - rollingForce) / mass;
+          der(velocity) = acceleration;
+          der(distance) = velocity;
+
+          // Conversions
+          speed = velocity * 3.6;  // m/s to km/h
+
+        end VehicleDynamics;
+
+      end EVPowertrain;
+      ```
+
+  - description: "OpenModelica Python automation script"
+    input: "Simulate EV powertrain and generate performance curves"
+    output: |
+      ```python
+      #!/usr/bin/env python3
+      """
+      OpenModelica EV Powertrain Simulation
+      Generates acceleration, range, and efficiency curves
+      """
+
+      from OMPython import OMCSessionZMQ
+      import matplotlib.pyplot as plt
+      import numpy as np
+      import DyMat
+      import os
+
+
+      class EVPowertrainSimulator:
+          def __init__(self, model_file='EVPowertrain.mo'):
+              self.omc = OMCSessionZMQ()
+              self.model_file = model_file
+              self.model_name = 'EVPowertrain.EVPowertrainComplete'
+
+              # Load model
+              self.omc.sendExpression(f"loadFile('{model_file}')")
+              self.omc.sendExpression("loadModel(Modelica)")
+
+              # Check model
+              result = self.omc.sendExpression(f"checkModel({self.model_name})")
+              print(f"Model check result: {result}")
+
+          def run_acceleration_test(self):
+              """Simulate 0-100 km/h acceleration"""
+              print("Running acceleration test...")
+
+              # Simulation parameters
+              params = {
+                  'startTime': 0,
+                  'stopTime': 20,
+                  'numberOfIntervals': 2000,
+                  'method': 'dassl',
+                  'tolerance': 1e-6,
+                  'outputFormat': 'mat'
+              }
+
+              # Run simulation
+              sim_cmd = f"""
+              simulate({self.model_name},
+                  startTime={params['startTime']},
+                  stopTime={params['stopTime']},
+                  numberOfIntervals={params['numberOfIntervals']},
+                  method="{params['method']}",
+                  tolerance={params['tolerance']})
+              """
+              result = self.omc.sendExpression(sim_cmd)
+
+              # Load results
+              mat_file = f"{self.model_name.split('.')[-1]}_res.mat"
+              data = DyMat.DyMatFile(mat_file)
+
+              time = data.abscissa('vehicle.speed')
+              speed = data.data('vehicle.speed')
+
+              # Find 0-100 km/h time
+              idx_100 = np.argmax(speed >= 100)
+              time_0_100 = time[idx_100] if idx_100 > 0 else None
+
+              print(f"0-100 km/h time: {time_0_100:.2f} seconds")
+
+              return time, speed
+
+          def run_range_test(self, initial_soc=0.9):
+              """Simulate driving range at constant speed"""
+              print(f"Running range test (SOC={initial_soc})...")
+
+              # Parameter override
+              override = f"battery.SOC(start={initial_soc})"
+
+              sim_cmd = f"""
+              simulate({self.model_name},
+                  startTime=0,
+                  stopTime=7200,  // 2 hours
+                  numberOfIntervals=7200,
+                  method="dassl",
+                  simflags="-override {override}")
+              """
+              result = self.omc.sendExpression(sim_cmd)
+
+              # Load results
+              mat_file = f"{self.model_name.split('.')[-1]}_res.mat"
+              data = DyMat.DyMatFile(mat_file)
+
+              time = data.abscissa('battery.SOC')
+              soc = data.data('battery.SOC')
+              distance = data.data('vehicle.distance') / 1000  # km
+
+              # Find range (SOC drops to 10%)
+              idx_depleted = np.argmax(soc <= 0.1)
+              range_km = distance[idx_depleted] if idx_depleted > 0 else distance[-1]
+
+              print(f"Estimated range: {range_km:.1f} km")
+
+              return time, soc, distance
+
+          def generate_efficiency_map(self):
+              """Generate motor efficiency map"""
+              print("Generating efficiency map...")
+
+              speeds = np.linspace(0, 15000, 20)  # RPM
+              torques = np.linspace(0, 310, 20)   # Nm
+
+              efficiency_map = np.zeros((len(speeds), len(torques)))
+
+              for i, speed in enumerate(speeds):
+                  for j, torque in enumerate(torques):
+                      # Calculate efficiency (simplified model)
+                      throttle = torque / 310.0
+                      eff = 0.75 + 0.20 * (speed/15000) - 0.15 * throttle**2
+                      efficiency_map[i, j] = max(0.5, min(0.96, eff))
+
+              return speeds, torques, efficiency_map
+
+          def plot_results(self):
+              """Generate all performance plots"""
+              fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+              # Acceleration curve
+              time, speed = self.run_acceleration_test()
+              axes[0, 0].plot(time, speed)
+              axes[0, 0].set_xlabel('Time [s]')
+              axes[0, 0].set_ylabel('Speed [km/h]')
+              axes[0, 0].set_title('Acceleration Test (0-100 km/h)')
+              axes[0, 0].grid(True)
+
+              # Range vs SOC
+              time, soc, distance = self.run_range_test()
+              axes[0, 1].plot(distance, soc * 100)
+              axes[0, 1].set_xlabel('Distance [km]')
+              axes[0, 1].set_ylabel('State of Charge [%]')
+              axes[0, 1].set_title('Driving Range Test')
+              axes[0, 1].grid(True)
+
+              # Efficiency map
+              speeds, torques, eff_map = self.generate_efficiency_map()
+              im = axes[1, 0].contourf(speeds, torques, eff_map.T, levels=15, cmap='RdYlGn')
+              axes[1, 0].set_xlabel('Motor Speed [RPM]')
+              axes[1, 0].set_ylabel('Motor Torque [Nm]')
+              axes[1, 0].set_title('Motor Efficiency Map')
+              plt.colorbar(im, ax=axes[1, 0], label='Efficiency')
+
+              # Power curve
+              max_torques = []
+              for speed in speeds:
+                  if speed < 5000:
+                      max_torques.append(310)
+                  else:
+                      max_torques.append(150000 * 60 / (2*np.pi*speed))
+
+              power = np.array(max_torques) * speeds * 2 * np.pi / 60 / 1000
+              axes[1, 1].plot(speeds, max_torques, label='Max Torque')
+              axes[1, 1].set_xlabel('Motor Speed [RPM]')
+              axes[1, 1].set_ylabel('Torque [Nm]', color='b')
+              axes[1, 1].tick_params(axis='y', labelcolor='b')
+
+              ax2 = axes[1, 1].twinx()
+              ax2.plot(speeds, power, 'r', label='Power')
+              ax2.set_ylabel('Power [kW]', color='r')
+              ax2.tick_params(axis='y', labelcolor='r')
+              axes[1, 1].set_title('Motor Performance Curve')
+              axes[1, 1].grid(True)
+
+              plt.tight_layout()
+              plt.savefig('ev_powertrain_performance.png', dpi=300)
+              print("Plot saved: ev_powertrain_performance.png")
+
+              plt.show()
+
+
+      if __name__ == "__main__":
+          sim = EVPowertrainSimulator('EVPowertrain.mo')
+          sim.plot_results()
+      ```
+
+tags:
+  - mbd
+  - openmodelica
+  - modelica
+  - opensource
+  - simulation
+  - electric-vehicle
+  - physical-modeling
+  - fmi
+  - co-simulation
+  - automotive

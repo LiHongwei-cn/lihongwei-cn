@@ -1,0 +1,189 @@
+name: fault-injection
+description: Fault injection testing for ECU robustness and safety validation
+version: 1.0.0
+category: hil-sil
+
+metadata:
+  author: Automotive Safety Team
+  tags: [fault-injection, safety-testing, robustness, fmea, iso26262]
+  platforms: [HIL, SIL, VIL]
+  requires: [python3, fault-injection-framework]
+
+parameters:
+  target_ecu:
+    type: string
+    description: Target ECU for fault injection
+    required: true
+
+  fault_type:
+    type: string
+    description: Type of fault to inject
+    required: true
+    enum: [bit-flip, stuck-at, timing-violation, communication-loss, sensor-dropout, power-glitch, memory-corruption]
+
+  injection_point:
+    type: object
+    description: Fault injection location
+    properties:
+      component:
+        type: string
+        description: Component to target
+      signal:
+        type: string
+        description: Signal name
+      time:
+        type: float
+        description: Injection time (seconds)
+      duration:
+        type: float
+        description: Fault duration
+
+  fault_parameters:
+    type: object
+    description: Fault-specific parameters
+    required: true
+
+  safety_monitoring:
+    type: boolean
+    description: Enable safety monitoring
+    default: true
+
+  test_oracle:
+    type: string
+    description: Expected system behavior specification
+    required: true
+
+instructions:
+  setup:
+    - description: Initialize fault injection framework
+      commands:
+        - "python3 tools/adapters/hil_sil/fault_injector.py --init --target {{target_ecu}}"
+
+    - description: Configure fault scenario
+      commands:
+        - "python3 tools/adapters/hil_sil/fault_injector.py --configure --fault-type {{fault_type}} --parameters {{fault_parameters}}"
+
+    - description: Load test oracle
+      commands:
+        - "python3 tools/adapters/hil_sil/fault_injector.py --load-oracle {{test_oracle}}"
+
+  execution:
+    - description: Start baseline recording
+      commands:
+        - "python3 tests/fault_injection/baseline_recorder.py --ecu {{target_ecu}}"
+
+    - description: Inject fault at specified point
+      commands:
+        - "python3 tools/adapters/hil_sil/fault_injector.py --inject --point {{injection_point}}"
+
+    - description: Monitor system response
+      conditions:
+        - "{{safety_monitoring}} == true"
+      commands:
+        - "python3 tests/fault_injection/safety_monitor.py --ecu {{target_ecu}}"
+
+    - description: Record fault response
+      commands:
+        - "python3 tests/fault_injection/response_recorder.py --output fault_response.log"
+
+  validation:
+    - description: Compare against test oracle
+      commands:
+        - "python3 tools/analysis/oracle_validator.py --response fault_response.log --oracle {{test_oracle}}"
+
+    - description: Analyze safety mechanisms
+      commands:
+        - "python3 tools/analysis/safety_mechanism_analyzer.py --data fault_response.log"
+
+    - description: Generate FMEA report
+      commands:
+        - "python3 tools/reporting/fmea_report_generator.py --output fmea_report.html"
+
+examples:
+  - name: CAN bus communication loss injection
+    parameters:
+      target_ecu: bms
+      fault_type: communication-loss
+      injection_point:
+        component: can_controller
+        signal: CAN1
+        time: 5.0
+        duration: 2.0
+      fault_parameters:
+        affected_messages: [0x123, 0x456]
+        loss_pattern: burst
+      safety_monitoring: true
+      test_oracle: oracles/bms_comm_loss_oracle.yaml
+
+  - name: Temperature sensor stuck-at fault
+    parameters:
+      target_ecu: bms
+      fault_type: stuck-at
+      injection_point:
+        component: adc_input
+        signal: temp_sensor_1
+        time: 10.0
+        duration: 5.0
+      fault_parameters:
+        stuck_value: 85.0
+      safety_monitoring: true
+      test_oracle: oracles/bms_temp_sensor_oracle.yaml
+
+  - name: Memory bit-flip in critical variable
+    parameters:
+      target_ecu: adas-ecu
+      fault_type: bit-flip
+      injection_point:
+        component: ram
+        signal: object_distance
+        time: 3.0
+        duration: 0.0
+      fault_parameters:
+        bit_position: 15
+        address: 0x20000100
+      safety_monitoring: true
+      test_oracle: oracles/adas_memory_oracle.yaml
+
+  - name: Power supply voltage glitch
+    parameters:
+      target_ecu: inverter
+      fault_type: power-glitch
+      injection_point:
+        component: power_supply
+        signal: vcc_5v
+        time: 8.0
+        duration: 0.05
+      fault_parameters:
+        voltage_drop: 1.5
+        recovery_time: 0.1
+      safety_monitoring: true
+      test_oracle: oracles/inverter_power_oracle.yaml
+
+outputs:
+  fault_log:
+    type: string
+    description: Detailed fault injection log
+
+  system_response:
+    type: object
+    description: System response to fault
+
+  safety_analysis:
+    type: object
+    description: Safety mechanism effectiveness
+
+  fmea_report:
+    type: string
+    description: FMEA analysis report
+
+best_practices:
+  - Always use safety monitoring during fault injection
+  - Test multiple fault injection points for each component
+  - Validate safety mechanisms trigger correctly
+  - Document all fault scenarios in FMEA
+  - Test combination of multiple faults
+  - Verify graceful degradation behavior
+  - Ensure system recovery after fault removal
+  - Test fault detection latency requirements
+  - Validate fail-safe states are reached
+  - Cross-reference with ISO 26262 ASIL requirements

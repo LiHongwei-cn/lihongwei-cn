@@ -1,0 +1,44 @@
+name: test-automation
+description: Automated HIL/SIL test execution and reporting framework
+version: 1.0.0
+category: hil-sil
+
+metadata:
+  author: Automotive Test Team
+  tags: [test-automation, ci-cd, regression-testing, continuous-integration]
+
+parameters:
+  test_suite:
+    type: string
+    description: Test suite path
+    required: true
+
+  platform:
+    type: string
+    description: Test platform
+    enum: [hil, sil, vil]
+    required: true
+
+  parallel_execution:
+    type: boolean
+    description: Run tests in parallel
+    default: true
+
+  report_format:
+    type: string
+    description: Report output format
+    enum: [html, xml, json, junit]
+    default: html
+
+instructions:
+  - description: Execute automated test suite
+    commands:
+      - "python3 tests/automation/test_runner.py --suite {{test_suite}} --platform {{platform}}"
+
+examples:
+  - name: Run BMS regression tests
+    parameters:
+      test_suite: tests/suites/bms_regression.yaml
+      platform: hil
+      parallel_execution: true
+      report_format: html

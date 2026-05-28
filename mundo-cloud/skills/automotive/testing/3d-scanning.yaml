@@ -1,0 +1,306 @@
+name: 3d-scanning
+description: 3D metrology and dimensional inspection using laser scanners, CMM, and photogrammetry for battery pack validation
+category: testing-metrology
+
+instructions: |
+  You are an expert in 3D scanning and metrology for automotive component validation.
+
+  When implementing 3D metrology:
+  1. Configure laser scanners or structured light systems
+  2. Perform point cloud acquisition with sub-mm accuracy
+  3. Align scans using reference features or targets
+  4. Compare as-built geometry to CAD models (GD&T)
+  5. Measure dimensional tolerances per ISO 1101
+  6. Generate heat maps showing deviation from nominal
+  7. Inspect weld seams and surface defects
+  8. Measure gap and flush of assembled components
+  9. Perform volume calculations for thermal expansion
+  10. Export to STEP, IGES, STL, or PLY formats
+  11. Integrate with quality management systems
+  12. Generate AS9100/IATF 16949 inspection reports
+  13. Perform reverse engineering of physical parts
+  14. Support portable CMM (Faro Arm, Hexagon Absolute Arm)
+  15. Implement automated pass/fail criteria
+
+  Supported Equipment:
+  - Faro Focus, Freestyle laser scanners
+  - Hexagon Absolute Arm with laser scanner
+  - GOM ATOS structured light scanner
+  - Artec Eva, Leo handheld scanners
+  - Creaform HandySCAN, MetraSCAN
+  - Zeiss CMM with optical probe
+
+  Measurement Applications:
+  - Battery module housing dimensional check
+  - Busbar flatness and parallelism
+  - Cooling plate surface inspection
+  - Assembly gap analysis
+  - Thermal deformation under load
+  - Crash test deformation analysis
+  - 3D reverse engineering
+
+  Point Cloud Processing:
+  - Noise filtering and outlier removal
+  - Mesh generation (Poisson, Ball-Pivoting)
+  - Surface fitting and smoothing
+  - Feature extraction (planes, cylinders, spheres)
+  - Best-fit alignment to CAD
+  - Deviation colormap generation
+
+  GD&T Inspection:
+  - Flatness, straightness, circularity
+  - Parallelism, perpendicularity, angularity
+  - Position, concentricity, symmetry
+  - Profile of surface/line
+  - Runout (circular, total)
+
+dependencies:
+  - open3d for point cloud processing
+  - numpy for numerical operations
+  - trimesh for mesh operations
+  - pymeshlab for advanced processing
+  - scipy for curve fitting
+
+examples:
+  - description: "3D scan comparison to CAD model"
+    input: "Compare battery module housing scan to CAD with tolerance check"
+    output: |
+      ```python
+      import open3d as o3d
+      import numpy as np
+      from dataclasses import dataclass
+      from typing import Tuple, List
+
+
+      @dataclass
+      class InspectionResult:
+          feature_name: str
+          nominal: float
+          measured: float
+          deviation: float
+          tolerance: float
+          passed: bool
+
+
+      class BatteryModuleInspection:
+          """3D Metrology for Battery Module Inspection."""
+
+          def __init__(self, scan_file: str, cad_file: str):
+              """Load scan and CAD model."""
+              print(f"Loading scan: {scan_file}")
+              self.scan_pcd = o3d.io.read_point_cloud(scan_file)
+
+              print(f"Loading CAD model: {cad_file}")
+              self.cad_mesh = o3d.io.read_triangle_mesh(cad_file)
+              self.cad_pcd = self.cad_mesh.sample_points_uniformly(number_of_points=100000)
+
+              print(f"Scan points: {len(self.scan_pcd.points)}")
+              print(f"CAD points: {len(self.cad_pcd.points)}")
+
+          def align_to_cad(self) -> np.ndarray:
+              """Align scan to CAD using ICP."""
+              threshold = 2.0  # mm
+              trans_init = np.eye(4)
+
+              print("Performing ICP alignment...")
+              reg_p2p = o3d.pipelines.registration.registration_icp(
+                  self.scan_pcd,
+                  self.cad_pcd,
+                  threshold,
+                  trans_init,
+                  o3d.pipelines.registration.TransformationEstimationPointToPoint(),
+                  o3d.pipelines.registration.ICPConvergenceCriteria(max_iteration=2000)
+              )
+
+              print(f"ICP fitness: {reg_p2p.fitness:.4f}")
+              print(f"ICP RMSE: {reg_p2p.inlier_rmse:.4f} mm")
+
+              self.scan_pcd.transform(reg_p2p.transformation)
+              return reg_p2p.transformation
+
+          def compute_deviations(self) -> np.ndarray:
+              """Compute point-to-surface deviations."""
+              print("Computing deviations...")
+
+              # Convert CAD to point cloud if not already
+              cad_points = np.asarray(self.cad_pcd.points)
+              scan_points = np.asarray(self.scan_pcd.points)
+
+              # Build KD-tree for fast nearest neighbor search
+              cad_tree = o3d.geometry.KDTreeFlann(self.cad_pcd)
+
+              deviations = []
+              for point in scan_points:
+                  [k, idx, _] = cad_tree.search_knn_vector_3d(point, 1)
+                  nearest_cad = cad_points[idx[0]]
+                  deviation = np.linalg.norm(point - nearest_cad)
+                  deviations.append(deviation)
+
+              return np.array(deviations)
+
+          def generate_colormap(self, deviations: np.ndarray, max_dev: float = 1.0):
+              """Generate color-coded deviation map."""
+              # Normalize deviations to [0, 1]
+              norm_dev = np.clip(deviations / max_dev, 0, 1)
+
+              # Create colormap (blue=good, red=bad)
+              colors = np.zeros((len(norm_dev), 3))
+              colors[:, 2] = 1 - norm_dev  # Blue channel
+              colors[:, 0] = norm_dev      # Red channel
+
+              self.scan_pcd.colors = o3d.utility.Vector3dVector(colors)
+
+          def measure_flatness(self, point_indices: List[int]) -> float:
+              """Measure flatness of surface."""
+              points = np.asarray(self.scan_pcd.points)[point_indices]
+
+              # Fit plane using least squares
+              centroid = np.mean(points, axis=0)
+              points_centered = points - centroid
+
+              # SVD to find normal
+              _, _, vh = np.linalg.svd(points_centered)
+              normal = vh[2, :]
+
+              # Compute distances to plane
+              distances = np.abs(np.dot(points_centered, normal))
+
+              # Flatness is max deviation from fitted plane
+              flatness = np.max(distances) - np.min(distances)
+
+              return flatness
+
+          def measure_parallelism(
+              self,
+              plane1_indices: List[int],
+              plane2_indices: List[int]
+          ) -> float:
+              """Measure parallelism between two planes."""
+              points1 = np.asarray(self.scan_pcd.points)[plane1_indices]
+              points2 = np.asarray(self.scan_pcd.points)[plane2_indices]
+
+              # Fit planes
+              def fit_plane(pts):
+                  centroid = np.mean(pts, axis=0)
+                  _, _, vh = np.linalg.svd(pts - centroid)
+                  return vh[2, :]  # Normal vector
+
+              normal1 = fit_plane(points1)
+              normal2 = fit_plane(points2)
+
+              # Angle between normals
+              cos_angle = np.dot(normal1, normal2)
+              angle_deg = np.degrees(np.arccos(np.clip(cos_angle, -1, 1)))
+
+              # Parallelism is deviation from 0 or 180 degrees
+              parallelism = min(angle_deg, 180 - angle_deg)
+
+              return parallelism
+
+          def generate_report(
+              self,
+              deviations: np.ndarray,
+              inspections: List[InspectionResult]
+          ) -> str:
+              """Generate inspection report."""
+              report = []
+              report.append("=" * 60)
+              report.append("BATTERY MODULE DIMENSIONAL INSPECTION REPORT")
+              report.append("=" * 60)
+              report.append("")
+
+              # Overall statistics
+              report.append("Overall Deviation Statistics:")
+              report.append(f"  Mean: {np.mean(deviations):.3f} mm")
+              report.append(f"  Std Dev: {np.std(deviations):.3f} mm")
+              report.append(f"  Max: {np.max(deviations):.3f} mm")
+              report.append(f"  95th percentile: {np.percentile(deviations, 95):.3f} mm")
+              report.append("")
+
+              # Feature-specific measurements
+              report.append("GD&T Inspection Results:")
+              report.append(f"{'Feature':<25} {'Nominal':<10} {'Measured':<10} {'Deviation':<10} {'Tol':<8} {'Status':<8}")
+              report.append("-" * 80)
+
+              for insp in inspections:
+                  status = "PASS" if insp.passed else "FAIL"
+                  report.append(
+                      f"{insp.feature_name:<25} "
+                      f"{insp.nominal:<10.3f} "
+                      f"{insp.measured:<10.3f} "
+                      f"{insp.deviation:<10.3f} "
+                      f"±{insp.tolerance:<7.3f} "
+                      f"{status:<8}"
+                  )
+
+              report.append("")
+              report.append("=" * 60)
+
+              return "\n".join(report)
+
+          def save_results(self, output_dir: str):
+              """Save inspection results."""
+              o3d.io.write_point_cloud(f"{output_dir}/scan_aligned.ply", self.scan_pcd)
+              print(f"Saved aligned scan to {output_dir}/scan_aligned.ply")
+
+
+      # Usage
+      if __name__ == "__main__":
+          inspector = BatteryModuleInspection(
+              scan_file="battery_module_scan.ply",
+              cad_file="battery_module_nominal.stl"
+          )
+
+          # Align scan to CAD
+          transform = inspector.align_to_cad()
+
+          # Compute deviations
+          deviations = inspector.compute_deviations()
+
+          # Generate colormap
+          inspector.generate_colormap(deviations, max_dev=1.0)
+
+          # Perform GD&T measurements (example indices)
+          top_surface_indices = list(range(0, 10000))  # Select top surface
+          bottom_surface_indices = list(range(50000, 60000))
+
+          flatness_top = inspector.measure_flatness(top_surface_indices)
+          parallelism = inspector.measure_parallelism(top_surface_indices, bottom_surface_indices)
+
+          # Create inspection results
+          inspections = [
+              InspectionResult(
+                  feature_name="Top Surface Flatness",
+                  nominal=0.0,
+                  measured=flatness_top,
+                  deviation=flatness_top,
+                  tolerance=0.5,
+                  passed=flatness_top <= 0.5
+              ),
+              InspectionResult(
+                  feature_name="Top/Bottom Parallelism",
+                  nominal=0.0,
+                  measured=parallelism,
+                  deviation=parallelism,
+                  tolerance=0.2,
+                  passed=parallelism <= 0.2
+              )
+          ]
+
+          # Generate report
+          report = inspector.generate_report(deviations, inspections)
+          print(report)
+
+          # Save results
+          inspector.save_results("inspection_results")
+      ```
+
+tags:
+  - testing
+  - 3d-scanning
+  - metrology
+  - cmm
+  - dimensional-inspection
+  - gdt
+  - point-cloud
+  - quality

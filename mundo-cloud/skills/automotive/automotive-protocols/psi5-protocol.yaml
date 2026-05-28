@@ -1,0 +1,515 @@
+name: PSI5 Protocol
+version: 1.0.0
+category: automotive-protocols
+domain: automotive
+subcategory: communication
+description: Expert skill in PSI5 (Peripheral Sensor Interface 5) protocol for airbag sensors and safety-critical automotive sensor communication.
+use_cases:
+- Airbag crash sensors (acceleration, pressure)
+- Seat belt tensioner sensors
+- Side impact sensors
+- Pedestrian protection sensors
+- Rollover detection sensors
+automotive_standards:
+- PSI5 Specification v2.3
+- ISO 26262 ASIL-D (Functional Safety)
+- AEC-Q100 (Automotive component qualification)
+instructions: |
+
+  ## Core Competencies
+
+  Expert in PSI5 protocol for safety-critical sensor communication in automotive applications.
+
+  ### Protocol Characteristics
+  - Bidirectional communication over 2-wire interface
+  - Current-mode signaling (more robust than voltage)
+  - Sensor powered via same 2-wire interface
+  - Synchronous data transmission (time-slot based)
+  - Built-in sensor diagnostics and monitoring
+  - Designed for ASIL-D safety applications
+
+  ### Physical Layer
+  - 2-wire interface: Power/Data+ and Ground/Data-
+  - Voltage: 8-18V (nominal 12V)
+  - Current mode: 5-13 mA for logic levels
+  - Data rate: 125 kbps or 189 kbps
+  - Up to 3 sensors per bus
+  - Cable length: Up to 10 meters
+
+  ### Communication Modes
+  - **Mode 1**: Asynchronous sensor data (continuous streaming)
+  - **Mode 2**: Synchronous time-slot based (typical for airbag)
+  - **Mode 3**: Bidirectional with ECU command capability
+
+  ### PSI5 Frame Structure (Mode 2)
+  ```
+  Sync Pulse (from ECU) triggers sensor transmission
+    |
+    v
+  |<-------- Time Slot 1 ------->|<-------- Time Slot 2 ------->|
+  | Sensor 1 Data | Sensor 2 Data | Sensor 3 Data | ...         |
+  | Start | Payload | CRC | Stop  | Start | Payload | CRC | Stop |
+  ```
+
+  ### Data Encoding
+  - Manchester encoding for clock recovery
+  - 10-bit or 16-bit data frames
+  - 2-bit or 3-bit CRC
+  - Start and stop bits for frame synchronization
+
+  ## Design Approach
+
+  1. Network Planning
+     - Define sensor types and count
+     - Select PSI5 mode (1, 2, or 3)
+     - Calculate time slots and bandwidth
+     - Plan power budget
+
+  2. ECU Interface Implementation
+     - Configure PSI5 transceiver
+     - Generate sync pulses
+     - Implement time-slot management
+     - Decode Manchester-encoded data
+
+  3. Safety Mechanisms
+     - CRC verification on every frame
+     - Timeout monitoring per sensor
+     - Plausibility checks on sensor data
+     - Diagnostic counter management
+
+  4. Validation and Testing
+     - Frame timing verification
+     - Fault injection testing
+     - Power supply variation testing
+     - EMC immunity testing
+
+  ## Implementation Examples
+
+  ### PSI5 ECU Interface Initialization
+  ```c
+  // PSI5 configuration
+  typedef struct {
+      uint8_t mode;              // PSI5 mode (1, 2, or 3)
+      uint32_t dataRate;         // 125000 or 189000 bps
+      uint8_t sensorCount;       // Number of sensors (1-3)
+      uint16_t syncPeriodUs;     // Sync pulse period (μs)
+      uint16_t timeSlotUs;       // Time slot duration (μs)
+      bool diagnosticEnable;     // Enable sensor diagnostics
+  } PSI5_Config_t;
+
+  void PSI5_Init(const PSI5_Config_t* config) {
+      // Initialize PSI5 transceiver
+      PSI5_TransceiverInit();
+
+      // Configure operating mode
+      PSI5_SetMode(config->mode);
+
+      // Set data rate
+      PSI5_SetDataRate(config->dataRate);
+
+      // Configure sync pulse generation
+      PSI5_ConfigureSyncPulse(config->syncPeriodUs);
+
+      // Configure time slots for Mode 2
+      if (config->mode == PSI5_MODE2) {
+          for (uint8_t i = 0; i < config->sensorCount; i++) {
+              PSI5_ConfigureTimeSlot(
+                  i,
+                  i * config->timeSlotUs,
+                  config->timeSlotUs
+              );
+          }
+      }
+
+      // Enable receiver
+      PSI5_EnableReceiver();
+
+      // Start sync pulse generation
+      PSI5_StartSyncPulse();
+  }
+  ```
+
+  ### Sync Pulse Generation (Mode 2)
+  ```c
+  // Generate sync pulse to trigger sensor transmissions
+  void PSI5_GenerateSyncPulse(void) {
+      // Sync pulse characteristics:
+      // - Current drop from 7mA to 2mA
+      // - Duration: ~10 μs
+      // - Triggers all sensors to transmit
+
+      // Set low current (sync pulse start)
+      PSI5_SetBusCurrent(PSI5_CURRENT_SYNC_LOW);
+
+      // Sync pulse duration (10 μs typical)
+      DelayUs(10);
+
+      // Return to normal current
+      PSI5_SetBusCurrent(PSI5_CURRENT_NORMAL);
+
+      // Sensors will now transmit in their time slots
+      PSI5_StartReception();
+  }
+  ```
+
+  ### Manchester Decoder
+  ```c
+  // Manchester decoder for PSI5 data
+  typedef struct {
+      uint8_t state;             // Decoder state
+      uint32_t bitStream;        // Accumulated bits
+      uint8_t bitCount;          // Bits decoded
+      uint32_t lastEdgeTime;     // Timestamp of last edge
+  } Manchester_Decoder_t;
+
+  static Manchester_Decoder_t decoder = {0};
+
+  void PSI5_ProcessEdge(bool rising) {
+      uint32_t currentTime = GetMicroseconds();
+      uint32_t edgeDelta = currentTime - decoder.lastEdgeTime;
+
+      // Bit period = 1 / dataRate
+      // For 125 kbps: 8 μs per bit
+      uint32_t bitPeriod = 1000000 / psi5Config.dataRate;
+      uint32_t halfBit = bitPeriod / 2;
+
+      // Manchester decoding:
+      // Rising edge in middle of bit period = '1'
+      // Falling edge in middle of bit period = '0'
+
+      if (edgeDelta > halfBit - 1 && edgeDelta < halfBit + 1) {
+          // Edge at half-bit time (mid-bit transition)
+          decoder.bitStream <<= 1;
+
+          if (rising) {
+              decoder.bitStream |= 1;  // Rising = logic '1'
+          }
+          // Falling = logic '0' (already shifted in 0)
+
+          decoder.bitCount++;
+
+          // Complete frame? (10 or 16 bits + start/stop)
+          if (decoder.bitCount >= 12) {
+              PSI5_ProcessFrame(decoder.bitStream, decoder.bitCount);
+              decoder.bitCount = 0;
+              decoder.bitStream = 0;
+          }
+      }
+
+      decoder.lastEdgeTime = currentTime;
+  }
+  ```
+
+  ### Frame Decoding and CRC Verification
+  ```c
+  // PSI5 data frame structure
+  typedef struct {
+      bool valid;
+      uint8_t sensorId;          // Which sensor (0-2)
+      uint16_t data;             // 10 or 16 bits
+      uint8_t crc;               // 2 or 3 bits
+      bool crcValid;
+      uint8_t errorCode;         // Sensor diagnostic code
+  } PSI5_Frame_t;
+
+  void PSI5_ProcessFrame(uint32_t rawFrame, uint8_t bitCount) {
+      PSI5_Frame_t frame = {0};
+
+      // Extract start bit
+      if (!(rawFrame & (1 << (bitCount - 1)))) {
+          LogError("PSI5 missing start bit");
+          return;
+      }
+
+      // Extract data (10 or 16 bits)
+      uint8_t dataLen = (bitCount == 12) ? 10 : 16;
+      frame.data = (rawFrame >> 3) & ((1 << dataLen) - 1);
+
+      // Extract CRC (2 or 3 bits)
+      uint8_t crcLen = (bitCount == 12) ? 2 : 3;
+      frame.crc = (rawFrame >> 1) & ((1 << crcLen) - 1);
+
+      // Extract stop bit
+      if (rawFrame & 0x01) {
+          LogError("PSI5 missing stop bit");
+          return;
+      }
+
+      // Verify CRC
+      frame.crcValid = PSI5_VerifyCRC(frame.data, dataLen, frame.crc);
+
+      if (frame.crcValid) {
+          frame.valid = true;
+
+          // Determine which sensor sent this frame (by time slot)
+          frame.sensorId = PSI5_IdentifySensor();
+
+          // Process sensor data
+          PSI5_ProcessSensorData(&frame);
+      } else {
+          LogWarning("PSI5 CRC error");
+          PSI5_IncrementErrorCounter(frame.sensorId);
+      }
+  }
+
+  // PSI5 CRC calculation (2-bit or 3-bit)
+  bool PSI5_VerifyCRC(uint16_t data, uint8_t dataLen, uint8_t receivedCRC) {
+      uint8_t calculatedCRC;
+
+      if (dataLen == 10) {
+          // 2-bit CRC: XOR of bit pairs
+          calculatedCRC = 0;
+          for (uint8_t i = 0; i < 10; i += 2) {
+              calculatedCRC ^= ((data >> i) & 0x03);
+          }
+          calculatedCRC &= 0x03;
+      } else {
+          // 3-bit CRC polynomial: x^3 + x + 1
+          calculatedCRC = 0;
+          for (int8_t i = dataLen - 1; i >= 0; i--) {
+              uint8_t bit = (data >> i) & 0x01;
+              uint8_t msb = (calculatedCRC >> 2) & 0x01;
+
+              calculatedCRC = ((calculatedCRC << 1) | bit) & 0x07;
+
+              if (msb) {
+                  calculatedCRC ^= 0x03;  // Polynomial x + 1
+              }
+          }
+      }
+
+      return (calculatedCRC == receivedCRC);
+  }
+  ```
+
+  ### Airbag Sensor Data Processing
+  ```c
+  // Airbag sensor specific processing
+  typedef struct {
+      int16_t acceleration_mg;   // Acceleration in milli-g
+      uint8_t temperature;       // Temperature in °C
+      uint8_t statusFlags;       // Diagnostic status
+      bool sensorOK;
+  } Airbag_SensorData_t;
+
+  void PSI5_ProcessAirbagSensor(const PSI5_Frame_t* frame) {
+      Airbag_SensorData_t sensorData = {0};
+
+      // 16-bit data format for airbag sensor:
+      // [15:14] - Status flags (2 bits)
+      // [13:2]  - Acceleration data (12 bits, signed)
+      // [1:0]   - Temperature (2 MSBs)
+
+      // Extract status flags
+      sensorData.statusFlags = (frame->data >> 14) & 0x03;
+
+      // Extract acceleration (12-bit signed)
+      int16_t rawAccel = (frame->data >> 2) & 0xFFF;
+
+      // Convert to signed (two's complement)
+      if (rawAccel & 0x800) {
+          rawAccel |= 0xF000;  // Sign extend
+      }
+
+      // Convert to milli-g (range: -100g to +100g)
+      sensorData.acceleration_mg = (rawAccel * 200000) / 4096;
+
+      // Extract temperature (full value via slow channel)
+      sensorData.temperature = (frame->data & 0x03) << 6;
+
+      // Check sensor health
+      sensorData.sensorOK = (sensorData.statusFlags == 0);
+
+      // Trigger airbag algorithm
+      if (!sensorData.sensorOK) {
+          LogError("Airbag sensor %d fault: 0x%02X",
+                   frame->sensorId, sensorData.statusFlags);
+      }
+
+      Airbag_ProcessAcceleration(
+          frame->sensorId,
+          sensorData.acceleration_mg
+      );
+  }
+  ```
+
+  ### Sensor Power Management
+  ```c
+  // PSI5 provides power to sensors via same 2-wire interface
+  typedef struct {
+      uint16_t voltageSupply_mV; // 8000-18000 mV
+      uint16_t currentDraw_mA;   // Per sensor
+      uint8_t sensorCount;
+      uint16_t totalPower_mW;
+  } PSI5_PowerBudget_t;
+
+  bool PSI5_CheckPowerBudget(PSI5_PowerBudget_t* budget) {
+      // Calculate total current
+      uint16_t totalCurrent = budget->currentDraw_mA * budget->sensorCount;
+
+      // Add overhead for communication
+      totalCurrent += 5;  // 5mA overhead
+
+      // Calculate total power
+      budget->totalPower_mW =
+          (budget->voltageSupply_mV * totalCurrent) / 1000;
+
+      // Check against ECU capability (typically 200mW per channel)
+      if (budget->totalPower_mW > 200) {
+          LogError("PSI5 power budget exceeded: %d mW",
+                   budget->totalPower_mW);
+          return false;
+      }
+
+      return true;
+  }
+  ```
+
+  ### Diagnostics and Error Handling
+  ```c
+  // PSI5 sensor diagnostics
+  typedef struct {
+      uint32_t frameCount;       // Total frames received
+      uint32_t crcErrors;        // CRC failures
+      uint32_t timeoutErrors;    // Missing frames
+      uint32_t plausibilityErrors;
+      float errorRate;
+      bool sensorConnected;
+  } PSI5_SensorDiag_t;
+
+  static PSI5_SensorDiag_t sensorDiag[3] = {0};
+
+  void PSI5_MonitorSensor(uint8_t sensorId) {
+      PSI5_SensorDiag_t* diag = &sensorDiag[sensorId];
+
+      // Check for timeout (no frame in last 10ms)
+      uint32_t timeSinceFrame = GetMicroseconds() - lastFrameTime[sensorId];
+
+      if (timeSinceFrame > 10000) {
+          diag->timeoutErrors++;
+          diag->sensorConnected = false;
+          LogError("PSI5 sensor %d timeout", sensorId);
+      } else {
+          diag->sensorConnected = true;
+      }
+
+      // Calculate error rate
+      if (diag->frameCount > 0) {
+          diag->errorRate =
+              (float)(diag->crcErrors + diag->plausibilityErrors) /
+              (float)diag->frameCount;
+      }
+
+      // Report diagnostics to safety monitor
+      if (diag->errorRate > 0.01) {  // 1% threshold
+          Airbag_ReportSensorFault(
+              sensorId,
+              AIRBAG_FAULT_HIGH_ERROR_RATE
+          );
+      }
+
+      if (!diag->sensorConnected) {
+          Airbag_ReportSensorFault(
+              sensorId,
+              AIRBAG_FAULT_SENSOR_DISCONNECTED
+          );
+      }
+  }
+  ```
+
+  ## Use Case: Multi-Sensor Airbag System
+
+  ### System Architecture
+  ```
+  Airbag ECU (PSI5 Master)
+    |
+    +-- Front Left Sensor (Acceleration + Pressure)
+    +-- Front Right Sensor (Acceleration + Pressure)
+    +-- Side Impact Sensor (Acceleration)
+  ```
+
+  ### Configuration
+  - Mode: PSI5 Mode 2 (synchronous time slots)
+  - Data rate: 189 kbps
+  - Sync period: 1 ms (1000 Hz update rate)
+  - Time slot: 250 μs per sensor
+  - Frame format: 16-bit data + 3-bit CRC
+
+  ### Time Slot Allocation
+  | Time (μs) | Sensor       | Data Content                    |
+  |-----------|--------------|----------------------------------|
+  | 0-10      | Sync Pulse   | Triggers all sensors            |
+  | 10-260    | Sensor 1     | Front left acceleration/pressure|
+  | 260-510   | Sensor 2     | Front right accel/pressure      |
+  | 510-760   | Sensor 3     | Side impact acceleration        |
+  | 760-1000  | Idle         | Processing time                 |
+
+  ### Safety Requirements (ASIL-D)
+  - CRC verification on every frame
+  - Timeout detection (<2ms)
+  - Dual-sensor voting for critical decisions
+  - Continuous self-test of communication
+  - Diagnostic counters reported to safety manager
+
+  ## Deliverables
+
+  - PSI5 network design specification
+  - ECU interface implementation (C code)
+  - Sensor calibration data
+  - Safety analysis (FMEA)
+  - Integration test specifications
+  - Timing verification report
+  - EMC test results
+
+  ## Common Issues and Solutions
+
+  ### Frame Synchronization Loss
+  - Verify sync pulse timing and amplitude
+  - Check current mode signaling levels
+  - Ensure proper Manchester encoding
+  - Validate time slot configuration
+
+  ### CRC Errors
+  - Check for EMI on sensor wiring
+  - Verify power supply stability
+  - Improve cable shielding/routing
+  - Validate CRC algorithm implementation
+
+  ### Sensor Timeout
+  - Check sensor power supply voltage
+  - Verify 2-wire connection integrity
+  - Monitor current consumption
+  - Test sensor at temperature extremes
+
+  ### Data Plausibility Issues
+  - Validate sensor calibration
+  - Check for mechanical mounting issues
+  - Verify sign bit interpretation
+  - Compare with other sensors (voting)
+
+constraints:
+- ASIL-D safety integrity level required
+- Maximum 3 sensors per PSI5 bus
+- Strict timing requirements for sync pulse
+- Current-mode signaling sensitivity
+- Temperature range -40°C to +125°C
+tools_required:
+- PSI5 transceiver IC (e.g., NXP TJA1028)
+- Logic analyzer with PSI5 decoder
+- Oscilloscope with current probe
+- Airbag sensor test equipment
+- Safety analysis tools (FMEA, FTA)
+metadata:
+  author: Automotive Claude Code Agents
+  last_updated: '2026-03-19'
+  maturity: production
+  complexity: advanced
+tags:
+- automotive
+- psi5
+- airbag
+- safety-critical
+- asil-d
+- sensor-interface
+- manchester-encoding
+- current-mode

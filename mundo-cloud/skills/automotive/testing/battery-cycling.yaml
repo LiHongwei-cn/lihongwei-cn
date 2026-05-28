@@ -1,0 +1,475 @@
+name: battery-cycling
+description: Battery cycler integration for Chroma, Arbin, Bitrode, and Maccor systems for cell and pack testing
+category: testing-metrology
+
+instructions: |
+  You are an expert in battery cycling test equipment for automotive validation.
+
+  When implementing battery cycler integration:
+  1. Configure test profiles (CC-CV charge, CC discharge, pulse tests)
+  2. Set safety limits (voltage, current, temperature, time)
+  3. Implement automated test sequences with schedule files
+  4. Monitor real-time voltage, current, temperature, capacity
+  5. Support multi-channel testing (up to 256 channels)
+  6. Integrate with thermal chambers for temperature cycling
+  7. Implement calendar aging and cycle life protocols
+  8. Generate test reports compliant with ISO 12405, IEC 62660
+  9. Handle test abort conditions and emergency shutdowns
+  10. Log data to database with microsecond timestamps
+  11. Calculate SOC, SOH, capacity fade, resistance growth
+  12. Support CAN/Modbus communication with BMS during test
+  13. Implement HPPC, GITT, EIS test profiles
+  14. Generate Ragone plots and characteristic curves
+  15. Support battery passport data export (EU regulation)
+  16. Implement formation cycling for new cells
+  17. Handle multi-step charge/discharge profiles
+  18. Real-time safety monitoring with interlock circuits
+  19. Support parallel/series channel configurations
+  20. Generate statistical analysis across test channels
+
+  Supported Equipment:
+  - Chroma 17000 series (17010H, 17020H, 17208M)
+  - Arbin BT2000, MSTAT series
+  - Bitrode FTV, MCV series
+  - Maccor 4000 series
+  - Neware BTS series
+  - PEC SBT/ACT series
+
+  Test Profiles:
+  - Constant Current (CC) charge/discharge
+  - Constant Voltage (CV) hold
+  - CC-CV combined charging
+  - Pulse power characterization (HPPC)
+  - Dynamic Stress Test (DST)
+  - Federal Urban Driving Schedule (FUDS)
+  - Worldwide Harmonized Light-Duty Test (WLTP)
+  - Galvanostatic Intermittent Titration (GITT)
+  - Electrochemical Impedance Spectroscopy (EIS)
+
+  Data Acquisition:
+  - Voltage: 0.1mV resolution, 0.05% accuracy
+  - Current: 0.1mA resolution, 0.05% accuracy
+  - Sampling rate: 1Hz to 10kHz
+  - Temperature: Multiple RTDs/thermocouples per cell
+  - CAN data: BMS telemetry synchronized with cycler data
+
+  Safety Features:
+  - Over-voltage / under-voltage cutoff
+  - Over-current protection
+  - Temperature limits (charge: 0-45C, discharge: -20-60C)
+  - Maximum test duration timeout
+  - Emergency stop button integration
+  - Smoke/gas detection interlock
+  - Isolation monitoring
+  - Automatic current ramp-down on fault
+
+dependencies:
+  - pyvisa for GPIB/Ethernet control
+  - pymodbus for Modbus TCP/RTU
+  - python-can for BMS communication
+  - numpy for signal processing
+  - scipy for curve fitting and analysis
+  - pandas for data management
+  - sqlalchemy for database logging
+
+examples:
+  - description: "Chroma 17010H battery cycler integration"
+    input: "Implement CC-CV charge and CC discharge test with Chroma 17010H"
+    output: |
+      ```python
+      import pyvisa
+      import time
+      import pandas as pd
+      from datetime import datetime
+      from dataclasses import dataclass
+      from typing import List, Optional, Callable
+      from enum import Enum
+
+
+      class TestState(Enum):
+          IDLE = "IDLE"
+          CHARGING = "CHARGING"
+          DISCHARGING = "DISCHARGING"
+          RESTING = "RESTING"
+          COMPLETE = "COMPLETE"
+          FAULT = "FAULT"
+
+
+      @dataclass
+      class CyclingMeasurement:
+          timestamp: datetime
+          voltage: float      # V
+          current: float      # A
+          capacity: float     # Ah
+          energy: float       # Wh
+          temperature: float  # degC
+          cycle_number: int
+          step_number: int
+          state: TestState
+
+
+      @dataclass
+      class SafetyLimits:
+          v_max: float = 4.2      # V per cell
+          v_min: float = 2.5      # V per cell
+          i_charge_max: float = 50.0   # A
+          i_discharge_max: float = 100.0  # A
+          temp_max: float = 60.0  # degC
+          temp_min: float = -20.0  # degC
+          test_duration_max: int = 72 * 3600  # 72 hours
+
+
+      class Chroma17010H:
+          """Chroma 17010H Regenerative Battery Cycler Interface."""
+
+          def __init__(self, address: str = "TCPIP0::192.168.1.100::INSTR"):
+              """
+              Initialize Chroma 17010H connection.
+
+              Args:
+                  address: VISA resource address (typically TCP/IP)
+              """
+              self.rm = pyvisa.ResourceManager()
+              self.instrument = self.rm.open_resource(address)
+              self.instrument.timeout = 5000
+
+              # Query identity
+              idn = self.instrument.query("*IDN?")
+              print(f"Connected to: {idn}")
+
+              self.cycle_count = 0
+              self.step_count = 0
+              self.current_state = TestState.IDLE
+
+              self._reset()
+
+          def _reset(self):
+              """Reset cycler to safe state."""
+              self.instrument.write("*RST")
+              self.instrument.write("*CLS")
+              self.instrument.write("OUTP OFF")
+              time.sleep(1)
+
+          def configure_channel(self, channel: int = 1):
+              """Select active channel (1-8)."""
+              self.instrument.write(f"CHAN {channel}")
+
+          def set_voltage_range(self, v_range: float):
+              """Set voltage measurement range (V)."""
+              self.instrument.write(f"VOLT:RANG {v_range}")
+
+          def set_current_range(self, i_range: float):
+              """Set current output range (A)."""
+              self.instrument.write(f"CURR:RANG {i_range}")
+
+          def charge_cc_cv(
+              self,
+              current: float,
+              voltage: float,
+              cutoff_current: float = 0.05,
+              max_time: int = 10800
+          ):
+              """
+              Execute CC-CV charging.
+
+              Args:
+                  current: Charge current in A (positive)
+                  voltage: CV voltage limit in V
+                  cutoff_current: CV phase cutoff current in A
+                  max_time: Maximum charge time in seconds
+              """
+              self.current_state = TestState.CHARGING
+              self.step_count += 1
+
+              # Set CC-CV mode
+              self.instrument.write("FUNC:MODE CCCV")
+              self.instrument.write(f"CURR {abs(current)}")
+              self.instrument.write(f"VOLT {voltage}")
+              self.instrument.write(f"CURR:CUTOFF {cutoff_current}")
+
+              # Set time limit
+              self.instrument.write(f"TIME {max_time}")
+
+              # Enable output
+              self.instrument.write("OUTP ON")
+
+              print(f"CC-CV Charge: {current}A -> {voltage}V, cutoff {cutoff_current}A")
+
+          def discharge_cc(
+              self,
+              current: float,
+              cutoff_voltage: float,
+              max_time: int = 10800
+          ):
+              """
+              Execute CC discharging.
+
+              Args:
+                  current: Discharge current in A (positive value)
+                  cutoff_voltage: Discharge cutoff voltage in V
+                  max_time: Maximum discharge time in seconds
+              """
+              self.current_state = TestState.DISCHARGING
+              self.step_count += 1
+
+              # Set CC discharge mode
+              self.instrument.write("FUNC:MODE CC")
+              self.instrument.write(f"CURR -{abs(current)}")  # Negative for discharge
+              self.instrument.write(f"VOLT:CUTOFF {cutoff_voltage}")
+              self.instrument.write(f"TIME {max_time}")
+
+              # Enable output
+              self.instrument.write("OUTP ON")
+
+              print(f"CC Discharge: {current}A until {cutoff_voltage}V")
+
+          def rest(self, duration: int):
+              """
+              Rest (open circuit) for specified duration.
+
+              Args:
+                  duration: Rest time in seconds
+              """
+              self.current_state = TestState.RESTING
+              self.step_count += 1
+
+              self.instrument.write("OUTP OFF")
+              print(f"Resting for {duration}s")
+              time.sleep(duration)
+
+          def read_measurement(self) -> CyclingMeasurement:
+              """Read current measurement from cycler."""
+              # Query voltage, current, capacity, energy
+              voltage = float(self.instrument.query("MEAS:VOLT?"))
+              current = float(self.instrument.query("MEAS:CURR?"))
+              capacity = float(self.instrument.query("MEAS:CAP?"))  # Ah
+              energy = float(self.instrument.query("MEAS:ENER?"))   # Wh
+
+              # Query temperature (if available)
+              try:
+                  temperature = float(self.instrument.query("MEAS:TEMP?"))
+              except:
+                  temperature = 25.0  # Default if not connected
+
+              return CyclingMeasurement(
+                  timestamp=datetime.now(),
+                  voltage=voltage,
+                  current=current,
+                  capacity=capacity,
+                  energy=energy,
+                  temperature=temperature,
+                  cycle_number=self.cycle_count,
+                  step_number=self.step_count,
+                  state=self.current_state
+              )
+
+          def check_safety_limits(
+              self,
+              measurement: CyclingMeasurement,
+              limits: SafetyLimits
+          ) -> bool:
+              """
+              Check if measurement is within safety limits.
+
+              Returns:
+                  True if safe, False if limit exceeded
+              """
+              if measurement.voltage > limits.v_max:
+                  print(f"FAULT: Voltage {measurement.voltage}V exceeds {limits.v_max}V")
+                  return False
+
+              if measurement.voltage < limits.v_min:
+                  print(f"FAULT: Voltage {measurement.voltage}V below {limits.v_min}V")
+                  return False
+
+              if abs(measurement.current) > max(limits.i_charge_max, limits.i_discharge_max):
+                  print(f"FAULT: Current {measurement.current}A exceeds limits")
+                  return False
+
+              if measurement.temperature > limits.temp_max:
+                  print(f"FAULT: Temperature {measurement.temperature}C exceeds {limits.temp_max}C")
+                  return False
+
+              if measurement.temperature < limits.temp_min:
+                  print(f"FAULT: Temperature {measurement.temperature}C below {limits.temp_min}C")
+                  return False
+
+              return True
+
+          def is_operation_complete(self) -> bool:
+              """Check if current operation completed."""
+              status = self.instrument.query("STAT:OPER:COND?")
+              # Bit 5 indicates operation complete
+              return (int(status) & (1 << 5)) != 0
+
+          def stop_output(self):
+              """Stop output immediately (emergency stop)."""
+              self.instrument.write("OUTP OFF")
+              self.current_state = TestState.IDLE
+              print("Output stopped")
+
+          def run_cycle_test(
+              self,
+              charge_current: float,
+              charge_voltage: float,
+              discharge_current: float,
+              discharge_voltage: float,
+              num_cycles: int,
+              rest_time: int = 300,
+              limits: Optional[SafetyLimits] = None
+          ) -> List[CyclingMeasurement]:
+              """
+              Run complete charge/discharge cycling test.
+
+              Args:
+                  charge_current: Charge current in A
+                  charge_voltage: Charge voltage limit in V
+                  discharge_current: Discharge current in A
+                  discharge_voltage: Discharge cutoff voltage in V
+                  num_cycles: Number of cycles to execute
+                  rest_time: Rest time between charge/discharge in seconds
+                  limits: Safety limits (uses defaults if None)
+
+              Returns:
+                  List of all measurements
+              """
+              if limits is None:
+                  limits = SafetyLimits()
+
+              all_measurements = []
+
+              for cycle in range(1, num_cycles + 1):
+                  self.cycle_count = cycle
+                  print(f"\n=== Cycle {cycle}/{num_cycles} ===")
+
+                  # Charge phase
+                  self.charge_cc_cv(
+                      current=charge_current,
+                      voltage=charge_voltage,
+                      cutoff_current=charge_current * 0.05
+                  )
+
+                  # Monitor charging
+                  while not self.is_operation_complete():
+                      measurement = self.read_measurement()
+                      all_measurements.append(measurement)
+
+                      if not self.check_safety_limits(measurement, limits):
+                          self.stop_output()
+                          self.current_state = TestState.FAULT
+                          return all_measurements
+
+                      time.sleep(1)
+
+                  print(f"Charge complete: {all_measurements[-1].capacity:.3f} Ah")
+
+                  # Rest
+                  self.rest(rest_time)
+
+                  # Discharge phase
+                  self.discharge_cc(
+                      current=discharge_current,
+                      cutoff_voltage=discharge_voltage
+                  )
+
+                  # Monitor discharging
+                  while not self.is_operation_complete():
+                      measurement = self.read_measurement()
+                      all_measurements.append(measurement)
+
+                      if not self.check_safety_limits(measurement, limits):
+                          self.stop_output()
+                          self.current_state = TestState.FAULT
+                          return all_measurements
+
+                      time.sleep(1)
+
+                  print(f"Discharge complete: {all_measurements[-1].capacity:.3f} Ah")
+
+                  # Rest
+                  self.rest(rest_time)
+
+              self.current_state = TestState.COMPLETE
+              return all_measurements
+
+          def export_to_csv(
+              self,
+              measurements: List[CyclingMeasurement],
+              filename: str
+          ):
+              """Export cycling data to CSV."""
+              df = pd.DataFrame([
+                  {
+                      'timestamp': m.timestamp.isoformat(),
+                      'voltage_v': m.voltage,
+                      'current_a': m.current,
+                      'capacity_ah': m.capacity,
+                      'energy_wh': m.energy,
+                      'temperature_c': m.temperature,
+                      'cycle': m.cycle_number,
+                      'step': m.step_number,
+                      'state': m.state.value
+                  }
+                  for m in measurements
+              ])
+
+              df.to_csv(filename, index=False)
+              print(f"Data exported to {filename}")
+
+          def close(self):
+              """Close cycler connection safely."""
+              self.stop_output()
+              self.instrument.close()
+              self.rm.close()
+
+
+      # Usage: 18650 cell cycle life test
+      if __name__ == "__main__":
+          cycler = Chroma17010H("TCPIP0::192.168.1.100::INSTR")
+          cycler.configure_channel(1)
+          cycler.set_voltage_range(5.0)
+          cycler.set_current_range(10.0)
+
+          # Define safety limits for 18650 cell (3.6V nominal)
+          limits = SafetyLimits(
+              v_max=4.2,
+              v_min=2.5,
+              i_charge_max=2.0,
+              i_discharge_max=5.0,
+              temp_max=45.0,
+              temp_min=0.0
+          )
+
+          # Run 1000 cycles (1C charge, 2C discharge)
+          measurements = cycler.run_cycle_test(
+              charge_current=2.0,      # 2A (1C for 2Ah cell)
+              charge_voltage=4.2,       # Standard Li-ion voltage
+              discharge_current=4.0,    # 4A (2C)
+              discharge_voltage=2.5,    # Cutoff
+              num_cycles=1000,
+              rest_time=300,            # 5 min rest
+              limits=limits
+          )
+
+          # Export data
+          cycler.export_to_csv(measurements, "cycle_life_test.csv")
+
+          # Print summary
+          print("\n=== Test Summary ===")
+          print(f"Total cycles: {cycler.cycle_count}")
+          print(f"Total measurements: {len(measurements)}")
+          print(f"Final state: {cycler.current_state.value}")
+
+          cycler.close()
+      ```
+
+tags:
+  - testing
+  - battery-cycling
+  - chroma
+  - arbin
+  - cell-testing
+  - cycle-life
+  - capacity
+  - automotive
+  - validation
