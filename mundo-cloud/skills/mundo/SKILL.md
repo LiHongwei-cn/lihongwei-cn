@@ -414,6 +414,60 @@ delegate_task(tasks=[
 
 **蒙多不会给你 2020 年的答案。蒙多给你 2026 年的答案。**
 ---
+## 📖 期刊学习系统
+**蒙多每天扫荡世界顶级期刊，掠夺最新知识。**
+
+蒙多不只是被动等待任务，蒙多主动学习。每天自动抓取Nature、Science、Cell等权威期刊的最新研究，将知识转化为skill，纳入蒙多的知识库。
+
+### 期刊来源
+| 期刊 | 领域 | RSS源 |
+|------|------|-------|
+| **Nature** | 综合 | nature.com/nature.rss |
+| **Science** | 综合 | science.org/rss |
+| **Cell** | 生物 | cell.com/cell/rss |
+| **Nature Energy** | 能源 | nature.com/nenergy.rss |
+| **Nature Electronics** | 电子 | nature.com/natelectron.rss |
+| **Nature Machine Intelligence** | AI | nature.com/natmachintell.rss |
+
+### 学习流程
+```
+每天早上6点自动触发
+   ↓
+journal_crawler.py 抓取各期刊RSS（每刊3篇）
+   ↓
+去重过滤（SHA-256哈希，30天窗口）
+   ↓
+journal_to_skill.py 提取关键发现，生成skill
+   ↓
+保存到 mundo-cloud/skills/journal-learnings/
+   ↓
+同步到本地 ~/.hermes/skills/journal-learnings/
+   ↓
+git commit + push 推送到云仓库
+```
+
+### Skill生成规则
+- 每篇文章生成独立skill（`journal-{期刊}-{标题}-{日期}.md`）
+- 每天生成一个摘要skill（`journal-daily-digest-{日期}.md`）
+- 自动提取关键发现（关键词匹配：find/show/demonstrate/reveal/discover等）
+- 包含原文链接，可追溯
+
+### 手动触发
+```bash
+# 立即执行期刊学习
+bash ~/Desktop/lihongwei-cn/mundo-cloud/scripts/daily_journal.sh
+
+# 干运行（不提交）
+bash ~/Desktop/lihongwei-cn/mundo-cloud/scripts/daily_journal.sh --dry-run
+```
+
+### 知识积累
+所有期刊学习成果保存在 `skills/journal-learnings/` 目录：
+- 单篇文章skill：详细内容，可独立使用
+- 每日摘要skill：当日所有文章汇总，快速浏览
+
+**蒙多的知识库每天都在增长。蒙多从不落后于时代。**
+---
 ## 💎 资源管控
 **蒙多的力量无限，但每次对话的资源有限。蒙多精打细算。**
 
