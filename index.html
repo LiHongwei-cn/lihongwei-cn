@@ -98,6 +98,24 @@ body::after {
   letter-spacing: 0.2px;
 }
 
+.contact {
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--dim);
+  line-height: 1.8;
+}
+
+.contact a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.contact a:hover {
+  color: #a5b4fc;
+  text-decoration: underline;
+}
+
 /* ====== 仪表盘 ====== */
 .dashboard {
   display: grid;
@@ -286,6 +304,7 @@ body::after {
   .header { margin-bottom: 32px; }
   .avatar { width: 64px; height: 64px; }
   .name { font-size: 19px; }
+  .contact { font-size: 11px; }
   .cat-section { padding: 16px 14px 12px; }
 }
 
@@ -309,6 +328,9 @@ body::after {
   <div class="header">
     <img class="avatar" src="avatar.jpg" alt="LiHongwei" />
     <div class="name">LiHongwei</div>
+    <div class="contact">
+      <a href="mailto:13865358206hp@gmail.com">13865358206hp@gmail.com</a> · 13865358206
+    </div>
   </div>
 
   <div class="dashboard">
