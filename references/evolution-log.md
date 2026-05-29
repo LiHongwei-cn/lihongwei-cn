@@ -1,5 +1,28 @@
 # Mundo Evolution Log
 
+## v22.0 — B站知识获取 (Bilibili Knowledge Acquisition)
+
+**日期**: 2026-05-29
+
+| 模块 | 能力 | 一句话 |
+|------|------|--------|
+| 🔍 搜索来源 | B站视频教程加入搜索优先级 | 中文技术教程质量高，B站优先 |
+| 📚 学习策略 | 视频教程类型（B站优先） | 先B站搜索，再YouTube，最后文字教程 |
+| 🕷️ 网络爬取 | B站知识获取规则 | 搜索方法、爬取规则、频道推荐、反爬注意 |
+| 🌈 多模态 | B站视频分析 | video_analyze提取关键操作，生成学习笔记 |
+
+**新增**: B站知识获取能力，蒙多现在可以从B站搜索优质技术教程。
+
+**同步位置**:
+- `~/.hermes/skills/mundo/SKILL.md`
+- `global-specs/skills/蒙多/SKILL.md`
+- `skills/mundo/SKILL.md`
+- `README.md` (CN/EN/JP/KR)
+- `mundo/index.html`
+- `skills/index.html`
+
+---
+
 ## v21.1 — 每日学习进化 (Daily Learning Evolution)
 
 **日期**: 2026-05-29
