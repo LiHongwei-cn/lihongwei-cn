@@ -1,5 +1,28 @@
 # Mundo Evolution Log
 
+## v23.0 — 流媒体学习 (Streaming Media Learning)
+
+**日期**: 2026-05-29
+
+| 模块 | 能力 | 一句话 |
+|------|------|--------|
+| 🔍 搜索来源 | 流媒体视频教程加入搜索优先级 | YouTube/B站/Coursera等流媒体平台优先 |
+| 📚 学习策略 | 流媒体平台搜索（YouTube/B站/Coursera） | 流媒体视频教程直观、生动，适合学习复杂操作 |
+| 🕷️ 网络爬取 | 流媒体学习规则 | YouTube、B站、Coursera、Udemy、TED、技术会议 |
+| 🌈 多模态 | 流媒体教程视频分析 | video_analyze提取关键操作，生成学习笔记 |
+
+**新增**: 流媒体学习能力，蒙多现在可以从YouTube、B站、Coursera等多个流媒体平台搜索优质技术教程。
+
+**同步位置**:
+- `~/.hermes/skills/mundo/SKILL.md`
+- `global-specs/skills/蒙多/SKILL.md`
+- `skills/mundo/SKILL.md`
+- `README.md` (CN/EN/JP/KR)
+- `mundo/index.html`
+- `skills/index.html`
+
+---
+
 ## v22.0 — B站知识获取 (Bilibili Knowledge Acquisition)
 
 **日期**: 2026-05-29
