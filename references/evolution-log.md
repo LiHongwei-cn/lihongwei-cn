@@ -1,5 +1,27 @@
 # Mundo Evolution Log
 
+## v21.1 — 每日学习进化 (Daily Learning Evolution)
+
+**日期**: 2026-05-29
+
+| 模块 | 能力 | 一句话 |
+|------|------|--------|
+| 📅 每日学习记录 | 自动抓取AI最新动态 + 知识整合 + 升级建议 | 蒙多每天学习，持续进化 |
+| 🌐 多模态趋势 | Gemini in Chrome + 多媒体论文 + 移动端AI | 蒙多跟上AI集成最新趋势 |
+| 💰 成本优化 | 关注AI服务成本变化 + 资源策略优化 | 蒙多用最少资源做最多事 |
+
+**新增**: 每日学习记录系统，自动记录AI最新进展并生成升级建议。
+
+**同步位置**:
+- `~/.hermes/skills/mundo/SKILL.md`
+- `global-specs/skills/蒙多/SKILL.md`
+- `skills/mundo/SKILL.md`
+- `README.md` (CN/EN/JP/KR)
+- `mundo/index.html`
+- `skills/index.html`
+
+---
+
 ## v19 — 精准手术 (Precision Surgery)
 
 **日期**: 2026-05-26
