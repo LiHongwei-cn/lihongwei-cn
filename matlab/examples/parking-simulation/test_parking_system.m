@@ -19,7 +19,7 @@ fprintf('[1/3] 测试路径规划算法...\n');
 road.length = 50;
 road.width = 6;  % 行车道宽度6m
 road.parking_spot_length = 5;
-road.parking_spot_depth = 5.5;
+road.parking_spot_depth = 2.5;  % 车位宽度（纵深）2.5m
 road.target_spot_index = 5;
 
 % 计算目标车位位置
