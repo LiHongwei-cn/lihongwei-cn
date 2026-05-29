@@ -25,7 +25,7 @@ sim_params.dt = 0.01;              % 仿真步长 [s]
 
 % 道路参数
 road_params.length = 50;           % 道路长度 [m]
-road_params.width = 7;             % 道路宽度 [m]
+road_params.width = 6;             % 行车道宽度 [m]
 road_params.num_parking_spots = 10; % 车位数量
 road_params.parking_spot_length = 5; % 车位长度 [m]
 road_params.parking_spot_width = 2.5; % 车位宽度 [m]
@@ -38,7 +38,7 @@ road_params.target_spot_index = 5; % 目标车位索引
 
 % 车辆初始状态
 vehicle_params.initial_x = 45;     % 初始x位置 [m]
-vehicle_params.initial_y = 3.5;    % 初始y位置 [m]（道路中间）
+vehicle_params.initial_y = 3;      % 初始y位置 [m]（道路中间）
 vehicle_params.initial_yaw = 0;    % 初始航向角 [rad]
 vehicle_params.initial_speed = 5;  % 初始速度 [km/h]
 vehicle_params.initial_steer = 0;  % 初始转向角 [deg]
@@ -323,44 +323,142 @@ function analyze_simulation_results(sim_output, ref_path, road_params, vehicle_p
 end
 
 function draw_road_and_parking(road_params)
-% DRAW_ROAD_AND_PARKING - 绘制道路和车位
+% DRAW_ROAD_AND_PARKING - 绘制道路、车位线和车辆
 
-    % 绘制道路边界
     hold on;
+
+    % ==================== 绘制道路边界 ====================
     plot([0, road_params.length], [0, 0], 'k-', 'LineWidth', 2);
     plot([0, road_params.length], [road_params.width, road_params.width], 'k-', 'LineWidth', 2);
 
-    % 绘制车位
+    % 绘制道路中心虚线（可选）
+    for x = 0:4:road_params.length
+        plot([x, min(x+2, road_params.length)], [road_params.width/2, road_params.width/2], ...
+            'k--', 'LineWidth', 1);
+    end
+
+    % ==================== 绘制车位和车位线 ====================
     for i = 1:road_params.num_parking_spots
-        % 车位位置
+        % 车位边界
         spot_x_start = (i-1) * road_params.parking_spot_length;
         spot_x_end = i * road_params.parking_spot_length;
         spot_y_start = -road_params.parking_spot_depth;
         spot_y_end = 0;
 
-        % 绘制车位边框
+        % 绘制车位边框（白色车位线）
         rectangle('Position', [spot_x_start, spot_y_start, ...
             road_params.parking_spot_length, road_params.parking_spot_depth], ...
-            'EdgeColor', 'k', 'LineWidth', 1.5);
+            'EdgeColor', 'w', 'LineWidth', 2, 'LineStyle', '-');
 
-        % 如果车位被占用，绘制车辆
+        % 绘制车位内部标线（斜线表示车位）
+        line_x = linspace(spot_x_start + 0.3, spot_x_end - 0.3, 5);
+        for lx = line_x
+            plot([lx, lx], [spot_y_start + 0.3, spot_y_end - 0.3], ...
+                'w-', 'LineWidth', 1);
+        end
+
+        % 绘制车位编号
+        text(spot_x_start + road_params.parking_spot_length/2, ...
+            spot_y_start - 0.3, ...
+            sprintf('%d', i), 'HorizontalAlignment', 'center', ...
+            'FontSize', 10, 'Color', 'k');
+
+        % ==================== 绘制车辆 ====================
         if road_params.parking_occupancy(i) == 1
-            rectangle('Position', [spot_x_start + 0.2, spot_y_start + 0.2, ...
-                road_params.parking_spot_length - 0.4, road_params.parking_spot_depth - 0.4], ...
-                'FaceColor', [0.7, 0.7, 0.7], 'EdgeColor', 'k', 'LineWidth', 1);
+            % 车辆主体（矩形）
+            car_x = spot_x_start + 0.25;
+            car_y = spot_y_start + 0.25;
+            car_width = road_params.parking_spot_length - 0.5;
+            car_height = road_params.parking_spot_depth - 0.5;
+
+            % 车身
+            rectangle('Position', [car_x, car_y, car_width, car_height], ...
+                'FaceColor', [0.6, 0.6, 0.8], ...  % 浅蓝色车身
+                'EdgeColor', 'k', 'LineWidth', 1.5);
+
+            % 车窗（前窗和后窗）
+            % 前窗
+            window_front_x = car_x + car_width * 0.6;
+            window_front_y = car_y + car_height * 0.2;
+            window_front_w = car_width * 0.25;
+            window_front_h = car_height * 0.6;
+            rectangle('Position', [window_front_x, window_front_y, ...
+                window_front_w, window_front_h], ...
+                'FaceColor', [0.7, 0.9, 1], ...  % 浅蓝色车窗
+                'EdgeColor', 'k', 'LineWidth', 1);
+
+            % 后窗
+            window_rear_x = car_x + car_width * 0.15;
+            window_rear_y = car_y + car_height * 0.25;
+            window_rear_w = car_width * 0.2;
+            window_rear_h = car_height * 0.5;
+            rectangle('Position', [window_rear_x, window_rear_y, ...
+                window_rear_w, window_rear_h], ...
+                'FaceColor', [0.7, 0.9, 1], ...
+                'EdgeColor', 'k', 'LineWidth', 1);
+
+            % 车轮（四个轮子）
+            wheel_radius = 0.15;
+            wheel_width = 0.1;
+
+            % 左前轮
+            rectangle('Position', [car_x + car_width*0.7 - wheel_radius, ...
+                car_y - wheel_radius, wheel_radius*2, wheel_radius*2], ...
+                'Curvature', [1, 1], 'FaceColor', [0.2, 0.2, 0.2], 'EdgeColor', 'k');
+
+            % 右前轮
+            rectangle('Position', [car_x + car_width*0.7 - wheel_radius, ...
+                car_y + car_height - wheel_radius, wheel_radius*2, wheel_radius*2], ...
+                'Curvature', [1, 1], 'FaceColor', [0.2, 0.2, 0.2], 'EdgeColor', 'k');
+
+            % 左后轮
+            rectangle('Position', [car_x + car_width*0.2 - wheel_radius, ...
+                car_y - wheel_radius, wheel_radius*2, wheel_radius*2], ...
+                'Curvature', [1, 1], 'FaceColor', [0.2, 0.2, 0.2], 'EdgeColor', 'k');
+
+            % 右后轮
+            rectangle('Position', [car_x + car_width*0.2 - wheel_radius, ...
+                car_y + car_height - wheel_radius, wheel_radius*2, wheel_radius*2], ...
+                'Curvature', [1, 1], 'FaceColor', [0.2, 0.2, 0.2], 'EdgeColor', 'k');
+
+            % 车灯（前灯和后灯）
+            % 前灯
+            rectangle('Position', [car_x + car_width - 0.15, car_y + 0.15, 0.1, 0.2], ...
+                'FaceColor', [1, 1, 0.8], 'EdgeColor', 'k');  % 黄色前灯
+            rectangle('Position', [car_x + car_width - 0.15, car_y + car_height - 0.35, 0.1, 0.2], ...
+                'FaceColor', [1, 1, 0.8], 'EdgeColor', 'k');
+
+            % 后灯
+            rectangle('Position', [car_x + 0.05, car_y + 0.15, 0.1, 0.2], ...
+                'FaceColor', [1, 0.2, 0.2], 'EdgeColor', 'k');  % 红色后灯
+            rectangle('Position', [car_x + 0.05, car_y + car_height - 0.35, 0.1, 0.2], ...
+                'FaceColor', [1, 0.2, 0.2], 'EdgeColor', 'k');
+
         else
-            % 标记空车位
-            rectangle('Position', [spot_x_start + 0.2, spot_y_start + 0.2, ...
-                road_params.parking_spot_length - 0.4, road_params.parking_spot_depth - 0.4], ...
-                'FaceColor', [0.9, 1, 0.9], 'EdgeColor', 'g', 'LineWidth', 2);
+            % 空车位标记
+            rectangle('Position', [spot_x_start + 0.1, spot_y_start + 0.1, ...
+                road_params.parking_spot_length - 0.2, road_params.parking_spot_depth - 0.2], ...
+                'FaceColor', [0.9, 1, 0.9], ...  % 浅绿色背景
+                'EdgeColor', 'g', 'LineWidth', 2, 'LineStyle', '--');
+
+            % 空车位标记文字
             text(spot_x_start + road_params.parking_spot_length/2, ...
                 spot_y_start + road_params.parking_spot_depth/2, ...
-                '空', 'HorizontalAlignment', 'center', 'FontSize', 14, 'Color', 'g');
+                '空', 'HorizontalAlignment', 'center', ...
+                'FontSize', 16, 'FontWeight', 'bold', 'Color', [0, 0.6, 0]);
         end
     end
 
-    % 设置坐标轴范围
-    xlim([-5, road_params.length + 5]);
+    % ==================== 绘制道路边缘标记 ====================
+    % 道路边缘实线
+    plot([0, road_params.length], [0, 0], 'w-', 'LineWidth', 3);
+    plot([0, road_params.length], [road_params.width, road_params.width], 'w-', 'LineWidth', 3);
+
+    % ==================== 设置坐标轴 ====================
+    xlim([-2, road_params.length + 2]);
     ylim([-road_params.parking_spot_depth - 2, road_params.width + 2]);
+
+    % 设置背景色（道路颜色）
+    set(gca, 'Color', [0.4, 0.4, 0.4]);  % 灰色道路背景
 
 end
