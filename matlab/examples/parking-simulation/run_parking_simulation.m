@@ -27,9 +27,9 @@ sim_params.dt = 0.01;              % 仿真步长 [s]
 road_params.length = 50;           % 道路长度 [m]
 road_params.width = 6;             % 行车道宽度 [m]
 road_params.num_parking_spots = 10; % 车位数量
-road_params.parking_spot_length = 5; % 车位长度 [m]
-road_params.parking_spot_width = 2.5; % 车位宽度 [m]
-road_params.parking_spot_depth = 5.5; % 车位深度 [m]
+road_params.parking_spot_length = 5; % 车位长度（沿道路方向） [m]
+road_params.parking_spot_width = 2.5; % 车位宽度（纵深） [m]
+road_params.parking_spot_depth = 2.5; % 车位深度 [m]
 
 % 车位布局（1=占用，0=空闲）
 % 目标车位是第5个车位（从1开始计数）
