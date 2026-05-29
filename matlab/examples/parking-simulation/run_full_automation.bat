@@ -67,15 +67,15 @@ echo ============================================================
 pause >nul
 
 :: 尝试打开CarSim
-if exist "C:\Program Files\CarSim 2019.0\Programs\CarSim.exe" (
+if exist "C:\Program Files (x86)\CarSim2019.0_Prog\CarSim.exe" (
+    start "" "C:\Program Files (x86)\CarSim2019.0_Prog\CarSim.exe"
+    echo   ✓ CarSim 2019.0 已启动
+) else if exist "C:\Program Files\CarSim 2019.0\Programs\CarSim.exe" (
     start "" "C:\Program Files\CarSim 2019.0\Programs\CarSim.exe"
-    echo   ✓ CarSim 已启动
-) else if exist "C:\Program Files (x86)\CarSim 2019.0\Programs\CarSim.exe" (
-    start "" "C:\Program Files (x86)\CarSim 2019.0\Programs\CarSim.exe"
-    echo   ✓ CarSim 已启动
+    echo   ✓ CarSim 2019.0 已启动
 ) else (
     echo   ✗ 未找到CarSim，请手动启动
-    echo   默认路径: C:\Program Files\CarSim 2019.0\
+    echo   实际路径: C:\Program Files (x86)\CarSim2019.0_Prog\
 )
 
 echo.

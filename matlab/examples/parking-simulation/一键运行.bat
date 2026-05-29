@@ -47,7 +47,10 @@ if exist "C:\Program Files\MATLAB\R2016b\bin\matlab.exe" (
 
 :: 检查CarSim
 set "CARSIM_PATH="
-if exist "C:\Program Files\CarSim 2019.0\Programs\CarSim.exe" (
+if exist "C:\Program Files (x86)\CarSim2019.0_Prog\CarSim.exe" (
+    echo   ✓ CarSim 2019.0: 已安装
+    set "CARSIM_PATH=C:\Program Files (x86)\CarSim2019.0_Prog\CarSim.exe"
+) else if exist "C:\Program Files\CarSim 2019.0\Programs\CarSim.exe" (
     echo   ✓ CarSim 2019.0: 已安装
     set "CARSIM_PATH=C:\Program Files\CarSim 2019.0\Programs\CarSim.exe"
 ) else (

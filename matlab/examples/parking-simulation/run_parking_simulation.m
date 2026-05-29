@@ -191,8 +191,8 @@ end
 function carsim_config = configure_carsim_interface(vehicle_params, road_params)
 % CONFIGURE_CARSIM_INTERFACE - 配置CarSim接口参数
 
-    % CarSim DLL路径（需要用户根据实际安装位置修改）
-    carsim_config.dll_path = 'C:\Program Files\CarSim 2020.0\Programs\sf_car_sim.dll';
+    % CarSim DLL路径（CarSim 2019.0实际安装路径）
+    carsim_config.dll_path = 'C:\Program Files (x86)\CarSim2019.0_Prog\Programs\vs_connect\vs_connect_sf2.mexw64';
 
     % CarSim数据集名称
     carsim_config.dataset_name = 'Parking_Reversing';
