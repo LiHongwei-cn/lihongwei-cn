@@ -75,11 +75,11 @@ echo.
 
 REM === Step 4: Open CarSim ===
 echo [Step 4/4] Opening CarSim...
-set "CARSIM_EXE=C:\Program Files\CarSim 2019.0\Programs\CarSim.exe"
+set "CARSIM_EXE=C:\Program Files (x86)\CarSim2019.0_Prog\CarSim.exe"
 
 if exist "!CARSIM_EXE!" (
     start "" "!CARSIM_EXE!"
-    echo   - CarSim started successfully
+    echo   - CarSim 2019.0 started successfully
 ) else (
     echo   - CarSim not found at: !CARSIM_EXE!
     echo   - Please open CarSim manually
