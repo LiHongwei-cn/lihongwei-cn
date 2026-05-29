@@ -7,6 +7,10 @@
 
 clear; clc;
 
+% 切换到脚本所在目录
+script_dir = fileparts(mfilename('fullpath'));
+cd(script_dir);
+
 fprintf('========================================\n');
 fprintf('  CarSim 2019.0 CPAR 文件生成工具\n');
 fprintf('========================================\n\n');
