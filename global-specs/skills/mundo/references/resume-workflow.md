@@ -29,8 +29,8 @@ User asks to create/update a resume for a specific company or position.
 ### Step 4: Generate PDF
 ```bash
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
-  --headless=new --print-to-pdf="/Users/huangpeng/Desktop/简历-公司名.pdf" \
-  --no-margins --no-header "file:///Users/huangpeng/Desktop/简历-公司名.html"
+  --headless=new --print-to-pdf="/Users/your-username/Desktop/简历-公司名.pdf" \
+  --no-margins --no-header "file:///Users/your-username/Desktop/简历-公司名.html"
 rm -f ~/Desktop/简历-公司名.html
 ```
 
@@ -46,8 +46,8 @@ rm -f ~/Desktop/简历-公司名.html
 ### Step 4: Generate PDF
 ```bash
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
-  --headless=new --print-to-pdf="/Users/huangpeng/Desktop/简历-公司名.pdf" \
-  --no-margins --no-header "file:///Users/huangpeng/Desktop/简历-公司名.html"
+  --headless=new --print-to-pdf="/Users/your-username/Desktop/简历-公司名.pdf" \
+  --no-margins --no-header "file:///Users/your-username/Desktop/简历-公司名.html"
 rm -f ~/Desktop/简历-公司名.html  # clean up HTML after PDF generated
 ```
 
@@ -59,7 +59,7 @@ rm -f ~/Desktop/简历-公司名.html  # clean up HTML after PDF generated
 - Desktop should have ONLY one copy — delete old versions immediately after generating new one
 
 ## Critical Rules
-- Real name for resume (黄鹏), NOT online alias (LiHongwei)
+- Real name for resume (你的姓名), NOT online alias (你的化名)
 - Don't overstate capabilities — user corrected "独立开发AI Agent架构" as wrong
 - Don't include skills user hasn't used recently (user corrected CAD/CATIA/Pro/E)
 - Mundo = "代表作品" (magnum opus), always first in project list

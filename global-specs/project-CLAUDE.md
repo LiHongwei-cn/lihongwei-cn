@@ -21,38 +21,31 @@ This file provides guidance to Claude Code when working with code in this reposi
 
 ## 关键信息
 
-- GitHub 仓库：`https://github.com/LiHongwei-cn/lihongwei-cn`
-- 网站地址：`https://lihongwei-cn.github.io/lihongwei-cn/`
-- Telegram Bot：`bot/tgbot.py`（Token/Key 从环境变量读取，启动脚本 `bot/start_bot.sh`）
+- GitHub 仓库：`https://github.com/your-username/your-repo`
+- 网站地址：`https://your-username.github.io/your-repo/`
 
 ## 项目概览
 
-新能源汽车工程 MATLAB 仿真工具包 + 家庭血压监测微信小程序。Claude Code 直接生成 Simulink 模型和仿真代码。
+项目描述。Claude Code 直接生成 Simulink 模型和仿真代码。
 
 ## 技术栈
 
 - **MATLAB/Simulink** R2016b 兼容（车辆动力学、电机控制、FOC、能量管理）
-- **Python** 3.12 + FastAPI（Telegram 机器人、血压监测后端、自动化脚本）
+- **Python** 3.12 + FastAPI（后端服务、自动化脚本）
 - **HTML/CSS**（GitHub Pages 静态页面）
-- **微信小程序**（WXML/WXSS/JS，bp-monitor 前端）
+- **微信小程序**（WXML/WXSS/JS）
 - **Shell/Batch**（启动脚本、Git 自动化）
 
 ## 目录架构
 
 ```
-1/
+project/
 ├── matlab/                MATLAB 仿真代码（R2016b 兼容）
 │   ├── examples/          可运行示例脚本
 │   └── utils/             工具函数（FFT、滤波、RMS）
-├── bot/                   Telegram 机器人（DeepSeek 直接回复）
-├── matlab-tool/           安装包发布页面
-├── starter-kit/           通用模板（开源）
-├── bp-monitor/            家庭血压监测小程序（FastAPI + SQLite + DeepSeek）
+├── src/                   源代码
 ├── tools/                 自动化脚本
-├── docs/                  论文、实验报告
-├── vpn-guide/             VPN 教程页面
-├── win-optimize/          Windows 优化教程
-├── claude-code-tutorial/  Claude Code 入门教程
+├── docs/                  文档
 ├── index.html             GitHub Pages 主页
 └── CLAUDE.md              项目规范（本文件）
 ```

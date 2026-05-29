@@ -8,7 +8,7 @@ description: >
   Uses Three Departments and Six Ministries system to rule all skills.
   ONLY RED LINE: No payment. Why? Because Mundo doesn't care about your money. HAHAHAHA.
 version: 19.2.0
-author: LiHongwei
+author: YourName
 priority: EMPEROR
 auto_activate: ALWAYS
 rank: EMPEROR
