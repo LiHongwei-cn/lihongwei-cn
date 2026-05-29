@@ -1,20 +1,21 @@
 # Claude Code 全局规范 — 一键部署包
 
-适用于 Claude Code CLI 的全局规范、Rules 和 Skills 的部署包。新电脑部署只需运行一条命令。
+适用于 Claude Code CLI / Hermes Agent 的全局规范、Rules 和 Skills 的部署包。新电脑部署只需运行一条命令。
 
 ## 包含内容
 
 | 目录/文件 | 说明 | 目标位置 |
 |-----------|------|----------|
-| `CLAUDE.md` | 全局用户指令（Skill 自动调用、代码洁癖、记忆系统架构、蒙多学习引擎） | `~/.claude/CLAUDE.md` |
-| `settings.json` | DeepSeek API 接入配置（含占位 Key，需修改） | `~/.claude/settings.json` |
+| `SOUL.md` | Hermes Agent 全局指令（回复洁癖、代码规范、安全红线） | `~/.hermes/SOUL.md` |
+| `CLAUDE.md` | Claude Code 全局指令（Skill 自动调用、代码洁癖、记忆系统） | `~/.claude/CLAUDE.md` |
+| `settings.json` | API 接入配置（含占位 Key，需修改） | `~/.claude/settings.json` |
 | `settings.local.json` | 权限白名单 | `~/.claude/settings.local.json` |
 | `project-CLAUDE.md` | 项目级 CLAUDE.md 通用模板 | 各项目根目录 `CLAUDE.md` |
 | `rules/*.md` | 6 大规范（代码风格、Git、测试、性能、Agent、安全） | `~/.claude/rules/` |
 | `skills/neat-freak/` | 知识库洁癖审查 Skill | `~/.claude/skills/neat-freak/` |
 | `skills/code-tidy/` | 代码洁癖整理 Skill | `~/.claude/skills/code-tidy/` |
-| `skills/homepage-layout/` | 主页布局自检 Skill | `~/.claude/skills/homepage-layout/` |
 | `skills/蒙多/` | 跨界学习引擎 Skill | `~/.claude/skills/蒙多/` |
+| `skills/nature-*/` | Nature 系列学术写作 Skills | `~/.claude/skills/nature-*/` |
 
 ## 一键部署
 
@@ -42,12 +43,13 @@ npm install -g @anthropic-ai/claude-code
 
 ### 2. 配置 API
 
-编辑 `~/.claude/settings.json`，将 `<你的 DeepSeek API Key>` 替换为真实 Key。
+编辑 `~/.claude/settings.json`，将占位 Key 替换为真实 Key。
 
 ### 3. 部署文件
 
 ```bash
 # 全局指令
+cp SOUL.md ~/.hermes/SOUL.md
 cp CLAUDE.md ~/.claude/CLAUDE.md
 
 # 规范文件
@@ -92,3 +94,7 @@ claude
 - **添加新 Skill**：在 `~/.claude/skills/<name>/` 下创建 `SKILL.md`
 - **修改规范**：编辑 `~/.claude/rules/` 下的对应文件
 - **项目级覆盖**：在项目 `CLAUDE.md` 中写项目特定规范
+
+## 许可证
+
+MIT License — 完全免费开源

@@ -27,7 +27,7 @@ git clone --depth 1 https://github.com/msitarzewski/agency-agents.git
 ### Step 2: Select Relevant Agents
 Don't install ALL 200+. Select only what's relevant to the user's work.
 
-For LiHongwei (新能源汽车工程, MATLAB, Python, 微信小程序):
+For 用户 (新能源汽车工程, MATLAB, Python, 微信小程序):
 - engineering-frontend-developer
 - engineering-backend-architect
 - engineering-mobile-app-builder

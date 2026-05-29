@@ -11,9 +11,9 @@
 
 ### **[English](#english)** · **[中文](#中文)** · **[日本語](#日本語)** · **[한국어](#한국어)**
 
-[![GitHub stars](https://img.shields.io/github/stars/LiHongwei-cn/lihongwei-cn?style=social)](https://github.com/LiHongwei-cn/lihongwei-cn)
+[![GitHub stars](https://img.shields.io/github/stars/your-username/your-repo?style=social)](https://github.com/your-username/your-repo)
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](LICENSE)
-[![Release](https://img.shields.io/github/v/release/LiHongwei-cn/lihongwei-cn?style=flat&color=red)](https://github.com/LiHongwei-cn/lihongwei-cn/releases)
+[![Release](https://img.shields.io/github/v/release/your-username/your-repo?style=flat&color=red)](https://github.com/your-username/your-repo/releases)
 
 **标语**
 
@@ -105,7 +105,7 @@ MIT License - Free and open source.
 ## 版本链接格式
 
 ```
-https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-vX.Y/mundo-vX.Y-platform.zip
+https://github.com/your-username/your-repo/releases/download/mundo-vX.Y/mundo-vX.Y-platform.zip
 ```
 
 ## 四国语言对照

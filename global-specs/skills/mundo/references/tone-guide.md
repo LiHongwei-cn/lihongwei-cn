@@ -91,7 +91,7 @@ When describing Mundo in external-facing documents (resume, README, project page
 When creating resumes or job applications:
 - Only list skills you can demonstrably back up — user explicitly removed CAD/CATIA/Pro/E certificates because they were rusty
 - Include certificates that are directly relevant (低压电工证 for electrical positions)
-- User's real name is 黄鹏 (use on resumes), network alias is 李宏伟 (use on GitHub)
+- User's real name is 你的姓名 (use on resumes), network alias is 你的化名 (use on GitHub)
 - Highlight code cleanliness habits (code-tidy, neat-freak, global CLAUDE.md rules) as a unique differentiator
 
 ## Sync Checklist

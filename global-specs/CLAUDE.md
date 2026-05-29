@@ -181,12 +181,11 @@
   "behaviorRules": {
     "autoPush": "每次代码修改后自动 git commit + push",
     "autoSync": "任务完成后自动同步 GitHub",
-    "fileLocation": "~/Desktop/lihongwei-cn/"
+    "fileLocation": "~/projects/"
   },
   "references": {
-    "githubRepo": "github.com/LiHongwei-ch/lihongwei-cn",
-    "websiteUrl": "lihongwei-cn.github.io/lihongwei-cn",
-    "telegramBot": "bot/tgbot.py"
+    "githubRepo": "github.com/your-username/your-repo",
+    "websiteUrl": "your-username.github.io/your-repo"
   }
 }
 ```
@@ -223,8 +222,8 @@
 **格式示例**：
 ```
 2026-05-18 | 记忆系统重构 | 用户要求将 memory 系统改为 ChatGPT 四层分层架构，搜索学习后写入全局规范
-2026-05-17 | CCS 启动器页面 | 为 Windows CCS 一键启动器创建项目页面，含下载、教程、FAQ
-2026-05-15 | 仓库迁移 | 将 LiHongwei-ch 迁移到 LiHongwei-cn，合并远程更新
+2026-05-17 | 项目页面创建 | 为项目创建 GitHub Pages 页面，含下载、教程、FAQ
+2026-05-15 | 仓库迁移 | 将旧仓库迁移到新仓库，合并远程更新
 ```
 
 **关键设计决策**：
