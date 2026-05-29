@@ -1,4 +1,5 @@
 @echo off
+setlocal EnableDelayedExpansion
 chcp 65001 >nul
 echo ============================================================
 echo   CarSim + Simulink 联合仿真 - 全自动化脚本
@@ -11,8 +12,16 @@ echo [1/5] 当前工作目录: %CD%
 echo.
 
 echo [2/5] 检查MATLAB安装...
+set "MATLAB_CMD="
 if exist "C:\Program Files\MATLAB\R2016b\bin\matlab.exe" (
+    set "MATLAB_CMD=C:\Program Files\MATLAB\R2016b\bin\matlab.exe"
     echo   ✓ MATLAB R2016b 已安装
+) else if exist "C:\Program Files\MATLAB\R2024a\bin\matlab.exe" (
+    set "MATLAB_CMD=C:\Program Files\MATLAB\R2024a\bin\matlab.exe"
+    echo   ✓ MATLAB R2024a 已安装
+) else if exist "C:\Program Files\MATLAB\R2023b\bin\matlab.exe" (
+    set "MATLAB_CMD=C:\Program Files\MATLAB\R2023b\bin\matlab.exe"
+    echo   ✓ MATLAB R2023b 已安装
 ) else (
     echo   ✗ 未找到MATLAB，请先安装
     pause
@@ -21,7 +30,7 @@ if exist "C:\Program Files\MATLAB\R2016b\bin\matlab.exe" (
 echo.
 
 echo [3/5] 生成CarSim配置文件...
-"C:\Program Files\MATLAB\R2016b\bin\matlab.exe" -batch "try, run('carsim_ap_auto_import.m'), fprintf('配置文件生成成功！\n'), catch e, fprintf('错误: %s\n', e.message), end"
+"!MATLAB_CMD!" -r "try, run('carsim_ap_auto_import.m'), fprintf('配置文件生成成功！\n'), catch e, fprintf('错误: %s\n', e.message), end; exit"
 echo.
 
 echo [4/5] 检查生成的文件...
