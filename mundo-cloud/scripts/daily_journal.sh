@@ -88,6 +88,10 @@ echo "━━━ 第四步：提交到云仓库 ━━━"
 if [ "$DRY_RUN" -eq 1 ]; then
     echo "[干运行] 将git commit + push"
 else
+    # 设置git用户信息（GitHub Actions环境需要）
+    git config user.email "mundo@lihongwei-cn.github.io"
+    git config user.name "Mundo Bot"
+    
     git add -A
     
     if git diff --cached --quiet; then
