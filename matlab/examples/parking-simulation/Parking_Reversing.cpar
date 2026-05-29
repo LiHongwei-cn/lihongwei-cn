@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CarSimParameters version="2019.0">
+  <Metadata>
+    <Name>Parking_Reversing</Name>
+    <Description>鍊掕溅鍏ュ簱浠跨湡鍦烘櫙 - 50m閬撹矾锛�6m瀹斤紝10涓溅浣�</Description>
+    <Author>MATLAB Auto Generator</Author>
+    <Date>2026-05-29</Date>
+    <Version>1.0</Version>
+  </Metadata>
+
+  <Vehicle>
+    <Body>
+      <Mass>1500</Mass>
+      <Length>4.5</Length>
+      <Width>1.8</Width>
+      <Height>1.5</Height>
+      <Wheelbase>2.7</Wheelbase>
+      <FrontOverhang>0.9</FrontOverhang>
+      <RearOverhang>0.9</RearOverhang>
+    </Body>
+    <Powertrain>
+      <EngineTorque>250</EngineTorque>
+      <Transmission>Auto6AT</Transmission>
+      <FinalDriveRatio>3.5</FinalDriveRatio>
+      <ReverseGearRatio>3.2</ReverseGearRatio>
+    </Powertrain>
+    <Brakes>
+      <FrontBrakeGain>250</FrontBrakeGain>
+      <RearBrakeGain>150</RearBrakeGain>
+      <MaxBrakePressure>15000</MaxBrakePressure>
+      <ABS>Enabled</ABS>
+    </Brakes>
+    <Steering>
+      <SteeringRatio>16</SteeringRatio>
+      <MaxSteeringAngle>540</MaxSteeringAngle>
+      <PowerSteering>Enabled</PowerSteering>
+    </Steering>
+  </Vehicle>
+
+  <Road>
+    <Geometry>
+      <Type>FlatRoad</Type>
+      <Length>50.0</Length>
+      <Width>6.0</Width>
+      <NumLanes>2</NumLanes>
+      <LaneWidth>3.0</LaneWidth>
+    </Geometry>
+    <Surface>
+      <Type>DryAsphalt</Type>
+      <Friction>0.85</Friction>
+      <Roughness>Smooth</Roughness>
+    </Surface>
+  </Road>
+
+  <ParkingSpots>
+    <NumSpots>10</NumSpots>
+    <SpotLength>5.0</SpotLength>
+    <SpotWidth>2.5</SpotWidth>
+    <TargetSpot>5</TargetSpot>
+    <Spot id="1">
+      <X>2.5</X>
+      <Y>-1.3</Y>
+      <Occupied>1</Occupied>
+    </Spot>
+    <Spot id="2">
+      <X>7.5</X>
+      <Y>-1.3</Y>
+      <Occupied>1</Occupied>
+    </Spot>
+    <Spot id="3">
+      <X>12.5</X>
+      <Y>-1.3</Y>
+      <Occupied>1</Occupied>
+    </Spot>
+    <Spot id="4">
+      <X>17.5</X>
+      <Y>-1.3</Y>
+      <Occupied>1</Occupied>
+    </Spot>
+    <Spot id="5">
+      <X>22.5</X>
+      <Y>-1.3</Y>
+      <Occupied>0</Occupied>
+    </Spot>
+    <Spot id="6">
+      <X>27.5</X>
+      <Y>-1.3</Y>
+      <Occupied>1</Occupied>
+    </Spot>
+    <Spot id="7">
+      <X>32.5</X>
+      <Y>-1.3</Y>
+      <Occupied>1</Occupied>
+    </Spot>
+    <Spot id="8">
+      <X>37.5</X>
+      <Y>-1.3</Y>
+      <Occupied>1</Occupied>
+    </Spot>
+    <Spot id="9">
+      <X>42.5</X>
+      <Y>-1.3</Y>
+      <Occupied>1</Occupied>
+    </Spot>
+    <Spot id="10">
+      <X>47.5</X>
+      <Y>-1.3</Y>
+      <Occupied>1</Occupied>
+    </Spot>
+  </ParkingSpots>
+
+  <StaticVehicles>
+    <Vehicle id="1">
+      <Type>Sedan</Type>
+      <X>2.50</X>
+      <Y>-1.25</Y>
+      <Yaw>90</Yaw>
+      <Speed>0</Speed>
+    </Vehicle>
+    <Vehicle id="2">
+      <Type>Sedan</Type>
+      <X>7.50</X>
+      <Y>-1.25</Y>
+      <Yaw>90</Yaw>
+      <Speed>0</Speed>
+    </Vehicle>
+    <Vehicle id="3">
+      <Type>Sedan</Type>
+      <X>12.50</X>
+      <Y>-1.25</Y>
+      <Yaw>90</Yaw>
+      <Speed>0</Speed>
+    </Vehicle>
+    <Vehicle id="4">
+      <Type>Sedan</Type>
+      <X>17.50</X>
+      <Y>-1.25</Y>
+      <Yaw>90</Yaw>
+      <Speed>0</Speed>
+    </Vehicle>
+    <Vehicle id="5">
+      <Type>Sedan</Type>
+      <X>27.50</X>
+      <Y>-1.25</Y>
+      <Yaw>90</Yaw>
+      <Speed>0</Speed>
+    </Vehicle>
+    <Vehicle id="6">
+      <Type>Sedan</Type>
+      <X>32.50</X>
+      <Y>-1.25</Y>
+      <Yaw>90</Yaw>
+      <Speed>0</Speed>
+    </Vehicle>
+    <Vehicle id="7">
+      <Type>Sedan</Type>
+      <X>37.50</X>
+      <Y>-1.25</Y>
+      <Yaw>90</Yaw>
+      <Speed>0</Speed>
+    </Vehicle>
+    <Vehicle id="8">
+      <Type>Sedan</Type>
+      <X>42.50</X>
+      <Y>-1.25</Y>
+      <Yaw>90</Yaw>
+      <Speed>0</Speed>
+    </Vehicle>
+    <Vehicle id="9">
+      <Type>Sedan</Type>
+      <X>47.50</X>
+      <Y>-1.25</Y>
+      <Yaw>90</Yaw>
+      <Speed>0</Speed>
+    </Vehicle>
+  </StaticVehicles>
+
+  <InitialConditions>
+    <X>45.0</X>
+    <Y>3.0</Y>
+    <Yaw>0.0</Yaw>
+    <Speed>5.0</Speed>
+    <Gear>1</Gear>
+  </InitialConditions>
+
+  <Events>
+    <Event id="1">
+      <Name>Approach</Name>
+      <StartTime>0</StartTime>
+      <Duration>10</Duration>
+      <Speed>5</Speed>
+      <Gear>1</Gear>
+    </Event>
+    <Event id="2">
+      <Name>Prepare</Name>
+      <StartTime>10</StartTime>
+      <Duration>2</Duration>
+      <Speed>0</Speed>
+      <Gear>0</Gear>
+      <Brake>100</Brake>
+    </Event>
+    <Event id="3">
+      <Name>Reverse</Name>
+      <StartTime>12</StartTime>
+      <Duration>38</Duration>
+      <Speed>-2</Speed>
+      <Gear>-1</Gear>
+      <Control>Simulink</Control>
+    </Event>
+  </Events>
+
+  <SimulinkInterface>
+    <SFunction>sf_car_sim</SFunction>
+    <Inputs>
+      <Channel name="IMP_STEER_SW" unit="deg" default="0"/>
+      <Channel name="IMP_PBK_CON" unit="kPa" default="0"/>
+      <Channel name="IMP_THROTTLE" unit="%" default="0"/>
+      <Channel name="IMP_GEARCHANGE" unit="-" default="0"/>
+    </Inputs>
+    <Outputs>
+      <Channel name="XCG" unit="m"/>
+      <Channel name="YCG" unit="m"/>
+      <Channel name="YAW" unit="rad"/>
+      <Channel name="VX" unit="km/h"/>
+      <Channel name="VY" unit="km/h"/>
+      <Channel name="AVZ" unit="deg/s"/>
+    </Outputs>
+  </SimulinkInterface>
+</CarSimParameters>
