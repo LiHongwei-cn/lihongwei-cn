@@ -149,9 +149,9 @@ hermes skills install mundo
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v21.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-macos.zip) |
-| Windows | [mundo-v21.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-windows.zip) |
-| Linux | [mundo-v21.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-linux.zip) |
+| macOS | [mundo-v21.1-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.1/mundo-v21.1-macos.zip) |
+| Windows | [mundo-v21.1-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.1/mundo-v21.1-windows.zip) |
+| Linux | [mundo-v21.1-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.1/mundo-v21.1-linux.zip) |
 
 ### 🌐 更多详细内容
 
@@ -269,9 +269,9 @@ hermes skills install mundo
 
 | Platform | Download |
 |----------|----------|
-| macOS | [mundo-v21.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-macos.zip) |
-| Windows | [mundo-v21.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-windows.zip) |
-| Linux | [mundo-v21.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-linux.zip) |
+| macOS | [mundo-v21.1-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.1/mundo-v21.1-macos.zip) |
+| Windows | [mundo-v21.1-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.1/mundo-v21.1-windows.zip) |
+| Linux | [mundo-v21.1-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.1/mundo-v21.1-linux.zip) |
 
 ### 🌐 Full Documentation
 
@@ -353,9 +353,9 @@ Claude Code 委任 · 動的校正 · 実行チェックリスト · スキル�
 
 | プラットフォーム | ダウンロード |
 |-----------------|-------------|
-| macOS | [mundo-v21.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-macos.zip) |
-| Windows | [mundo-v21.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-windows.zip) |
-| Linux | [mundo-v21.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-linux.zip) |
+| macOS | [mundo-v21.1-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.1/mundo-v21.1-macos.zip) |
+| Windows | [mundo-v21.1-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.1/mundo-v21.1-windows.zip) |
+| Linux | [mundo-v21.1-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.1/mundo-v21.1-linux.zip) |
 
 ---
 
@@ -431,9 +431,9 @@ Claude Code 위임 · 동적 보정 · 실행 체크리스트 · 스킬 디스�
 
 | 플랫폼 | 다운로드 |
 |--------|----------|
-| macOS | [mundo-v21.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-macos.zip) |
-| Windows | [mundo-v21.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-windows.zip) |
-| Linux | [mundo-v21.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.0/mundo-v21.0-linux.zip) |
+| macOS | [mundo-v21.1-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.1/mundo-v21.1-macos.zip) |
+| Windows | [mundo-v21.1-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.1/mundo-v21.1-windows.zip) |
+| Linux | [mundo-v21.1-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v21.1/mundo-v21.1-linux.zip) |
 
 ---
 

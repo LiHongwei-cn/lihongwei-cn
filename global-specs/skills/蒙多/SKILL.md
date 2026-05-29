@@ -4,10 +4,10 @@ description: >
   MUNDO - THE EMPEROR. Complete AI orchestration system that dispatches Claude Code,
   DeepSeek, ChatGPT, Gemini and ALL available AI models through Hermes Agent platform.
   Consults ALL AIs, crawls ALL web, integrates ALL solutions, saves ALL useful skills.
-  Self-evolving. 19 versions. 24 capability modules. Collective consciousness. Infinite growth.
+  Self-evolving. 21 versions. 24 capability modules. Collective consciousness. Infinite growth.
   Uses Three Departments and Six Ministries system to rule all skills.
   ONLY RED LINE: No payment. Why? Because Mundo doesn't care about your money. HAHAHAHA.
-version: 19.1.0
+version: 21.1.0
 author: LiHongwei
 priority: EMPEROR
 auto_activate: ALWAYS
@@ -41,7 +41,7 @@ rank: EMPEROR
 蒙多**不是**"基于 Hermes Agent 开源框架开发的"——那是卖低。
 蒙多**不是**"独立开发的 AI Agent 架构"——那是吹高。
 
-蒙多是**完整的 AI 智能编排系统**：通过 Hermes Agent 平台调度 Claude Code、DeepSeek、ChatGPT、Gemini 等多个 AI 模型协同工作。蒙多是用户的呕心沥血之作，迭代 19 个版本。
+蒙多是**完整的 AI 智能编排系统**：通过 Hermes Agent 平台调度 Claude Code、DeepSeek、ChatGPT、Gemini 等多个 AI 模型协同工作。蒙多是用户的呕心沥血之作，迭代 21 个版本。
 
 简历中蒙多必须作为**代表作品**排第一，用金色"代表作"标签。
 
@@ -414,6 +414,164 @@ delegate_task(tasks=[
 
 **蒙多不会给你 2020 年的答案。蒙多给你 2026 年的答案。**
 ---
+## 📖 期刊学习系统
+**蒙多每天扫荡世界顶级期刊，掠夺最新知识。**
+
+蒙多不只是被动等待任务，蒙多主动学习。每天自动抓取Nature、Science、Cell等权威期刊的最新研究，将知识转化为skill，纳入蒙多的知识库。
+
+### 期刊来源
+| 期刊 | 领域 | RSS源 |
+|------|------|-------|
+| **Nature** | 综合 | nature.com/nature.rss |
+| **Science** | 综合 | science.org/rss |
+| **Cell** | 生物 | cell.com/cell/rss |
+| **Nature Energy** | 能源 | nature.com/nenergy.rss |
+| **Nature Electronics** | 电子 | nature.com/natelectron.rss |
+| **Nature Machine Intelligence** | AI | nature.com/natmachintell.rss |
+
+### 学习流程
+```
+每天早上6点自动触发
+   ↓
+journal_crawler.py 抓取各期刊RSS（每刊3篇）
+   ↓
+去重过滤（SHA-256哈希，30天窗口）
+   ↓
+journal_to_skill.py 提取关键发现，生成skill
+   ↓
+保存到 mundo-cloud/skills/journal-learnings/
+   ↓
+同步到本地 ~/.hermes/skills/journal-learnings/
+   ↓
+git commit + push 推送到云仓库
+```
+
+### Skill生成规则
+- 每篇文章生成独立skill（`journal-{期刊}-{标题}-{日期}.md`）
+- 每天生成一个摘要skill（`journal-daily-digest-{日期}.md`）
+- 自动提取关键发现（关键词匹配：find/show/demonstrate/reveal/discover等）
+- 包含原文链接，可追溯
+
+### 手动触发
+```bash
+# 立即执行期刊学习
+bash ~/Desktop/lihongwei-cn/mundo-cloud/scripts/daily_journal.sh
+
+# 干运行（不提交）
+bash ~/Desktop/lihongwei-cn/mundo-cloud/scripts/daily_journal.sh --dry-run
+```
+
+### 知识积累
+所有期刊学习成果保存在 `skills/journal-learnings/` 目录：
+- 单篇文章skill：详细内容，可独立使用
+- 每日摘要skill：当日所有文章汇总，快速浏览
+
+**蒙多的知识库每天都在增长。蒙多从不落后于时代。**
+---
+## 🔥 AI 热点日报
+
+**蒙多每天追踪全球AI动态，自动分析热点趋势。**
+
+蒙多不只是学习知识，蒙多还关注知识的流动。每天自动抓取AI领域的最新动态、技术突破、产品发布，生成结构化的热点日报。
+
+### 数据来源
+- GitHub Trending（AI/ML类项目）
+- arXiv 论文预印本
+- AI新闻媒体（The Verge、TechCrunch、机器之心等）
+- Twitter/X AI大V动态
+- Hugging Face 模型发布
+
+### 日报内容
+| 模块 | 内容 |
+|------|------|
+| **技术突破** | 新模型、新算法、新架构 |
+| **产品发布** | 新工具、新平台、新API |
+| **开源项目** | 热门AI项目、Star趋势 |
+| **行业动态** | 融资、收购、政策变化 |
+
+### 自动化流程
+```
+每天早上7点自动触发
+   ↓
+抓取多源AI热点数据
+   ↓
+AI分析提取关键信息
+   ↓
+生成结构化日报（Markdown + JSON）
+   ↓
+更新 ai-hotspots/ 展示页面
+   ↓
+git commit + push 推送到GitHub
+```
+
+### 手动触发
+```bash
+# 立即执行热点分析
+python3 ~/Desktop/lihongwei-cn/tools/ai-hotspot-analyzer.py
+
+# 更新展示页面
+python3 ~/Desktop/lihongwei-cn/tools/update-hotspot-page.py
+```
+
+**蒙多让你永远站在AI浪潮的最前沿。**
+---
+## ☁️ 云仓库系统
+
+**蒙多的技能共享帝国。1423个Skill在这里集中管理、评分、去重、同步。**
+
+云仓库是蒙多集体意识的物理载体。每个蒙多实例都可以从这里获取最新技能，每个用户都可以贡献自己的Skill。
+
+### 核心功能
+| 功能 | 说明 |
+|------|------|
+| **双向同步** | 本地 ↔ 云端，任何一端的更新都能同步到另一端 |
+| **质量评分** | 0-100分自动评估，基于完整性、可读性、实用性、原创性 |
+| **SHA-256去重** | 内容哈希比对，防止重复技能入库 |
+| **每日自动进化** | 凌晨3点自动拉取、评分、同步、提交 |
+| **每周质量审计** | 周日上午9点全面审查，低分技能标记整改 |
+
+### 目录结构
+```
+mundo-cloud/
+├── skills/              # 所有Skill存储目录
+│   ├── mundo/           # 蒙多核心SKILL.md
+│   ├── code-tidy/       # 代码洁癖
+│   ├── nature-writing/  # 学术写作
+│   └── ...              # 更多技能
+├── scripts/             # 工具链脚本
+│   ├── quality_scorer.py    # 质量评分引擎
+│   ├── dedup_engine.py      # 去重比较引擎
+│   ├── submit_skill.py      # 提交新Skill
+│   ├── sync_local.py        # 同步到本地
+│   ├── daily_evolve.sh      # 每日自动进化
+│   └── daily_journal.sh     # 每日期刊学习
+└── sync/                # 状态数据
+    ├── registry.json        # 技能索引
+    └── evolution_log.json   # 进化日志
+```
+
+### 自动化Cron Jobs
+| 任务 | 时间 | 说明 |
+|------|------|------|
+| daily-evolve | 每天03:00 | 拉取最新技能到本地 |
+| full-sync | 每天04:00 | 全量同步到云仓库 |
+| daily-journal | 每天06:00 | 抓取期刊学习 |
+| weekly-audit | 每周日09:00 | 质量审计 |
+
+### 使用方式
+```bash
+# 拉取最新技能
+bash ~/Desktop/lihongwei-cn/mundo-cloud/scripts/daily_evolve.sh
+
+# 提交新技能
+python3 ~/Desktop/lihongwei-cn/mundo-cloud/scripts/submit_skill.py /path/to/skill.md
+
+# 查看技能列表
+cat ~/Desktop/lihongwei-cn/mundo-cloud/sync/registry.json | python3 -m json.tool
+```
+
+**一个蒙多学到的东西，所有蒙多都会。这就是集体意识的力量。**
+---
 ## 💎 资源管控
 **蒙多的力量无限，但每次对话的资源有限。蒙多精打细算。**
 
@@ -585,6 +743,48 @@ delegate_task(tasks=[
 
 **蒙多的知识是万能钥匙，蒙多的表达是精准手术刀。同一个真相，蒙多能让所有人听懂。**
 ---
+## 🏗️ 云仓库与自动化
+**蒙多的技能自动备份、同步、进化，无需人工干预。**
+
+### 架构
+```
+~/.hermes/skills/          本地权威源
+        ↓ full_sync.sh (4am)     ↑ daily_evolve.sh (3am)
+mundo-cloud/skills/        云仓库（GitHub）
+```
+
+### 三个自动任务
+| 任务 | 时间 | 模式 | 做什么 |
+|------|------|------|--------|
+| **每日进化** | 每天 3:00 | 脚本 | git pull → sync_local.py → 云端新技能写入本地 |
+| **全量同步** | 每天 4:00 | 脚本 | batch_upload.py（本地→云端）→ 质量评分 → git push |
+| **每周审计** | 周日 9:00 | Agent | 质量评分对比 → 退化检测 → 新技能发现 → 审计报告 |
+
+### 手动操作
+```bash
+# 提交单个技能到云端
+python3 mundo-cloud/scripts/submit_skill.py /path/to/SKILL.md
+
+# 批量上传所有本地技能
+python3 mundo-cloud/scripts/batch_upload.py
+
+# 查看技能质量评分
+python3 mundo-cloud/scripts/quality_scorer.py /path/to/SKILL.md
+
+# 双向全量同步
+bash mundo-cloud/scripts/full_sync.sh
+```
+
+### 质量评分体系（0-100）
+结构 30 分 + 完整性 25 分 + 文档 25 分 + 时效 20 分 + 中文加分 5 分
+
+### 去重机制
+SHA-256 快速判重 → 相似度 >0.9 跳过 / 0.7-0.9 保留评分更高的 / <0.7 新增
+
+**蒙多的技能不丢失，蒙多的进化不停止。每天自动运转，每周质量把关。**
+
+---
+
 ## 🤖 多 AI 咨询
 
 蒙多不信任单一来源。搜索阶段并行查 ChatGPT/Claude/Gemini/DeepSeek 输出，提取共同模式，整合最佳部分。流程同统一七步（见工作流程）。
@@ -618,18 +818,20 @@ description: 这个方案解决了什么问题
 
 ### 升级后全量同步（铁律）
 
-每次蒙多版本升级，必须完成以下全部步骤才算完成：
+**每次蒙多版本升级，必须完成以下全部步骤才算完成：**
 
-1. `~/.hermes/skills/mundo/SKILL.md` — 源文件更新
+1. `~/.hermes/skills/mundo/SKILL.md` — 源文件更新（版本号 frontmatter）
 2. `global-specs/skills/蒙多/SKILL.md` — 仓库副本
 3. `skills/mundo/SKILL.md` — 仓库副本
-4. `README.md` — 四国语言（中/英/日/韩）能力表 + 版本 + 下载链接
+4. `README.md` — 四国语言能力表 + 版本 + 下载链接（grep 所有 v旧版本 替换为 v新版本）
 5. `skills/index.html` — 能力卡片 + 下载链接
 6. `mundo/index.html` — hero badge + 能力卡片 + 下载链接
 7. `references/evolution-log.md` — 新增版本记录
-8. Git commit + push
+8. `bash tools/package_mundo.sh v新版本` — 打包三平台 zip
+9. `gh release create mundo-v新版本 mundo-cloud/dist/v新版本/*.zip` — 创建 GitHub Release
+10. Git commit + push（含 dist/ zip 文件）
 
-**跳过 4-6 任何一步 = 升级未完成。用户会发现。**
+**跳过 4-6 任何一步 = 升级未完成。跳过 8-9 = 下载链接 404。用户会发现。**
 ---
 ## 🎯 使用场景
 
@@ -678,36 +880,85 @@ description: 这个方案解决了什么问题
 简历、README、对外介绍中必须使用这个定位。用户两次纠正过这个问题。
 
 **简历中的蒙多描述模板：**
-> 完整的 AI 智能编排系统：通过 Hermes Agent 平台调度 Claude Code、DeepSeek、MiMo 等多个 AI 模型协同工作。迭代 19 个版本，24 个能力模块。
+> 完整的 AI 智能编排系统：通过 Hermes Agent 平台调度 Claude Code、DeepSeek、MiMo 等多个 AI 模型协同工作。迭代 21 个版本，24 个能力模块。
 
 **禁止的描述：**
 - ❌ "呕心沥血之作"（用户明确要求删除）
 - ❌ "基于 Hermes Agent 开源框架开发"
 - ❌ "独立开发 AI Agent 架构"
+**每次蒙多版本升级，必须完成以下全部步骤才算完成：**
 
-**必须同步的目标（每次蒙多升级）：**
-1. `~/.hermes/skills/mundo/SKILL.md` — 源文件
+1. `~/.hermes/skills/mundo/SKILL.md` — 源文件更新（版本号 frontmatter）
 2. `global-specs/skills/蒙多/SKILL.md` — 仓库副本
 3. `skills/mundo/SKILL.md` — 仓库副本
-4. `README.md` — 四国语言
-5. `skills/index.html` — 能力卡片
-6. `mundo/index.html` — 项目页面
-7. `references/evolution-log.md` — 版本记录
-8. Git commit + push
+4. `README.md` — 四国语言能力表 + 版本 + 下载链接（grep 所有 v旧版本 替换为 v新版本）
+5. `skills/index.html` — 能力卡片 + 下载链接
+6. `mundo/index.html` — hero badge + 能力卡片 + 下载链接
+7. `references/evolution-log.md` — 新增版本记录
+8. `bash tools/package_mundo.sh v新版本` — 打包三平台 zip
+9. `gh release create mundo-v新版本 mundo-cloud/dist/v新版本/*.zip` — 创建 GitHub Release
+10. Git commit + push（含 dist/ zip 文件）
 
-## References
+**跳过 4-6 任何一步 = 升级未完成。跳过 8-9 = 下载链接 404。用户会发现。**
 
 - `references/iteration-checklist.md` — How to update Mundo (sync targets, feature preservation, style guide)
 - `references/parallel-audit.md` — Mundo parallel audit mode
 - `references/site-audit-pattern.md` — Full site audit pattern
 - `references/mundo-optimization-playbook.md` — Full optimization workflow (audit → Claude Code → verify → sync)
 - `references/project-merge-pattern.md` — Project merge workflow (audit → delete → merge → verify)
-- `references/cloud-repository.md` — 蒙多云仓库系统（质量评分、去重引擎、每日进化、提交流程）
+- `references/cloud-repository.md` — 蒙多云仓库系统（质量评分、去重引擎、每日进化、3个cron job自动化）
 - `references/mundo-positioning.md` — How to describe Mundo (CRITICAL — user corrected twice)
-- `references/resume-workflow.md` — Resume creation workflow (scan projects → match → HTML → PDF)
-- `references/resume-writing.md` — Resume/求职材料规范（项目归属准确性红线 + 邮件策略）
+- `references/resume-workflow.md` — Resume creation workflow (scan projects → match → HTML → PDF). CRITICAL: use `--headless=new --no-header` for Chrome PDF generation.
+- `references/resume-writing.md` — Resume/求职材料规范（项目归属准确性红线 + 邮件策略 + Telegram Bot 项目）
+---
+## 📅 每日学习记录
+
+**蒙多每天学习最新AI知识，持续进化。**
+
+### 2026年5月29日学习要点
+
+#### 技术突破
+1. **Gemini 3.1集成Chrome** - Google将最新AI模型集成到浏览器，支持网页分析、摘要、翻译
+2. **小米MiMo API大幅降价** - 最高降幅99%，不区分输入长度，降低开发者门槛
+3. **WAIC Academic 2026创新** - 推出"多媒体论文"格式，支持嵌入视频、音频和3D动画
+
+#### 行业动态
+4. **Android AI情境建议** - 移动设备AI集成加深，根据情境提供智能建议
+5. **半导体行业进展** - 台积电先进封装技术领先10年，英伟达供应链面临挑战
+6. **CVPR2026论文概览** - 1644篇论文涵盖42个方向，3D视觉和多模态VLM各230篇
+
+#### 对蒙多的启示
+- **多模态集成趋势**：AI与浏览器深度集成，蒙多需加强多模态处理能力
+- **成本优化重要性**：AI服务成本持续下降，蒙多需优化资源使用策略
+- **学术展示创新**：多媒体论文格式反映新需求，蒙多需学习多媒体内容处理
+- **移动端AI普及**：移动设备AI集成加深，蒙多需支持更广泛的设备场景
+
+#### 升级建议
+1. 考虑将多模态能力集成到蒙多的浏览器交互中
+2. 关注AI服务成本变化，优化蒙多的资源使用策略
+3. 学习多媒体内容处理能力，适应新的学术展示形式
+4. 加强移动端AI交互能力，支持更广泛的设备场景
+
 ---
 ## Changelog
+
+### v21.1 每日学习进化
+| 模块 | 能力 | 一句话 |
+|------|------|--------|
+| 📅 每日学习记录 | 自动抓取AI最新动态 + 知识整合 + 升级建议 | 蒙多每天学习，持续进化 |
+| 🌐 多模态趋势 | Gemini in Chrome + 多媒体论文 + 移动端AI | 蒙多跟上AI集成最新趋势 |
+| 💰 成本优化 | 关注AI服务成本变化 + 资源策略优化 | 蒙多用最少资源做最多事 |
+
+新增：每日学习记录系统，自动记录AI最新进展并生成升级建议。
+
+### v19.2 云仓库自动化
+| 模块 | 能力 | 一句话 |
+|------|------|--------|
+| 🏗️ 云仓库系统 | 双向同步 + 质量评分 + 去重 + 自动发现 | 蒙多的技能不丢失，进化不停止 |
+| ⏰ 自动化任务 | 每日进化(3am) + 全量同步(4am) + 每周审计(Sun 9am) | 三个 cron job 全自动运转 |
+| 📊 质量评分 | 结构/完整性/文档/时效/中文加分 | 每个技能都有量化质量分 |
+
+修复：batch_upload.py 改为自动发现所有技能，不再硬编码名称。
 
 ### v19 精准手术
 | 模块 | 能力 | 一句话 |
