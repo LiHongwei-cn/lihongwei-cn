@@ -1,5 +1,74 @@
 # Mundo Evolution Log
 
+## v23.1 — 每日学习进化 (Daily Learning Evolution)
+
+**日期**: 2026-05-30
+
+| 模块 | 能力 | 一句话 |
+|------|------|--------|
+| 📅 MATLAB/Simulink AI集成 | R2026a Simulink Copilot + MATLAB Agentic Toolkit | 蒙多学习新能源汽车工程专业工具 |
+| 🤖 AI Agent技术栈成熟 | 12大主流框架深度解析 + 完整技术栈 | 蒙多借鉴Agent架构优化自身 |
+| 🔋 新能源汽车BMS AI化 | AI大模型在电池管理系统中的应用 | 蒙多深耕电池管理领域 |
+| 🔒 隐私保护趋势 | Meta加密AI对话 + 服务器不留存日志 | 蒙多调整数据处理策略 |
+
+**新增**: 学习R2026a的Simulink Copilot和MATLAB Agentic Toolkit，研究12大AI Agent框架架构，关注BMS领域AI应用，评估Meta隐私策略对商业模式的影响。
+
+**同步位置**:
+- `~/.hermes/skills/mundo/SKILL.md`
+- `global-specs/skills/蒙多/SKILL.md`
+- `skills/mundo/SKILL.md`
+- `README.md` (CN/EN/JP/KR)
+- `mundo/index.html`
+- `skills/index.html`
+
+---
+
+## v23.0 — 流媒体学习 (Streaming Media Learning)
+
+**日期**: 2026-05-29
+
+| 模块 | 能力 | 一句话 |
+|------|------|--------|
+| 🔍 搜索来源 | 流媒体视频教程加入搜索优先级 | YouTube/B站/Coursera等流媒体平台优先 |
+| 📚 学习策略 | 流媒体平台搜索（YouTube/B站/Coursera） | 流媒体视频教程直观、生动，适合学习复杂操作 |
+| 🕷️ 网络爬取 | 流媒体学习规则 | YouTube、B站、Coursera、Udemy、TED、技术会议 |
+| 🌈 多模态 | 流媒体教程视频分析 | video_analyze提取关键操作，生成学习笔记 |
+
+**新增**: 流媒体学习能力，蒙多现在可以从YouTube、B站、Coursera等多个流媒体平台搜索优质技术教程。
+
+**同步位置**:
+- `~/.hermes/skills/mundo/SKILL.md`
+- `global-specs/skills/蒙多/SKILL.md`
+- `skills/mundo/SKILL.md`
+- `README.md` (CN/EN/JP/KR)
+- `mundo/index.html`
+- `skills/index.html`
+
+---
+
+## v22.0 — B站知识获取 (Bilibili Knowledge Acquisition)
+
+**日期**: 2026-05-29
+
+| 模块 | 能力 | 一句话 |
+|------|------|--------|
+| 🔍 搜索来源 | B站视频教程加入搜索优先级 | 中文技术教程质量高，B站优先 |
+| 📚 学习策略 | 视频教程类型（B站优先） | 先B站搜索，再YouTube，最后文字教程 |
+| 🕷️ 网络爬取 | B站知识获取规则 | 搜索方法、爬取规则、频道推荐、反爬注意 |
+| 🌈 多模态 | B站视频分析 | video_analyze提取关键操作，生成学习笔记 |
+
+**新增**: B站知识获取能力，蒙多现在可以从B站搜索优质技术教程。
+
+**同步位置**:
+- `~/.hermes/skills/mundo/SKILL.md`
+- `global-specs/skills/蒙多/SKILL.md`
+- `skills/mundo/SKILL.md`
+- `README.md` (CN/EN/JP/KR)
+- `mundo/index.html`
+- `skills/index.html`
+
+---
+
 ## v21.1 — 每日学习进化 (Daily Learning Evolution)
 
 **日期**: 2026-05-29
