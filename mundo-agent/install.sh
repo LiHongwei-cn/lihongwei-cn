@@ -70,10 +70,48 @@ if ! echo "$PATH" | grep -q "$HOME/bin"; then
     echo "✓ 已添加 ~/bin 到 PATH"
 fi
 
+# 从云仓库拉取 Skills 和全局规范
+echo ""
+echo "从云仓库拉取 Skills 和全局规范..."
+REPO_TMP="/tmp/mundo-repo-$$"
+git clone --depth=1 https://github.com/LiHongwei-cn/lihongwei-cn.git "$REPO_TMP" 2>/dev/null
+
+if [ -d "$REPO_TMP/global-specs/skills" ]; then
+    SKILLS_DIR="$HOME/.hermes/skills"
+    mkdir -p "$SKILLS_DIR"
+    cp_count=0
+    for d in "$REPO_TMP/global-specs/skills"/*/; do
+        name=$(basename "$d")
+        if [ -f "$d/SKILL.md" ]; then
+            mkdir -p "$SKILLS_DIR/$name"
+            cp "$d/SKILL.md" "$SKILLS_DIR/$name/SKILL.md"
+            cp_count=$((cp_count + 1))
+        fi
+    done
+    echo "  ✓ 已部署 $cp_count 个 Skills"
+fi
+
+if [ -d "$REPO_TMP/global-specs/rules" ]; then
+    RULES_DIR="$HOME/.hermes/rules"
+    mkdir -p "$RULES_DIR"
+    cp "$REPO_TMP/global-specs/rules/"*.md "$RULES_DIR/" 2>/dev/null
+    echo "  ✓ 已部署全局规范"
+fi
+
+# 保存仓库缓存供后续同步
+mkdir -p "$MUNDO_DIR/repo_cache"
+cp -r "$REPO_TMP/.git" "$MUNDO_DIR/repo_cache/" 2>/dev/null
+rm -rf "$REPO_TMP"
+
 echo ""
 echo "╔══════════════════════════════════════════╗"
 echo "║         👑 安装完成！                    ║"
 echo "╚══════════════════════════════════════════╝"
+echo ""
+echo "已部署内容："
+echo "  • MUNDO Agent 引擎（9 个 Python 模块）"
+echo "  • Skills（从云仓库自动拉取）"
+echo "  • 全局规范（从云仓库自动拉取）"
 echo ""
 echo "启动蒙多："
 echo "  mundo              # 交互模式"

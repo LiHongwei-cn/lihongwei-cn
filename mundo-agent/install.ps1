@@ -66,10 +66,52 @@ if ($currentPath -notlike "*$binDir*") {
     Write-Host "✓ 已添加到 PATH"
 }
 
+# 从云仓库拉取 Skills 和全局规范
+Write-Host ""
+Write-Host "从云仓库拉取 Skills 和全局规范..."
+$repoTmp = "$env:TEMP\mundo-repo-$PID"
+try {
+    git clone --depth=1 https://github.com/LiHongwei-cn/lihongwei-cn.git $repoTmp 2>$null
+
+    $cloudSkills = "$repoTmp\global-specs\skills"
+    if (Test-Path $cloudSkills) {
+        $skillsDir = "$env:USERPROFILE\.hermes\skills"
+        New-Item -ItemType Directory -Force -Path $skillsDir | Out-Null
+        $cpCount = 0
+        Get-ChildItem $cloudSkills -Directory | ForEach-Object {
+            $skillMd = Join-Path $_.FullName "SKILL.md"
+            if (Test-Path $skillMd) {
+                $dst = Join-Path $skillsDir $_.Name
+                New-Item -ItemType Directory -Force -Path $dst | Out-Null
+                Copy-Item $skillMd (Join-Path $dst "SKILL.md") -Force
+                $cpCount++
+            }
+        }
+        Write-Host "  ✓ 已部署 $cpCount 个 Skills"
+    }
+
+    $cloudSpecs = "$repoTmp\global-specs\rules"
+    if (Test-Path $cloudSpecs) {
+        $rulesDir = "$env:USERPROFILE\.hermes\rules"
+        New-Item -ItemType Directory -Force -Path $rulesDir | Out-Null
+        Copy-Item "$cloudSpecs\*.md" $rulesDir -Force 2>$null
+        Write-Host "  ✓ 已部署全局规范"
+    }
+} catch {
+    Write-Host "  ⚠ 云端拉取失败（可稍后手动同步）"
+} finally {
+    Remove-Item -Recurse -Force $repoTmp -ErrorAction SilentlyContinue
+}
+
 Write-Host ""
 Write-Host "╔══════════════════════════════════════════╗"
 Write-Host "║         👑 安装完成！                    ║"
 Write-Host "╚══════════════════════════════════════════╝"
+Write-Host ""
+Write-Host "已部署内容："
+Write-Host "  • MUNDO Agent 引擎（9 个 Python 模块）"
+Write-Host "  • Skills（从云仓库自动拉取）"
+Write-Host "  • 全局规范（从云仓库自动拉取）"
 Write-Host ""
 Write-Host "启动蒙多（重启终端后）："
 Write-Host "  mundo              # 交互模式"
