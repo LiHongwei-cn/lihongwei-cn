@@ -148,13 +148,30 @@ Borrow these slash commands from Claude Code:
 
 See `references/context-management-commands.md` for implementation details.
 
-## Sync Workflow (MANDATORY)
+## Sync Workflow (MANDATORY — User will call you out if you skip this)
 
-After ANY code change to Mundo agent files, sync these three places **without being asked**:
-1. `cp` to local install dir `~/.hermes/mundo-agent/`
-2. Update `README.md` version numbers + feature descriptions (all 4 languages: zh/en/ja/ko)
-3. Update website `mundo-agent/index.html` and main `index.html`
-4. `git add + commit + push`
+After ANY code change to Mundo agent files, sync ALL FOUR places **without being asked**. User has been extremely frustrated by missed syncs.
+
+```bash
+cd ~/Desktop/lihongwei-cn
+# 1. Local install
+cp mundo-cloud/agent/display.py ~/.hermes/mundo-agent/display.py
+cp mundo-cloud/agent/mundo.py ~/.hermes/mundo-agent/mundo.py
+cp mundo-cloud/agent/engine.py ~/.hermes/mundo-agent/engine.py
+cp mundo-cloud/agent/memory.py ~/.hermes/mundo-agent/memory.py
+# 2. README.md — update version, features, commands (all 4 languages)
+# 3. mundo-agent/index.html — update version, features, terminal preview
+# 4. Git
+git add -A && git commit -m "type: description" && git push
+```
+
+**User's exact complaint**: "有没有更新到本地还有GitHub自述文件内容还有网址项目内容，每次都要我说一遍"
+
+**Checklist before finishing ANY Mundo task:**
+- [ ] `diff` local install files — must match repo
+- [ ] README.md version + features updated
+- [ ] index.html version + features updated
+- [ ] git pushed
 
 ## Smart Routing (v24.3+)
 
@@ -233,7 +250,7 @@ if hasattr(self, '_memory_ref') and self._memory_ref:
 In mundo.py, after task completion:
 ```python
 self.memory.generate_session_summary(self.session_id, self.engine.client)
-```
+## Pitfalls
 
 - **MiMo base_url**: Use `/v1` not `/anthropic` (404)
 - **/tmp paths**: Must be classified as `safe` in approval system, not `caution`
@@ -246,6 +263,10 @@ self.memory.generate_session_summary(self.session_id, self.engine.client)
 - **Banner duplication**: `show_banner()` must be called ONLY in `main()`, never in `run()`. If called in both, the banner appears twice. Classic bug pattern for CLI entry points.
 - **Memory import on first deploy**: Read `~/.claude/CLAUDE.md` for user preferences, `~/.hermes/.env` for API keys. Use `.memory_imported` flag to avoid re-scanning. See `references/memory-import-pattern.md` for full implementation.
 - **Output stream design**: Log methods (`log_thinking`, `log_tool_start`, `log_tool_output`, `log_tool_done`) must ONLY write to stdout. Do NOT call status bar redraws between log lines. The output should be a clean scroll stream. Status/info bar shows only at: task start, task done.
+- **Regex chat/task detection**: NEVER use regex to pre-judge if input is chat or task. User explicitly rejected this. Let the LLM decide — it naturally skips tools for simple questions. See `references/smart-routing-token-optimization.md`.
+- **Emotional intelligence**: MUST be in system prompt. User wants MUNDO to be a friend, not a machine. "先共情再解决". NEVER use platitudes like "别担心" or "我理解你的感受". See `references/emotional-intelligence-pattern.md`.
+- **Token optimization**: Keep system prompt compact (~100 chars). Full prompt wastes tokens on simple conversations. Tools always available but LLM decides when to use them.
+- **UI洁癖**: User has extreme cleanliness preferences. No duplicate elements, no extra icons, no visual noise. Every UI change is scrutinized line by line. When in doubt, simpler is always better.
 
 ## References
 
@@ -256,7 +277,9 @@ self.memory.generate_session_summary(self.session_id, self.engine.client)
 - `references/context-management-commands.md` — /compact /context /btw /effort implementation
 - `references/cloud-sync-pattern.md` — Skill upload/download, quality scoring
 - `references/memory-import-pattern.md` — First-deploy memory import from Hermes/Claude Code
-- `references/smart-routing-token-optimization.md` — Chat vs task detection, dual-path LLM routing, context compression
+- `references/smart-routing-token-optimization.md` — LLM-decides routing, context compression
+- `references/emotional-intelligence-pattern.md` — Empathy rules, detection signals, anti-platitudes
+- `references/claude-mem-integration.md` — Tool observation logging, session summary generation
 
 ## User Preferences (from MUNDO development)
 
@@ -266,3 +289,9 @@ self.memory.generate_session_summary(self.session_id, self.engine.client)
 - Permission prompts MUST match Claude Code's yes/no style
 - Real-time status bar showing model/token/time is mandatory
 - First-time setup wizard must show all available models with descriptions
+- **UI洁癖**: No duplicate elements, no extra icons, no visual noise. Every UI change scrutinized.
+- **Sync is mandatory**: local + README + website + git. Never skip, never wait for user to ask.
+- **Learn from real products**: Study Hermes/Claude Code/claude-mem patterns, don't reinvent.
+- **Emotional intelligence**: MUNDO is a friend, not a machine. Empathy first.
+- **Token efficiency**: Compact prompts, LLM decides tool usage, no regex pre-judgment.
+- **User name**: 黄鹏 (real name), LiHongwei (pen name for GitHub). Never expose in public content.
