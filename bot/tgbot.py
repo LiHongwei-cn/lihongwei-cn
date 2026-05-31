@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+"""Danking Bot — 蒙多 AI 助手（优化版）
+主要改进：
+- 对话历史记忆（/clear 清除）
+- 速率限制（每用户 15 次/分钟）
+- DeepSeek API 自动重试
+- 资源正确清理
+"""
 import asyncio
 import base64
 import logging
@@ -19,6 +27,8 @@ from telegram.ext import (
 from openai import AsyncOpenAI
 
 from config import get_env
+from chat_history import ChatHistory
+from rate_limiter import RateLimiter
 
 load_dotenv(Path(__file__).with_name(".env"))
 
@@ -28,10 +38,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger("tgbot")
 
+# ─── 配置 ───
+
 TELEGRAM_TOKEN = get_env("TELEGRAM_TOKEN")
 DEEPSEEK_API_KEY = get_env("DEEPSEEK_API_KEY")
-DEEPSEEK_MODEL = "deepseek-v4-pro"
+DEEPSEEK_MODEL = "deepseek-chat"
 TELEGRAM_MSG_LIMIT = 4096
+MAX_RETRIES = 2
 
 SYSTEM_PROMPT_FILE = Path(__file__).with_name("SYSTEM_PROMPT.md")
 CHAT_ID_FILE = Path(__file__).parent / "chat_id.txt"
@@ -42,13 +55,18 @@ MUNDO_KEYWORDS = re.compile(
     re.IGNORECASE,
 )
 
+# ─── 全局实例 ───
+
 client = AsyncOpenAI(
     api_key=DEEPSEEK_API_KEY,
     base_url="https://api.deepseek.com",
     timeout=60.0,
 )
-
 http_client = httpx.AsyncClient(timeout=15.0, follow_redirects=True)
+chat_history = ChatHistory()
+rate_limiter = RateLimiter(max_requests=15, window_seconds=60)
+
+# ─── 工具函数 ───
 
 
 def _load_system_prompt() -> str:
@@ -66,11 +84,31 @@ MUNDO_BANNER = (
 )
 
 
-# ─── 网络搜索（蒙多学习引擎核心） ───
+def _split_long_msg(text: str) -> list[str]:
+    if len(text) <= TELEGRAM_MSG_LIMIT:
+        return [text]
+    chunks = []
+    while len(text) > TELEGRAM_MSG_LIMIT:
+        split_at = text.rfind("\n", 0, TELEGRAM_MSG_LIMIT)
+        if split_at == -1:
+            split_at = TELEGRAM_MSG_LIMIT
+        chunks.append(text[:split_at])
+        text = text[split_at:].lstrip("\n")
+    if text:
+        chunks.append(text)
+    return chunks
+
+
+def _save_chat_id(chat_id: int):
+    if not CHAT_ID_FILE.exists():
+        CHAT_ID_FILE.write_text(str(chat_id), encoding="utf-8")
+        logger.info(f"已保存 chat_id={chat_id}")
+
+
+# ─── 网络搜索 ───
 
 
 async def _search_github(query: str) -> str:
-    """搜索 GitHub 代码和仓库"""
     try:
         resp = await http_client.get(
             "https://api.github.com/search/repositories",
@@ -87,13 +125,12 @@ async def _search_github(query: str) -> str:
             results.append(f"- ⭐{stars} {repo['full_name']}: {desc}")
         if results:
             return "GitHub 热门仓库：\n" + "\n".join(results)
-    except Exception as e:
-        logger.debug(f"GitHub 搜索失败: {e}")
+    except httpx.HTTPError as e:
+        logger.warning(f"GitHub 搜索失败: {e}")
     return ""
 
 
 async def _search_stackoverflow(query: str) -> str:
-    """搜索 Stack Overflow 问答"""
     try:
         resp = await http_client.get(
             "https://api.stackexchange.com/2.3/search/advanced",
@@ -117,38 +154,44 @@ async def _search_stackoverflow(query: str) -> str:
             results.append(f"- [{score}票/{answers}答] {title}\n  {link}")
         if results:
             return "Stack Overflow 相关问答：\n" + "\n".join(results)
-    except Exception as e:
-        logger.debug(f"SO 搜索失败: {e}")
+    except httpx.HTTPError as e:
+        logger.warning(f"SO 搜索失败: {e}")
     return ""
 
 
 async def _mundo_search(query: str) -> str:
-    """蒙多并行搜索：GitHub + Stack Overflow"""
     github_task = _search_github(query)
     so_task = _search_stackoverflow(query)
-    github_results, so_results = await asyncio.gather(github_task, so_task)
-
+    github_results, so_results = await asyncio.gather(
+        github_task, so_task, return_exceptions=True
+    )
     parts = []
-    if github_results:
+    if isinstance(github_results, str) and github_results:
         parts.append(github_results)
-    if so_results:
+    if isinstance(so_results, str) and so_results:
         parts.append(so_results)
     return "\n\n".join(parts) if parts else ""
 
 
-# ─── DeepSeek 调用 ───
+# ─── DeepSeek 调用（带重试） ───
 
 
-async def _call_deepseek(messages: list[dict]) -> str:
-    try:
-        response = await client.chat.completions.create(
-            model=DEEPSEEK_MODEL,
-            messages=messages,
-        )
-        return response.choices[0].message.content or ""
-    except Exception as e:
-        logger.error(f"DeepSeek API 错误: {e}")
-        return "请求出错了，稍等片刻再试。"
+async def _call_deepseek(messages: list[dict], retries: int = MAX_RETRIES) -> str:
+    for attempt in range(retries + 1):
+        try:
+            response = await client.chat.completions.create(
+                model=DEEPSEEK_MODEL,
+                messages=messages,
+            )
+            return response.choices[0].message.content or ""
+        except Exception as e:
+            if attempt < retries:
+                wait = 2 ** attempt
+                logger.warning(f"DeepSeek 调用失败（{attempt+1}/{retries+1}），{wait}s 后重试: {e}")
+                await asyncio.sleep(wait)
+            else:
+                logger.error(f"DeepSeek API 最终失败: {e}")
+                return "服务暂时不可用，请稍后再试。"
 
 
 async def _reply_with_typing(update: Update, context, chat_id: int, reply: str):
@@ -160,40 +203,21 @@ async def _reply_with_typing(update: Update, context, chat_id: int, reply: str):
         await update.message.reply_text(chunk)
 
 
-def _split_long_msg(text: str) -> list[str]:
-    if len(text) <= TELEGRAM_MSG_LIMIT:
-        return [text]
-    chunks = []
-    while len(text) > TELEGRAM_MSG_LIMIT:
-        split_at = text.rfind("\n", 0, TELEGRAM_MSG_LIMIT)
-        if split_at == -1:
-            split_at = TELEGRAM_MSG_LIMIT
-        chunks.append(text[:split_at])
-        text = text[split_at:].lstrip("\n")
-    if text:
-        chunks.append(text)
-    return chunks
-
-
-def _save_chat_id(chat_id: int):
-    if not CHAT_ID_FILE.exists():
-        CHAT_ID_FILE.write_text(str(chat_id))
-        logger.info(f"已保存 chat_id={chat_id} 到 {CHAT_ID_FILE}")
-
-
 # ─── 命令处理 ───
 
 
 async def start_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
-    logger.info(f"/start 来自 chat_id={chat_id}")
     _save_chat_id(chat_id)
+    chat_history.clear(chat_id)
+    logger.info(f"/start chat_id={chat_id}")
     await update.message.reply_text(
         "Danking Bot 已就绪。\n\n"
-        "直接发消息即可，支持文字和图片。\n\n"
+        "直接发消息即可，支持文字和图片（有对话记忆）。\n\n"
         "命令：\n"
         "/start — 启动\n"
         "/mundo <问题> — 蒙多学习模式\n"
+        "/clear — 清除对话历史\n"
         "/help — 帮助"
     )
 
@@ -202,24 +226,37 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "Danking Bot — 蒙多 AI 助手\n\n"
         "用法：\n"
-        "• 直接发文字 — AI 回复\n"
+        "• 直接发文字 — AI 回复（支持多轮对话）\n"
         "• 发图片（可加描述）— AI 分析图片\n"
         "• /mundo <问题> — 蒙多学习模式\n"
         "  自动搜索 GitHub + Stack Overflow\n"
         "  多源对比，给出最优方案\n"
         "• 说「蒙多」「卡住了」「报错」自动触发\n"
+        "• /clear — 清除对话历史\n"
         "• /start — 启动\n"
         "• /help — 本帮助\n\n"
-        "后端：DeepSeek V4 Pro\n"
-        "兼容：MATLAB R2016b"
+        "后端：DeepSeek Chat\n"
+        "速率：15 次/分钟"
     )
 
 
+async def clear_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.effective_chat.id
+    chat_history.clear(chat_id)
+    logger.info(f"/clear chat_id={chat_id}")
+    await update.message.reply_text("对话历史已清除。")
+
+
 async def mundo_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """蒙多学习模式：搜索 + 分析 + 给方案"""
     query = " ".join(context.args) if context.args else ""
     chat_id = update.effective_chat.id
+    user_id = update.effective_user.id
     _save_chat_id(chat_id)
+
+    if not rate_limiter.is_allowed(user_id):
+        remaining = rate_limiter.remaining(user_id)
+        await update.message.reply_text(f"请求过于频繁，剩余 {remaining} 次/分钟。")
+        return
 
     if not query:
         await update.message.reply_text(
@@ -232,35 +269,47 @@ async def mundo_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    logger.info(f"/mundo 来自 chat_id={chat_id}: {query[:80]}")
+    logger.info(f"/mundo chat_id={chat_id}: {query[:80]}")
 
-    # 发送搜索中提示
     await update.message.reply_text(
         f"{MUNDO_BANNER}\n\n蒙多正在搜索: {query}\n搜索 GitHub + Stack Overflow..."
     )
 
-    # 并行搜索
     search_results = await _mundo_search(query)
 
-    # 构建带搜索结果的 prompt
     user_content = f"问题: {query}"
     if search_results:
         user_content += f"\n\n以下是蒙多搜索到的参考资料：\n{search_results}\n\n请基于以上资料，给出最优方案。如果没有参考资料，直接给出你的方案。"
 
-    reply = await _call_deepseek([
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": user_content},
-    ])
+    # 添加用户消息到历史
+    chat_history.add(chat_id, "user", user_content)
+
+    # 构建完整消息（system + 历史）
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    messages.extend(chat_history.get(chat_id))
+
+    reply = await _call_deepseek(messages)
+
+    # 保存 AI 回复到历史
+    chat_history.add(chat_id, "assistant", reply)
+
     await _reply_with_typing(update, context, chat_id, reply)
 
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_msg = update.message.text
     chat_id = update.effective_chat.id
-    logger.info(f"收到消息 chat_id={chat_id}: {user_msg[:80]}")
+    user_id = update.effective_user.id
     _save_chat_id(chat_id)
 
-    # 检测蒙多关键词，自动激活学习模式
+    if not rate_limiter.is_allowed(user_id):
+        remaining = rate_limiter.remaining(user_id)
+        await update.message.reply_text(f"请求过于频繁，剩余 {remaining} 次/分钟。")
+        return
+
+    logger.info(f"消息 chat_id={chat_id}: {user_msg[:80]}")
+
+    # 检测蒙多关键词
     is_mundo = bool(MUNDO_KEYWORDS.search(user_msg))
 
     if is_mundo:
@@ -269,17 +318,31 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if search_results:
             user_msg += f"\n\n参考资料：\n{search_results}"
 
-    reply = await _call_deepseek([
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": user_msg},
-    ])
+    # 添加用户消息到历史
+    chat_history.add(chat_id, "user", user_msg)
+
+    # 构建完整消息
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    messages.extend(chat_history.get(chat_id))
+
+    reply = await _call_deepseek(messages)
+
+    # 保存 AI 回复到历史
+    chat_history.add(chat_id, "assistant", reply)
+
     await _reply_with_typing(update, context, chat_id, reply)
 
 
 async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     caption = update.message.caption or ""
     chat_id = update.effective_chat.id
+    user_id = update.effective_user.id
     _save_chat_id(chat_id)
+
+    if not rate_limiter.is_allowed(user_id):
+        await update.message.reply_text("请求过于频繁，请稍后再试。")
+        return
+
     photo = update.message.photo[-1]
     file = await context.bot.get_file(photo.file_id)
     photo_bytes = await file.download_as_bytearray()
@@ -294,10 +357,15 @@ async def handle_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if caption:
         user_content.insert(0, {"type": "text", "text": caption})
 
-    reply = await _call_deepseek([
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": user_content},
-    ])
+    # 图片不存历史（太大），只存描述
+    chat_history.add(chat_id, "user", f"[发送图片] {caption}" if caption else "[发送图片]")
+
+    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    messages.append({"role": "user", "content": user_content})
+
+    reply = await _call_deepseek(messages)
+    chat_history.add(chat_id, "assistant", reply)
+
     await _reply_with_typing(update, context, chat_id, reply)
 
 
@@ -308,10 +376,13 @@ async def unknown_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def error_handler(update: object, context: ContextTypes.DEFAULT_TYPE):
     err = context.error
     if isinstance(err, Conflict):
-        logger.error("另一 bot 实例正在运行，本实例退出。请先停止其他设备上的 bot。")
+        logger.error("另一 bot 实例正在运行，本实例退出。")
         await context.application.stop()
         return
     logger.error(f"处理消息时异常: {err}", exc_info=err)
+
+
+# ─── 启动 ───
 
 
 def _main() -> None:
@@ -328,6 +399,7 @@ def _main() -> None:
     app.add_handler(CommandHandler("start", start_cmd))
     app.add_handler(CommandHandler("help", help_cmd))
     app.add_handler(CommandHandler("mundo", mundo_cmd))
+    app.add_handler(CommandHandler("clear", clear_cmd))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
     app.add_handler(MessageHandler(filters.PHOTO, handle_photo))
     app.add_handler(MessageHandler(filters.COMMAND, unknown_cmd))

@@ -18,7 +18,7 @@
 
 ---
 
-## 👑 MUNDO Agent v24 — 独立 AI Agent
+## 👑 MUNDO Agent v24.2 — 独立 AI Agent
 
 蒙多不再只是一个 Skill。蒙多是独立的 AI Agent，拥有自己的 LLM 直连、工具引擎、Agentic Loop。
 
