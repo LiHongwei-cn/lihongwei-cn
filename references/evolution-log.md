@@ -1,5 +1,28 @@
 # Mundo Evolution Log
 
+## v24.2 — 实时调整与BTW系统 (Real-time Adjustment & BTW System)
+
+**日期**: 2026-05-31
+
+| 模块 | 能力 | 一句话 |
+|------|------|--------|
+| 🔀 实时调整 | 任务中途插入新细节 → 暂停/整合/继续 | 蒙多实时响应，绝不脑补跑偏 |
+| 💬 BTW 系统 | btw/顺便问/另外 → 暂停任务/快速回答/自动恢复 | 类似 Claude Code 的 /btw 功能 |
+| 🛡️ 防幻觉铁律 | 5种幻觉类型识别 + 4项检查点 | 整合新细节前必须通过防幻觉检查 |
+| ⚡ 冲突检测 | 新细节与旧细节冲突时向用户报告 | 不擅自选择，请用户裁决 |
+
+**新增**: 任务执行过程中用户插入新指令的处理机制。两种中断类型（细节补充/BTW提问），防幻觉铁律（禁止脑补/遗忘/漂移/覆盖/过度延伸），BTW触发关键词和自动恢复流程。
+
+**同步位置**:
+- `~/.hermes/skills/mundo/SKILL.md`
+- `global-specs/skills/蒙多/SKILL.md`
+- `skills/mundo/SKILL.md`
+- `README.md`
+- `mundo-agent/index.html`
+- `skills/index.html`
+
+---
+
 ## v23.1 — 每日学习进化 (Daily Learning Evolution)
 
 **日期**: 2026-05-30
