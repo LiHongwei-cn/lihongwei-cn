@@ -73,32 +73,60 @@ LLM summarizes all subtask results: dedup, resolve conflicts, check completeness
   共 3 子任务
 ```
 
-## Terminal UI Design (LESSONS LEARNED)
+## Terminal UI Design (LESSONS LEARNED — 8 iterations)
 
-The user has an extremely strong preference for minimal, clean terminal UI. **Do NOT use emoji icons in the status/input area.** What NOT to do:
+The user has extreme UI cleanliness standards. Study Claude Code / Hermes / Codex before designing.
+
+### Final Design: Three-Section Layout (Claude Code Style)
 
 ```
-BAD (5-line bottom, 3 emoji icons — user called this "太繁杂"):
-  📊 5.8K tokens (3.2K→2.6K) ⏱ 12.3s T3 · 2 tools
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   ← gold bar
-  👑 xiaomi/mimo-v2.5-pro · v24.3                    ← model line
+  MUNDO v24.3 · mimo-v2.5-pro · 1.2K tokens · 5m     ← TOP: status line
+❯ 帮我写个排序                                          ← BOTTOM: ❯ prompt
+
+  ▸ 思考中... (Turn 1)                                  ← MIDDLE: output (scrolls)
+  ▸ terminal  python3 quicksort.py
+  │ [1, 2, 3, 5, 8]
+  ✓ terminal (0.3s)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━    ← completion: gold separator
+  ✓ · ⏱ 3.2s · 1.2K tokens (800→400) · T2 · LLM 45% Tools 38%
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  MUNDO v24.3 · mimo-v2.5-pro · 1.2K tokens · 3s      ← next round status
+❯ 
+```
+
+### Rules
+- **Three sections**: status (top) → output (middle) → prompt (bottom)
+- **Status line**: flat, dot-separated: `MUNDO · model · tokens · time`
+- **Output**: colored scroll stream (green ✓, red ✗, blue tool names, purple keywords)
+- **Prompt**: bare `❯ ` — no decoration, no bars, no emoji
+- **Completion**: gold separator lines (`━` * cols) with stats between them
+- **No scroll regions** — direct stdout.write() only
+- **No status bar redraws between log lines** — only at task start/done
+- **No emoji** in status/input area
+
+### What NOT to Do (user rejected each of these)
+
+```
+BAD 1: Gold bars around input (user: "更烂了，逻辑UI设计非常混乱")
+  ━━━━━━━━━ 1.2K tokens ━━━━━━━━━━━━━━━
   > 用户输入
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   ← gold bar
-```
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-```
-GOOD (3-line bottom, Hermes style, flat status — user approved):
-  MUNDO · xiaomi/mimo-v2.5-pro · 5.8K tokens · ⏱ 12.3s · T3
-  ──────────────────────────────────────────────────
-  > 用户输入
-```
+BAD 2: Status bar between every output line (user: "刷屏")
+  MUNDO · terminal · ⏱ 8.2s
+  │ output line 1
+  MUNDO · 思考中 · ⏱ 8.3s           ← DON'T redraw here
+  │ output line 2
+  MUNDO · 思考中 · ⏱ 8.3s           ← DON'T redraw here
 
-Rules:
-- **BOTTOM_LINES = 3** (status + separator + input). No more.
-- **No emoji** in status bar or input area. Text-only, dot-separated.
-- **One thin separator line** (`─` * terminal_width), not gold bars (`━`).
-- Status line is flat: `MUNDO · model · tokens · ⏱ elapsed · turns`
-- Input prompt is just `> ` with no decoration.
+BAD 3: Progress bar embedded in separator (user: "看起来就很难受")
+  ━━━━━━━━━━━ [██░░░░░░░░] 27% ━━━━━━━━━━━
+
+BAD 4: Duplicate banner (user: "为什么有两个重复内容")
+  show_banner() called in BOTH main() AND run()
+```
 
 ### Raw Terminal Input (termios)
 
@@ -261,6 +289,8 @@ self.memory.generate_session_summary(self.session_id, self.engine.client)
 - **Scroll region + status bar redraw**: NEVER use scroll regions for terminal UI. They cause output to be invisible when combined with cursor save/restore. Use direct stdout.write() only. See `references/terminal-ui-patterns.md`.
 - **Status bar frequency**: Only at task boundaries (start/done), NOT after every tool output line. User explicitly rejected the "刷屏" behavior.
 - **Banner duplication**: `show_banner()` must be called ONLY in `main()`, never in `run()`. If called in both, the banner appears twice. Classic bug pattern for CLI entry points.
+- **Decorated input area**: NEVER put gold bars, progress bars, or emoji around the input area. User rejected every decorated variant. Use bare `❯ ` prompt. Status goes at TOP, not around input.
+- **Full-width bars**: Gold bars (`━`) are ONLY for completion summary (between stats). Never for input area framing.
 - **Memory import on first deploy**: Read `~/.claude/CLAUDE.md` for user preferences, `~/.hermes/.env` for API keys. Use `.memory_imported` flag to avoid re-scanning. See `references/memory-import-pattern.md` for full implementation.
 - **Output stream design**: Log methods (`log_thinking`, `log_tool_start`, `log_tool_output`, `log_tool_done`) must ONLY write to stdout. Do NOT call status bar redraws between log lines. The output should be a clean scroll stream. Status/info bar shows only at: task start, task done.
 - **Regex chat/task detection**: NEVER use regex to pre-judge if input is chat or task. User explicitly rejected this. Let the LLM decide — it naturally skips tools for simple questions. See `references/smart-routing-token-optimization.md`.
