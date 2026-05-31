@@ -349,7 +349,16 @@ source ~/.zshrc
 
 - **[👉 MUNDO Agent 官方页面](https://lihongwei-cn.github.io/lihongwei-cn/mundo-agent/)** — 完整介绍、能力矩阵、架构图
 - **[👉 蒙多 Skill 页面](https://lihongwei-cn.github.io/lihongwei-cn/mundo/)** — 中英日韩四语、三省六部制、武器库
-- **[👉 GitHub Releases](https://github.com/LiHongwei-cn/lihongwei-cn/releases)** — 下载安装包
+**📦 下载安装包**
+
+| 平台 | 下载 |
+|------|------|
+| macOS | [mundo-v24-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v24.0/mundo-v24-macos.zip) |
+| Windows | [mundo-v24-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v24.0/mundo-v24-windows.zip) |
+| Linux | [mundo-v24-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v24.0/mundo-v24-linux.zip) |
+| 全平台 | [mundo-v24-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v24.0/mundo-v24-all.zip) |
+
+- **[👉 全部 Release](https://github.com/LiHongwei-cn/lihongwei-cn/releases)**
 
 ---
 
