@@ -163,6 +163,19 @@ After ANY code change to Mundo agent files, sync these three places **without be
 - **setup wizard in non-interactive mode**: `-q` flag must skip setup if no `.setup_complete`
 - **Task splitting keywords**: Need ≥2 keyword hits to trigger (1 hit is too aggressive)
 - **External agent timeout**: Claude Code gets 600s, Hermes gets 300s
+- **Scroll region + status bar redraw**: NEVER call `_draw_status_bar()` after each log line. Use direct output only. See `references/terminal-ui-patterns.md` for the full pitfall story.
+- **Status bar frequency**: Only at task boundaries (start/done), NOT after every tool output line. User explicitly rejected the "刷屏" behavior.
+- **Memory import on first deploy**: Read `~/.claude/CLAUDE.md` for user preferences, `~/.hermes/.env` for API keys. Use `.memory_imported` flag to avoid re-scanning. See `references/memory-import-pattern.md` for full implementation.
+
+## References
+
+- `references/mundo-agent-architecture.md` — 28-provider model catalog, API quirks
+- `references/agent-delegation-pattern.md` — Task splitting, agent assignment, result merging
+- `references/memory-system-v2-architecture.md` — 3-layer memory (hot/warm/cold)
+- `references/terminal-ui-patterns.md` — Scroll region pitfall, safe ANSI codes, raw input
+- `references/context-management-commands.md` — /compact /context /btw /effort implementation
+- `references/cloud-sync-pattern.md` — Skill upload/download, quality scoring
+- `references/memory-import-pattern.md` — First-deploy memory import from Hermes/Claude Code
 
 ## User Preferences (from MUNDO development)
 
