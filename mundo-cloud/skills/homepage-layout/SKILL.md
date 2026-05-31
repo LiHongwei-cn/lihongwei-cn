@@ -6,6 +6,7 @@ description: >
   MUST trigger when the user says: "主页布局", "首页排版", "check layout",
   "fix homepage", "检查页面", or after any project page add/remove/rename.
   Also triggered by any change to index.html or addition of new project directories.
+  Also trigger when merging sub-projects into a parent (removing cards after consolidation).
 ---
 
 # 首页布局自检
