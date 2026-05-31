@@ -278,6 +278,62 @@ if hasattr(self, '_memory_ref') and self._memory_ref:
 In mundo.py, after task completion:
 ```python
 self.memory.generate_session_summary(self.session_id, self.engine.client)
+## Professional Color Scheme (Catppuccin Mocha)
+
+Terminal UI color palette based on Catppuccin Mocha with gold accent (MUNDO identity).
+
+### ANSI Color Codes
+```python
+class A:
+    TEXT = "\033[38;5;252m"          # 柔和白 #cdd6f4
+    SUBTEXT = "\033[38;5;249m"       # 浅灰 #bac2de
+    OVERLAY = "\033[38;5;243m"       # 中灰 #6c7086
+    SURFACE = "\033[38;5;240m"       # 深灰 #585b70
+    GOLD = "\033[38;5;221m"          # 温暖金 #f9e2af (MUNDO identity)
+    GOLD_DIM = "\033[38;5;180m"      # 暗金 #e0af68
+    SUCCESS = "\033[38;5;150m"       # 柔和绿 #a6e3a1
+    ERROR = "\033[38;5;210m"         # 柔和红 #f38ba8
+    WARNING = "\033[38;5;223m"       # 柔和黄 #f9e2af
+    INFO = "\033[38;5;111m"          # 柔和蓝 #89b4fa
+    CYAN = "\033[38;5;116m"          # 柔和青 #94e2d5
+    PURPLE = "\033[38;5;183m"        # 柔和紫 #cba6f7
+```
+
+### Design Principles
+- **Low saturation** — muted colors are sophisticated, bright colors are jarring
+- **Warm tone unity** — all colors in same color temperature (Catppuccin Mocha)
+- **Semantic clarity** — gold=MUNDO, green=success, red=error, blue=tool, purple=code, cyan=data
+- **Minimal palette** — 5-6 main colors max, don't add more
+- **Fine lines** — use `─` (thin) not `━` (thick) for separators
+- **Whitespace is design** — breathing room matters, don't fill every pixel
+- **Consistency** — same elements get same style, no mixing
+- **Subtlety > flashiness** — refined over loud
+
+### Reference Themes
+- Catppuccin Mocha (primary reference)
+- Tokyo Night
+- Dracula
+- Monolisa (warm, low-contrast, extended sessions)
+
+## Aesthetic Principles (in System Prompt)
+
+Embed these as iron rules in the agent's system prompt so ALL output reflects professional taste:
+
+```
+审美原则（铁律）：
+- 蒙多有专业艺术家级别的审美。所有输出、代码、UI 都要体现这个品味。
+- 低饱和度 > 高饱和度。柔和的颜色比刺眼的颜色高级。
+- 少即是多。能用 3 种颜色解决的不用 10 种。能用 1 行说清的不写 3 行。
+- 暖色调统一。所有颜色在同一色温内（Catppuccin Mocha 调色板）。
+- 语义清晰。每种颜色/样式都有明确含义，不为装饰而装饰。
+- 留白是设计。不要填满每一寸空间，呼吸感很重要。
+- 一致性。同类元素用同样的样式，不混搭。
+- 细腻 > 粗犷。用细线 ─ 不用粗线 ━。用柔和色不用纯色。
+- 写代码时：命名优雅、结构清晰、注释精准、排版整洁。
+- 做 UI 时：层次分明、对比度够、不刺眼、看得清。
+- 审美来源：Catppuccin、Tokyo Night、Dracula、Monolisa 等专业终端主题。
+```
+
 ## Pitfalls
 
 - **MiMo base_url**: Use `/v1` not `/anthropic` (404)
@@ -310,6 +366,8 @@ self.memory.generate_session_summary(self.session_id, self.engine.client)
 - `references/smart-routing-token-optimization.md` — LLM-decides routing, context compression
 - `references/emotional-intelligence-pattern.md` — Empathy rules, detection signals, anti-platitudes
 - `references/claude-mem-integration.md` — Tool observation logging, session summary generation
+- `references/color-scheme-aesthetics.md` — Catppuccin Mocha palette, ANSI codes, syntax highlighting
+- `references/aesthetic-principles.md` — Professional design philosophy, anti-patterns, system prompt rules
 
 ## User Preferences (from MUNDO development)
 
