@@ -293,30 +293,41 @@ body::before{
     <div class="ab"><div class="n">主动智能</div><div class="d">预判矩阵 · 主动防御 · 灾难预防</div></div>
   </div>
 
+  <!-- 前提条件 -->
+  <h2 class="section-title">前提条件</h2>
+  <div class="ab-grid">
+    <div class="ab"><div class="n">Python 3.10+</div><div class="d"><code>python3 --version</code> 检查 · macOS: <code>brew install python</code> · Win: <code>winget install Python.Python.3.12</code></div></div>
+    <div class="ab"><div class="n">Git 2.0+</div><div class="d"><code>git --version</code> 检查 · macOS: <code>brew install git</code> · Win: <code>winget install Git.Git</code></div></div>
+    <div class="ab"><div class="n">pip</div><div class="d">随 Python 安装 · 国内加速: <code>pip install -i https://pypi.tuna.tsinghua.edu.cn/simple 包名</code></div></div>
+  </div>
+
   <!-- 安装 -->
   <div class="install">
     <h3>安装蒙多</h3>
-    <div class="step">1. 安装 Hermes Agent（蒙多的底层引擎）</div>
-    <code>curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash</code>
-    <div class="step">2. 启动 Hermes，蒙多自动激活</div>
-    <code>hermes</code>
-    <div class="step">3. 或手动加载蒙多</div>
-    <code>/skill mundo</code>
-    <div class="step">4. 蒙多 CLI（独立模式）</div>
-    <code>~/.hermes/mundo-agent/mundo.sh</code>
+    <div class="step">1. 一键安装（推荐）</div>
+    <code>curl -fsSL https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/mundo-agent/install.sh | bash</code>
+    <div class="step">2. 或手动安装</div>
+    <code>git clone https://github.com/LiHongwei-cn/lihongwei-cn.git
+cp -r lihongwei-cn/mundo-agent ~/.hermes/mundo-agent
+mkdir -p ~/bin && echo '#!/bin/bash' > ~/bin/mundo
+echo 'exec python3 "$HOME/.hermes/mundo-agent/mundo.py" "$@"' >> ~/bin/mundo
+chmod +x ~/bin/mundo</code>
+    <div class="step">3. 启动</div>
+    <code>mundo</code>
+    <div class="step">首次启动会引导选择 AI 模型（28 个可选）并输入 API Key。Key 仅保存在本地。</div>
   </div>
 
   <!-- 快速命令 -->
   <h2 class="section-title">快速命令</h2>
   <div class="ab-grid">
     <div class="ab" onclick="copyCmd('/help')" style="cursor:pointer"><div class="n">/help</div><div class="d">命令手册</div></div>
-    <div class="ab" onclick="copyCmd('/skills')" style="cursor:pointer"><div class="n">/skills</div><div class="d">扫描武器库</div></div>
-    <div class="ab" onclick="copyCmd('/ranks')" style="cursor:pointer"><div class="n">/ranks</div><div class="d">三省六部制排名</div></div>
-    <div class="ab" onclick="copyCmd('/reason')" style="cursor:pointer"><div class="n">/reason</div><div class="d">第一性原理推理</div></div>
-    <div class="ab" onclick="copyCmd('/attack')" style="cursor:pointer"><div class="n">/attack</div><div class="d">对抗验证方案</div></div>
-    <div class="ab" onclick="copyCmd('/claude')" style="cursor:pointer"><div class="n">/claude</div><div class="d">委托 Claude Code</div></div>
-    <div class="ab" onclick="copyCmd('/hermes')" style="cursor:pointer"><div class="n">/hermes</div><div class="d">委托 Hermes Agent</div></div>
-    <div class="ab" onclick="copyCmd('/codex')" style="cursor:pointer"><div class="n">/codex</div><div class="d">委托 OpenAI Codex</div></div>
+    <div class="ab" onclick="copyCmd('/agents')" style="cursor:pointer"><div class="n">/agents</div><div class="d">检测本地 Agent</div></div>
+    <div class="ab" onclick="copyCmd('/providers')" style="cursor:pointer"><div class="n">/providers</div><div class="d">28 个 AI 模型</div></div>
+    <div class="ab" onclick="copyCmd('/switch deepseek')" style="cursor:pointer"><div class="n">/switch</div><div class="d">切换模型</div></div>
+    <div class="ab" onclick="copyCmd('/add')" style="cursor:pointer"><div class="n">/add</div><div class="d">添加新模型</div></div>
+    <div class="ab" onclick="copyCmd('/skills')" style="cursor:pointer"><div class="n">/skills</div><div class="d">列出本地 Skill</div></div>
+    <div class="ab" onclick="copyCmd('/sync')" style="cursor:pointer"><div class="n">/sync</div><div class="d">同步到云仓库</div></div>
+    <div class="ab" onclick="copyCmd('/audit')" style="cursor:pointer"><div class="n">/audit</div><div class="d">质量审计</div></div>
   </div>
 
   <!-- 财务声明 -->
