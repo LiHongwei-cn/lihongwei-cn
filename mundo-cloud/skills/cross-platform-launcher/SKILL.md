@@ -113,24 +113,6 @@ set /p "CHOICE=选项: "
 - `goto` 标签实现菜单循环
 - 路径中的反斜杠需要双写 `\\`（如传给 MATLAB 的 `-r` 参数）
 
-## macOS .app 启动器（放入程序坞）
-
-当用户要求"放进 Dock""程序坞""桌面图标""双击启动应用"时，创建完整的 .app bundle：
-
-1. 创建目录：`mkdir -p ~/Applications/AppName.app/Contents/{MacOS,Resources}`
-2. 写入 `Info.plist`（CFBundleExecutable 必须与 MacOS/ 下脚本名一致）
-3. 写入启动脚本（用 osascript 打开 Terminal.app 执行命令）
-4. 生成自定义图标：Python PIL 画 1024x1024 PNG → `iconutil -c icns` 转换
-5. 添加到 Dock：`defaults write com.apple.dock persistent-apps -array-add '...'` + `killall Dock`
-
-完整流程、Info.plist 模板、图标生成代码、Dock 命令见 `references/macos-app-bundle.md`。
-
-**关键坑**：
-- `CFBundleExecutable` 和 `CFBundleIconFile` 必须与实际文件名完全匹配
-- iconset 必须包含 @2x 变体（Retina 屏幕），否则图标模糊
-- `killall Dock` 安全，会自动重启，不丢失其他图标
-- .app 放在 `~/Applications/`（用户目录），不是 `/Applications/`（系统目录）
-
 ## Logo / 图标集成
 
 启动器页面应展示工具的官方 logo（而非纯 emoji）：
@@ -140,7 +122,7 @@ set /p "CHOICE=选项: "
 3. HTML 页面 hero 区添加 `<img src="hermes-logo.png" class="hero-logo">`
 4. CSS 添加 `.hero-logo{width:120px;height:120px;margin-bottom:20px;border-radius:24px;box-shadow:0 8px 32px rgba(0,0,0,0.3)}`
 5. 主页卡片 icon 用 `<img>` 替代 emoji：`<img src="子目录/logo.png" style="width:28px;height:28px;border-radius:6px">`
-6. 如需 macOS .app 启动器 + 自定义图标，见 `references/macos-app-bundle.md`
+6. 如需 macOS .app 图标，见 `references/macos-app-icon.md`
 
 ## 同步规则
 
