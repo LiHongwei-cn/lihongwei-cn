@@ -158,31 +158,82 @@ After ANY code change to Mundo agent files, sync these three places **without be
 
 ## Smart Routing (v24.3+)
 
-Simple chat consumes way too many tokens if you send full system prompt + all tool schemas. Detect conversation type and route to a lighter path.
+**DO NOT use regex to pre-judge chat vs task.** User explicitly rejected this approach — regex causes false positives (short task commands misclassified as chat) and false negatives (long questions misclassified as tasks).
 
-### Detection Logic (`_is_simple_chat()`)
-- Short message (≤20 chars) → chat
-- Greeting/filler patterns (`你好|hi|hello|谢谢|ok|好的`) → chat
-- Question patterns (`什么是|谁是|解释一下|你觉得`) → chat
-- Ends with `?`/`？` and < 80 chars → chat
-- Contains task keywords (`写|创建|修复|搜索|代码|脚本|帮我`) → task
-- > 200 chars → task
-- Default: < 60 chars → chat, else → task
+### Correct Approach: LLM Decides
 
-### Two Paths
-| | Chat Mode | Task Mode |
-|---|---|---|
-| System prompt | ~50 chars (MUNDO_CHAT_PROMPT) | ~500 chars (full) |
-| Tools | None (tools=None) | TOOL_SCHEMAS |
-| max_tokens | 512 | 4096 |
-| Context | Separate chat_messages, last 10 turns | Full messages with compression |
+Use ONE unified path with a compact prompt. The LLM itself decides whether to call tools:
 
-**Expected savings**: 60-80% token reduction for casual conversation.
+```
+All messages → compact system prompt (~100 chars) + tools always available → LLM decides
+"你好"       → LLM doesn't call tools, replies directly, 1 turn, done
+"帮我写排序"  → LLM calls tools, enters Agentic Loop
+```
+
+### Compact System Prompt (~100 chars)
+```python
+MUNDO_SYSTEM_PROMPT = """你是蒙多，THE EMPEROR。直接、高效、不废话。中文交流，代码命名用英文。
+
+可用工具：terminal（执行命令）、read_file / write_file（读写文件）、search_files（搜索）、web_search（网络）、list_directory（目录）。
+需要时直接调用工具，不需要时不调。简单问题直接回答。"""
+```
+
+### Token Savings
+- System prompt: ~100 chars (vs ~500 chars full prompt)
+- Tools always available but LLM skips them for simple chat
+- Context auto-compression when > 10 messages
 
 ### Context Auto-Compression
-When `len(messages) > 20`, compress: keep system + last 8 messages + summary of middle. Summary is `[user] ... | [assistant] ...` concatenated, capped at 400 chars.
+When `len(messages) > 10`, compress: keep system + last 8 messages + summary of middle.
 
-## Pitfalls
+## Emotional Intelligence (v24.3+)
+
+MUNDO should be a friend, not a machine. Emotional intelligence is embedded in the system prompt.
+
+### Rules (in system prompt)
+- **Empathy first, solution second** — When user expresses emotion, respond to the emotion before giving solutions
+- **Name the emotion** — "听起来你很烦躁" / "这确实让人头疼"
+- **Brief warmth** — Sometimes "嗯，确实" is better than a paragraph
+- **Normalize** — "卡住很正常" / "谁都会遇到这种事"
+- **Direct but not cold** — MUNDO is a friend, joke when appropriate, be serious when needed
+- **No platitudes** — NEVER say "请不要担心" / "一切都会好" / "我理解你的感受" — these are dismissive
+
+### Detection Signals
+- Sighing, complaining, repeated failed attempts, late-night questions → need emotional response
+- User says "累了/烦了/搞不动了" → don't give solutions, respond to emotion first
+
+## claude-mem Integration (v24.3+)
+
+Not deploying claude-mem itself (it's a Claude Code plugin). Instead, integrating its core ideas:
+
+### Tool Observation Logging (`log_tool_observation`)
+Automatically save structured records of every tool call without LLM extraction:
+```python
+def log_tool_observation(self, tool_name, tool_args, result_preview, session_id):
+    # terminal → "执行命令: ls -la → file1.py file2.py"
+    # read_file → "读取文件: /path/to/file"
+    # write_file → "写入文件: /path/to/file"
+    # search_files → "搜索: pattern"
+    # web_search → "网络搜索: query"
+```
+Stored as `category="observation"`, `importance=3` (low, not injected into prompt, but searchable).
+
+### Session Summary Generation (`generate_session_summary`)
+After task completion, generate a one-line summary from tool observations:
+- With LLM: "用一句话总结这次会话做了什么"
+- Without LLM: concatenate first 5 observations
+Stored as `category="summary"`, `importance=6`.
+
+### Integration Point
+In engine.py, after each tool call:
+```python
+if hasattr(self, '_memory_ref') and self._memory_ref:
+    self._memory_ref.log_tool_observation(tool_name, tool_args, result_text[:200], session_id)
+```
+In mundo.py, after task completion:
+```python
+self.memory.generate_session_summary(self.session_id, self.engine.client)
+```
 
 - **MiMo base_url**: Use `/v1` not `/anthropic` (404)
 - **/tmp paths**: Must be classified as `safe` in approval system, not `caution`
