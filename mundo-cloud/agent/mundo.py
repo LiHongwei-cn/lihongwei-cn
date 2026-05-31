@@ -146,6 +146,8 @@ class MundoCLI:
 
         self.engine.on_delegate = _on_delegate
         self.engine.on_clones = _on_clones
+        self.engine._memory_ref = self.memory
+        self.engine._session_id = self.session_id
 
         self.engine.on_turn_start = lambda turn, stats: self.console.log_thinking(turn)
 
@@ -757,6 +759,14 @@ class MundoCLI:
         finally:
             self._engine_busy = False
             self.console.stop_task()
+
+            # 生成会话摘要（借鉴 claude-mem）
+            try:
+                self.memory.generate_session_summary(
+                    self.session_id, self.engine.client
+                )
+            except Exception:
+                pass
 
 
 def main():

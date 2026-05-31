@@ -278,6 +278,13 @@ class MundoEngine:
                 if self.on_tool_call:
                     self.on_tool_call(tool_name, tool_args, self.stats, "done", result_text[:200], tool_duration)
 
+                # 自动记录工具观察（借鉴 claude-mem）
+                if hasattr(self, '_memory_ref') and self._memory_ref:
+                    self._memory_ref.log_tool_observation(
+                        tool_name, tool_args, result_text[:200],
+                        session_id=getattr(self, '_session_id', '')
+                    )
+
                 self.messages.append({
                     "role": "tool",
                     "tool_call_id": tool_id,

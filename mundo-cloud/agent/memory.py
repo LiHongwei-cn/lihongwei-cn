@@ -248,15 +248,13 @@ class MundoMemoryV2:
     def compress_conversation(self, messages: List[Dict], conv_id: str) -> str:
         """将对话历史压缩为摘要 + 关键事实。大幅减少 token。"""
         if len(messages) < SUMMARY_COMPRESS_THRESHOLD:
-            return ""  # 短对话不压缩
+            return ""
 
-        # 提取关键信息
         user_msgs = [m for m in messages if m.get("role") == "user"]
         assistant_msgs = [m for m in messages if m.get("role") == "assistant"]
 
-        # 生成摘要
         summary_parts = []
-        for um in user_msgs[-5:]:  # 只保留最近 5 条用户消息
+        for um in user_msgs[-5:]:
             content = um.get("content", "")[:200]
             summary_parts.append(f"用户: {content}")
 
@@ -264,7 +262,6 @@ class MundoMemoryV2:
         if len(summary) > 500:
             summary = summary[:500] + "..."
 
-        # 保存到数据库
         now = datetime.now().isoformat()
         with sqlite3.connect(str(self.db_path)) as conn:
             conn.execute(
@@ -286,6 +283,110 @@ class MundoMemoryV2:
             return ""
         lines = [f"- [{r[1][:10]}] {r[0][:150]}" for r in rows]
         return "\n".join(lines)
+
+    # ═══════════════════════════════════════════════
+    # 工具观察记录（借鉴 claude-mem）
+    # ═══════════════════════════════════════════════
+
+    def log_tool_observation(self, tool_name: str, tool_args: dict,
+                              result_preview: str, session_id: str = ""):
+        """自动记录工具使用观察（claude-mem 核心思想）
+
+        不需要 LLM 提取，直接结构化记录：
+        - 用了什么工具
+        - 参数是什么
+        - 结果预览
+        """
+        # 构建观察内容
+        if tool_name == "terminal":
+            cmd = tool_args.get("command", "")[:100]
+            observation = f"执行命令: {cmd}"
+            if result_preview and not result_preview.startswith("["):
+                # 提取关键结果（前 100 字符）
+                obs_result = result_preview[:100].replace("\n", " ")
+                observation += f" → {obs_result}"
+        elif tool_name in ("read_file", "write_file"):
+            path = tool_args.get("path", "")
+            action = "读取" if tool_name == "read_file" else "写入"
+            observation = f"{action}文件: {path}"
+        elif tool_name == "search_files":
+            pattern = tool_args.get("pattern", "")
+            observation = f"搜索: {pattern}"
+        elif tool_name == "web_search":
+            query = tool_args.get("query", "")
+            observation = f"网络搜索: {query}"
+        else:
+            observation = f"工具调用: {tool_name}"
+
+        # 保存为低重要性观察（不注入 prompt，但可被检索）
+        self.remember(
+            content=observation,
+            category="observation",
+            source=f"tool:{session_id}",
+            importance=3,
+            tags=f"{tool_name},{session_id}"
+        )
+
+    # ═══════════════════════════════════════════════
+    # 会话摘要生成（借鉴 claude-mem）
+    # ═══════════════════════════════════════════════
+
+    def generate_session_summary(self, session_id: str, llm_client=None) -> str:
+        """根据本次会话的工具观察，生成结构化摘要
+
+        claude-mem 的核心：不是从对话提取，而是从工具操作提取。
+        """
+        # 获取本次会话的所有工具观察
+        with sqlite3.connect(str(self.db_path)) as conn:
+            rows = conn.execute(
+                "SELECT content FROM memories WHERE source = ? AND category = 'observation' ORDER BY created_at DESC LIMIT 30",
+                (f"tool:{session_id}",)
+            ).fetchall()
+
+        if not rows:
+            return ""
+
+        observations = [r[0] for r in rows]
+
+        # 如果有 LLM，用它生成更好的摘要
+        if llm_client and len(observations) >= 3:
+            obs_text = "\n".join(f"- {o}" for o in observations[:20])
+            prompt = f"""用一句话总结这次会话做了什么（不超过 50 字）。
+
+操作记录：
+{obs_text}"""
+            try:
+                result = llm_client.chat(
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.1, max_tokens=100
+                )
+                from llm import LLMClient as LC
+                summary = LC.extract_response(result).get("content", "").strip()
+                if summary:
+                    # 保存为会话摘要
+                    self.remember(
+                        content=summary,
+                        category="summary",
+                        source=f"session:{session_id}",
+                        importance=6,
+                        tags=session_id
+                    )
+                    return summary
+            except Exception:
+                pass
+
+        # Fallback: 直接拼接
+        summary = "; ".join(observations[:5])
+        if len(summary) > 200:
+            summary = summary[:200] + "..."
+        self.remember(
+            content=summary,
+            category="summary",
+            source=f"session:{session_id}",
+            importance=5,
+            tags=session_id
+        )
+        return summary
 
     # ═══════════════════════════════════════════════
     # 自动提取（借鉴 Supermemory/Cognee）
