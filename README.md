@@ -249,6 +249,7 @@ open ~/.hermes/mundo-agent/MUNDO.command
 | `/pull` | 从云仓库拉取 Skills + 全局规范 |
 | `/models` | 已配置模型 + 能力矩阵 |
 | `/memory` | 记忆系统状态 + 自动合并 |
+| `/update` | 检查并更新蒙多（保留记忆和配置） |
 | `/audit` | 运行质量审计 |
 | `/status` | 蒙多状态 |
 | `/reset` | 重置对话 |
@@ -346,6 +347,19 @@ pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple Pillow
 - 国产模型（MiMo/DeepSeek/Qwen 等）：**无需魔法**，直接使用
 - 国际模型（OpenAI/Anthropic/Google 等）：**需要魔法**
 - 推荐方案：使用 **OpenRouter** 聚合平台，一个 Key 访问所有模型
+
+### 自动更新
+
+蒙多启动时自动检查新版本。发现新版本后提示：
+
+```
+发现新版本 v24.2.0（当前 v24.1.0）。输入 /update 更新。
+```
+
+执行 `/update` 更新时：
+- **保留**：用户记忆（memory.db）、API Key（.env）、设置（.setup_complete）
+- **更新**：所有代码文件（mundo.py、engine.py、tools.py 等）
+- 更新完成后重启蒙多即可
 
 ### mundo 命令找不到
 
