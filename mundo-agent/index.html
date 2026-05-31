@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="MUNDO Agent v24.2 — 独立 AI Agent。LLM 直连 · 28 个模型 · 工具调用 · Agentic Loop · Agent 调度 · 分身并行 · 实时调整 · BTW 提问。">
+<meta name="description" content="MUNDO Agent v24.3 — 独立 AI Agent。LLM 直连 · 28 个模型 · 工具调用 · Agentic Loop · Agent 调度 · 分身并行 · 上下文管理 · 推理深度 · 金色条输入框。">
 <title>MUNDO Agent — THE EMPEROR</title>
 <style>
 :root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--gold:#d4a017;--gold-light:#f0c040;--gold-dim:rgba(212,160,23,0.12);--gold-border:rgba(212,160,23,0.3);--gold-glow:rgba(212,160,23,0.15);--radius:16px;--crimson:#8b3a3a}
@@ -122,7 +122,7 @@ body.lang-en [data-lang="zh"]{display:none}
 
   <!-- HERO -->
   <div class="hero">
-    <div class="hero-badge">INDEPENDENT AI AGENT · v24.2 · 28 MODELS · AGENTIC LOOP · REAL-TIME BTW</div>
+    <div class="hero-badge">INDEPENDENT AI AGENT · v24.3 · 28 MODELS · AGENTIC LOOP · CONTEXT MGMT · GOLD INPUT</div>
     <div class="hero-top">
       <img src="../skills/mundo-avatar.png" alt="Mundo" class="hero-avatar">
       <div class="hero-text">
@@ -135,12 +135,14 @@ body.lang-en [data-lang="zh"]{display:none}
       蒙多是独立 AI Agent。LLM 直连 28 个模型，内置 6 大工具，Agentic Loop 自动推理执行。<br>
       自动检测本地 Agent（Hermes / Claude Code / Codex），按任务类型分发。<br>
       复杂任务自动拆分，多个 Agent 或蒙多分身并行执行。<br>
+      v24.3 新增：紧凑 UI + 金色条输入框 + /compact 上下文压缩 + /btw 旁问 + /effort 推理深度。<br>
       蒙多学习。蒙多记忆。蒙多成长。蒙多进化。蒙多无限。
     </p>
     <p class="hero-desc" data-lang="en">
       Mundo is an independent AI Agent. LLM direct-connect to 28 models, 6 built-in tools, Agentic Loop.<br>
       Auto-detects local agents (Hermes / Claude Code / Codex), dispatches by task type.<br>
       Complex tasks auto-split, multiple agents or Mundo clones execute in parallel.<br>
+      v24.3: Compact UI + Gold input bars + /compact context compression + /btw side questions + /effort reasoning depth.<br>
       Mundo learns. Mundo remembers. Mundo grows. Mundo evolves. Mundo is infinite.
     </p>
   </div>
@@ -157,21 +159,23 @@ body.lang-en [data-lang="zh"]{display:none}
     ╚══════════════════════════════════════════════╝
   </div>
 
-  <!-- 终端预览 -->
+  <!-- 终端预览 — 金色条输入框 -->
   <div class="term">
-    <div><span class="p">👑 </span><span class="c">帮我同时做三件事：1) 冒泡排序 2) 二分查找 3) 斐波那契</span></div>
-    <div><span class="o">&nbsp;&nbsp;━━ 任务分发 ━━</span></div>
-    <div><span class="s">&nbsp;&nbsp;&nbsp;▸ 调用 Claude Code...</span></div>
-    <div><span class="o">&nbsp;&nbsp;&nbsp;共 3 个子任务</span></div>
-    <div><span class="o">&nbsp;&nbsp;┌──────────────────────────────────────────────┐</span></div>
-    <div><span class="s">&nbsp;&nbsp;│ ✓ 任务完成 │ ⏱ 1m45s │ Tokens: 5.8K │ Turns: 3 │</span></div>
-    <div><span class="o">&nbsp;&nbsp;└──────────────────────────────────────────────┘</span></div>
+    <div><span class="p">  MUNDO — THE EMPEROR</span><span class="o">  v24.3 · 独立 AI Agent · LLM 直连 · 工具调用</span></div>
+    <div><span class="o">&nbsp;&nbsp;  📊 等待任务...</span></div>
+    <div><span class="p">&nbsp;&nbsp;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span></div>
+    <div><span class="o">&nbsp;&nbsp;  👑 xiaomi/mimo-v2.5-pro · v24.3</span></div>
+    <div><span class="c">&nbsp;&nbsp;  &gt; 帮我同时做三件事：1) 冒泡排序 2) 二分查找 3) 斐波那契</span></div>
+    <div><span class="p">&nbsp;&nbsp;━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span></div>
+    <div><span class="s">&nbsp;&nbsp;  ▸ 任务分发 ▸ 调用 Claude Code 并行执行 (3 子任务)</span></div>
+    <div><span class="o">&nbsp;&nbsp;  ──────────────────────────────────────────────</span></div>
+    <div><span class="s">&nbsp;&nbsp;  ✓ 完成 │ ⏱ 1m45s │ Tokens: 5.8K │ T3 · 3 tools</span></div>
   </div>
 
   <!-- 核心引擎 -->
   <div class="section" data-lang="zh">
     <div class="section-title">⚔️ 核心引擎</div>
-    <div class="section-subtitle">蒙多不只是一个工具。蒙多是独立的 AI Agent——LLM 直连、工具调用、推理执行、Agent 调度，全部自己完成。v24.2 新增：任务中途实时调整与 BTW 提问系统。</div>
+    <div class="section-subtitle">蒙多不只是一个工具。蒙多是独立的 AI Agent——LLM 直连、工具调用、推理执行、Agent 调度，全部自己完成。v24.3 新增：上下文管理、推理深度控制、紧凑金色条 UI。</div>
     <div class="abilities-grid">
       <div class="ability-card"><div class="ability-icon">🤖</div><div class="ability-title">28 个 AI 模型 + 多模型协同</div><div class="ability-desc">MiMo/DeepSeek/Qwen/GLM/Kimi/ERNIE/豆包/OpenAI/Claude/Gemini/Mistral/Grok/OpenRouter... 首次向导选择，支持添加多个模型。蒙多根据任务类型智能分配：代码→DeepSeek/Claude，日常→MiMo，推理→DeepSeek R1。</div></div>
       <div class="ability-card"><div class="ability-icon">🔄</div><div class="ability-title">Agentic Loop</div><div class="ability-desc">think → act → observe → repeat。自动推理、执行工具、验证结果，直到任务完成。</div></div>
@@ -191,12 +195,15 @@ body.lang-en [data-lang="zh"]{display:none}
       <div class="ability-card"><div class="ability-icon">⚡</div><div class="ability-title">并行模式</div><div class="ability-desc">复杂任务自动拆分，多个蒙多同时干活。时间不是障碍。</div></div>
       <div class="ability-card"><div class="ability-icon">🔀</div><div class="ability-title">跨域综合</div><div class="ability-desc">A 领域方案迁移到 B 领域。跨域智慧是蒙多最强秘密武器。</div></div>
       <div class="ability-card"><div class="ability-icon">🔮</div><div class="ability-title">主动智能</div><div class="ability-desc">不等问主动发现风险。蒙多在灾难酝酿时就掐灭它。</div></div>
+      <div class="ability-card"><div class="ability-icon">📐</div><div class="ability-title">上下文管理</div><div class="ability-desc">借鉴 Claude Code：/compact 压缩上下文省 token，/context 窗口使用率可视化，/btw 旁问不消耗上下文。</div></div>
+      <div class="ability-card"><div class="ability-icon">🎛️</div><div class="ability-title">推理深度控制</div><div class="ability-desc">借鉴 Claude Code /effort：low（快速省token）· medium（平衡）· high（深度推理）· max（全力以赴）。</div></div>
+      <div class="ability-card"><div class="ability-icon">✨</div><div class="ability-title">金色条 UI</div><div class="ability-desc">紧凑 banner 单一标识，金色条框标识输入区域，自动调整大小随输入内容扩展。输入区支持自动换行。</div></div>
     </div>
   </div>
 
   <div class="section" data-lang="en">
     <div class="section-title">⚔️ Core Engine</div>
-    <div class="section-subtitle">Mundo is not just a tool. Mundo is an independent AI Agent — LLM direct-connect, tool calling, reasoning, agent dispatch, all autonomous. v24.2: Real-time task adjustment & BTW questioning system.</div>
+    <div class="section-subtitle">Mundo is not just a tool. Mundo is an independent AI Agent — LLM direct-connect, tool calling, reasoning, agent dispatch, all autonomous. v24.3: Context management, reasoning depth control, compact gold-bar UI.</div>
     <div class="abilities-grid">
       <div class="ability-card"><div class="ability-icon">🤖</div><div class="ability-title">28 AI Models</div><div class="ability-desc">MiMo/DeepSeek/Qwen/GLM/Kimi/ERNIE/Doubao/OpenAI/Claude/Gemini/Mistral/Grok/OpenRouter...</div></div>
       <div class="ability-card"><div class="ability-icon">🔄</div><div class="ability-title">Agentic Loop</div><div class="ability-desc">think → act → observe → repeat. Auto-reasoning, tool execution, result verification.</div></div>
@@ -370,6 +377,10 @@ mundo</code></div>
       <div class="cmd-item" onclick="copyCmd('/pull')"><div class="cmd-name">/pull</div><div class="cmd-desc">拉取云端 Skills</div></div>
       <div class="cmd-item" onclick="copyCmd('/update')"><div class="cmd-name">/update</div><div class="cmd-desc">更新蒙多（保留记忆）</div></div>
       <div class="cmd-item" onclick="copyCmd('/audit')"><div class="cmd-name">/audit</div><div class="cmd-desc">质量审计</div></div>
+      <div class="cmd-item" onclick="copyCmd('/compact')"><div class="cmd-name">/compact</div><div class="cmd-desc">压缩上下文</div></div>
+      <div class="cmd-item" onclick="copyCmd('/context')"><div class="cmd-name">/context</div><div class="cmd-desc">上下文使用率</div></div>
+      <div class="cmd-item" onclick="copyCmd('/btw')"><div class="cmd-name">/btw</div><div class="cmd-desc">旁问（不占上下文）</div></div>
+      <div class="cmd-item" onclick="copyCmd('/effort')"><div class="cmd-name">/effort</div><div class="cmd-desc">推理深度控制</div></div>
     </div>
   </div>
 
@@ -414,7 +425,7 @@ mundo</code></div>
 
   <!-- 下载 -->
   <div class="section">
-    <div class="section-title">📦 <span data-lang="zh">下载 v24.2</span><span data-lang="en">Download v24.2</span></div>
+    <div class="section-title">📦 <span data-lang="zh">下载 v24.3</span><span data-lang="en">Download v24.3</span></div>
     <div class="download-grid">
       <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v24.0/mundo-v24-macos.zip"><div class="dl-icon">🍎</div><div class="dl-name">macOS</div><div class="dl-size">mundo-v24-macos.zip</div></a>
       <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v24.0/mundo-v24-windows.zip"><div class="dl-icon">🪟</div><div class="dl-name">Windows</div><div class="dl-size">mundo-v24-windows.zip</div></a>
