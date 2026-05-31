@@ -155,6 +155,32 @@ After ANY code change to Mundo agent files, sync these three places **without be
 3. Update website `mundo-agent/index.html` and main `index.html`
 4. `git add + commit + push`
 
+## Smart Routing (v24.3+)
+
+Simple chat consumes way too many tokens if you send full system prompt + all tool schemas. Detect conversation type and route to a lighter path.
+
+### Detection Logic (`_is_simple_chat()`)
+- Short message (≤20 chars) → chat
+- Greeting/filler patterns (`你好|hi|hello|谢谢|ok|好的`) → chat
+- Question patterns (`什么是|谁是|解释一下|你觉得`) → chat
+- Ends with `?`/`？` and < 80 chars → chat
+- Contains task keywords (`写|创建|修复|搜索|代码|脚本|帮我`) → task
+- > 200 chars → task
+- Default: < 60 chars → chat, else → task
+
+### Two Paths
+| | Chat Mode | Task Mode |
+|---|---|---|
+| System prompt | ~50 chars (MUNDO_CHAT_PROMPT) | ~500 chars (full) |
+| Tools | None (tools=None) | TOOL_SCHEMAS |
+| max_tokens | 512 | 4096 |
+| Context | Separate chat_messages, last 10 turns | Full messages with compression |
+
+**Expected savings**: 60-80% token reduction for casual conversation.
+
+### Context Auto-Compression
+When `len(messages) > 20`, compress: keep system + last 8 messages + summary of middle. Summary is `[user] ... | [assistant] ...` concatenated, capped at 400 chars.
+
 ## Pitfalls
 
 - **MiMo base_url**: Use `/v1` not `/anthropic` (404)
@@ -163,19 +189,22 @@ After ANY code change to Mundo agent files, sync these three places **without be
 - **setup wizard in non-interactive mode**: `-q` flag must skip setup if no `.setup_complete`
 - **Task splitting keywords**: Need ≥2 keyword hits to trigger (1 hit is too aggressive)
 - **External agent timeout**: Claude Code gets 600s, Hermes gets 300s
-- **Scroll region + status bar redraw**: NEVER call `_draw_status_bar()` after each log line. Use direct output only. See `references/terminal-ui-patterns.md` for the full pitfall story.
+- **Scroll region + status bar redraw**: NEVER use scroll regions for terminal UI. They cause output to be invisible when combined with cursor save/restore. Use direct stdout.write() only. See `references/terminal-ui-patterns.md`.
 - **Status bar frequency**: Only at task boundaries (start/done), NOT after every tool output line. User explicitly rejected the "刷屏" behavior.
+- **Banner duplication**: `show_banner()` must be called ONLY in `main()`, never in `run()`. If called in both, the banner appears twice. Classic bug pattern for CLI entry points.
 - **Memory import on first deploy**: Read `~/.claude/CLAUDE.md` for user preferences, `~/.hermes/.env` for API keys. Use `.memory_imported` flag to avoid re-scanning. See `references/memory-import-pattern.md` for full implementation.
+- **Output stream design**: Log methods (`log_thinking`, `log_tool_start`, `log_tool_output`, `log_tool_done`) must ONLY write to stdout. Do NOT call status bar redraws between log lines. The output should be a clean scroll stream. Status/info bar shows only at: task start, task done.
 
 ## References
 
 - `references/mundo-agent-architecture.md` — 28-provider model catalog, API quirks
 - `references/agent-delegation-pattern.md` — Task splitting, agent assignment, result merging
 - `references/memory-system-v2-architecture.md` — 3-layer memory (hot/warm/cold)
-- `references/terminal-ui-patterns.md` — Scroll region pitfall, safe ANSI codes, raw input
+- `references/terminal-ui-patterns.md` — Scroll region pitfall, safe ANSI codes, raw input, banner duplication, output stream design
 - `references/context-management-commands.md` — /compact /context /btw /effort implementation
 - `references/cloud-sync-pattern.md` — Skill upload/download, quality scoring
 - `references/memory-import-pattern.md` — First-deploy memory import from Hermes/Claude Code
+- `references/smart-routing-token-optimization.md` — Chat vs task detection, dual-path LLM routing, context compression
 
 ## User Preferences (from MUNDO development)
 
