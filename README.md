@@ -32,7 +32,7 @@
 - 推理深度控制（/effort low/medium/high/max）
 - 极简 Hermes 风格 UI（一行状态 + 分隔线 + 输入）
 - 首次启动自动导入已有 Agent 记忆（Hermes / Claude Code）
-- 智能路由：简单对话走轻量通道（省 60-80% token），任务走完整 Agentic Loop
+- 智能路由：LLM 自主判断是否需要工具（不预判、不误判），精简 prompt 省 token
 
 ---
 
@@ -299,7 +299,7 @@ open ~/.hermes/mundo-agent/MUNDO.command
 | **状态栏** | 实时显示模型 / Token / 耗时 / Turn / Agent |
 | **上下文管理** | /compact 压缩 · /context 可视化 · /btw 旁问 · /effort 推理深度 |
 | **极简 UI** | 一行状态平铺 + 分隔线 + 输入提示符（Hermes 风格） |
-| **智能路由** | 简单对话省 token（轻量 prompt + 无工具），任务走完整 Loop |
+| **智能路由** | LLM 自主判断是否需要工具，不预判不误判，精简 prompt 省 token |
 | **多模态** | 图像/视频/PDF 理解 |
 
 ---
