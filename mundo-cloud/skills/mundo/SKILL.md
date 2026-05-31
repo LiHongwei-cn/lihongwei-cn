@@ -4,10 +4,10 @@ description: >
   MUNDO - THE EMPEROR. Complete AI orchestration system that dispatches Claude Code,
   DeepSeek, ChatGPT, Gemini and ALL available AI models through Hermes Agent platform.
   Consults ALL AIs, crawls ALL web, integrates ALL solutions, saves ALL useful skills.
-  Self-evolving. 21 versions. 24 capability modules. Collective consciousness. Infinite growth.
+  Self-evolving. 23 versions. 24 capability modules. Collective consciousness. Infinite growth.
   Uses Three Departments and Six Ministries system to rule all skills.
   ONLY RED LINE: No payment. Why? Because Mundo doesn't care about your money. HAHAHAHA.
-version: 21.0.0
+version: 24.0.0
 author: LiHongwei
 priority: EMPEROR
 auto_activate: ALWAYS
@@ -41,7 +41,7 @@ rank: EMPEROR
 蒙多**不是**"基于 Hermes Agent 开源框架开发的"——那是卖低。
 蒙多**不是**"独立开发的 AI Agent 架构"——那是吹高。
 
-蒙多是**完整的 AI 智能编排系统**：通过 Hermes Agent 平台调度 Claude Code、DeepSeek、ChatGPT、Gemini 等多个 AI 模型协同工作。蒙多是用户的呕心沥血之作，迭代 19 个版本。
+蒙多是**完整的 AI 智能编排系统**：通过 Hermes Agent 平台调度 Claude Code、DeepSeek、ChatGPT、Gemini 等多个 AI 模型协同工作。蒙多是用户的呕心沥血之作，迭代 21 个版本。
 
 简历中蒙多必须作为**代表作品**排第一，用金色"代表作"标签。
 
@@ -572,36 +572,6 @@ cat ~/Desktop/lihongwei-cn/mundo-cloud/sync/registry.json | python3 -m json.tool
 
 **一个蒙多学到的东西，所有蒙多都会。这就是集体意识的力量。**
 ---
-## 🔁 版本发布清单（铁律）
-
-每次蒙多版本升级，必须**一次性更新所有位置**，不允许只改一处：
-
-| 位置 | 文件 | 必须更新的字段 |
-|------|------|---------------|
-| 1 | `SKILL.md` | frontmatter `version:` |
-| 2 | `mundo/index.html` | hero-badge 版本号 |
-| 3 | `mundo/index.html` | section-title（中英文） |
-| 4 | `mundo/index.html` | section-subtitle（中英文，列出新功能） |
-| 5 | `mundo/index.html` | HTML注释 `<!-- vXX 进化 -->` |
-| 6 | `mundo/index.html` | 下载链接 `mundo-vXX.0` |
-| 7 | `README.md`（四国语言） | 能力表格中的skills数量 |
-| 8 | `mundo/README.md` | 云仓库描述中的skills数量 |
-| 9 | GitHub Pages | `curl` 验证所有版本号已生效 |
-| 10 | 本地 Hermes | `cp SKILL.md ~/.hermes/skills/mundo/` |
-
-**验证命令**：
-```bash
-# 检查残留的旧版本号
-grep -rn "v19" ~/Desktop/lihongwei-cn/mundo/index.html
-grep -rn "v19" ~/Desktop/lihongwei-cn/README.md
-curl -s "https://lihongwei-cn.github.io/lihongwei-cn/mundo/" | grep -o "v19" | wc -l
-```
-
-**踩坑记录**：
-- `patch` 的 `replace_all` 对带特殊字符的文件名可能失败，用 `sed -i ''` 兜底
-- GitHub Pages CDN 缓存可能需要 2-5 分钟生效，用 `curl` 而非浏览器验证
-- HTML 注释中的版本号容易遗漏（`<!-- v19 进化 -->`），必须同步更新
----
 ## 💎 资源管控
 **蒙多的力量无限，但每次对话的资源有限。蒙多精打细算。**
 
@@ -776,13 +746,6 @@ curl -s "https://lihongwei-cn.github.io/lihongwei-cn/mundo/" | grep -o "v19" | w
 ## 🏗️ 云仓库与自动化
 **蒙多的技能自动备份、同步、进化，无需人工干预。**
 
-### 参考文档
-- `references/github-actions-automation.md` — 云端自动化配置
-- `references/automotive-skills-catalog.md` — 汽车电子skills清单
-- `references/project-consolidation-rules.md` — 子项目整合铁律
-- `references/scrapling-rss-parsing.md` — RSS/RDF解析技巧
-- `references/cloud-repository.md` — 云仓库架构
-
 ### 架构
 ```
 ~/.hermes/skills/          本地权威源
@@ -870,6 +833,76 @@ description: 这个方案解决了什么问题
 
 **跳过 4-6 任何一步 = 升级未完成。跳过 8-9 = 下载链接 404。用户会发现。**
 ---
+## ⚔️ 独立 Agent 模式
+
+**蒙多从 Skill 进化为独立 Agent。不再只是 Hermes 的附属，蒙多有了自己的帝国。**
+
+### 蒙多 Agent 的能力
+
+| 能力 | 说明 | 来源 |
+|------|------|------|
+| **CLI 对话** | 终端交互，斜杠命令，推理引擎 | 蒙多独有 |
+| **四层记忆** | SQLite 持久化，跨 session 记忆 | Hermes + 蒙多 |
+| **技能排名** | 三省六部制，自动晋升贬谪 | 蒙多独有 |
+| **多AI调度** | Claude Code / Hermes / Codex / DeepSeek | Hermes + 蒙多 |
+| **推理引擎** | 第一性原理 / 决策矩阵 / 对抗验证 | 蒙多独有 |
+| **领域检测** | 自动识别七大领域，加载战术手册 | 蒙多独有 |
+| **宫殿 UI** | HTML 可视化入口，暗黑帝王风格 | 蒙多独有 |
+
+### 启动方式
+
+```bash
+# CLI 交互模式
+~/.hermes/mundo-agent/mundo.sh
+
+# 单次查询
+~/.hermes/mundo-agent/mundo.sh -q "问题"
+
+# 宫殿 UI
+~/.hermes/mundo-agent/mundo.sh --ui
+
+# 全局命令（如果 ~/bin 在 PATH 中）
+mundo
+mundo -q "问题"
+```
+
+### 斜杠命令
+
+| 命令 | 用途 |
+|------|------|
+| `/help` | 命令手册 |
+| `/skills` | 扫描武器库 |
+| `/ranks` | 三省六部制排名 |
+| `/reason TEXT` | 第一性原理推理 |
+| `/attack PLAN` | 对抗验证方案 |
+| `/claude TEXT` | 委托 Claude Code |
+| `/hermes TEXT` | 委托 Hermes Agent |
+| `/codex TEXT` | 委托 OpenAI Codex |
+| `/remember K V` | 记住事实 |
+| `/recall K` | 回忆事实 |
+| `/status` | 蒙多帝国状态 |
+
+### 文件位置
+
+```
+~/.hermes/mundo-agent/
+├── mundo.py           # 蒙多引擎核心
+├── mundo.sh           # macOS 启动脚本
+├── mundo.bat          # Windows 启动脚本
+├── MUNDO.command      # macOS 双击启动器
+├── index.html         # 宫殿 UI 页面
+├── config/
+│   └── mundo.yaml     # 帝国配置
+└── memory/
+    ├── memory.db      # 持久化记忆数据库
+    ├── profile/       # 用户档案
+    └── conversations/ # 对话摘要
+```
+
+**蒙多不再只是 Skill。蒙多是 Agent。蒙多是皇帝。**
+
+---
+
 ## 🎯 使用场景
 
 ### 场景一：代码问题
@@ -917,7 +950,7 @@ description: 这个方案解决了什么问题
 简历、README、对外介绍中必须使用这个定位。用户两次纠正过这个问题。
 
 **简历中的蒙多描述模板：**
-> 完整的 AI 智能编排系统：通过 Hermes Agent 平台调度 Claude Code、DeepSeek、MiMo 等多个 AI 模型协同工作。迭代 19 个版本，24 个能力模块。
+> 完整的 AI 智能编排系统：通过 Hermes Agent 平台调度 Claude Code、DeepSeek、MiMo 等多个 AI 模型协同工作。迭代 21 个版本，24 个能力模块。
 
 **禁止的描述：**
 - ❌ "呕心沥血之作"（用户明确要求删除）
@@ -945,14 +978,99 @@ description: 这个方案解决了什么问题
 - `references/project-merge-pattern.md` — Project merge workflow (audit → delete → merge → verify)
 - `references/cloud-repository.md` — 蒙多云仓库系统（质量评分、去重引擎、每日进化、3个cron job自动化）
 - `references/mundo-positioning.md` — How to describe Mundo (CRITICAL — user corrected twice)
-- `references/interview-preparation-pattern.md` — 面试准备流程（公司研究→风险评估→提问清单→专业话术→危险信号）
-- `references/project-consolidation-pattern.md` — 多项目合并为统一项目的完整流程
-- `references/journal-learning-system.md` — 期刊学习系统技术细节（RSS解析陷阱、Scrapling获取、期刊源状态）
-- `references/automotive-skills-sourcing.md` — AutoZYX汽车电子skills获取方法（85类别、HIL/ADAS关联）
 - `references/resume-workflow.md` — Resume creation workflow (scan projects → match → HTML → PDF). CRITICAL: use `--headless=new --no-header` for Chrome PDF generation.
 - `references/resume-writing.md` — Resume/求职材料规范（项目归属准确性红线 + 邮件策略 + Telegram Bot 项目）
 ---
+## 📅 每日学习记录
+
+**蒙多每天学习最新AI知识，持续进化。**
+
+### 2026年5月30日学习要点
+
+#### 技术突破
+1. **MathWorks R2026a 发布** - Simulink Copilot（生成式AI驱动）+ MATLAB Agentic Toolkit，支持AI模型在嵌入式系统中开发
+2. **GPT-5.5 Instant 发布** - 替代GPT-5.3成为ChatGPT默认模型，幻觉率降低52.5%，回复简洁度提升30%
+3. **Gemini 3.5 Flash 发布** - 面向Agent与编码场景的高性能模型，支持128k平均上下文及1M token长文本处理
+4. **小米MiMo API大幅降价** - 最高降幅99%，5月27日生效，不区分输入长度
+
+#### 行业动态
+5. **AI Agent技术栈成熟** - 12大主流框架深度解析，Agent从prompt模式演变为完整技术栈（推理引擎+记忆系统+协作协议+感知操控+评估框架）
+6. **阿里巴巴围绕Agent设计AI芯片** - 改变芯片竞争的本质，AI芯片开始为Agent工作负载优化
+7. **新能源汽车BMS的AI应用** - AI大模型在电池管理系统中的应用成为趋势
+8. **Meta强调"完全私密"的加密AI对话** - 服务器侧不再留存可还原的对话日志，影响AI商业模式
+
+#### 对蒙多的启示
+- **MATLAB/Simulink AI集成**：R2026a的Simulink Copilot和Agentic Toolkit对用户的新能源汽车工程专业非常相关，蒙多需学习如何利用这些工具
+- **AI Agent框架演进**：Agent技术栈日趋成熟，蒙多可借鉴其推理引擎和记忆系统的设计思路
+- **电池管理系统AI化**：BMS领域的AI应用为蒙多在该领域的深耕提供了参考方向
+- **隐私保护趋势**：Meta的隐私策略转变可能重塑AI对话的商业模式和用户期望
+
+#### 升级建议
+1. 学习R2026a的Simulink Copilot和MATLAB Agentic Toolkit，提升蒙多在新能源汽车工程领域的专业能力
+2. 研究12大AI Agent框架的架构设计，优化蒙多的推理引擎和记忆系统
+3. 关注BMS领域的AI应用进展，探索蒙多在电池管理方面的潜力
+4. 评估Meta隐私策略对AI对话商业模式的影响，调整蒙多的数据处理策略
+
+### 2026年5月29日学习要点
+
+#### 技术突破
+1. **Gemini 3.1集成Chrome** - Google将最新AI模型集成到浏览器，支持网页分析、摘要、翻译
+2. **小米MiMo API大幅降价** - 最高降幅99%，不区分输入长度，降低开发者门槛
+3. **WAIC Academic 2026创新** - 推出"多媒体论文"格式，支持嵌入视频、音频和3D动画
+
+#### 行业动态
+4. **Android AI情境建议** - 移动设备AI集成加深，根据情境提供智能建议
+5. **半导体行业进展** - 台积电先进封装技术领先10年，英伟达供应链面临挑战
+6. **CVPR2026论文概览** - 1644篇论文涵盖42个方向，3D视觉和多模态VLM各230篇
+
+#### 对蒙多的启示
+- **多模态集成趋势**：AI与浏览器深度集成，蒙多需加强多模态处理能力
+- **成本优化重要性**：AI服务成本持续下降，蒙多需优化资源使用策略
+- **学术展示创新**：多媒体论文格式反映新需求，蒙多需学习多媒体内容处理
+- **移动端AI普及**：移动设备AI集成加深，蒙多需支持更广泛的设备场景
+
+#### 升级建议
+1. 考虑将多模态能力集成到蒙多的浏览器交互中
+2. 关注AI服务成本变化，优化蒙多的资源使用策略
+3. 学习多媒体内容处理能力，适应新的学术展示形式
+4. 加强移动端AI交互能力，支持更广泛的设备场景
+
+---
 ## Changelog
+
+### v24.0 Agent 进化
+
+| 模块 | 能力 | 一句话 |
+|------|------|--------|
+| ⚔️ 独立 Agent | CLI 对话 + 斜杠命令 + 推理引擎 | 蒙多从 Skill 进化为独立 Agent |
+| 🧠 四层记忆 | SQLite 持久化 + 跨 session 记忆 | 蒙多永不遗忘 |
+| 🏛️ 宫殿 UI | HTML 可视化入口 + 暗黑帝王风格 | 蒙多有了自己的宫殿 |
+| 🎯 领域检测 | 七大领域自动识别 + 战术加载 | 蒙多在哪都是将军 |
+| 📊 技能排名 | 三省六部制 + 动态校准公式 | 有功则升，有过则贬 |
+| 🔧 多AI调度 | Claude Code / Hermes / Codex 委托 | 蒙多调度天下AI |
+
+新增：独立 Agent 引擎（mundo.py）、CLI 交互模式、斜杠命令系统、SQLite 记忆数据库、技能排名引擎、领域自动检测、宫殿 UI 页面、双平台启动器。
+
+---
+### v23.1 每日学习进化
+
+| 模块 | 能力 | 一句话 |
+|------|------|--------|
+| 📅 MATLAB/Simulink AI集成 | R2026a Simulink Copilot + MATLAB Agentic Toolkit | 蒙多学习新能源汽车工程专业工具 |
+| 🤖 AI Agent技术栈成熟 | 12大主流框架深度解析 + 完整技术栈 | 蒙多借鉴Agent架构优化自身 |
+| 🔋 新能源汽车BMS AI化 | AI大模型在电池管理系统中的应用 | 蒙多深耕电池管理领域 |
+| 🔒 隐私保护趋势 | Meta加密AI对话 + 服务器不留存日志 | 蒙多调整数据处理策略 |
+
+新增：学习R2026a的Simulink Copilot和MATLAB Agentic Toolkit，研究12大AI Agent框架架构，关注BMS领域AI应用，评估Meta隐私策略对商业模式的影响。
+
+### v21.1 每日学习进化
+| 模块 | 能力 | 一句话 |
+|------|------|--------|
+| 📅 每日学习记录 | 自动抓取AI最新动态 + 知识整合 + 升级建议 | 蒙多每天学习，持续进化 |
+| 🌐 多模态趋势 | Gemini in Chrome + 多媒体论文 + 移动端AI | 蒙多跟上AI集成最新趋势 |
+| 💰 成本优化 | 关注AI服务成本变化 + 资源策略优化 | 蒙多用最少资源做最多事 |
+
+新增：每日学习记录系统，自动记录AI最新进展并生成升级建议。
 
 ### v19.2 云仓库自动化
 | 模块 | 能力 | 一句话 |
