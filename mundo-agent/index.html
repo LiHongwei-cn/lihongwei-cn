@@ -104,7 +104,7 @@ body::before{
 .card.emperor{border-color:var(--gold-dim);background:linear-gradient(135deg,var(--bg-card),#1a1508)}
 
 /* 终端预览 */
-.term{
+.terminal-preview{
   background:#0a0a0a;
   border:1px solid var(--border);
   border-radius:3px;
@@ -114,10 +114,10 @@ body::before{
   font-size:13px;
   line-height:1.7;
 }
-.term .p{color:var(--gold)}
-.term .c{color:var(--steel)}
-.term .o{color:var(--iron)}
-.term .s{color:#4a7a4a}
+.terminal-preview .p{color:var(--gold)}
+.terminal-preview .c{color:var(--steel)}
+.terminal-preview .o{color:var(--iron)}
+.terminal-preview .s{color:#4a7a4a}
 
 /* 能力模块 */
 .section-title{font-size:18px;color:var(--gold);margin-bottom:20px;letter-spacing:2px;font-weight:600}
@@ -195,17 +195,15 @@ body::before{
   <div class="crown">
     <div class="crown-icon">👑</div>
     <h1>MUNDO</h1>
-    <div class="subtitle">THE EMPEROR · AI 智能编排系统</div>
-    <div class="version">v24.0.0 · 24 Capability Modules</div>
+    <div class="subtitle">THE EMPEROR · 独立 AI Agent</div>
+    <div class="version">v24.0.0 · LLM 直连 · 工具调用 · Agentic Loop</div>
   </div>
 
   <div class="decree">
     <p>
-      <span class="hl">蒙多想去哪就去哪。</span>完整的AI智能编排系统，通过
-      <span class="hl">Hermes Agent</span> 平台调度
-      <span class="hl">Claude Code</span>、<span class="hl">DeepSeek</span>、
-      <span class="hl">ChatGPT</span>、<span class="hl">Gemini</span> 等多模型协同工作。
-      24个能力模块，三省六部制技能管理，四层记忆架构，集体意识，无限成长。
+      <span class="hl">蒙多想去哪就去哪。</span>独立 AI Agent，<span class="hl">LLM 直连</span>多模型（MiMo / DeepSeek / OpenRouter），
+      内置 <span class="hl">6 大工具</span>（terminal / file / web / search），<span class="hl">Agentic Loop</span> 自动推理执行。
+      独立写代码、跑命令、读写文件、搜索网络——不依赖任何外部 Agent。
     </p>
   </div>
 
@@ -262,32 +260,30 @@ body::before{
   </div>
 
   <!-- 终端预览 -->
-  <div class="term">
-    <div><span class="p">👑 </span><span class="c">帮我设计一个 FastAPI 微服务架构</span></div>
-    <div><span class="o">⚔️  蒙多思考中...</span></div>
-    <div><span class="o">  ℹ 领域: backend | 战术: 数据一致→错误处理→并发安全→性能</span></div>
-    <div><span class="s">  ✓ 找到 3 个相关技能: fastapi-routing, pydantic-models, api-security</span></div>
-    <div><span class="s">  ✓ 蒙多已征服</span></div>
+  <div class="terminal-preview">
+    <div><span class="p">👑 </span><span class="c">用 Python 写一个快速排序，保存到 /tmp/quicksort.py 然后运行测试</span></div>
+    <div><span class="o">⚔️  思考中... (第 1 轮)</span></div>
+    <div><span class="o">  ▸ write_file: /tmp/quicksort.py</span></div>
+    <div><span class="o">  ⚔️  思考中... (第 2 轮)</span></div>
+    <div><span class="o">  ▸ terminal: python3 /tmp/quicksort.py</span></div>
+    <div><span class="s">    → ✅ 全部测试通过</span></div>
     <div>&nbsp;</div>
-    <div><span class="p">👑 </span><span class="c">/skills</span></div>
-    <div><span class="s">  ✓ 发现 87 个技能</span></div>
-    <div><span class="o">  [一品首辅] code-tidy: 代码洁癖级整理</span></div>
-    <div><span class="o">  [二品次辅] nature-writing: 学术写作</span></div>
+    <div><span class="p">👑 </span><span class="c">/switch deepseek</span></div>
+    <div><span class="s">  ✓ 已切换到 deepseek (deepseek-chat)</span></div>
   </div>
-
   <!-- 能力模块 -->
-  <h2 class="section-title">能力模块</h2>
+  <h2 class="section-title">核心引擎</h2>
   <div class="ab-grid">
-    <div class="ab"><div class="n">推理引擎</div><div class="d">第一性原理 · 决策矩阵 · 根因分析 · 类比 · 反事实</div></div>
-    <div class="ab"><div class="n">对抗验证</div><div class="d">边界/安全/性能/依赖/矛盾 五维攻击</div></div>
-    <div class="ab"><div class="n">四层记忆</div><div class="d">系统指令 · 会话元数据 · 用户档案 · 滑动窗口</div></div>
+    <div class="ab"><div class="n">LLM 直连</div><div class="d">MiMo · DeepSeek · OpenRouter · OpenAI · Anthropic</div></div>
+    <div class="ab"><div class="n">Agentic Loop</div><div class="d">think → act → observe → repeat 自动推理执行</div></div>
+    <div class="ab"><div class="n">6 大工具</div><div class="d">terminal · read_file · write_file · search · web · ls</div></div>
+    <div class="ab"><div class="n">推理引擎</div><div class="d">第一性原理 · 决策矩阵 · 根因分析 · 对抗验证</div></div>
+    <div class="ab"><div class="n">四层记忆</div><div class="d">SQLite 持久化 · 跨 session · 用户档案 · 对话摘要</div></div>
+    <div class="ab"><div class="n">领域检测</div><div class="d">七大领域自动识别 · 战术手册加载</div></div>
     <div class="ab"><div class="n">技能精通</div><div class="d">三省六部制 · 知识图谱 · 自动排名 · 晋升贬谪</div></div>
+    <div class="ab"><div class="n">自主调试</div><div class="d">写代码 → 运行 → 报错 → 自动修复 → 重新验证</div></div>
+    <div class="ab"><div class="n">多模型切换</div><div class="d">/switch 命令热切换 provider，不重启</div></div>
     <div class="ab"><div class="n">并行模式</div><div class="d">分身术 · 多任务并行 · 结果收集整合</div></div>
-    <div class="ab"><div class="n">多AI调度</div><div class="d">Claude Code · DeepSeek · ChatGPT · Gemini · Codex</div></div>
-    <div class="ab"><div class="n">元学习</div><div class="d">学习如何学习 · 动态校准 · 自信度公式</div></div>
-    <div class="ab"><div class="n">自我诊断</div><div class="d">失败分类 · 自检 · 自动降级 · 事后复盘</div></div>
-    <div class="ab"><div class="n">场景模拟</div><div class="d">四维模拟矩阵 · 最佳/最坏/最可能/替代</div></div>
-    <div class="ab"><div class="n">领域专精</div><div class="d">七大领域战术手册 · 自动识别</div></div>
     <div class="ab"><div class="n">跨域综合</div><div class="d">跨领域迁移 · 结构相似已解法</div></div>
     <div class="ab"><div class="n">主动智能</div><div class="d">预判矩阵 · 主动防御 · 灾难预防</div></div>
   </div>
