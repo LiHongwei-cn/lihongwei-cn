@@ -93,6 +93,13 @@ curl -fsSL https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/mund
 irm https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/mundo-agent/install.ps1 | iex
 ```
 
+安装时自动完成：
+1. 下载 MUNDO Agent 引擎（9 个 Python 模块）
+2. 从云仓库拉取所有 Skills（蒙多 + 学术写作 + MATLAB + 代码整理 + ...）
+3. 从云仓库拉取全局规范（代码规范 + 安全规则 + Git 规范 + ...）
+4. 创建全局命令 `mundo`
+5. 首次启动引导选择 AI 模型
+
 ### 方法 2：手动安装
 
 ```bash
@@ -224,6 +231,7 @@ open ~/.hermes/mundo-agent/MUNDO.command
 | `/add` | 添加新 AI 模型 |
 | `/skills` | 列出本地 Skill |
 | `/sync` | 同步新 Skill 到云仓库 |
+| `/pull` | 从云仓库拉取 Skills + 全局规范 |
 | `/audit` | 运行质量审计 |
 | `/status` | 蒙多状态 |
 | `/reset` | 重置对话 |

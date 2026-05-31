@@ -335,8 +335,8 @@ body.lang-en [data-lang="zh"]{display:none}
   <!-- 安装 -->
   <div class="install-section">
     <div class="install-title">⚡ <span data-lang="zh">一键安装</span><span data-lang="en">Quick Install</span></div>
-    <p style="font-size:14px;color:var(--muted);margin-bottom:16px" data-lang="zh">首次启动会引导选择 AI 模型（28 个可选）并输入 API Key。Key 仅保存在本地。</p>
-    <p style="font-size:14px;color:var(--muted);margin-bottom:16px" data-lang="en">First launch guides you to select an AI model (28 options) and enter API Key. Key is stored locally only.</p>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:16px" data-lang="zh">安装时自动部署：Skills（蒙多+学术写作+MATLAB+代码整理+...）+ 全局规范（代码规范+安全规则+Git规范+...）。首次启动引导选择 AI 模型（28 个可选）。Key 仅保存在本地。</p>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:16px" data-lang="en">Auto-deploys on install: Skills + global specs. First launch guides model selection (28 options). Key stored locally only.</p>
     <div class="install-cmd" data-lang="zh"><code># macOS / Linux 一键安装
 curl -fsSL https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/mundo-agent/install.sh | bash
 
@@ -366,6 +366,7 @@ mundo</code></div>
       <div class="cmd-item" onclick="copyCmd('/add')"><div class="cmd-name">/add</div><div class="cmd-desc">添加新模型</div></div>
       <div class="cmd-item" onclick="copyCmd('/skills')"><div class="cmd-name">/skills</div><div class="cmd-desc">列出本地 Skill</div></div>
       <div class="cmd-item" onclick="copyCmd('/sync')"><div class="cmd-name">/sync</div><div class="cmd-desc">同步到云仓库</div></div>
+      <div class="cmd-item" onclick="copyCmd('/pull')"><div class="cmd-name">/pull</div><div class="cmd-desc">拉取云端 Skills</div></div>
       <div class="cmd-item" onclick="copyCmd('/audit')"><div class="cmd-name">/audit</div><div class="cmd-desc">质量审计</div></div>
     </div>
   </div>
