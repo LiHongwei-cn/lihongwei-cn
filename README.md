@@ -248,6 +248,7 @@ open ~/.hermes/mundo-agent/MUNDO.command
 | `/sync` | 同步新 Skill 到云仓库 |
 | `/pull` | 从云仓库拉取 Skills + 全局规范 |
 | `/models` | 已配置模型 + 能力矩阵 |
+| `/memory` | 记忆系统状态 + 自动合并 |
 | `/audit` | 运行质量审计 |
 | `/status` | 蒙多状态 |
 | `/reset` | 重置对话 |
@@ -278,7 +279,7 @@ open ~/.hermes/mundo-agent/MUNDO.command
 | **Agent 调度** | 自动检测 Hermes / Claude Code / Codex，按类型分发 |
 | **蒙多分身** | 无外部 Agent 时自动分出多个分身并行执行 |
 | **权限审批** | Claude Code 风格 yes/no，危险命令拦截 |
-| **四层记忆** | SQLite 持久化，跨 session 记忆 |
+| **记忆系统 v2** | 三层架构(热/温/冷) · 自动提取事实 · 相关性检索 · 记忆压缩 · token 预算控制 · 借鉴 mem0/Letta/Cognee/Supermemory |
 | **推理引擎** | 第一性原理 / 决策矩阵 / 根因分析 / 对抗验证 |
 | **领域检测** | 七大领域自动识别，加载战术手册 |
 | **技能精通** | 三省六部制，自动排名，晋升贬谪 |
