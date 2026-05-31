@@ -1,6 +1,237 @@
 {
   "entries": [
     {
+      "timestamp": "2026-05-31T22:37:13Z",
+      "action": "sync",
+      "synced_count": 32,
+      "skills": [
+        {
+          "skill": "mundo",
+          "from_version": "0.0",
+          "to_version": "19.2",
+          "score": 86,
+          "content_hash": "82d7cbdab95c8a3aebe86dac230ec0a09651c687fb637c3b02dd2eddeab03dd6"
+        },
+        {
+          "skill": "code-tidy",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 61,
+          "content_hash": "6ba72900e37b3f5da9ffb853d8c312e27d3262859f505ab61d890d49da13c48e"
+        },
+        {
+          "skill": "homepage-layout",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 44,
+          "content_hash": "6d35a5f843383e85e85983c7dbfcf16540d4b19b6ec283ee396cb9af999c0b02"
+        },
+        {
+          "skill": "neat-freak",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 59,
+          "content_hash": "dfa7ba124e896ae16d8cec21071fbeb10841f2d1b497a46c85c6bed6fc89bbf5"
+        },
+        {
+          "skill": "cross-platform-launcher",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 69,
+          "content_hash": "9a693067693a9b4a20d738d2a4bd5734b036a61549c5c1d1351d22e8860c761f"
+        },
+        {
+          "skill": "matlab-ai-generator",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 69,
+          "content_hash": "cc4537e9e8d7b3c3e9e08356a98700288266acb87087abaafca005d30fd2c554"
+        },
+        {
+          "skill": "nature-writing",
+          "from_version": "0.0",
+          "to_version": "0.2",
+          "score": 47,
+          "content_hash": "9cf73605a225fd17d1ee191c5f8f978a198902eeb3ff467edc7de38bfdbeae4c"
+        },
+        {
+          "skill": "nature-polishing",
+          "from_version": "0.0",
+          "to_version": "5.0",
+          "score": 55,
+          "content_hash": "946eeed13b86805fbd926e6adc25c84d825e3726f001a11175b9ad277e3a2792"
+        },
+        {
+          "skill": "nature-figure",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 51,
+          "content_hash": "8418c227f56f5fbaf6af75eff7d15916630e159329e831d7379d377fe9e55ebb"
+        },
+        {
+          "skill": "nature-citation",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 56,
+          "content_hash": "26f852df3aa8f4d1ba38b747aaa58b70dd34d83bb1e4fca7f1a2fb76bd1ee20b"
+        },
+        {
+          "skill": "nature-data",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 51,
+          "content_hash": "16761a2d6aef2a28f25b4eb443c4d47d7e393d4de525b11793b72452f1d116d8"
+        },
+        {
+          "skill": "nature-reader",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 49,
+          "content_hash": "5c36a0af0cc1462318fac28c5b4382c7db4f51855db7fef6a66e5f634c700c36"
+        },
+        {
+          "skill": "nature-response",
+          "from_version": "0.0",
+          "to_version": "0.1",
+          "score": 61,
+          "content_hash": "9521d5cd6d66b331a635dda21608fc9546d0ef10140d3cfa28f1acb11c0da159"
+        },
+        {
+          "skill": "nature-paper2ppt",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 44,
+          "content_hash": "70bb1b9522763a158e8d45fd1149fefe55e839c6b4d9e4a86d227a3986074414"
+        },
+        {
+          "skill": "nature-academic-search",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 56,
+          "content_hash": "d15b0e2420fda1d8539c0dc780de955f56762d8cd594327d7f8f90a225588a18"
+        },
+        {
+          "skill": "cc-switch-sync",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 69,
+          "content_hash": "8072b854b78f62004ef49396054e5f9cb454da38b112054c9345c802a661ecba"
+        },
+        {
+          "skill": "cua-driver",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 63,
+          "content_hash": "5c0e46c628d02e6a4596fbad53ff2235820d21754f4f96454a900e90d7f96125"
+        },
+        {
+          "skill": "doc-coauthoring",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 30,
+          "content_hash": "2e47d78846faeea4a56e9809c52700087a15a2155a3f293a3efbaded81398ef4"
+        },
+        {
+          "skill": "dogfood",
+          "from_version": "0.0",
+          "to_version": "1.0",
+          "score": 65,
+          "content_hash": "36b1a710c61727c2be3c43ba20d68605cfed199afc90e27bde9746f4b80b91dd"
+        },
+        {
+          "skill": "matlab-debugging",
+          "from_version": "0.0",
+          "to_version": "2.0",
+          "score": 73,
+          "content_hash": "944c8d1eff24583259ef70dcc449caad03731691e10427f43d0536ea46d5ffee"
+        },
+        {
+          "skill": "matlab-design-digital-filter",
+          "from_version": "0.0",
+          "to_version": "1.1",
+          "score": 47,
+          "content_hash": "87e170d39d0d060bc5cb7ef618e9d0cdd8999af36e11dcfa05352ee36cc6d259"
+        },
+        {
+          "skill": "matlab-live-script",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 58,
+          "content_hash": "db3f21553c23550a429cf7a4121e57d33a4a64869a3249d474e4c83a01d5ae9f"
+        },
+        {
+          "skill": "matlab-modernize-code",
+          "from_version": "0.0",
+          "to_version": "1.0",
+          "score": 73,
+          "content_hash": "6c4844bc0bb88656c8b0b25b0dde7ddbda35cdd07e996c051493a5f0d3839524"
+        },
+        {
+          "skill": "matlab-optimize-performance",
+          "from_version": "0.0",
+          "to_version": "1.0",
+          "score": 65,
+          "content_hash": "ca620b1f485d88dc1956332b6b03cfef2c9dffce0185fd8b3da7bd516fb74e5f"
+        },
+        {
+          "skill": "matlab-performance-optimizer",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 56,
+          "content_hash": "fdfb01a54521af5c0200115a032e000c8fdcd7e0f7f48598318e68174b36dbb5"
+        },
+        {
+          "skill": "matlab-review-code",
+          "from_version": "0.0",
+          "to_version": "1.0",
+          "score": 73,
+          "content_hash": "6c7f54a6d9719a0c2faad6cff5134ee04dcd0cb8db27743fa03a25230e6c54b1"
+        },
+        {
+          "skill": "matlab-simulink-generator",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 76,
+          "content_hash": "82e03b8c6dba7178481d050ff2e2238408b23c2839c9b45e75fcb1e4581b3c22"
+        },
+        {
+          "skill": "matlab-test-generator",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 56,
+          "content_hash": "6f1b73109c042365662abae63eeb2c1fe428a0dcc183a141ef7c9c52f248c9c2"
+        },
+        {
+          "skill": "matlab-testing",
+          "from_version": "0.0",
+          "to_version": "1.0",
+          "score": 73,
+          "content_hash": "85dfe6f02e091cf730354c534bdce04f0faf30b7b1fbacef520e220422b0acce"
+        },
+        {
+          "skill": "matlab-uihtml-app-builder",
+          "from_version": "0.0",
+          "to_version": "1.0.0",
+          "score": 48,
+          "content_hash": "5a586aee322c08e82bd9cd53eb9dc32a41eb639f960e9362831fc8431574fc11"
+        },
+        {
+          "skill": "yuanbao",
+          "from_version": "0.0",
+          "to_version": "1.0",
+          "score": 70,
+          "content_hash": "239e4875f511124fab06e94ff21511fd8f857554c6ffd82dfb796ed275b4ff32"
+        },
+        {
+          "skill": "蒙多",
+          "from_version": "0.0",
+          "to_version": "16.0",
+          "score": 86,
+          "content_hash": "dee79f9848a051ed276ae6d12e3ec6f926162d2436428c4eac94b32bd474b4b6"
+        }
+      ]
+    },
+    {
       "timestamp": "2026-05-30T22:33:41Z",
       "action": "sync",
       "synced_count": 32,
