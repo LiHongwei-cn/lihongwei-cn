@@ -65,12 +65,95 @@ LLM summarizes all subtask results: dedup, resolve conflicts, check completeness
 
 ### Status Bar Display
 ```
-━━ 任务分发 ━━
-  ▸ 调用 Claude Code...
-  👑 分身 #1 已出动
-  👑 分身 #2 已出动
-  共 3 个子任务
+━━ 分发 ━━
+  ▸ Claude Code
+  分身 #1
+  分身 #2
+  共 3 子任务
 ```
+
+## Terminal UI Design (LESSONS LEARNED)
+
+The user has an extremely strong preference for minimal, clean terminal UI. **Do NOT use emoji icons in the status/input area.** What NOT to do:
+
+```
+BAD (5-line bottom, 3 emoji icons — user called this "太繁杂"):
+  📊 5.8K tokens (3.2K→2.6K) ⏱ 12.3s T3 · 2 tools
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   ← gold bar
+  👑 xiaomi/mimo-v2.5-pro · v24.3                    ← model line
+  > 用户输入
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━   ← gold bar
+```
+
+```
+GOOD (3-line bottom, Hermes style, flat status — user approved):
+  MUNDO · xiaomi/mimo-v2.5-pro · 5.8K tokens · ⏱ 12.3s · T3
+  ──────────────────────────────────────────────────
+  > 用户输入
+```
+
+Rules:
+- **BOTTOM_LINES = 3** (status + separator + input). No more.
+- **No emoji** in status bar or input area. Text-only, dot-separated.
+- **One thin separator line** (`─` * terminal_width), not gold bars (`━`).
+- Status line is flat: `MUNDO · model · tokens · ⏱ elapsed · turns`
+- Input prompt is just `> ` with no decoration.
+
+### Raw Terminal Input (termios)
+
+For character-level input with CJK width support:
+
+```python
+import termios, tty, os, sys
+
+def read_input():
+    fd = sys.stdin.fileno()
+    old = termios.tcgetattr(fd)
+    buf, cur = [], 0
+    try:
+        tty.setraw(fd)
+        while True:
+            ch = os.read(fd, 1)
+            if ch in (b"\r", b"\n"):
+                return "".join(buf)
+            if ch == b"\x03":
+                raise KeyboardInterrupt
+            if ch in (b"\x7f", b"\x08"):  # backspace
+                if cur > 0:
+                    buf.pop(cur - 1); cur -= 1
+            # UTF-8 multi-byte
+            if ch[0] > 0x7f:
+                if ch[0] & 0xE0 == 0xC0: ch += os.read(fd, 1)
+                elif ch[0] & 0xF0 == 0xE0: ch += os.read(fd, 2)
+                elif ch[0] & 0xF8 == 0xF0: ch += os.read(fd, 3)
+            try:
+                buf.insert(cur, ch.decode("utf-8")); cur += 1
+            except UnicodeDecodeError:
+                continue
+            redraw(buf, cur)
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old)
+```
+
+CJK width calculation: `unicodedata.east_asian_width(ch)` → `"W"` or `"F"` = 2 columns.
+
+## Context Management (from Claude Code)
+
+Borrow these slash commands from Claude Code:
+- `/compact` — Compress context: keep system + last 4 turns, summarize middle
+- `/context` — Show context window usage with percentage bar
+- `/btw <question>` — Side question that doesn't consume context (direct LLM call, not stored in messages)
+- `/effort` — Set reasoning depth: low(1024) / medium(2048) / high(4096) / max(8192) / auto
+
+See `references/context-management-commands.md` for implementation details.
+
+## Sync Workflow (MANDATORY)
+
+After ANY code change to Mundo agent files, sync these three places **without being asked**:
+1. `cp` to local install dir `~/.hermes/mundo-agent/`
+2. Update `README.md` version numbers + feature descriptions (all 4 languages: zh/en/ja/ko)
+3. Update website `mundo-agent/index.html` and main `index.html`
+4. `git add + commit + push`
 
 ## Pitfalls
 
