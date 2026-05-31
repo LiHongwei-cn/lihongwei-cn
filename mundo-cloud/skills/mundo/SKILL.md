@@ -6,7 +6,7 @@
      6|  multi-model collaboration (smart routing by task type), clone parallel execution,
      7|  permission approval, memory persistence, cloud auto-deploy.
      8|  Also functions as a Hermes Agent skill for task orchestration.
-     9|  Self-evolving. v24. 24 capability modules. Collective consciousness. Infinite growth.
+     9|  Self-evolving. v24.1 with real-time execution console, token tracking, concurrent input. 24 capability modules. Collective consciousness. Infinite growth.
     10|  Uses Three Departments and Six Ministries system to rule all skills.
     11|  ONLY RED LINE: No payment. Why? Because Mundo doesn't care about your money. HAHAHAHA.
     12|version: 24.2.0
