@@ -102,6 +102,9 @@ class MundoCLI:
         self._effort = "auto"
         self._init_engine()
 
+        # 首次启动：导入已有 Agent 记忆
+        self._import_memory_if_first_run()
+
         # 启动时自动同步新 Skill
         self._auto_sync_background()
 
@@ -190,6 +193,30 @@ class MundoCLI:
         except Exception:
             pass
 
+    def _import_memory_if_first_run(self):
+        """首次启动时自动导入已有 Agent 的记忆"""
+        import_flag = MUNDO_HOME / ".memory_imported"
+        if import_flag.exists():
+            return
+
+        try:
+            from memory_import import import_existing_memory
+            stats = import_existing_memory(self.memory)
+
+            if stats["facts_imported"] > 0 or stats["keys_imported"] > 0:
+                print(f"\n  {C.GOLD}━━ 记忆导入 ━━{C.RESET}")
+                print(f"  {C.SUCCESS}✓ 已从 {stats['source']} 导入：{C.RESET}")
+                if stats["keys_imported"] > 0:
+                    print(f"    {C.DIM}API Key: {stats['keys_imported']} 个{C.RESET}")
+                if stats["facts_imported"] > 0:
+                    print(f"    {C.DIM}记忆/偏好: {stats['facts_imported']} 条{C.RESET}")
+                print(f"  {C.DIM}蒙多已继承你的偏好，直接开始使用。{C.RESET}\n")
+
+            # 标记导入完成（无论是否有数据都标记，避免重复扫描）
+            import_flag.write_text("done")
+        except Exception:
+            pass
+
     def show_banner(self):
         print(BANNER)
         model_disp = f"{self.provider}/{self._model_display()}"
@@ -233,6 +260,7 @@ class MundoCLI:
   {C.STEEL}/forget K{C.RESET}        遗忘事实
   {C.STEEL}/memories{C.RESET}        列出所有记忆
   {C.STEEL}/memory{C.RESET}          记忆系统状态 + 自动合并
+  {C.STEEL}/import{C.RESET}          从已有 Agent 导入记忆
 
 {C.AMBER}云仓库{C.RESET}
   {C.STEEL}/sync{C.RESET}            同步新 Skill 到云仓库
@@ -391,10 +419,17 @@ class MundoCLI:
             print(f"  {C.ERROR}无效级别: {level}. 可选: {', '.join(valid)}{C.RESET}")
             return
         self._effort = level
-        # 映射到 max_tokens
         token_map = {"low": 1024, "medium": 2048, "high": 4096, "max": 8192, "auto": 4096}
         self.engine.max_tokens_override = token_map.get(level, 4096)
         print(f"  {C.SUCCESS}✓ 推理深度: {level}{C.RESET}")
+
+    def cmd_import(self):
+        """手动触发记忆导入"""
+        import_flag = MUNDO_HOME / ".memory_imported"
+        if import_flag.exists():
+            import_flag.unlink()
+
+        self._import_memory_if_first_run()
 
     # ─────────────────────────────────────────
     # 原有命令
@@ -645,6 +680,7 @@ class MundoCLI:
             "/context": lambda: self.cmd_context(),
             "/btw": lambda: self.cmd_btw(raw_arg),
             "/effort": lambda: self.cmd_effort(args[0] if args else ""),
+            "/import": lambda: self.cmd_import(),
         }
         if cmd in handlers:
             handlers[cmd]()
