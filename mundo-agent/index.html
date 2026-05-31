@@ -173,7 +173,7 @@ body.lang-en [data-lang="zh"]{display:none}
     <div class="section-title">⚔️ 核心引擎</div>
     <div class="section-subtitle">蒙多不只是一个工具。蒙多是独立的 AI Agent——LLM 直连、工具调用、推理执行、Agent 调度，全部自己完成。</div>
     <div class="abilities-grid">
-      <div class="ability-card"><div class="ability-icon">🤖</div><div class="ability-title">28 个 AI 模型</div><div class="ability-desc">MiMo/DeepSeek/Qwen/GLM/Kimi/ERNIE/豆包/OpenAI/Claude/Gemini/Mistral/Grok/OpenRouter... 首次启动向导选择。</div></div>
+      <div class="ability-card"><div class="ability-icon">🤖</div><div class="ability-title">28 个 AI 模型 + 多模型协同</div><div class="ability-desc">MiMo/DeepSeek/Qwen/GLM/Kimi/ERNIE/豆包/OpenAI/Claude/Gemini/Mistral/Grok/OpenRouter... 首次向导选择，支持添加多个模型。蒙多根据任务类型智能分配：代码→DeepSeek/Claude，日常→MiMo，推理→DeepSeek R1。</div></div>
       <div class="ability-card"><div class="ability-icon">🔄</div><div class="ability-title">Agentic Loop</div><div class="ability-desc">think → act → observe → repeat。自动推理、执行工具、验证结果，直到任务完成。</div></div>
       <div class="ability-card"><div class="ability-icon">🔧</div><div class="ability-title">6 大工具</div><div class="ability-desc">terminal（执行命令）· read_file / write_file（读写文件）· search_files（搜索）· web_search（网络）· list_directory（浏览）</div></div>
       <div class="ability-card"><div class="ability-icon">🧠</div><div class="ability-title">推理引擎</div><div class="ability-desc">第一性原理拆解、决策矩阵量化、根因分析追问、类比推理迁移、反事实验证。</div></div>
@@ -335,8 +335,8 @@ body.lang-en [data-lang="zh"]{display:none}
   <!-- 安装 -->
   <div class="install-section">
     <div class="install-title">⚡ <span data-lang="zh">一键安装</span><span data-lang="en">Quick Install</span></div>
-    <p style="font-size:14px;color:var(--muted);margin-bottom:16px" data-lang="zh">安装时自动部署：Skills（蒙多+学术写作+MATLAB+代码整理+...）+ 全局规范（代码规范+安全规则+Git规范+...）。首次启动引导选择 AI 模型（28 个可选）。Key 仅保存在本地。</p>
-    <p style="font-size:14px;color:var(--muted);margin-bottom:16px" data-lang="en">Auto-deploys on install: Skills + global specs. First launch guides model selection (28 options). Key stored locally only.</p>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:16px" data-lang="zh">安装时自动部署：Skills + 全局规范。首次启动引导选择 AI 模型（28 个可选），支持添加多个模型协同工作。蒙多根据任务类型智能分配：代码→DeepSeek/Claude，日常→MiMo，推理→DeepSeek R1。Key 仅保存在本地。</p>
+    <p style="font-size:14px;color:var(--muted);margin-bottom:16px" data-lang="en">Auto-deploys on install. First launch guides model selection (28 options). Supports multi-model collaboration: code→DeepSeek/Claude, daily→MiMo, reasoning→DeepSeek R1. Key stored locally only.</p>
     <div class="install-cmd" data-lang="zh"><code># macOS / Linux 一键安装
 curl -fsSL https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/mundo-agent/install.sh | bash
 
@@ -362,6 +362,7 @@ mundo</code></div>
       <div class="cmd-item" onclick="copyCmd('/help')"><div class="cmd-name">/help</div><div class="cmd-desc">命令手册</div></div>
       <div class="cmd-item" onclick="copyCmd('/agents')"><div class="cmd-name">/agents</div><div class="cmd-desc">检测本地 Agent</div></div>
       <div class="cmd-item" onclick="copyCmd('/providers')"><div class="cmd-name">/providers</div><div class="cmd-desc">28 个 AI 模型</div></div>
+      <div class="cmd-item" onclick="copyCmd('/models')"><div class="cmd-name">/models</div><div class="cmd-desc">模型能力矩阵</div></div>
       <div class="cmd-item" onclick="copyCmd('/switch deepseek')"><div class="cmd-name">/switch</div><div class="cmd-desc">切换模型</div></div>
       <div class="cmd-item" onclick="copyCmd('/add')"><div class="cmd-name">/add</div><div class="cmd-desc">添加新模型</div></div>
       <div class="cmd-item" onclick="copyCmd('/skills')"><div class="cmd-name">/skills</div><div class="cmd-desc">列出本地 Skill</div></div>
