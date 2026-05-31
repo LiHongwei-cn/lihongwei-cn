@@ -62,12 +62,24 @@ from memory import MundoMemoryV2 as Memory
 
 
 # ═══════════════════════════════════════════════
-# 紧凑 Banner（单一标识，不再双重显示）
+# ═══════════════════════════════════════════════
+# 像素风 Banner（蒙多皇帝形象）
 # ═══════════════════════════════════════════════
 
-BANNER = (
-    f"\n  {C.GOLD}{C.BOLD}MUNDO — THE EMPEROR{C.RESET}"
-    f"  {C.DIM}v{VERSION} · 独立 AI Agent · LLM 直连 · 工具调用 · Agentic Loop{C.RESET}\n"
+_BANNER_ART = """
+  {g}           ▄   ▄   ▄{r}
+  {g}          ▐█▌ ▐█▌ ▐█▌{r}
+  {g}         ▐███▌▐███▌▐███▌{r}
+  {g}        ▐███████████████▌{r}
+  {g}         ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀{r}
+  {g}          M  U  N  D  O{r}
+  {g}         ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄{r}
+  {d}          THE EMPEROR{r}
+  {d}          v{v}{r}
+""".strip()
+
+BANNER = _BANNER_ART.format(
+    g=C.GOLD, d=C.DIM, r=C.RESET, v=VERSION
 )
 
 
@@ -223,14 +235,11 @@ class MundoCLI:
         print(BANNER)
         model_disp = f"{self.provider}/{self._model_display()}"
         self.console.init_screen(model_disp, VERSION)
-        # 显示检测到的 Agent
         agents = self.agent_mgr.list_available()
         if agents:
             names = ", ".join(a["name"] for a in agents)
-            print(f"  {C.SUCCESS}检测到外部 Agent: {names}{C.RESET}")
-        else:
-            print(f"  {C.IRON}未检测到外部 Agent，蒙多将用分身模式并行执行{C.RESET}")
-        print(f"\n  {C.IRON}输入 /help 查看命令，直接输入任务蒙多开始干活{C.RESET}\n")
+            print(f"\n  {C.DIM}Agents: {names}{C.RESET}")
+        print()
 
     def show_help(self):
         print(f"""
