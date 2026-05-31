@@ -12,12 +12,13 @@ related_skills: [mundo]
 
 Build independent AI agents that connect directly to LLM APIs with tool calling and agentic loops.
 
-## Architecture (4 layers)
+## Architecture (5 layers)
 
 1. **LLM Client** — OpenAI-compatible API, multi-provider support
 2. **Tool Engine** — terminal/file/web/search with schema + handler
 3. **Agentic Loop** — call LLM → parse tool_calls → execute → inject results → repeat
-4. **Status Bar** — real-time model/token/time/turn display
+4. **Smart Router** — detect chat vs task, route to lightweight or full path
+5. **Display** — direct stdout output, status at boundaries only
 
 ## Key Implementation Details
 
