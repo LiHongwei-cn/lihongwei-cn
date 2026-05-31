@@ -31,6 +31,7 @@
 - 上下文管理（/compact 压缩、/context 可视化、/btw 旁问）
 - 推理深度控制（/effort low/medium/high/max）
 - 极简 Hermes 风格 UI（一行状态 + 分隔线 + 输入）
+- 首次启动自动导入已有 Agent 记忆（Hermes / Claude Code）
 
 ---
 
@@ -258,6 +259,7 @@ open ~/.hermes/mundo-agent/MUNDO.command
 | `/context` | 上下文窗口使用率 |
 | `/btw <问题>` | 旁问（不消耗上下文） |
 | `/effort` | 推理深度（low/medium/high/max） |
+| `/import` | 从已有 Agent 导入记忆 |
 | `/status` | 蒙多状态 |
 | `/reset` | 重置对话 |
 | `/setup` | 重新运行设置向导 |
