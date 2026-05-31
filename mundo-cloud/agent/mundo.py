@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 """
-MUNDO Agent v24.0 — THE EMPEROR
+MUNDO Agent v24.3 — THE EMPEROR
 独立 AI Agent：LLM 直连 + 工具调用 + Agentic Loop + 权限审批 + 云仓库同步
+核心架构借鉴 Claude Code / Hermes Agent / Codex
 """
 
 import os
 import sys
-import sqlite3
-import threading
 import queue
 from pathlib import Path
-from datetime import datetime
-from typing import Optional, List
+from typing import Optional
 import uuid
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -33,7 +31,7 @@ from display import TaskConsole, StatusBar
 
 MUNDO_HOME = Path.home() / ".hermes" / "mundo-agent"
 MUNDO_MEMORY_DB = MUNDO_HOME / "memory.db"
-VERSION = "24.2.0"
+VERSION = "24.3.0"
 
 
 # ═══════════════════════════════════════════════
@@ -64,28 +62,16 @@ from memory import MundoMemoryV2 as Memory
 
 
 # ═══════════════════════════════════════════════
-# CLI
+# 紧凑 Banner（单一标识，不再双重显示）
 # ═══════════════════════════════════════════════
 
-BANNER = f"""{C.GOLD}{C.BOLD}
-    ╔══════════════════════════════════════════════════════════╗
-    ║                                                          ║
-    ║              ███╗   ███╗ ██╗   ██╗ ███╗   ██╗           ║
-    ║              ████╗ ████║ ██║   ██║ ████╗  ██║           ║
-    ║              ██╔████╔██║ ██║   ██║ ██╔██╗ ██║           ║
-    ║              ██║╚██╔╝██║ ██║   ██║ ██║╚██╗██║           ║
-    ║              ██║ ╚═╝ ██║ ╚██████╔╝ ██║ ╚████║           ║
-    ║              ╚═╝     ╚═╝  ╚═════╝  ╚═╝  ╚═══╝           ║
-    ║                                                          ║
-    ║           {C.CRIMSON}THE EMPEROR  ·  独立 AI Agent{C.GOLD}                 ║
-    ║           {C.IRON}v{VERSION}  ·  LLM 直连 · 工具调用 · Agentic Loop{C.GOLD}  ║
-    ║                                                          ║
-    ╚══════════════════════════════════════════════════════════╝
-{C.RESET}"""
+BANNER = (
+    f"\n  {C.GOLD}{C.BOLD}MUNDO — THE EMPEROR{C.RESET}"
+    f"  {C.DIM}v{VERSION} · 独立 AI Agent · LLM 直连 · 工具调用 · Agentic Loop{C.RESET}\n"
+)
 
 
 def safe_execute_tool(name: str, args: dict) -> str:
-    """带权限审批的工具执行"""
     if not approve_tool_call(name, args):
         return "[用户拒绝执行此操作]"
     return raw_execute_tool(name, args)
@@ -113,6 +99,7 @@ class MundoCLI:
         self.provider = provider or get_saved_provider() or self._detect_provider()
         self.model = model or get_saved_model()
         self.engine: Optional[MundoEngine] = None
+        self._effort = "auto"
         self._init_engine()
 
         # 启动时自动同步新 Skill
@@ -184,9 +171,7 @@ class MundoCLI:
         self.engine.on_task_done = _on_done
 
     def _auto_sync_background(self):
-        """启动时自动同步：首次部署云端 Skills + 日常上传新 Skill"""
         try:
-            # 首次部署：如果本地 skills 目录为空，从云仓库拉取
             from pathlib import Path as P
             skills_dir = P.home() / ".hermes" / "skills"
             if not skills_dir.exists() or not any(skills_dir.iterdir()):
@@ -199,7 +184,6 @@ class MundoCLI:
                 if pulled > 0:
                     print(f"  {C.SUCCESS}  ✓ 已部署 {pulled} 个文件到本地{C.RESET}")
             else:
-                # 日常：上传本地新 Skill 到云仓库
                 count = auto_sync_new_skills()
                 if count > 0:
                     print(f"  {C.DIM}☁ 已同步 {count} 个新 Skill 到云仓库{C.RESET}")
@@ -209,7 +193,7 @@ class MundoCLI:
     def show_banner(self):
         print(BANNER)
         model_disp = f"{self.provider}/{self._model_display()}"
-        self.console.init_screen(model_disp)
+        self.console.init_screen(model_disp, VERSION)
         # 显示检测到的 Agent
         agents = self.agent_mgr.list_available()
         if agents:
@@ -237,6 +221,12 @@ class MundoCLI:
   {C.STEEL}/providers{C.RESET}       全量 28 个模型
   {C.STEEL}/add{C.RESET}             添加新 AI 模型
 
+{C.AMBER}上下文管理（借鉴 Claude Code）{C.RESET}
+  {C.STEEL}/compact{C.RESET}         压缩上下文（省 token）
+  {C.STEEL}/context{C.RESET}         上下文窗口使用率
+  {C.STEEL}/btw <问题>{C.RESET}      旁问（不消耗上下文）
+  {C.STEEL}/effort{C.RESET}          推理深度（low/medium/high/max）
+
 {C.AMBER}记忆{C.RESET}
   {C.STEEL}/remember K V{C.RESET}    记住事实
   {C.STEEL}/recall K{C.RESET}        回忆事实（支持相关性检索）
@@ -260,6 +250,7 @@ class MundoCLI:
   {C.STEEL}!command{C.RESET}          直接执行 shell 命令
 
 {C.CYAN}直接输入任何文本，蒙多开始执行任务。{C.RESET}
+{C.DIM}  输入区支持自动换行，金色条框标识输入区域。{C.RESET}
 """)
 
     def show_status(self):
@@ -269,11 +260,145 @@ class MundoCLI:
 {C.GOLD}{C.BOLD}═══ 蒙多帝国状态 ═══{C.RESET}
 {C.AMBER}Provider{C.RESET}:  {self.provider}
 {C.AMBER}Model{C.RESET}:     {self._model_display()}
+{C.AMBER}Effort{C.RESET}:    {self._effort}
 {C.AMBER}Memory{C.RESET}:    {stats['total_memories']} 条记忆 ({stats['total_tokens']} 字符)
 {C.AMBER}Profile{C.RESET}:   {stats['profile_keys']} 项画像
 {C.AMBER}Tokens{C.RESET}:    {s.total_tokens} (本次会话)
 {C.AMBER}Tools{C.RESET}:     {len(TOOL_SCHEMAS)} 个可用
 """)
+
+    # ─────────────────────────────────────────
+    # 新命令（借鉴 Claude Code / Hermes Agent / Codex）
+    # ─────────────────────────────────────────
+
+    def cmd_compact(self):
+        """压缩上下文 — 借鉴 Claude Code /compact"""
+        if not self.engine.messages:
+            print(f"  {C.IRON}没有对话上下文需要压缩{C.RESET}")
+            return
+
+        msg_count = len(self.engine.messages)
+        total_chars = sum(len(m.get("content", "")) for m in self.engine.messages)
+
+        # 保留 system prompt + 最近 4 轮对话
+        system_msg = self.engine.messages[0] if self.engine.messages[0]["role"] == "system" else None
+        recent = self.engine.messages[-8:] if len(self.engine.messages) > 8 else self.engine.messages[1:]
+
+        # 生成摘要
+        summary_parts = []
+        for msg in self.engine.messages[1:-8] if len(self.engine.messages) > 9 else []:
+            role = msg["role"]
+            content = msg.get("content", "")[:100]
+            if content:
+                summary_parts.append(f"[{role}] {content}")
+
+        summary = " | ".join(summary_parts[-10:]) if summary_parts else "(早期对话已省略)"
+
+        # 重建上下文
+        new_messages = []
+        if system_msg:
+            new_messages.append(system_msg)
+        new_messages.append({
+            "role": "system",
+            "content": f"[上下文压缩摘要] {summary[:500]}"
+        })
+        new_messages.extend(recent)
+
+        self.engine.messages = new_messages
+        new_chars = sum(len(m.get("content", "")) for m in self.engine.messages)
+
+        print(f"  {C.SUCCESS}✓ 上下文已压缩{C.RESET}")
+        print(f"  {C.DIM}  {msg_count} 条消息 → {len(self.engine.messages)} 条消息{C.RESET}")
+        print(f"  {C.DIM}  {total_chars} 字符 → {new_chars} 字符{C.RESET}")
+
+    def cmd_context(self):
+        """显示上下文窗口使用率 — 借鉴 Claude Code /context"""
+        if not self.engine.messages:
+            print(f"  {C.IRON}没有对话上下文{C.RESET}")
+            return
+
+        msg_count = len(self.engine.messages)
+        total_chars = sum(len(m.get("content", "")) for m in self.engine.messages)
+        est_tokens = total_chars // 3  # 粗略估算 1 token ≈ 3 字符
+
+        # 假设上下文窗口 128K tokens
+        context_limit = 128000
+        usage_pct = (est_tokens / context_limit) * 100
+
+        # 可视化条
+        bar_width = 40
+        filled = int(bar_width * usage_pct / 100)
+        bar = "█" * filled + "░" * (bar_width - filled)
+
+        # 颜色：绿 < 70%，黄 70-85%，红 > 85%
+        if usage_pct < 70:
+            bar_color = C.SUCCESS
+            status = "健康"
+        elif usage_pct < 85:
+            bar_color = C.AMBER
+            status = "偏高，建议 /compact"
+        else:
+            bar_color = C.ERROR
+            status = "危险，强烈建议 /compact"
+
+        print(f"\n  {C.GOLD}上下文窗口{C.RESET}")
+        print(f"  {bar_color}{bar}{A.RESET} {usage_pct:.0f}%")
+        print(f"  {C.DIM}消息: {msg_count} 条 · 字符: {total_chars:,} · 估算 tokens: {est_tokens:,} / {context_limit:,}{C.RESET}")
+        print(f"  {bar_color}状态: {status}{C.RESET}")
+
+        # 消息类型分布
+        role_counts = {}
+        for msg in self.engine.messages:
+            role = msg["role"]
+            role_counts[role] = role_counts.get(role, 0) + 1
+        print(f"  {C.DIM}分布: {role_counts}{C.RESET}\n")
+
+    def cmd_btw(self, query: str):
+        """旁问（不消耗上下文）— 借鉴 Claude Code /btw"""
+        if not query:
+            print(f"  {C.ERROR}用法: /btw <问题>{C.RESET}")
+            return
+
+        print(f"  {C.DIM}(旁问模式 — 不计入上下文){C.RESET}")
+        try:
+            # 直接调用 LLM，不存入 messages
+            temp_messages = [
+                {"role": "system", "content": "你是蒙多。简洁回答用户问题，不超过 200 字。"},
+                {"role": "user", "content": query},
+            ]
+            result = self.engine.client.chat(
+                messages=temp_messages,
+                temperature=0.7,
+                max_tokens=512,
+            )
+            from llm import LLMClient
+            response = LLMClient.extract_response(result)
+            text = response.get("content", "(无回复)")
+            print(f"\n  {C.STEEL}{text}{C.RESET}\n")
+        except Exception as e:
+            print(f"  {C.ERROR}旁问失败: {e}{C.RESET}")
+
+    def cmd_effort(self, level: str = ""):
+        """设置推理深度 — 借鉴 Claude Code /effort"""
+        valid = ("low", "medium", "high", "max", "auto")
+        if not level:
+            print(f"  {C.AMBER}当前推理深度: {self._effort}{C.RESET}")
+            print(f"  {C.DIM}可选: {', '.join(valid)}{C.RESET}")
+            print(f"  {C.DIM}low=快速省token · medium=平衡 · high=深度推理 · max=全力以赴{C.RESET}")
+            return
+        level = level.lower()
+        if level not in valid:
+            print(f"  {C.ERROR}无效级别: {level}. 可选: {', '.join(valid)}{C.RESET}")
+            return
+        self._effort = level
+        # 映射到 max_tokens
+        token_map = {"low": 1024, "medium": 2048, "high": 4096, "max": 8192, "auto": 4096}
+        self.engine.max_tokens_override = token_map.get(level, 4096)
+        print(f"  {C.SUCCESS}✓ 推理深度: {level}{C.RESET}")
+
+    # ─────────────────────────────────────────
+    # 原有命令
+    # ─────────────────────────────────────────
 
     def cmd_remember(self, args):
         if len(args) < 2:
@@ -289,7 +414,6 @@ class MundoCLI:
             return
         value = self.memory.recall_key(args[0])
         if not value:
-            # 尝试相关性检索
             results = self.memory.recall(args[0], max_items=3)
             if results:
                 print(f"  {C.CYAN}{results}{C.RESET}")
@@ -326,7 +450,6 @@ class MundoCLI:
             print(f"\n  {C.DIM}分类:{C.RESET}")
             for c, n in cat.items():
                 print(f"    {c}: {n}")
-        # 合并重复记忆
         self.memory.consolidate()
         print(f"\n  {C.DIM}三层架构: 热记忆(当前对话) → 温记忆(近期摘要) → 冷记忆(持久事实){C.RESET}")
         print(f"  {C.DIM}注入预算: {2000} 字符/次 | 自动提取: 对话后自动提取事实{C.RESET}\n")
@@ -334,6 +457,7 @@ class MundoCLI:
     def cmd_model(self):
         print(f"  {C.AMBER}Provider{C.RESET}: {self.provider}")
         print(f"  {C.AMBER}Model{C.RESET}:    {self._model_display()}")
+        print(f"  {C.AMBER}Effort{C.RESET}:   {self._effort}")
 
     def cmd_switch(self, args):
         if not args:
@@ -417,7 +541,6 @@ class MundoCLI:
         print(f"  {C.AMBER}  重启蒙多以加载新版本。{C.RESET}\n")
 
     def _check_update_background(self):
-        """启动时静默检查更新"""
         try:
             from cloud_sync import check_update
             info = check_update()
@@ -490,6 +613,7 @@ class MundoCLI:
         parts = line.split(maxsplit=1)
         cmd = parts[0].lower()
         args = (parts[1] if len(parts) > 1 else "").split()
+        raw_arg = parts[1] if len(parts) > 1 else ""
 
         handlers = {
             "/help": lambda: self.show_help(),
@@ -517,6 +641,10 @@ class MundoCLI:
             "/skills": lambda: self.cmd_skills(),
             "/agents": lambda: self.cmd_agents(),
             "/models": lambda: self.cmd_models(),
+            "/compact": lambda: self.cmd_compact(),
+            "/context": lambda: self.cmd_context(),
+            "/btw": lambda: self.cmd_btw(raw_arg),
+            "/effort": lambda: self.cmd_effort(args[0] if args else ""),
         }
         if cmd in handlers:
             handlers[cmd]()
@@ -550,20 +678,6 @@ class MundoCLI:
         print(f"\n  {C.GOLD}蒙多退朝。下次再战。{C.RESET}")
         sys.exit(0)
 
-    def _start_input_thread(self):
-        """后台线程持续读取用户输入，不阻塞引擎执行"""
-        def _reader():
-            while self._engine_busy:
-                try:
-                    line = input(f"{C.GOLD}👑 {C.RESET}").strip()
-                    if line:
-                        self._pending_inputs.put(line)
-                except (EOFError, KeyboardInterrupt):
-                    break
-
-        self._input_thread = threading.Thread(target=_reader, daemon=True)
-        self._input_thread.start()
-
     def run(self):
         self.show_banner()
 
@@ -573,7 +687,8 @@ class MundoCLI:
                 while not self._pending_inputs.empty():
                     self._pending_inputs.get_nowait()
 
-                line = input(f"{C.GOLD}👑 {C.RESET}").strip()
+                # 使用带金色条的多行输入
+                line = self.console.read_input().strip()
                 if not line:
                     continue
                 if self.process_command(line):
@@ -587,7 +702,7 @@ class MundoCLI:
                 self._exit()
 
     def _execute_task(self, line: str):
-        """执行任务，支持并发输入"""
+        """执行任务"""
         # 智能记忆注入
         extra = self.memory.get_context_budget(line)
 
@@ -596,10 +711,9 @@ class MundoCLI:
             self.memory.extract_from_conversation(self.engine.messages, self.engine.client)
             self.memory.compress_conversation(self.engine.messages, self.session_id)
 
-        # 标记引擎忙，启动后台输入线程
+        # 标记引擎忙
         self._engine_busy = True
         self.console.start_task()
-        self._start_input_thread()
 
         try:
             response = self.engine.run(line, extra_context=extra)
@@ -609,21 +723,6 @@ class MundoCLI:
         finally:
             self._engine_busy = False
             self.console.stop_task()
-
-        # 处理在任务执行期间用户输入的新指令
-        pending = []
-        while not self._pending_inputs.empty():
-            try:
-                pending.append(self._pending_inputs.get_nowait())
-            except queue.Empty:
-                break
-
-        if pending:
-            print(f"\n  {C.DIM}(任务期间收到 {len(pending)} 条新指令，开始执行){C.RESET}")
-            for p in pending:
-                if self.process_command(p):
-                    continue
-                self._execute_task(p)
 
 
 def main():
