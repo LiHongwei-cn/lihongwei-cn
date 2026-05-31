@@ -715,8 +715,6 @@ class MundoCLI:
         sys.exit(0)
 
     def run(self):
-        self.show_banner()
-
         while True:
             try:
                 # 清空待处理输入队列
