@@ -1,14 +1,21 @@
-"""蒙多执行控制台 v8 — Claude Code 风格布局
+"""蒙多执行控制台 v9 — 专业配色 + Claude Code 风格布局
 
-布局（三段式，参考 Claude Code / Hermes）：
-  顶部：状态行（模型 · token · 时间）     ← 每次交互开始时显示
-  中间：输出区（彩色滚动）                ← 任务执行时
-  底部：❯ 提示符                          ← 等待输入时
+配色方案：基于 Catppuccin Mocha + 金色点缀（蒙多身份色）
+  背景：终端原生深色
+  文本：柔和白 #cdd6f4
+  暗淡：灰色 #6c7086
+  金色：低饱和金 #f2c57c（蒙多标识色）
+  绿色：柔和绿 #a6e3a1（成功）
+  红色：柔和红 #f38ba8（错误）
+  蓝色：柔和蓝 #89b4fa（信息/工具）
+  紫色：柔和紫 #cba6f7（代码关键字）
+  黄色：柔和黄 #f9e2af（警告）
+  青色：柔和青 #94e2d5（数据）
 
-完成时：
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ✓ · ⏱ 3.2s · 1.2K tokens · T2 LLM 45% Tools 38%
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+布局：Claude Code 风格三段式
+  顶部：状态行
+  中间：输出区
+  底部：❯ 提示符
 """
 
 import sys
@@ -19,24 +26,29 @@ import time as _time
 
 
 class A:
+    # ── 基础 ──
     RESET = "\033[0m"
     BOLD = "\033[1m"
     DIM = "\033[2m"
     CLEAR_LINE = "\033[2K\r"
-    GOLD = "\033[38;5;178m"
-    GOLD_BRIGHT = "\033[38;5;220m"
-    IRON = "\033[38;5;243m"
-    STEEL = "\033[38;5;248m"
-    AMBER = "\033[38;5;136m"
-    SUCCESS = "\033[38;5;65m"
-    ERROR = "\033[38;5;203m"
-    TOOL = "\033[38;5;111m"
-    CYAN = "\033[38;5;87m"
-    GREEN = "\033[38;5;82m"
-    YELLOW = "\033[38;5;226m"
-    RED = "\033[38;5;196m"
-    BLUE = "\033[38;5;75m"
-    PURPLE = "\033[38;5;141m"
+
+    # ── Catppuccin Mocha 调色板 ──
+    TEXT = "\033[38;5;252m"          # 柔和白
+    SUBTEXT = "\033[38;5;249m"       # 浅灰
+    OVERLAY = "\033[38;5;243m"       # 中灰
+    SURFACE = "\033[38;5;240m"       # 深灰
+
+    # ── 语义色（低饱和）──
+    GOLD = "\033[38;5;221m"          # 蒙多标识色（温暖金）
+    GOLD_DIM = "\033[38;5;180m"      # 暗金
+    SUCCESS = "\033[38;5;150m"       # 柔和绿
+    ERROR = "\033[38;5;210m"         # 柔和红
+    WARNING = "\033[38;5;223m"       # 柔和黄
+    INFO = "\033[38;5;111m"          # 柔和蓝
+    CYAN = "\033[38;5;116m"          # 柔和青
+    PURPLE = "\033[38;5;183m"        # 柔和紫
+
+    # ── 工具 ──
     HIDE_CURSOR = "\033[?25l"
     SHOW_CURSOR = "\033[?25h"
 
@@ -85,7 +97,7 @@ class TaskConsole:
         return f"{int(m // 60)}h{m % 60}m"
 
     def _bar(self) -> str:
-        return A.GOLD + "━" * self._cols + A.RESET
+        return A.GOLD_DIM + "─" * self._cols + A.RESET
 
     # ── 初始化 ──
 
@@ -95,35 +107,32 @@ class TaskConsole:
         self._cols = shutil.get_terminal_size((80, 24)).columns
         self._session_start = _time.time()
 
-    # ── 状态行（顶部，Claude Code 风格）──
+    # ── 状态行 ──
 
     def _status_line(self) -> str:
         tok = self._stats.total_tokens if self._stats else 0
         model = self._model.split("/")[-1] if "/" in self._model else self._model
         session_t = self._elapsed(self._session_start)
         task_t = self._elapsed(self._task_start) if self._is_running else ""
-        ver = f"v{self._version}" if self._version else ""
 
         line = (
-            f"  {A.GOLD_BRIGHT}MUNDO{A.RESET}"
-            f" {A.DIM}{ver}{A.RESET}"
-            f" {A.DIM}·{A.RESET} {A.IRON}{model}{A.RESET}"
+            f"  {A.GOLD}{A.BOLD}MUNDO{A.RESET}"
+            f" {A.DIM}·{A.RESET} {A.SUBTEXT}{model}{A.RESET}"
             f" {A.DIM}·{A.RESET} {A.CYAN}{self._fmt_tok(tok)} tokens{A.RESET}"
-            f" {A.DIM}·{A.RESET} {A.IRON}{session_t}{A.RESET}"
+            f" {A.DIM}·{A.RESET} {A.OVERLAY}{session_t}{A.RESET}"
         )
         if self._is_running and task_t:
-            line += f" {A.DIM}·{A.RESET} {A.AMBER}⏲ {task_t}{A.RESET}"
+            line += f" {A.DIM}·{A.RESET} {A.GOLD_DIM}⏱ {task_t}{A.RESET}"
         return line
 
-    # ── 输入（底部，简单 ❯ 提示符）──
+    # ── 输入 ──
 
     def read_input(self) -> str:
         import termios
         import tty
 
-        # 显示状态行 + 空行 + 提示符
         self._w(f"\n{self._status_line()}\n")
-        self._w(f"{A.GOLD_BRIGHT}❯{A.RESET} ")
+        self._w(f"{A.GOLD}❯{A.RESET} ")
 
         buf = []
         cur = 0
@@ -205,7 +214,7 @@ class TaskConsole:
 
     def _redraw(self, buf, cur):
         text = "".join(buf)
-        self._w(f"\r{A.CLEAR_LINE}{A.GOLD_BRIGHT}❯{A.RESET} {text}")
+        self._w(f"\r{A.CLEAR_LINE}{A.GOLD}❯{A.RESET} {text}")
         if cur < len(text):
             bw = _dw(text[:cur])
             self._w(f"\033[{3 + bw}G")
@@ -216,14 +225,14 @@ class TaskConsole:
     def log_thinking(self, turn: int):
         self._task_start = _time.time()
         self._stats = None
-        self._w(f"\n  {A.AMBER}▸{A.RESET} {A.STEEL}思考中...{A.RESET} {A.DIM}(Turn {turn}){A.RESET}\n")
+        self._w(f"\n  {A.GOLD_DIM}▸{A.RESET} {A.SUBTEXT}思考中...{A.RESET} {A.DIM}(Turn {turn}){A.RESET}\n")
 
     def log_tool_start(self, tool_name: str, tool_args: dict):
         info = self._fmt_tool_info(tool_name, tool_args)
-        self._w(f"\n  {A.BLUE}▸{A.RESET} {A.TOOL}{tool_name}{A.RESET}  {A.DIM}{info}{A.RESET}\n")
+        self._w(f"\n  {A.INFO}▸{A.RESET} {A.TEXT}{tool_name}{A.RESET}  {A.DIM}{info}{A.RESET}\n")
 
     def log_tool_output(self, tool_name: str, output: str, is_error: bool = False):
-        mark = f"{A.RED}✗{A.RESET}" if is_error else f"{A.GREEN}│{A.RESET}"
+        mark = f"{A.ERROR}✗{A.RESET}" if is_error else f"{A.DIM}│{A.RESET}"
         if not output:
             self._w(f"  {mark} {A.DIM}(无输出){A.RESET}\n")
             return
@@ -232,28 +241,28 @@ class TaskConsole:
 
     def log_tool_done(self, tool_name: str, duration: float):
         if duration > 0.5:
-            self._w(f"  {A.SUCCESS}✓{A.RESET} {A.GREEN}{tool_name}{A.RESET} {A.DIM}({duration:.1f}s){A.RESET}\n")
+            self._w(f"  {A.SUCCESS}✓{A.RESET} {A.SUBTEXT}{tool_name}{A.RESET} {A.DIM}({duration:.1f}s){A.RESET}\n")
 
     def log_delegation(self, agent_names: list, clone_count: int, total: int):
         self._w(f"\n  {A.CYAN}━━ 分发 ━━{A.RESET}\n")
         for name in set(agent_names):
             self._w(f"  {A.SUCCESS}  ▸ {name}{A.RESET}\n")
         if clone_count > 0:
-            self._w(f"  {A.AMBER}  ▸ {clone_count} 个分身{A.RESET}\n")
+            self._w(f"  {A.GOLD_DIM}  ▸ {clone_count} 个分身{A.RESET}\n")
         self._w(f"  {A.DIM}  共 {total} 个子任务{A.RESET}\n")
 
     def log_clones(self, count: int):
         for i in range(1, count + 1):
-            self._w(f"  {A.GOLD}  👑 分身 #{i}{A.RESET}\n")
+            self._w(f"  {A.GOLD}  分身 #{i}{A.RESET}\n")
 
     def log_response(self, text: str):
         self._w("\n")
         for line in text.split("\n"):
-            self._w(f"  {A.STEEL}{line}{A.RESET}\n")
+            self._w(f"  {A.TEXT}{line}{A.RESET}\n")
         self._w("\n")
 
     def log_error(self, error: str):
-        self._w(f"\n  {A.RED}✗{A.RESET} {A.ERROR}{error}{A.RESET}\n\n")
+        self._w(f"\n  {A.ERROR}✗{A.RESET} {A.ERROR}{error}{A.RESET}\n\n")
 
     def log_done(self, stats):
         self._stats = stats
@@ -266,15 +275,15 @@ class TaskConsole:
 
         self._w(f"\n{self._bar()}\n")
         self._w(
-            f"  {A.GREEN}✓{A.RESET}"
-            f" {A.DIM}·{A.RESET} {A.AMBER}⏱ {elapsed}{A.RESET}"
+            f"  {A.SUCCESS}✓{A.RESET}"
+            f" {A.DIM}·{A.RESET} {A.GOLD_DIM}⏱ {elapsed}{A.RESET}"
             f" {A.DIM}·{A.RESET} {A.CYAN}{tok} tokens{A.RESET}"
             f" {A.DIM}({tok_in}→{tok_out}){A.RESET}"
-            f" {A.DIM}·{A.RESET} {A.IRON}T{stats.turns}{A.RESET}"
-            f" {A.DIM}·{A.RESET} {A.IRON}LLM {llm_pct} Tools {tool_pct}{A.RESET}"
+            f" {A.DIM}·{A.RESET} {A.OVERLAY}T{stats.turns}{A.RESET}"
+            f" {A.DIM}·{A.RESET} {A.OVERLAY}LLM {llm_pct} Tools {tool_pct}{A.RESET}"
         )
         if stats.tool_calls_count > 0:
-            self._w(f" {A.DIM}·{A.RESET} {A.IRON}{stats.tool_calls_count} tools{A.RESET}")
+            self._w(f" {A.DIM}·{A.RESET} {A.OVERLAY}{stats.tool_calls_count} tools{A.RESET}")
         self._w(f"\n{self._bar()}\n")
 
         self._is_running = False
@@ -299,28 +308,28 @@ class TaskConsole:
         if any(k in s.lower() for k in ["error", "err:", "错误", "failed", "fatal", "traceback"]):
             return f"{A.ERROR}{line}{A.RESET}"
         if any(k in s.lower() for k in ["warn", "warning", "警告"]):
-            return f"{A.YELLOW}{line}{A.RESET}"
+            return f"{A.WARNING}{line}{A.RESET}"
         if any(k in s for k in ["✓", "success", "ok", "完成", "done"]):
-            return f"{A.GREEN}{line}{A.RESET}"
+            return f"{A.SUCCESS}{line}{A.RESET}"
         if tool == "terminal":
             return self._code_color(line)
         if "/" in s and " " not in s[:20]:
-            return f"{A.BLUE}{line}{A.RESET}"
-        return f"{A.IRON}{line}{A.RESET}"
+            return f"{A.INFO}{line}{A.RESET}"
+        return f"{A.SUBTEXT}{line}{A.RESET}"
 
     def _code_color(self, line: str) -> str:
         s = line.strip()
         if s.startswith("$") or s.startswith("#"):
-            return f"{A.GREEN}{line}{A.RESET}"
+            return f"{A.SUCCESS}{line}{A.RESET}"
         kw = ["def ", "class ", "import ", "from ", "if ", "elif ", "return ",
               "for ", "while ", "try:", "except", "with ", "async "]
         if any(s.startswith(k) or f" {k}" in s for k in kw):
             return f"{A.PURPLE}{line}{A.RESET}"
-        if s.startswith("//") or s.startswith("#") or s.startswith("--"):
+        if s.startswith("//") or s.startswith("--"):
             return f"{A.DIM}{line}{A.RESET}"
         if s and s[0].isdigit():
             return f"{A.CYAN}{line}{A.RESET}"
-        return f"{A.IRON}{line}{A.RESET}"
+        return f"{A.SUBTEXT}{line}{A.RESET}"
 
     # ── 格式化 ──
 
@@ -376,23 +385,23 @@ class StatusBar:
 
     def show_thinking(self, model: str, turn: int, stats):
         sys.stdout.write(
-            f"\r{A.CLEAR_LINE}  {A.AMBER}▸ Turn {turn}"
+            f"\r{A.CLEAR_LINE}  {A.GOLD_DIM}▸ Turn {turn}"
             f" {A.DIM}·{A.RESET} {A.CYAN}{self._fmt_tok(stats.total_tokens)}{A.RESET}"
-            f" {A.DIM}·{A.RESET} {A.AMBER}⏱ {stats.elapsed_str}{A.RESET}  "
+            f" {A.DIM}·{A.RESET} {A.GOLD_DIM}⏱ {stats.elapsed_str}{A.RESET}  "
         )
         sys.stdout.flush()
 
     def show_tool_start(self, model: str, tool_name: str, tool_info: str, stats):
         sys.stdout.write(
-            f"\r{A.CLEAR_LINE}  {A.TOOL}▸ {tool_name}: {tool_info[:30]}"
+            f"\r{A.CLEAR_LINE}  {A.INFO}▸ {tool_name}: {tool_info[:30]}"
             f" {A.DIM}·{A.RESET} {A.CYAN}{self._fmt_tok(stats.total_tokens)}{A.RESET}  "
         )
         sys.stdout.flush()
 
     def show_done(self, model: str, stats):
         sys.stdout.write(A.CLEAR_LINE)
-        print(f"\n  {A.SUCCESS}✓{A.RESET} {A.DIM}·{A.RESET} {A.AMBER}⏱ {stats.elapsed_str}{A.RESET} {A.DIM}·{A.RESET} {A.CYAN}{self._fmt_tok(stats.total_tokens)}{A.RESET}\n")
+        print(f"\n  {A.SUCCESS}✓{A.RESET} {A.DIM}·{A.RESET} {A.GOLD_DIM}⏱ {stats.elapsed_str}{A.RESET} {A.DIM}·{A.RESET} {A.CYAN}{self._fmt_tok(stats.total_tokens)}{A.RESET}\n")
 
     def show_error(self, model: str, error: str, stats):
         sys.stdout.write(A.CLEAR_LINE)
-        print(f"\n  {A.RED}✗{A.RESET} {A.DIM}·{A.RESET} {A.CYAN}{self._fmt_tok(stats.total_tokens)}{A.RESET} {A.ERROR}{error[:60]}{A.RESET}\n")
+        print(f"\n  {A.ERROR}✗{A.RESET} {A.DIM}·{A.RESET} {A.CYAN}{self._fmt_tok(stats.total_tokens)}{A.RESET} {A.ERROR}{error[:60]}{A.RESET}\n")
