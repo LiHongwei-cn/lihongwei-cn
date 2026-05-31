@@ -1,16 +1,15 @@
-"""蒙多执行控制台 v6 — 彩色输出 + 金色条输入框 + 实时 token
+"""蒙多执行控制台 v7 — Hermes 风格全宽金色条 + 状态行
 
-布局：
-  运行中：彩色日志直接滚动输出
-  等待输入：
-    ━━━━━━━━━ 金色条（含实时 token）━━━━━━━━━
-    > 用户输入
-    ━━━━━━━━━ 金色条 ━━━━━━━━━━━━━━━━━━━━━━━
+等待输入时：
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ MUNDO · mimo-v2.5-pro │ 1.2K/1M │ [██░░░░░░░░] 1% │ 5m │ ⏲ 0s
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❯ 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
 
 import sys
 import os
-import re
 import shutil
 import unicodedata
 import time as _time
@@ -20,12 +19,9 @@ class A:
     RESET = "\033[0m"
     BOLD = "\033[1m"
     DIM = "\033[2m"
-    ITALIC = "\033[3m"
-    UNDERLINE = "\033[4m"
     CLEAR_LINE = "\033[2K\r"
     GOLD = "\033[38;5;178m"
     GOLD_BRIGHT = "\033[38;5;220m"
-    GOLD_DIM = "\033[38;5;136m"
     IRON = "\033[38;5;243m"
     STEEL = "\033[38;5;248m"
     AMBER = "\033[38;5;136m"
@@ -38,7 +34,6 @@ class A:
     RED = "\033[38;5;196m"
     BLUE = "\033[38;5;75m"
     PURPLE = "\033[38;5;141m"
-    WHITE = "\033[38;5;255m"
     HIDE_CURSOR = "\033[?25l"
     SHOW_CURSOR = "\033[?25h"
 
@@ -62,6 +57,8 @@ class TaskConsole:
         self._stats = None
         self._is_running = False
         self._task_start = 0.0
+        self._session_start = _time.time()
+        self._context_limit = 1_000_000  # 默认 1M context
 
     def _w(self, text: str):
         sys.stdout.write(text)
@@ -71,24 +68,51 @@ class TaskConsole:
         if n < 1000:
             return str(n)
         if n < 1000000:
-            return f"{n / 1000:.1f}K"
-        return f"{n / 1000000:.2f}M"
+            return f"{n / 1000:.0f}K"
+        return f"{n / 1000000:.1f}M"
 
-    def _gold_bar(self, content: str = "") -> str:
-        """金色条，可选中间嵌入内容"""
-        bar_char = "━"
-        if content:
-            # 内容嵌入在条中间
-            content_w = _display_width(content)
-            # ANSI 码不算宽度
-            side_w = (self._cols - content_w - 4) // 2
-            if side_w < 5:
-                side_w = 5
-            left = bar_char * side_w
-            right = bar_char * (self._cols - side_w - content_w - 4)
-            return f"  {A.GOLD}{left}{A.RESET} {content} {A.GOLD}{right}{A.RESET}"
-        else:
-            return f"  {A.GOLD}{bar_char * (self._cols - 4)}{A.RESET}"
+    def _elapsed(self, start: float) -> str:
+        if start <= 0:
+            return "0s"
+        s = _time.time() - start
+        if s < 60:
+            return f"{int(s)}s"
+        m = int(s // 60)
+        if m < 60:
+            return f"{m}m {int(s % 60)}s"
+        h = int(m // 60)
+        return f"{h}h {m % 60}m"
+
+    def _progress_bar(self, current: int, total: int, width: int = 10) -> str:
+        pct = min(current / max(total, 1), 1.0)
+        filled = int(width * pct)
+        bar = "█" * filled + "░" * (width - filled)
+        return f"[{bar}] {pct * 100:.0f}%"
+
+    def _gold_bar(self) -> str:
+        return A.GOLD + "━" * self._cols + A.RESET
+
+    def _build_status_line(self) -> str:
+        """构建状态行：模型 │ tokens │ 进度条 │ 时间 │ 任务时间"""
+        tok = self._stats.total_tokens if self._stats else 0
+        tok_str = f"{self._fmt_tok(tok)}/{self._fmt_tok(self._context_limit)}"
+        progress = self._progress_bar(tok, self._context_limit)
+        session_time = self._elapsed(self._session_start)
+        task_time = self._elapsed(self._task_start) if self._is_running else "—"
+
+        # 模型名缩短
+        model = self._model_display
+        if "/" in model:
+            model = model.split("/")[-1]
+
+        return (
+            f" {A.GOLD_BRIGHT}MUNDO{A.RESET}"
+            f" {A.DIM}·{A.RESET} {A.IRON}{model}{A.RESET}"
+            f" {A.DIM}│{A.RESET} {A.CYAN}{tok_str}{A.RESET}"
+            f" {A.DIM}│{A.RESET} {A.AMBER}{progress}{A.RESET}"
+            f" {A.DIM}│{A.RESET} {A.IRON}{session_time}{A.RESET}"
+            f" {A.DIM}│{A.RESET} {A.AMBER}⏲ {task_time}{A.RESET}"
+        )
 
     # ── 初始化 ──
 
@@ -96,26 +120,22 @@ class TaskConsole:
         self._model_display = model_display
         self._version = version
         self._cols = shutil.get_terminal_size((80, 24)).columns
+        self._session_start = _time.time()
 
-    # ── 输入区（带金色条）──
-
-    def _build_token_display(self) -> str:
-        """构建 token 显示文本"""
-        if self._stats and self._stats.total_tokens > 0:
-            tok = self._fmt_tok(self._stats.total_tokens)
-            return f"{A.CYAN}{tok} tokens{A.RESET}"
-        return f"{A.DIM}0 tokens{A.RESET}"
+    # ── 输入区（Hermes 风格全宽金色条）──
 
     def read_input(self) -> str:
         import termios
         import tty
 
-        # 金色上条（含 token）
-        token_str = self._build_token_display()
-        self._w(f"\n{self._gold_bar(token_str)}\n")
-
-        # 输入提示符
-        self._w(f"  {A.GOLD_BRIGHT}>{A.RESET} ")
+        # 上金色条
+        self._w(f"\n{self._gold_bar()}\n")
+        # 状态行
+        self._w(f"{self._build_status_line()}\n")
+        # 下金色条
+        self._w(f"{self._gold_bar()}\n")
+        # 输入提示
+        self._w(f"{A.GOLD_BRIGHT}❯{A.RESET} ")
 
         buf = []
         cur = 0
@@ -130,7 +150,6 @@ class TaskConsole:
                     continue
 
                 if ch in (b"\r", b"\n"):
-                    # 金色下条
                     self._w(f"\n{self._gold_bar()}\n")
                     self._w(A.SHOW_CURSOR)
                     return "".join(buf)
@@ -201,11 +220,18 @@ class TaskConsole:
 
     def _redraw_input(self, buf, cur):
         text = "".join(buf)
-        self._w(f"\r{A.CLEAR_LINE}  {A.GOLD_BRIGHT}>{A.RESET} {text}")
+        self._w(f"\r{A.CLEAR_LINE}{A.GOLD_BRIGHT}❯{A.RESET} {text}")
         if cur < len(text):
             before_w = _display_width(text[:cur])
-            self._w(f"\033[{4 + before_w}G")
+            self._w(f"\033[{3 + before_w}G")
         self._w(A.SHOW_CURSOR)
+
+    # ── 运行时状态栏（任务执行中显示在底部）──
+
+    def _draw_running_status(self):
+        """任务执行中：一行状态信息"""
+        self._w(f"\r{A.CLEAR_LINE}{self._build_status_line()}")
+        self._w(A.RESET)
 
     # ── 日志输出（彩色）──
 
@@ -213,31 +239,30 @@ class TaskConsole:
         self._task_start = _time.time()
         self._stats = None
         self._w(f"\n  {A.AMBER}▸{A.RESET} {A.STEEL}思考中...{A.RESET} {A.DIM}(Turn {turn}){A.RESET}\n")
+        self._draw_running_status()
 
     def log_tool_start(self, tool_name: str, tool_args: dict):
-        self._last_tool_start = _time.time()
         info = self._fmt_tool_info(tool_name, tool_args)
-        # 工具名用蓝色，参数用灰色
         self._w(f"\n  {A.BLUE}▸{A.RESET} {A.BOLD}{A.TOOL}{tool_name}{A.RESET}  {A.DIM}{info}{A.RESET}\n")
+        self._draw_running_status()
 
     def log_tool_output(self, tool_name: str, output: str, is_error: bool = False):
         if is_error:
-            color = A.ERROR
             mark = f"{A.RED}✗{A.RESET}"
         else:
-            color = A.IRON
             mark = f"{A.GREEN}│{A.RESET}"
         if not output:
             self._w(f"  {mark} {A.DIM}(无输出){A.RESET}\n")
             return
         for line in self._fmt_tool_output(tool_name, output).split("\n"):
-            # 根据内容高亮
-            colored_line = self._colorize_line(line, tool_name)
-            self._w(f"  {mark} {colored_line}\n")
+            colored = self._colorize_line(line, tool_name)
+            self._w(f"  {mark} {colored}\n")
+        self._draw_running_status()
 
     def log_tool_done(self, tool_name: str, duration: float):
         if duration > 0.5:
             self._w(f"  {A.SUCCESS}✓{A.RESET} {A.GREEN}{tool_name}{A.RESET} {A.DIM}({duration:.1f}s){A.RESET}\n")
+        self._draw_running_status()
 
     def log_delegation(self, agent_names: list, clone_count: int, total: int):
         self._w(f"\n  {A.CYAN}━━ 分发 ━━{A.RESET}\n")
@@ -269,8 +294,7 @@ class TaskConsole:
         llm_pct = f"{stats.llm_time / max(stats.elapsed, 0.01) * 100:.0f}%"
         tool_pct = f"{stats.tool_time / max(stats.elapsed, 0.01) * 100:.0f}%"
 
-        sep = A.GOLD + "━" * min(self._cols - 4, 50) + A.RESET
-        self._w(f"\n  {sep}\n")
+        self._w(f"\n{self._gold_bar()}\n")
         self._w(
             f"  {A.GREEN}✓{A.RESET}"
             f" {A.DIM}·{A.RESET} {A.AMBER}⏱ {elapsed}{A.RESET}"
@@ -281,7 +305,7 @@ class TaskConsole:
         )
         if stats.tool_calls_count > 0:
             self._w(f" {A.DIM}·{A.RESET} {A.IRON}{stats.tool_calls_count} tools{A.RESET}")
-        self._w(f"\n  {sep}\n")
+        self._w(f"\n{self._gold_bar()}\n")
 
         self._is_running = False
         self._task_start = 0.0
@@ -301,60 +325,31 @@ class TaskConsole:
     # ── 语法高亮 ──
 
     def _colorize_line(self, line: str, tool_name: str) -> str:
-        """给输出行添加语法高亮"""
-        stripped = line.strip()
-
-        # 错误/警告
-        if any(kw in stripped.lower() for kw in ["error", "err:", "错误", "failed", "fatal", "traceback"]):
+        s = line.strip()
+        if any(k in s.lower() for k in ["error", "err:", "错误", "failed", "fatal", "traceback"]):
             return f"{A.ERROR}{line}{A.RESET}"
-        if any(kw in stripped.lower() for kw in ["warn", "warning", "警告"]):
+        if any(k in s.lower() for k in ["warn", "warning", "警告"]):
             return f"{A.YELLOW}{line}{A.RESET}"
-
-        # 成功
-        if any(kw in stripped for kw in ["✓", "success", "ok", "完成", "done"]):
+        if any(k in s for k in ["✓", "success", "ok", "完成", "done"]):
             return f"{A.GREEN}{line}{A.RESET}"
-
-        # terminal 输出：代码高亮
         if tool_name == "terminal":
             return self._colorize_code(line)
-
-        # 文件路径
-        if "/" in stripped and (" " not in stripped[:20]):
+        if "/" in s and " " not in s[:20]:
             return f"{A.BLUE}{line}{A.RESET}"
-
         return f"{A.IRON}{line}{A.RESET}"
 
     def _colorize_code(self, line: str) -> str:
-        """简单代码语法高亮"""
-        stripped = line.strip()
-
-        # shell 提示符
-        if stripped.startswith("$") or stripped.startswith("#"):
+        s = line.strip()
+        if s.startswith("$") or s.startswith("#"):
             return f"{A.GREEN}{line}{A.RESET}"
-
-        # Python 关键字
-        py_keywords = ["def ", "class ", "import ", "from ", "if ", "elif ", "else:",
-                       "for ", "while ", "return ", "try:", "except", "with ", "as ",
-                       "async ", "await ", "yield ", "raise ", "assert ", "pass", "break", "continue"]
-        if any(stripped.startswith(kw) or f" {kw}" in stripped for kw in py_keywords):
+        kw = ["def ", "class ", "import ", "from ", "if ", "elif ", "return ",
+              "for ", "while ", "try:", "except", "with ", "async ", "await "]
+        if any(s.startswith(k) or f" {k}" in s for k in kw):
             return f"{A.PURPLE}{line}{A.RESET}"
-
-        # 字符串
-        if '"""' in stripped or "'''" in stripped:
-            return f"{A.GREEN}{line}{A.RESET}"
-
-        # 注释
-        if stripped.startswith("//") or stripped.startswith("#") or stripped.startswith("--"):
+        if s.startswith("//") or s.startswith("#") or s.startswith("--"):
             return f"{A.DIM}{line}{A.RESET}"
-
-        # 数字开头
-        if stripped and stripped[0].isdigit():
+        if s and s[0].isdigit():
             return f"{A.CYAN}{line}{A.RESET}"
-
-        # 路径
-        if "/" in stripped and not " " in stripped[:15]:
-            return f"{A.BLUE}{line}{A.RESET}"
-
         return f"{A.IRON}{line}{A.RESET}"
 
     # ── 格式化 ──
@@ -397,7 +392,6 @@ class TaskConsole:
 
 
 class StatusBar:
-    """兼容 -q 查询模式"""
 
     def __init__(self):
         self._cols = shutil.get_terminal_size((80, 24)).columns
@@ -407,8 +401,8 @@ class StatusBar:
         if n < 1000:
             return str(n)
         if n < 1000000:
-            return f"{n / 1000:.1f}K"
-        return f"{n / 1000000:.2f}M"
+            return f"{n / 1000:.0f}K"
+        return f"{n / 1000000:.1f}M"
 
     def show_thinking(self, model: str, turn: int, stats):
         sys.stdout.write(
