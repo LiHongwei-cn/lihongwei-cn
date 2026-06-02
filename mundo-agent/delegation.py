@@ -1,4 +1,4 @@
-"""蒙多的任务分发引擎 — 层级拆分 + 并行执行 + 结果汇总"""
+"""蒙多的任务分发引擎 — 层级拆分 + 并行执行 + 结果汇总 + 实时进度"""
 
 import json
 import time
@@ -34,18 +34,17 @@ SYSTEM_PROMPT_MERGE = """你是蒙多的结果汇总器。给定多个子任务�
 
 
 class TaskDelegator:
-    """蒙多的任务分发引擎"""
 
     def __init__(self, llm_client: LLMClient, agent_manager: AgentManager):
         self.client = llm_client
         self.agent_mgr = agent_manager
-        self.on_delegate: Optional[Callable] = None  # (agent_name, task, phase) -> None
-        self.on_clone_start: Optional[Callable] = None  # (clone_id, task) -> None
-        self.on_clone_done: Optional[Callable] = None  # (clone_id, result_preview) -> None
+        self.on_delegate: Optional[Callable] = None
+        self.on_clone_start: Optional[Callable] = None
+        self.on_clone_done: Optional[Callable] = None
+        # 子任务进度回调: (subtask_id, task_desc, agent_name, phase, result_preview)
+        self.on_subtask_progress: Optional[Callable] = None
 
     def should_split(self, task: str) -> bool:
-        """判断任务是否需要拆分"""
-        # 快速关键词检测
         split_keywords = [
             "同时", "并行", "分别", "各自", "三个", "四个", "五个",
             "1)", "2)", "3)", "第一", "第二", "第三",
@@ -57,7 +56,6 @@ class TaskDelegator:
         if keyword_hits >= 2:
             return True
 
-        # 用 LLM 判断
         try:
             result = self.client.chat(
                 messages=[
@@ -68,12 +66,11 @@ class TaskDelegator:
                 max_tokens=10,
             )
             msg = LLMClient.extract_response(result)
-            return "SPLIT" in msg.get("content", "").upper()
+            return "SPLIT" in (msg.get("content") or "").upper()
         except Exception:
             return False
 
     def split_task(self, task: str) -> List[Dict]:
-        """将复杂任务拆分为子任务列表"""
         try:
             result = self.client.chat(
                 messages=[
@@ -84,8 +81,7 @@ class TaskDelegator:
                 max_tokens=2000,
             )
             msg = LLMClient.extract_response(result)
-            content = msg.get("content", "[]").strip()
-            # 提取 JSON
+            content = (msg.get("content") or "[]").strip()
             if "```" in content:
                 content = content.split("```")[1]
                 if content.startswith("json"):
@@ -99,52 +95,51 @@ class TaskDelegator:
         return []
 
     def execute_parallel(self, task: str, subtasks: List[Dict]) -> Dict:
-        """并行执行子任务。返回 {subtask_id: result, ...}"""
         results = {}
         max_workers = min(len(subtasks), 4)
+        total = len(subtasks)
+        completed = 0
 
-        # 决定每个子任务用什么 Agent
         assignments = []
         for st in subtasks:
             task_type = st.get("type", "")
             best_agent = self.agent_mgr.get_best_for(task_type)
-            assignments.append({
-                "subtask": st,
-                "agent_key": best_agent,
-            })
+            assignments.append({"subtask": st, "agent_key": best_agent})
 
-        # 并行执行
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = {}
             for a in assignments:
                 st = a["subtask"]
                 agent_key = a["agent_key"]
+                agent_name = self.agent_mgr.available.get(agent_key, {}).get("name", f"分身#{st['id']}") if agent_key else f"分身#{st['id']}"
                 prompt = f"任务: {st['task']}\n\n原始上下文: {task}"
 
+                if self.on_subtask_progress:
+                    self.on_subtask_progress(st["id"], st["task"], agent_name, "start", None)
+
                 if agent_key:
-                    # 用外部 Agent
-                    future = executor.submit(
-                        self._run_external_agent, agent_key, prompt, st
-                    )
+                    future = executor.submit(self._run_external_agent, agent_key, prompt, st)
                 else:
-                    # 用蒙多分身
-                    future = executor.submit(
-                        self._run_mundo_clone, st, task
-                    )
-                futures[future] = st
+                    future = executor.submit(self._run_mundo_clone, st, task)
+                futures[future] = (st, agent_name)
 
             for future in as_completed(futures):
-                st = futures[future]
+                st, agent_name = futures[future]
+                completed += 1
                 try:
                     result = future.result(timeout=600)
                     results[st["id"]] = result
+                    if self.on_subtask_progress:
+                        preview = (result or "")[:80].replace("\n", " ")
+                        self.on_subtask_progress(st["id"], st["task"], agent_name, "done", preview)
                 except Exception as e:
                     results[st["id"]] = f"[执行失败: {e}]"
+                    if self.on_subtask_progress:
+                        self.on_subtask_progress(st["id"], st["task"], agent_name, "error", str(e)[:80])
 
         return results
 
     def _run_external_agent(self, agent_key: str, prompt: str, subtask: Dict) -> str:
-        """调用外部 Agent"""
         agent_name = self.agent_mgr.available.get(agent_key, {}).get("name", agent_key)
         if self.on_delegate:
             self.on_delegate(agent_name, subtask["task"], "start")
@@ -156,7 +151,6 @@ class TaskDelegator:
         return result
 
     def _run_mundo_clone(self, subtask: Dict, original_task: str) -> str:
-        """用蒙多分身执行"""
         clone_id = subtask["id"]
         if self.on_clone_start:
             self.on_clone_start(clone_id, subtask["task"])
@@ -169,11 +163,10 @@ class TaskDelegator:
         result = clone.execute(system, subtask["task"])
 
         if self.on_clone_done:
-            self.on_clone_done(clone_id, result[:100])
+            self.on_clone_done(clone_id, (result or "")[:100])
         return result
 
     def merge_results(self, original_task: str, subtasks: List[Dict], results: Dict) -> str:
-        """汇总所有子任务结果"""
         parts = []
         for st in subtasks:
             sid = st["id"]
@@ -192,12 +185,11 @@ class TaskDelegator:
                 max_tokens=4096,
             )
             msg = LLMClient.extract_response(result)
-            return msg.get("content", all_results)
+            return msg.get("content") or all_results
         except Exception:
             return all_results
 
     def delegate_and_execute(self, task: str) -> Optional[str]:
-        """完整的分发执行流程。如果不需要拆分返回 None。"""
         if not self.should_split(task):
             return None
 
@@ -205,9 +197,6 @@ class TaskDelegator:
         if not subtasks:
             return None
 
-        # 执行
         results = self.execute_parallel(task, subtasks)
-
-        # 汇总
         final = self.merge_results(task, subtasks, results)
         return final

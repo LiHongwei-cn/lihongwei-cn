@@ -96,6 +96,7 @@ class MundoEngine:
         self.on_task_done: Optional[Callable] = None
         self.on_delegate: Optional[Callable] = None
         self.on_clones: Optional[Callable] = None
+        self.on_merge_start: Optional[Callable] = None
         # 流式回调
         self.on_stream_text: Optional[Callable] = None
         self.on_stream_start: Optional[Callable] = None
@@ -180,6 +181,10 @@ class MundoEngine:
                 self.stats.delegated_agent = ", ".join(set(agent_names))
 
             results = self.delegator.execute_parallel(user_input, subtasks)
+
+            if self.on_merge_start:
+                self.on_merge_start()
+
             return self.delegator.merge_results(user_input, subtasks, results)
         except Exception as e:
             return None
