@@ -462,6 +462,7 @@ Embed these as iron rules in the agent's system prompt so ALL output reflects pr
 - **Usage in streaming**: Many providers don't return `usage` in streaming chunks (only in the last chunk, if at all). Always `usage = msg.get("_usage") or {}` — never assume it exists.
 - **Tool execution exceptions**: Wrap `execute_tool()` in try/except. A crashing tool shouldn't kill the entire agentic loop. Return `f"[工具执行异常: {e}]"` and continue.
 - **Memory compress on every task**: `compress_conversation` and `extract_from_conversation` run at the START of each task (before engine.run). Wrap in try/except — memory failures must not block task execution.
+- **Prompt_toolkit multi-line paste**: When users paste multi-line text (e.g. from web/chat), prompt_toolkit's default `PromptSession` either submits on first newline (multiline=False) or treats all Enter as newlines (multiline=True). Neither is correct. Use custom `KeyBindings` with `multiline=True`: Enter at end-of-buffer (`cursor >= len(text.rstrip())`) → submit; Enter in middle → insert newline. Add `Option+Enter` (escape+enter) as force-submit. Always `.strip()` the result. See `references/prompt-toolkit-input.md`.
 
 ## References
 
@@ -478,6 +479,7 @@ Embed these as iron rules in the agent's system prompt so ALL output reflects pr
 - `references/color-scheme-aesthetics.md` — Catppuccin Mocha palette, ANSI codes, syntax highlighting
 - `references/aesthetic-principles.md` — Professional design philosophy, anti-patterns, system prompt rules
 - `references/sse-streaming-patterns.md` — SSE parsing, tool_calls accumulation, fallback, None safety, dedup
+- `references/prompt-toolkit-input.md` — Multi-line paste, cursor-aware Enter, Option+Enter force submit
 
 ## User Preferences (from MUNDO development)
 
