@@ -214,10 +214,25 @@ class TaskConsole:
 
     def _redraw(self, buf, cur):
         text = "".join(buf)
-        self._w(f"\r\033[J{A.GOLD}❯{A.RESET} {text}")
+        cols = shutil.get_terminal_size((80, 24)).columns
+        usable = max(cols - 3, 10)
+        text_w = _dw(text)
+        lines = max(1, (text_w + usable - 1) // usable) if text_w > 0 else 1
+        # 回到输入起始行
+        if lines > 1:
+            self._w(f"\033[{lines - 1}A")
+        self._w(f"\r\033[J")
+        # 重绘
+        self._w(f"{A.GOLD}❯{A.RESET} {text}")
+        # 光标定位（重写后光标在文本末尾）
         if cur < len(text):
             bw = _dw(text[:cur])
-            self._w(f"\033[{3 + bw}G")
+            target_line = bw // usable if usable > 0 else 0
+            total_lines = lines
+            move_up = total_lines - 1 - target_line
+            if move_up > 0:
+                self._w(f"\033[{move_up}A")
+            self._w(f"\r\033[{3 + (bw % usable)}G")
         self._w(A.SHOW_CURSOR)
 
     # ── 日志输出 ──
