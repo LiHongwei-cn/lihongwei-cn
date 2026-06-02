@@ -119,6 +119,10 @@ class SlashCompleter:
             if cmd.startswith(text):
                 yield Completion(cmd, start_position=-len(text))
 
+    async def get_completions_async(self, document, complete_event):
+        for c in self.get_completions(document, complete_event):
+            yield c
+
 
 # ═══════════════════════════════════════════════
 # TaskConsole — Hermes 活动流模式
