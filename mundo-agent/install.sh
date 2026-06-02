@@ -27,6 +27,14 @@ if [ "$PY_MAJOR" -lt 3 ] || ([ "$PY_MAJOR" -eq 3 ] && [ "$PY_MINOR" -lt 10 ]); t
 fi
 echo "✓ Python $PY_VER"
 
+# 安装依赖
+echo "▸ 检查依赖..."
+python3 -c "import prompt_toolkit" 2>/dev/null || {
+    echo "  安装 prompt_toolkit..."
+    python3 -m pip install prompt_toolkit --quiet 2>/dev/null || pip3 install prompt_toolkit --quiet 2>/dev/null
+}
+echo "✓ 依赖就绪"
+
 # 检查 Git
 if ! command -v git &>/dev/null; then
     echo "✗ 未找到 Git。请先安装："

@@ -20,6 +20,7 @@
 
 import sys
 import shutil
+from pathlib import Path
 import time as _time
 
 
@@ -113,14 +114,26 @@ class TaskConsole:
             line += f" {A.DIM}·{A.RESET} {A.GOLD_DIM}⏱ {task_t}{A.RESET}"
         return line
 
-    # ── 输入 ──
+    # ── 输入（prompt_toolkit：和 Hermes Agent 同架构）──
 
     def read_input(self) -> str:
-        import readline
+        from prompt_toolkit import PromptSession
+        from prompt_toolkit.history import FileHistory
+        from prompt_toolkit.patch_stdout import patch_stdout
+
         print(f"\n{self._status_line()}", flush=True)
+
+        hist_path = str(Path.home() / ".hermes" / "mundo-agent" / ".mundo_history")
+        session = PromptSession(history=FileHistory(hist_path))
+
         try:
-            return input(f"{A.GOLD}❯{A.RESET} ")
-        except EOFError:
+            with patch_stdout():
+                return session.prompt(
+                    f"{A.GOLD}❯{A.RESET} ",
+                    multiline=False,
+                    wrap_lines=True,
+                )
+        except (EOFError, KeyboardInterrupt):
             return ""
 
     # ── 日志输出 ──
