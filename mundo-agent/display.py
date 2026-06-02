@@ -203,14 +203,14 @@ class TaskConsole:
             est_tokens = len(self._stream_buf) * 2 // 3
             self._stats.completion_tokens = max(self._stats.completion_tokens, est_tokens)
             self._stats.total_tokens = self._stats.prompt_tokens + self._stats.completion_tokens
-        from prompt_toolkit import print_formatted_text
-        from prompt_toolkit.formatted_text import ANSI as PT_ANSI
-        # 每 15 个 chunk 在行尾追加状态
+        # 直接用 sys.stdout.write 输出（避免 prompt_toolkit ANSI 渲染问题）
+        sys.stdout.write(text)
+        sys.stdout.flush()
+        # 每 15 个 chunk 追加状态
         if self._stream_chunk_count % 15 == 0:
             status = self._build_stream_status()
-            print_formatted_text(PT_ANSI(f"{A.TEXT}{text}{A.RESET}{A.DIM}  [{status}]{A.RESET}"), end="", flush=True)
-        else:
-            print_formatted_text(PT_ANSI(f"{A.TEXT}{text}{A.RESET}"), end="", flush=True)
+            sys.stdout.write(f"  \033[2m[{status}]\033[0m")
+            sys.stdout.flush()
 
     def stream_end(self, turn: int):
         """流式输出结束"""

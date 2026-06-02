@@ -148,20 +148,32 @@ class LLMClient:
 
     @staticmethod
     def _sanitize_messages(messages: List[Dict]) -> List[Dict]:
-        """清洗消息：确保 content 为字符串，移除空消息"""
+        """清洗消息：确保 content 为字符串，修复损坏的 tool_calls"""
         cleaned = []
         for msg in messages:
             if not isinstance(msg, dict):
                 continue
             m = dict(msg)
-            # content 必须是字符串（None → 空串）
+            # content 必须是字符串
             if "content" in m:
                 if m["content"] is None:
                     m["content"] = ""
                 elif not isinstance(m["content"], str):
                     m["content"] = str(m["content"])
-            # tool_calls 消息保留（content 可为空）
-            # 移除完全空的消息（无 content、无 tool_calls、无 tool_call_id）
+            # 清洗 tool_calls 中的 arguments
+            if "tool_calls" in m and m["tool_calls"]:
+                valid_tcs = []
+                for tc in m["tool_calls"]:
+                    func = tc.get("function", {})
+                    raw_args = func.get("arguments", "{}")
+                    try:
+                        json.loads(raw_args)
+                        valid_tcs.append(tc)
+                    except (json.JSONDecodeError, TypeError):
+                        func["arguments"] = "{}"
+                        valid_tcs.append(tc)
+                m["tool_calls"] = valid_tcs
+            # 移除完全空的消息
             if not m.get("content") and not m.get("tool_calls") and not m.get("tool_call_id"):
                 continue
             cleaned.append(m)
