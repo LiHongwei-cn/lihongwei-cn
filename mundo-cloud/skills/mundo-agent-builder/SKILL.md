@@ -204,6 +204,43 @@ if self.on_merge_start:
 return self.delegator.merge_results(user_input, subtasks, results)
 ```
 
+### Agent Fallback (v25.0+)
+
+External agents (Claude Code, Hermes) may timeout or fail. Always fall back to MundoClone:
+
+```python
+def _run_external_with_fallback(self, agent_key, prompt, subtask, original_task):
+    result = self._run_external_agent(agent_key, prompt, subtask)
+    # Detect failure keywords from _retry_run
+    if any(k in result for k in ["超时", "未安装", "不可用", "错误", "失败", "重试耗尽", "无输出"]):
+        return self._run_mundo_clone(subtask, original_task)
+    return result
+```
+
+### LLM API Retry (v25.0+)
+
+All LLM calls must retry on transient failures:
+- **3 attempts** with exponential backoff (2s, 4s, 6s)
+- **5xx errors**: retry (server-side transient)
+- **4xx errors**: don't retry (client-side permanent)
+- **Network errors (URLError)**: retry
+- **Timeout**: retry with longer wait
+
+Subprocess calls (`_retry_run`) follow the same pattern. `FileNotFoundError` never retries (binary not installed).
+
+### MundoClone Retry (v25.0+)
+
+Clones retry 3 times with backoff. **Empty reply counts as failure** (some providers return `content: null` or `content: ""` on transient issues).
+
+See `references/retry-and-fallback-patterns.md` for full implementation.
+
+```python
+results = self.delegator.execute_parallel(user_input, subtasks)
+if self.on_merge_start:
+    self.on_merge_start()
+return self.delegator.merge_results(user_input, subtasks, results)
+```
+
 **Console display pattern**:
 ```
   ▸ [1] 研究硬件价格 → Claude Code 执行中...
@@ -538,6 +575,7 @@ Embed these as iron rules in the agent's system prompt so ALL output reflects pr
 - **Real-time token during streaming**: Estimate from output buffer: `len(stream_buf) * 2 // 3`. Not exact but shows progress. Update status bar every ~20 chunks to avoid terminal flicker.
 - **Streaming status: inline NOT `\r`**: Using `sys.stdout.write("\r" + CLEAR_LINE)` for a status bar during streaming DOES NOT WORK — `print_formatted_text` and `sys.stdout.write` fight each other, causing status to disappear. Instead, append status inline after text every N chunks: `print_formatted_text(PT_ANSI(f"{text}  [{status}]"))`. Status appears as dim `[T1 · 1.2Ktok · 3s]` at the end of streamed text segments. User sees token count climbing in real-time.
 - **Callback overwrite trap**: When wiring engine callbacks in `_init_engine`, watch for duplicate assignments. If `engine.on_turn_end = lambda turn, stats, *a: console._update_stats(stats)` is set on line 176 but `engine.on_turn_end = lambda *a: None` appears on line 195, the second silently kills the first. After wiring ALL callbacks, grep for the callback name to ensure no duplicates. Common when adding new callbacks incrementally — old placeholder `lambda *a: None` lines survive.
+- **Stats sync timing**: `console._stats` must be set BEFORE streaming starts, not after. Wire `_update_stats(stats)` in BOTH `on_turn_start` AND `on_turn_end`. If only `on_turn_end` sets stats, the streaming status shows 0 tok because `_stats` is None during output. Pattern: `engine.on_turn_start = lambda turn, stats: (console.log_thinking(turn), console._update_stats(stats))`.
 - **Tool execution exceptions**: Wrap `execute_tool()` in try/except. A crashing tool shouldn't kill the entire agentic loop. Return `f"[工具执行异常: {e}]"` and continue.
 - **Memory compress on every task**: `compress_conversation` and `extract_from_conversation` run at the START of each task (before engine.run). Wrap in try/except — memory failures must not block task execution.
 - **Prompt_toolkit multi-line paste**: When users paste multi-line text (e.g. from web/chat), prompt_toolkit's default `PromptSession` either submits on first newline (multiline=False) or treats all Enter as newlines (multiline=True). Neither is correct. Use custom `KeyBindings` with `multiline=True`: Enter at end-of-buffer (`cursor >= len(text.rstrip())`) → submit; Enter in middle → insert newline. Add `Option+Enter` (escape+enter) as force-submit. Always `.strip()` the result. See `references/prompt-toolkit-input.md`.
