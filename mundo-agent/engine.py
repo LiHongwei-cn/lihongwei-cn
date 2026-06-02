@@ -341,11 +341,22 @@ class MundoEngine:
 
             self.stats.llm_time += time.time() - llm_start
 
-            # 提取 usage
+            # 提取 usage（流式模式可能为 0，需要兜底估算）
             usage = assistant_msg.get("_usage") or {}
-            self.stats.prompt_tokens += usage.get("prompt_tokens", 0)
-            self.stats.completion_tokens += usage.get("completion_tokens", 0)
-            self.stats.total_tokens += usage.get("total_tokens", 0)
+            api_prompt = usage.get("prompt_tokens", 0)
+            api_completion = usage.get("completion_tokens", 0)
+            if api_prompt > 0:
+                self.stats.prompt_tokens += api_prompt
+            else:
+                # 估算：基于消息总长度
+                total_chars = sum(len((m.get("content") or "")) for m in self.messages)
+                self.stats.prompt_tokens = max(self.stats.prompt_tokens, total_chars * 2 // 3)
+            if api_completion > 0:
+                self.stats.completion_tokens += api_completion
+            else:
+                # 流式期间 stream_text 已估算，此处不覆盖
+                pass
+            self.stats.total_tokens = self.stats.prompt_tokens + self.stats.completion_tokens
 
             if self.on_stream_end:
                 self.on_stream_end(turn)
