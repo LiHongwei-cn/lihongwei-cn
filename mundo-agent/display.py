@@ -220,7 +220,7 @@ class TaskConsole:
         self._stream_buf = ""
 
     def _build_stream_status(self) -> str:
-        """构建流式状态文本"""
+        """构建流式状态文本（纯文本，不含 ANSI 码）"""
         elapsed = self._elapsed(self._task_start) if self._task_start > 0 else "0s"
         tok = self._fmt_tok(self._stats.total_tokens) if self._stats else "0"
         turn = self._stats.turns if self._stats else 1
