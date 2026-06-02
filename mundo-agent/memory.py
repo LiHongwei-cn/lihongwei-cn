@@ -124,12 +124,24 @@ class MundoMemory:
             ).fetchall()
 
         scored = []
+        now = datetime.now()
         for mid, content, cat, imp, acc, tok in rows:
             content_lower = content.lower()
-            keyword_score = sum(1 for kw in keywords if kw in content_lower)
-            total_score = keyword_score * 2 + imp * 0.5 + min(acc, 10) * 0.2
-            if total_score > 0:
-                scored.append((total_score, mid, content, cat, tok))
+            # 关键词匹配（支持多词匹配加分）
+            keyword_hits = sum(1 for kw in keywords if kw in content_lower)
+            if keyword_hits == 0:
+                continue
+            keyword_score = keyword_hits * 2
+            # 多词同时命中额外加分
+            if keyword_hits >= 2:
+                keyword_score += keyword_hits
+            importance_score = imp * 0.5
+            access_score = min(acc, 10) * 0.2
+            # 分类权重：教训 > 事实 > 偏好 > 摘要
+            cat_weights = {"lesson": 1.5, "fact": 1.2, "preference": 1.0, "summary": 0.6}
+            cat_score = cat_weights.get(cat, 0.8)
+            total_score = (keyword_score + importance_score + access_score) * cat_score
+            scored.append((total_score, mid, content, cat, tok))
 
         scored.sort(key=lambda x: -x[0])
         selected = []

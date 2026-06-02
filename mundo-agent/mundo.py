@@ -28,7 +28,7 @@ from delegation import TaskDelegator, AgentManager
 from display import TaskConsole, console
 
 MUNDO_HOME = Path.home() / ".hermes" / "mundo-agent"
-VERSION = "26.1.0"
+VERSION = "27.0.0"
 
 
 def safe_execute_tool(name: str, args: dict) -> str:
@@ -108,6 +108,10 @@ class MundoCLI:
             self.console.log_done(stats)
         self.engine.on_task_done = _on_done
 
+        # v27: 预算警告 + 自动压缩通知
+        self.engine.on_budget_warn = lambda budget: self.console.log_budget_warning(budget)
+        self.engine.on_compress = lambda *a: self.console.log_compress(*a)
+
     def _init_memory(self):
         try:
             from memory import MundoMemory
@@ -157,6 +161,13 @@ class MundoCLI:
   [subtext]/context[/]         上下文窗口使用率
   [subtext]/effort[/]          推理深度（low/medium/high/max）
 
+[gold.dim]输入技巧[/]
+  [dim]输入 / 后按 Tab     自动补全命令[/]
+  [dim]Enter 在末尾         提交输入[/]
+  [dim]Enter 在中间         换行编辑[/]
+  [dim]Option+Enter         强制提交[/]
+  [dim]!command             直接执行 shell 命令[/]
+
 [gold.dim]记忆[/]
   [subtext]/remember K V[/]    记住事实
   [subtext]/recall K[/]        回忆事实
@@ -167,7 +178,6 @@ class MundoCLI:
 [gold.dim]工具[/]
   [subtext]/tools[/]           列出所有工具
   [subtext]/setup[/]           重新运行设置向导
-  [subtext]!command[/]          直接执行 shell 命令
 
 [cyan]直接输入任何文本，蒙多开始执行任务。[/]
 """
@@ -176,6 +186,7 @@ class MundoCLI:
     def show_status(self):
         stats = self.memory.get_stats() if self.memory else {"total_memories": 0, "total_tokens": 0, "profile_keys": 0}
         s = self.engine.stats
+        b = self.engine.budget
         console.print(f"""
 [bold gold]═══ 蒙多帝国状态 ═══[/]
 [gold.dim]Provider[/]:  {self.provider}
@@ -184,7 +195,10 @@ class MundoCLI:
 [gold.dim]Memory[/]:    {stats['total_memories']} 条记忆 ({stats['total_tokens']} 字符)
 [gold.dim]Profile[/]:   {stats['profile_keys']} 项画像
 [gold.dim]Tokens[/]:    {s.total_tokens} (本次会话)
+[gold.dim]Budget[/]:    {b.prompt_tokens_used:,}/{b.max_prompt_tokens:,} prompt ({int(b.usage_ratio*100)}%)
+[gold.dim]Turns[/]:     {b.turns_used}/{b.max_turns}
 [gold.dim]Tools[/]:     {len(tool_registry.schemas)} 个可用
+[gold.dim]Errors[/]:    {s.errors_count} 错误 · {s.retries_count} 重试
 """)
 
     # ─────────────────────────────────────────

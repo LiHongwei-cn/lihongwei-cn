@@ -1,18 +1,17 @@
-"""蒙多执行控制台 v26.2 — Hermes 活动流 + Rich 渲染
+"""蒙多执行控制台 v27 — Hermes 活动流 + Rich 渲染 + 命令自动补全
 
-核心改进：借鉴 Hermes Agent 的 ┊ 活动流模式
-- 工具开始: ┊ ⚡ preparing terminal…
-- 工具输出: ┊ 输出行（带颜色）
-- 工具完成: ┊ 💻 $  ls -la  0.3s
-- 完成汇总: 金色分隔线 + 统计
-- 输入提示: ❯ （清晰醒目）
+v27 改进（vs v26）：
+- slash 命令自动补全（借鉴 Hermes prompt_toolkit completer）
+- 预算警告显示
+- 压缩通知显示
+- 错误分类显示（可重试 vs 致命）
 """
 
 import sys
 import shutil
 import time as _time
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 
 from rich.console import Console
 from rich.text import Text
@@ -35,15 +34,13 @@ MUNDO_THEME = Theme({
     "muted": "#5c6370",
     "text": "#abb2bf",
     "subtext": "#9da5b4",
-    "feed": "#636d83",  # ┊ 活动流颜色
+    "feed": "#636d83",
 })
 
 console = Console(theme=MUNDO_THEME, highlight=False, force_terminal=True)
 
-# 活动流前缀字符（Hermes 风格）
 _FEED = "┊"
 
-# 工具 emoji 映射（Hermes 风格）
 TOOL_EMOJI = {
     "terminal": "💻",
     "read_file": "📖",
@@ -63,6 +60,14 @@ TOOL_VERB = {
     "web_search": "search",
     "list_directory": "ls",
 }
+
+# slash 命令列表（自动补全用）
+SLASH_COMMANDS = [
+    "/help", "/quit", "/exit", "/clear", "/status", "/reset",
+    "/model", "/models", "/switch", "/providers", "/add", "/setup",
+    "/remember", "/recall", "/forget", "/memories", "/memory",
+    "/compact", "/context", "/effort", "/tools",
+]
 
 
 def _fmt_tok(n: int) -> str:
@@ -96,6 +101,26 @@ def _path_short(p: str, n: int = 35) -> str:
 
 
 # ═══════════════════════════════════════════════
+# Slash 命令自动补全器
+# ═══════════════════════════════════════════════
+
+class SlashCompleter:
+    """prompt_toolkit 自动补全器 — 输入 / 时显示可用命令"""
+
+    def __init__(self, commands: List[str] = None):
+        self.commands = commands or SLASH_COMMANDS
+
+    def get_completions(self, document, complete_event):
+        from prompt_toolkit.completion import Completion
+        text = document.text_before_cursor
+        if not text.startswith("/"):
+            return
+        for cmd in self.commands:
+            if cmd.startswith(text):
+                yield Completion(cmd, start_position=-len(text))
+
+
+# ═══════════════════════════════════════════════
 # TaskConsole — Hermes 活动流模式
 # ═══════════════════════════════════════════════
 
@@ -114,10 +139,6 @@ class TaskConsole:
     def init_screen(self, model_display: str, version: str = ""):
         self._model = model_display
         self._session_start = _time.time()
-
-    # ═══════════════════════════════════════
-    # 状态行 — 精简一行
-    # ═══════════════════════════════════════
 
     def _build_status(self) -> Text:
         tok = self._stats.total_tokens if self._stats else 0
@@ -142,7 +163,7 @@ class TaskConsole:
             self._stats = stats
 
     # ═══════════════════════════════════════
-    # 流式输出 — 直接写 sys.stdout
+    # 流式输出
     # ═══════════════════════════════════════
 
     def stream_start(self, turn: int):
@@ -164,7 +185,7 @@ class TaskConsole:
         sys.stdout.flush()
 
     # ═══════════════════════════════════════
-    # 输入 — prompt_toolkit 只管输入
+    # 输入 — prompt_toolkit + 自动补全
     # ═══════════════════════════════════════
 
     def read_input(self) -> str:
@@ -197,11 +218,15 @@ class TaskConsole:
             buf.text = buf.text.rstrip()
             buf.validate_and_handle()
 
+        completer = SlashCompleter()
+
         session = PromptSession(
             history=FileHistory(hist_path),
             style=style,
             key_bindings=kb,
             multiline=True,
+            completer=completer,
+            complete_while_typing=True,
         )
         try:
             return session.prompt("❯ ").strip()
@@ -221,7 +246,6 @@ class TaskConsole:
         console.print(f"\n  [success]{_FEED}[/] [dim]已接收[/] [subtext]{preview}[/]")
 
     def log_tool_start(self, tool_name: str, tool_args: dict):
-        """Hermes 风格：┊ ⚡ preparing terminal…"""
         emoji = TOOL_EMOJI.get(tool_name, "⚡")
         info = self._fmt_tool_preview(tool_name, tool_args)
         console.print(f"  [feed]{_FEED}[/] {emoji} [dim]preparing[/] [text]{tool_name}[/] [dim]{info}[/]")
@@ -230,11 +254,9 @@ class TaskConsole:
             self._stats._active_tools.append(tool_name)
 
     def log_tool_output(self, tool_name: str, output: str, is_error: bool = False):
-        """Hermes 风格：┊ 输出行"""
         if not output:
             return
         lines = output.strip().split("\n")
-        # 限制显示行数
         if len(lines) > 20:
             display = lines[:10] + [f"  ... ({len(lines) - 15} 行省略)"] + lines[-5:]
         else:
@@ -244,7 +266,6 @@ class TaskConsole:
             console.print(f"  [feed]{_FEED}[/] {colored}")
 
     def log_tool_done(self, tool_name: str, duration: float):
-        """Hermes 风格：┊ 💻 $  ls -la  0.3s"""
         emoji = TOOL_EMOJI.get(tool_name, "⚡")
         verb = TOOL_VERB.get(tool_name, tool_name)
         preview = self._fmt_tool_preview(tool_name, self._last_tool_args)
@@ -267,8 +288,15 @@ class TaskConsole:
     def log_error(self, error: str):
         console.print(f"\n  [error]{_FEED}[/] [error]{error}[/]\n")
 
+    def log_budget_warning(self, budget):
+        ratio = int(budget.usage_ratio * 100)
+        console.print(f"  [warning]{_FEED}[/] [warning]上下文使用率 {ratio}%，建议 /compact[/]")
+
+    def log_compress(self, old_count, new_count, old_tokens, new_tokens):
+        saved = old_tokens - new_tokens
+        console.print(f"  [info]{_FEED}[/] [info]自动压缩[/] {old_count}→{new_count} 条消息，节省 ~{_fmt_tok(saved)} tok")
+
     def log_done(self, stats):
-        """完成汇总 — 金色分隔线"""
         self._stats = stats
         tok = _fmt_tok(stats.total_tokens)
         tok_in = _fmt_tok(stats.prompt_tokens)
@@ -286,13 +314,15 @@ class TaskConsole:
         t.append(f" · T{stats.turns}", style="muted")
         if stats.tool_calls_count > 0:
             t.append(f" · {stats.tool_calls_count} tools", style="muted")
+        if stats.retries_count > 0:
+            t.append(f" · {stats.retries_count} retries", style="warning")
+        if stats.errors_count > 0:
+            t.append(f" · {stats.errors_count} errors", style="error")
         console.print(t)
         console.print(f"  [gold.dim]{bar}[/]\n")
 
         self._is_running = False
         self._task_start = 0.0
-
-    # ── 任务状态 ──
 
     def start_task(self):
         self._is_running = True
@@ -306,8 +336,6 @@ class TaskConsole:
 
     def cleanup(self):
         pass
-
-    # ── 颜色映射 ──
 
     def _color_line(self, line: str, tool: str, is_error: bool = False) -> str:
         s = line.strip()
@@ -336,8 +364,6 @@ class TaskConsole:
         if s and s[0].isdigit():
             return f"[cyan]{line}[/]"
         return f"[subtext]{line}[/]"
-
-    # ── 工具预览 ──
 
     def _fmt_tool_preview(self, name: str, args: dict) -> str:
         if name == "terminal":

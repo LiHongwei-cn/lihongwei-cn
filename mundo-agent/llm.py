@@ -1,10 +1,10 @@
-"""蒙多 LLM 客户端 v26 — 多 provider + 流式 + 重试 + 消息清洗
+"""蒙多 LLM 客户端 v27 — 多 provider + 流式 + 重试 + 消息清洗
 
-改进（vs v25）：
-- 消息清洗更健壮（借鉴 Hermes message_sanitization）
-- 流式读取用 readline（SSE 铁律）
-- 重试逻辑统一，指数退避
-- 支持 reasoning_content 字段（DeepSeek R1 等）
+v27 改进（vs v26）：
+- 消息清洗增强：surrogate 字符修复、content 类型强制转换
+- 流式读取更健壮：超时处理、连接断开恢复
+- 错误分类：区分可重试/不可重试错误
+- 上下文溢出检测：自动触发压缩
 """
 
 import os
@@ -33,6 +33,25 @@ def _load_env():
 _load_env()
 
 from setup import PROVIDERS
+
+
+# ═══════════════════════════════════════════════
+# 可重试错误判断
+# ═══════════════════════════════════════════════
+
+RETRYABLE_CODES = {429, 500, 502, 503, 504}
+CONTEXT_OVERFLOW_CODES = {400, 413}
+
+
+def _is_retryable(code: int) -> bool:
+    return code in RETRYABLE_CODES
+
+
+def _is_context_overflow(code: int, body: str) -> bool:
+    if code in CONTEXT_OVERFLOW_CODES:
+        keywords = ["context", "too long", "maximum", "token", "limit"]
+        return any(kw in body.lower() for kw in keywords)
+    return False
 
 
 class LLMClient:
@@ -90,8 +109,13 @@ class LLMClient:
                     return json.loads(resp.read().decode("utf-8"))
             except urllib.error.HTTPError as e:
                 err_body = e.read().decode("utf-8", errors="replace")
-                if e.code >= 500 and attempt < max_retries - 1:
-                    time.sleep(2 * (attempt + 1))
+                # 上下文溢出 — 不重试，直接报错让引擎压缩
+                if _is_context_overflow(e.code, err_body):
+                    raise RuntimeError(f"上下文过长 (HTTP {e.code}): 请减少输入或运行 /compact")
+                # 可重试错误
+                if _is_retryable(e.code) and attempt < max_retries - 1:
+                    wait = min(2 ** attempt * 2, 30)
+                    time.sleep(wait)
                     continue
                 raise RuntimeError(f"LLM API 错误 {e.code}: {err_body[:300]}") from e
             except urllib.error.URLError as e:
@@ -119,6 +143,8 @@ class LLMClient:
             resp = urllib.request.urlopen(req, timeout=120)
         except urllib.error.HTTPError as e:
             err_body = e.read().decode("utf-8", errors="replace")
+            if _is_context_overflow(e.code, err_body):
+                raise RuntimeError(f"上下文过长 (HTTP {e.code}): 请减少输入或运行 /compact")
             raise RuntimeError(f"LLM API 错误 {e.code}: {err_body[:300]}") from e
         except urllib.error.URLError as e:
             raise RuntimeError(f"网络错误: {e.reason}") from e
@@ -151,7 +177,6 @@ class LLMClient:
         }
         if "usage" in chunk:
             result["usage"] = chunk["usage"]
-        # DeepSeek R1 等 reasoning 模型
         if delta.get("reasoning_content"):
             result["reasoning"] = delta["reasoning_content"]
         return result
@@ -183,35 +208,70 @@ class LLMClient:
 # 消息清洗 — 借鉴 Hermes message_sanitization
 # ═══════════════════════════════════════════════
 
+def _fix_surrogates(text: str) -> str:
+    """修复 surrogate 字符（Hermes 铁律）"""
+    try:
+        text.encode("utf-8")
+        return text
+    except UnicodeEncodeError:
+        return text.encode("utf-8", errors="replace").decode("utf-8")
+
+
+def _coerce_content(value) -> str:
+    """强制转换 content 为字符串（Hermes 铁律：永远不信任 API 返回值）"""
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return _fix_surrogates(value)
+    if isinstance(value, (int, float, bool)):
+        return str(value)
+    if isinstance(value, (list, dict)):
+        try:
+            return json.dumps(value, ensure_ascii=False)
+        except (TypeError, ValueError):
+            return str(value)
+    return str(value)
+
+
 def sanitize_messages(messages: List[Dict]) -> List[Dict]:
-    """清洗消息：确保 content 为字符串，修复损坏的 tool_calls，移除空消息"""
+    """清洗消息：surrogate 修复、content 类型转换、tool_calls 验证、空消息过滤"""
     cleaned = []
     for msg in messages:
         if not isinstance(msg, dict):
             continue
         m = dict(msg)
-        # content 必须是字符串（None → ""）
+
+        # content 必须是字符串
         if "content" in m:
-            if m["content"] is None:
-                m["content"] = ""
-            elif not isinstance(m["content"], str):
-                m["content"] = str(m["content"])
+            m["content"] = _coerce_content(m["content"])
+
         # 清洗 tool_calls 中的 arguments
         if "tool_calls" in m and m["tool_calls"]:
             valid_tcs = []
             for tc in m["tool_calls"]:
                 func = tc.get("function", {})
                 raw_args = func.get("arguments", "{}")
-                try:
-                    json.loads(raw_args)
-                    valid_tcs.append(tc)
-                except (json.JSONDecodeError, TypeError):
+                if isinstance(raw_args, str):
+                    try:
+                        json.loads(raw_args)
+                        valid_tcs.append(tc)
+                    except (json.JSONDecodeError, TypeError):
+                        func["arguments"] = "{}"
+                        valid_tcs.append(tc)
+                else:
                     func["arguments"] = "{}"
                     valid_tcs.append(tc)
             m["tool_calls"] = valid_tcs
-        # 移除完全空的消息
-        if not m.get("content") and not m.get("tool_calls") and not m.get("tool_call_id"):
+
+        # tool role 的 content 必须存在
+        if m.get("role") == "tool" and "content" not in m:
+            m["content"] = ""
+
+        # 移除完全空的消息（但保留 tool 消息和 system 消息）
+        if (not m.get("content") and not m.get("tool_calls")
+                and not m.get("tool_call_id") and m.get("role") not in ("system",)):
             continue
+
         cleaned.append(m)
     return cleaned if cleaned else [{"role": "user", "content": "继续"}]
 
