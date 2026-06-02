@@ -1,6 +1,6 @@
 ---
 name: nature-paper2ppt
-description: Build a complete but efficient Nature-style Chinese PPTX presentation from a scientific paper, preprint, PDF, article text, abstract, figure legends, or reading notes. Use this skill whenever the user asks to make slides/PPT/PPTX for journal club, group meeting, paper sharing, thesis seminar, lab meeting, department report, or academic presentation from a research paper, not only medical papers. It identifies the paper type and argument, selects only the figures needed for the story, writes Chinese slide content and speaker notes, creates the actual .pptx deck, and performs lightweight verification with cross-platform Python tooling by default.
+description: Build a complete but efficient Nature-style Chinese PPTX presentation from a scientific paper, preprint, PDF, article text, abstract, figure legends, or reading notes. Use this skill whenever the user asks to make slides/PPT/PPTX for journal club, group meeting, paper sharing, thesis seminar, lab meeting, department report, or academic presentation from a research paper, not only medical papers. It identifies the paper type and argument, selects only the figures needed for the story, writes Chinese slide content and speaker notes, creates the actual .pptx deck, and runs an explicit self-review/corrective revision loop focused on figure quality, text overflow prevention, and non-template visual design before delivery.
 ---
 
 # Purpose
@@ -38,7 +38,10 @@ Do:
 - read only the source material needed to understand the paper's argument,
 - extract only figures/tables that will actually appear in the deck,
 - create the PPTX as the primary deliverable,
-- run lightweight structural checks on the PPTX package,
+- design slides with varied, evidence-led composition rather than rigid AI-looking card templates,
+- prevent text overflow by writing shorter on-slide copy, using larger text boxes, and splitting slides when needed,
+- run at least one self-audit and correction pass on the generated PPTX,
+- run lightweight structural checks on the PPTX package after revision,
 - write a short QA report.
 
 Avoid by default:
@@ -83,7 +86,8 @@ For a normal selectable-text paper PDF, run the shortest complete path:
 3. Render low-resolution contact sheets only when figure locations are unclear.
 4. Render high-resolution images only for selected figure/table pages and crop only assets that will appear in the deck.
 5. Build the PPTX directly with python-pptx, using native tables/charts when values are explicit and figure crops when the original visual carries the evidence.
-6. Verify by reopening the PPTX and inspecting package structure; render slide previews only if a reliable cross-platform headless renderer is already available.
+6. Run the self-review and revision loop: inspect crop quality, slide density, layout bounds, source labels, notes, and figure readability; fix high- and medium-severity issues before final validation.
+7. Verify by reopening the PPTX and inspecting package structure; render slide previews only if a reliable cross-platform headless renderer is already available.
 
 OCR, full supplementary extraction, all-page high-resolution rendering, all-slide rendered QA, and long script files are opt-in or justified exceptions, not defaults.
 
@@ -150,6 +154,28 @@ Adapt this structure to the paper type. Do not force every paper into the same t
 
 For a quick or unspecified request, prefer 10-14 slides. Expand beyond 16 slides only when the user asks for a detailed seminar deck or the paper genuinely needs the extra space to stay readable.
 
+### Plan the visual rhythm before authoring
+Before creating slides, assign each slide a visual role and avoid repeating the same role too often.
+
+Use a rhythm such as:
+- opener / conceptual claim,
+- problem setup,
+- mechanism or workflow,
+- evidence slide,
+- evidence slide with cropped subpanel,
+- comparison or ablation,
+- boundary / limitation,
+- synthesis / discussion.
+
+For each slide, choose one of these composition types:
+- `figure-dominant`: figure owns most of the slide; text is a quiet margin note or bottom strip,
+- `process-wide`: full-width workflow with small stage labels,
+- `claim-led`: one strong sentence with 2-3 supporting fragments, no fake cards,
+- `comparison`: table/chart or two evidence blocks with a single conclusion line,
+- `discussion`: open layout with a few sharp prompts, not a dense bullet page.
+
+Do not create the whole deck from one generic layout family. If the plan shows repeated `three cards + takeaway` or `figure left + rail right` slides, revise the plan before building.
+
 ## Step 4. Select figures as evidence, not decoration
 Inspect the source for:
 - graphical abstracts or summary models
@@ -191,6 +217,19 @@ If extraction fails, use the best available fallback:
 - recreated editable table only when values are explicitly available,
 - clearly labeled placeholder only when the visual is unavailable.
 
+### Figure crop self-check before slide insertion
+Before building the final PPTX, create a quick contact sheet or inspect selected crops directly. This is a cheap way to catch the most common deck defects before they become slide defects.
+
+Check every selected figure/table asset for:
+- clipped titles, axis labels, legends, panel letters, or source figure labels,
+- irrelevant surrounding paper text or captions included in the crop,
+- too little margin around the crop, especially at the top and left edges,
+- unreadable small text after the planned slide scaling,
+- dense multi-panel figures that should be split into separate slides or cropped to key panels,
+- low-resolution or blurry rendering.
+
+Revise the crop before placing it in the PPTX when any scientific context is cut off. A figure crop that loses a title, y-axis label, legend, or panel label is a defect, not an acceptable tradeoff.
+
 ## Step 6. Write slide-by-slide content
 For each slide, write:
 - Chinese title
@@ -208,6 +247,19 @@ Each slide should make one point. Result slides should answer:
 - What should the audience believe after seeing it?
 
 Speaker notes should be useful but concise. Do not write long narration for every slide when the slide content is self-explanatory.
+
+### On-slide text budget
+Write for the slide, not for the manuscript. Most explanation belongs in speaker notes.
+
+Use these default limits unless a user-provided template clearly supports more:
+- title: one line preferred; two lines allowed only when the slide still has enough vertical space,
+- normal slide: 2-3 bullets, each no more than about 18 Chinese characters or 8-10 English words,
+- result slide: 1 short interpretation sentence plus at most 2 compact callouts,
+- card body: 1 sentence, usually no more than 24 Chinese characters,
+- metric label: 1 line whenever possible,
+- source label: small and short; do not let source text compete with the figure.
+
+If the point needs more words, split the slide or move the explanation to speaker notes. Do not rely on shrinking text below readable size to make an overfull slide work.
 
 ### Evidence hierarchy on a slide
 For any result slide, order the visual logic like this:
@@ -233,6 +285,27 @@ Treat equal-weight 1:1 layouts as the exception, not the default. Use them only 
 Prefer the smallest text block that still makes the claim legible. If the visual needs space, give it space; if the text is the main point, let the slide breathe and keep the figure smaller or move it to its own slide.
 
 For dense figures or tables, crop to the most relevant panels and avoid squeezing them into equal columns. For sparse slides, do not pad the page with extra boxes just to fill space.
+
+### Anti-template design rule
+Avoid layouts that look like generic AI-generated slides. Academic restraint does not mean mechanical repetition.
+
+Do not overuse:
+- three equal cards with icon/number strips,
+- rows of identical metric pills,
+- the same right-hand interpretation rail on every figure slide,
+- nested rectangles and fake dashboard cards,
+- evenly spaced boxes that ignore the shape of the evidence,
+- generic "problem / solution / impact" grids when the paper's argument has a more specific structure.
+
+Instead, vary the composition based on the evidence:
+- let one figure own the page when it is the evidence,
+- use a single large quote-like claim line only when the slide is conceptual,
+- use small edge annotations, direct labels, or a narrow marginal note instead of big explanatory boxes,
+- use full-width process diagrams for workflows,
+- split a dense figure across two slides instead of adding a crowded explanation rail,
+- place summary text as a quiet bottom strip or margin note when the figure is dominant.
+
+Before finalizing, scan the deck at slide-sorter scale. If five or more slides share the same composition, redesign at least some of them so the deck has a natural rhythm.
 
 ### Slide archetype defaults
 Use these defaults unless the source strongly suggests otherwise:
@@ -263,17 +336,96 @@ The PPTX should:
 - use Chinese titles, bullets, captions, and speaker notes,
 - include source labels for figure slides,
 - keep slide text concise and readable,
+- use text boxes sized for their content, with conservative margins and no expected clipping,
 - avoid text-only result slides when visuals are available,
-- maintain consistent typography, spacing, titles, captions, and section transitions.
+- maintain consistent typography, spacing, titles, captions, and section transitions,
+- avoid repetitive, rigid, card-heavy layouts that make the deck feel machine-generated.
 
 Use compact, evidence-first page composition. Avoid making every result slide a rigid two-column template or any balanced 1:1 scaffold. Let slide geometry follow the figure rather than forcing the figure to fit a template.
 
 When a slide has one dominant figure, let that figure own the page. Keep the annotation rail narrow and short, and move secondary explanation into speaker notes or a follow-up slide rather than expanding the slide horizontally into a symmetrical split.
 
-## Step 8. Render, inspect, and revise
-After creating the PPTX, render previews only when a reliable headless renderer is readily available.
+### Text fitting implementation rules
+When authoring with python-pptx or similar tooling:
+- Treat automatic text shrinking (`fit_text` or equivalent) as a last resort, not the layout strategy. It can fail silently, behave differently across platforms, or make text too small.
+- Prefer writing shorter text, increasing the text box, or splitting the slide.
+- Use explicit line breaks for known long phrases, model names, and metric labels.
+- Keep text box margins conservative; avoid tiny text boxes with long Chinese-English mixed strings.
+- If using auto-fit, still verify the rendered or estimated text size and document the fallback.
+- Never accept a slide where text is expected to overflow, be clipped, or require manual resizing by the user.
 
-If rendered previews are available, inspect them for:
+## Step 8. Self-review and corrective revision loop
+After creating the first PPTX draft, run at least one explicit self-review pass before declaring the deck final. Treat this as a defect-finding step, not a confirmation step.
+
+The loop is:
+1. Inspect the generated PPTX and extracted assets.
+2. Write a short defect list with severity (`high`, `medium`, `low`) and slide numbers.
+3. Correct every high-severity issue and every medium-severity issue that can be fixed without expanding the task substantially.
+4. Regenerate the PPTX after edits.
+5. Re-run verification and update `output/qa_report.md` with what was checked, what was fixed, and what remains.
+
+### Self-review checklist
+Check content and structure:
+- slide order follows the paper's argument, not merely the paper section order,
+- each slide has one dominant claim,
+- slide titles are conclusion-style where possible,
+- no invented numbers, mechanisms, datasets, claims, or unsupported implications,
+- result slides include source labels and do not remove original scientific labels,
+- speaker notes exist when planned and are useful for oral explanation.
+
+Check visual and layout quality:
+- no cropped-off figure titles, axes, legends, panel labels, or important annotations,
+- no source figure is squeezed so far that the evidence becomes unreadable,
+- dense figures are split or cropped rather than placed as tiny full-figure screenshots,
+- text boxes, figures, captions, source labels, and takeaway bands do not overlap,
+- no text visually exceeds or is likely to exceed its text box; text overflow is a delivery-blocking defect,
+- all shapes stay inside slide bounds,
+- text density is reasonable; move excess explanation into speaker notes or split the slide,
+- layout rhythm feels intentional rather than generated from one repeated card/rail template,
+- no slide uses equal cards or metric chips merely to fill space,
+- cards, metrics, and captions have consistent spacing and alignment,
+- font choices are Office-safe; avoid relying on a font that is unavailable in the environment for text fitting.
+
+### Severity rules
+Use `high` for defects that can mislead the audience or make the deck look broken:
+- clipped scientific evidence such as axes, legends, panel labels, table rows, figure titles, or method labels,
+- unreadable main evidence on a key result slide,
+- overlapping text/figures, text cut off by its box, or text extending beyond a visible boundary,
+- wrong slide order or missing central evidence,
+- fabricated or unsupported quantitative statements.
+
+Use `medium` for defects that reduce professionalism or comprehension:
+- overly dense slides,
+- rigid AI-looking layouts, especially repeated equal cards, repeated right-side rails, or decorative metric rows,
+- weak crop margins,
+- figure captions detached from the visual,
+- excessive repeated layouts,
+- missing or unhelpful speaker notes,
+- ambiguous source attribution.
+
+Use `low` for cosmetic issues that do not affect comprehension:
+- minor alignment imperfections,
+- palette or typography refinements,
+- optional split of a readable but dense figure.
+
+### Programmatic checks when using python-pptx
+When generating with python-pptx, perform a lightweight audit in code after the first draft and again after revision:
+- reopen the PPTX with `Presentation(output_path)`,
+- count slides and embedded media,
+- count non-empty notes slides if notes were planned,
+- check every shape's left/top/right/bottom stays within the slide canvas,
+- flag text-heavy slides by character count and number of text boxes,
+- flag any text box whose estimated text length is too large for its width/height, especially mixed Chinese-English strings,
+- flag long unbroken tokens or labels that may overflow narrow boxes,
+- count repeated layout patterns and flag decks that reuse the same composition too often,
+- flag images whose displayed size is too small for their role,
+- scan for placeholder text such as `lorem`, `xxxx`, or accidental unreplaced labels.
+
+These checks cannot prove visual perfection, but they reliably catch many failures and should trigger a manual/self-review pass.
+
+### Rendered preview policy
+Render slide previews when a reliable headless renderer is readily available. If rendered previews are available, inspect them for:
+
 - missing images,
 - distorted or low-resolution figures,
 - unreadable panels,
@@ -284,15 +436,24 @@ If rendered previews are available, inspect them for:
 - missing source labels,
 - missing or unhelpful speaker notes.
 
-If no reliable renderer is available, perform lightweight verification instead:
+If rendered preview reveals defects, revise and regenerate the PPTX. Do not deliver a deck with obvious visual defects merely because the package validates.
+
+If no reliable renderer is available, still complete the self-review loop using:
+- crop/contact-sheet inspection for selected assets,
+- python-pptx structural checks,
+- slide-by-slide text and shape inspection,
+- a clear note in `output/qa_report.md` that rendered preview was unavailable.
+
+## Step 9. Final verification
+After revision, perform lightweight verification:
 - reopen the PPTX with the generation library when possible,
 - check slide count,
 - check embedded media count,
 - check speaker notes presence when notes were planned,
 - check obvious shape bounds if tooling supports it,
-- create a contact sheet from selected extracted assets only if helpful, not a full-deck screenshot set.
+- create a contact sheet from selected extracted assets when figures were cropped.
 
-Revise obvious defects. Document any remaining limitation in `output/qa_report.md`.
+Do not stop at "PPTX opens" if the self-review found high-severity issues. Correct them first, then verify again. Document any remaining limitation in `output/qa_report.md`.
 
 # Paper-Type Guidance
 
@@ -439,7 +600,11 @@ A short quality report:
 - slide count,
 - figures inserted,
 - missing or placeholder figures,
-- verification method used,
+- self-review defects found, grouped by severity,
+- defects corrected during the revision pass,
+- text overflow and text-fit checks performed,
+- design-rhythm / anti-template review performed,
+- verification method used after revision,
 - known limitations,
 - manual follow-up if needed.
 
@@ -453,7 +618,7 @@ Figure asset traceability file, generated only when external figure/table assets
 - source page or source file,
 - extraction method,
 - slide placement,
-- quality notes.
+- quality notes, including whether titles, axes, legends, and panel labels are preserved.
 
 If no external figure/table assets are extracted, omit `asset_manifest.md` or write a one-line note in `qa_report.md` instead.
 
@@ -504,12 +669,16 @@ Skip the optional outline/script/figure-plan files by default unless they materi
 - Do not fabricate results, methods, numbers, or figure details.
 - Do not add expensive processing steps unless they improve the deck or were requested.
 - Do not overload slides with text.
+- Do not deliver slides with text extending beyond visible boxes, clipped by boxes, or likely to overflow after font substitution.
 - Do not make result slides text-only when figures are available.
 - Make every slide serve the paper's argument.
 - Ensure figures are readable at presentation scale.
+- Ensure selected figure crops preserve all scientifically necessary context before placing them in slides.
 - Ensure text, captions, and figures do not overlap.
 - Ensure font hierarchy is consistent across slides and that figures, captions, and metrics feel visually related rather than independently placed.
+- Ensure the visual rhythm does not feel like a repeated AI template; vary composition based on evidence role and figure geometry.
 - Ensure the deck is not visually underfilled: empty regions should be intentional whitespace, not leftover template space from an undersized figure or text block.
+- Run at least one self-review and corrective revision pass; do not deliver a first draft with known high-severity defects.
 - Document uncertainty and missing source material clearly.
 
 # Fallback Rules
