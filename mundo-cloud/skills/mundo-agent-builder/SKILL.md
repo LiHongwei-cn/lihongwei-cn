@@ -251,13 +251,15 @@ The user has extreme UI cleanliness standards. Study Claude Code / Hermes / Code
 ### Rules
 - **Three sections**: status (top) → output (middle) → prompt (bottom)
 - **Status line**: flat, dot-separated: `MUNDO · model · tokens · time`
+- **Task accepted feedback**: IMMEDIATELY after user submits, show `▸ 已接收 <task preview>`. Without this, user thinks the program didn't hear them. This is BEFORE any LLM call.
 - **Output**: colored scroll stream (green ✓, red ✗, blue tool names, purple keywords)
 - **Prompt**: bare `❯ ` — no decoration, no bars, no emoji
 ### Completion: gold separator lines (`━` * cols) with stats between them
 - **No scroll regions** — direct stdout.write() only
 - **No status bar redraws between log lines** — only at task start/done
 - **No emoji** in status/input area
-- **Live dashboard** (v25.0+): During execution, show inline status: `▸ T1 · 1.2K tok · ⏱3.2s · L60% T40% · terminal · hermes · ×2分身`. Updated after each tool call via `update_live_status(stats)`. Uses `sys.stdout.write("\r" + CLEAR_LINE)` for in-place update.
+- **Live dashboard** (v25.0+): During execution, show inline status: `▸ T1 · 1.2K tok · ⏱3.2s · L60% T40% · terminal · hermes · ×2分身`. Updated after each tool call via `update_live_status(stats)`. Uses `sys.stdout.write("\\r" + CLEAR_LINE)` for in-place update.
+- **Task accepted feedback** (v25.0+): Immediately after user submits, show `▸ 已接收 <task preview...>` so the user knows the input was received before thinking/processing starts. Call `log_task_accepted(line)` at the start of `_execute_task`.
 
 ### What NOT to Do (user rejected each of these)
 
@@ -371,8 +373,10 @@ gh release create mundo-vN.0 *.zip --title "MUNDO Agent vN.0 — <summary>" --no
 
 **Checklist before finishing ANY Mundo task:**
 - [ ] `diff` local install files — must match repo
-- [ ] README.md version + features updated
-- [ ] index.html version + features updated
+- [ ] README.md version + features updated (all 4 languages)
+- [ ] mundo-agent/README.md updated
+- [ ] index.html version + features + download links updated
+- [ ] GitHub Release created (if version bump)
 - [ ] git pushed
 
 ## Smart Routing (v24.3+)
@@ -530,6 +534,8 @@ Embed these as iron rules in the agent's system prompt so ALL output reflects pr
 - **dict.get() None trap**: `d.get("key", "")` returns `None` (NOT `""`) when the key EXISTS but its value IS None. This is the #1 crash cause in LLM message processing. Tool_calls assistant messages have `content: null`. Always use `d.get("key") or ""` for any field that could be None. Applies to: `content`, `tool_calls`, `delta`, `choices`. See `references/sse-streaming-patterns.md`.
 - **extract_stream_delta safety**: `chunk.get("choices", [{}])[0]` crashes if choices is empty. Use: `choice = chunk.get("choices") or [{}]; first = choice[0] if choice else {}; delta = first.get("delta") or {}`.
 - **Usage in streaming**: Many providers don't return `usage` in streaming chunks (only in the last chunk, if at all). Always `usage = msg.get("_usage") or {}` — never assume it exists.
+- **log_thinking must NOT null stats**: `log_thinking(turn)` must NOT set `self._stats = None`. The streaming status bar reads `_stats` during output. If null, it shows 0 tok. Keep previous stats; updated by `_update_stats` after LLM responds.
+- **Real-time token during streaming**: Estimate from output buffer: `len(stream_buf) * 2 // 3`. Not exact but shows progress. Update status bar every ~20 chunks to avoid terminal flicker.
 - **Tool execution exceptions**: Wrap `execute_tool()` in try/except. A crashing tool shouldn't kill the entire agentic loop. Return `f"[工具执行异常: {e}]"` and continue.
 - **Memory compress on every task**: `compress_conversation` and `extract_from_conversation` run at the START of each task (before engine.run). Wrap in try/except — memory failures must not block task execution.
 - **Prompt_toolkit multi-line paste**: When users paste multi-line text (e.g. from web/chat), prompt_toolkit's default `PromptSession` either submits on first newline (multiline=False) or treats all Enter as newlines (multiline=True). Neither is correct. Use custom `KeyBindings` with `multiline=True`: Enter at end-of-buffer (`cursor >= len(text.rstrip())`) → submit; Enter in middle → insert newline. Add `Option+Enter` (escape+enter) as force-submit. Always `.strip()` the result. See `references/prompt-toolkit-input.md`.
