@@ -96,6 +96,7 @@ class MundoCLI:
 
         def _on_tool_start(tool_name, tool_args, stats):
             self.console.log_tool_start(tool_name, tool_args)
+            self.console._last_tool_args = tool_args  # 存储用于完成时显示
             self.console.update_live_status(stats)
         self.engine.on_tool_call = _on_tool_start
 
