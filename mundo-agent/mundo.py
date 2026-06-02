@@ -720,25 +720,25 @@ class MundoCLI:
         sys.exit(0)
 
     def run(self):
-        while True:
-            try:
-                # 清空待处理输入队列
-                while not self._pending_inputs.empty():
-                    self._pending_inputs.get_nowait()
+        from prompt_toolkit.patch_stdout import patch_stdout
+        with patch_stdout():
+            while True:
+                try:
+                    while not self._pending_inputs.empty():
+                        self._pending_inputs.get_nowait()
 
-                # 使用带金色条的多行输入
-                line = self.console.read_input().strip()
-                if not line:
-                    continue
-                if self.process_command(line):
-                    continue
+                    line = self.console.read_input().strip()
+                    if not line:
+                        continue
+                    if self.process_command(line):
+                        continue
 
-                self._execute_task(line)
+                    self._execute_task(line)
 
-            except KeyboardInterrupt:
-                print(f"\n{C.IRON}  (Ctrl+C) 输入 /quit 退出{C.RESET}")
-            except EOFError:
-                self._exit()
+                except KeyboardInterrupt:
+                    print(f"\n{C.IRON}  (Ctrl+C) 输入 /quit 退出{C.RESET}")
+                except EOFError:
+                    self._exit()
 
     def _execute_task(self, line: str):
         """执行任务"""
