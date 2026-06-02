@@ -172,6 +172,9 @@ class MundoCLI:
         self.engine.on_stream_text = lambda text: self.console.stream_text(text)
         self.engine.on_stream_end = lambda turn: self.console.stream_end(turn)
 
+        # stats 同步到 console（实时状态栏需要）
+        self.engine.on_turn_end = lambda turn, stats, *a: self.console._update_stats(stats)
+
         # 工具调用开始 → console 显示工具名和参数
         def _on_tool_start(tool_name, tool_args, stats, phase, result_preview=None, duration=0):
             if phase == "start":
