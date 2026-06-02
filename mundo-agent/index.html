@@ -135,14 +135,14 @@ body.lang-en [data-lang="zh"]{display:none}
       蒙多是独立 AI Agent。LLM 直连 28 个模型，内置 6 大工具，Agentic Loop 自动推理执行。<br>
       自动检测本地 Agent（Hermes / Claude Code / Codex），按任务类型分发。<br>
       复杂任务自动拆分，多个 Agent 或蒙多分身并行执行。<br>
-      v25.0 新增：流式输出（实时看蒙多思考）· 实时仪表盘（token/turns/工具/Agent 一览无余）· 连接稳定性（3次重试+指数退避+失败降级）· 子任务实时进度 · 智能输入框 · 修复 content=None 崩溃。<br>
+      v25.0 新增：流式输出（实时看蒙多思考）· 实时仪表盘（token/turns/工具/Agent 一览无余）· 连接稳定性（3次重试+指数退避+失败降级）· 工具参数验证（缺参不崩溃）· API 消息清洗（None/空消息自动修复）· 子任务实时进度 · 智能输入框。<br>
       蒙多学习。蒙多记忆。蒙多成长。蒙多进化。蒙多无限。
     </p>
     <p class="hero-desc" data-lang="en">
       Mundo is an independent AI Agent. LLM direct-connect to 28 models, 6 built-in tools, Agentic Loop.<br>
       Auto-detects local agents (Hermes / Claude Code / Codex), dispatches by task type.<br>
       Complex tasks auto-split, multiple agents or Mundo clones execute in parallel.<br>
-      v25.0: Streaming output · Live dashboard · Connection stability (3x retry + exponential backoff + fallback) · Subtask progress · Smart input box · Fixed content=None crash.<br>
+      v25.0: Streaming output · Live dashboard · Connection stability (3x retry + backoff + fallback) · Tool arg validation · API message sanitization · Subtask progress · Smart input box.<br>
       Mundo learns. Mundo remembers. Mundo grows. Mundo evolves. Mundo is infinite.
     </p>
   </div>
@@ -172,7 +172,7 @@ body.lang-en [data-lang="zh"]{display:none}
   <!-- 核心引擎 -->
   <div class="section" data-lang="zh">
     <div class="section-title">⚔️ 核心引擎</div>
-    <div class="section-subtitle">蒙多不只是一个工具。蒙多是独立的 AI Agent——LLM 直连、工具调用、推理执行、Agent 调度，全部自己完成。v25.0 新增：流式输出 + 实时仪表盘 + 连接稳定性，让你看见蒙多思考的每一刻。</div>
+    <div class="section-subtitle">蒙多不只是一个工具。蒙多是独立的 AI Agent——LLM 直连、工具调用、推理执行、Agent 调度，全部自己完成。v25.0 新增：流式输出 + 实时仪表盘 + 连接稳定性 + 健壮性，让你看见蒙多思考的每一刻。</div>
     <div class="abilities-grid">
       <div class="ability-card"><div class="ability-icon">🤖</div><div class="ability-title">28 个 AI 模型 + 多模型协同</div><div class="ability-desc">MiMo/DeepSeek/Qwen/GLM/Kimi/ERNIE/豆包/OpenAI/Claude/Gemini/Mistral/Grok/OpenRouter... 首次向导选择，支持添加多个模型。蒙多根据任务类型智能分配：代码→DeepSeek/Claude，日常→MiMo，推理→DeepSeek R1。</div></div>
       <div class="ability-card"><div class="ability-icon">🔄</div><div class="ability-title">Agentic Loop</div><div class="ability-desc">think → act → observe → repeat。自动推理、执行工具、验证结果，直到任务完成。</div></div>
