@@ -214,7 +214,7 @@ class TaskConsole:
 
     def _redraw(self, buf, cur):
         text = "".join(buf)
-        self._w(f"\r{A.CLEAR_LINE}{A.GOLD}❯{A.RESET} {text}")
+        self._w(f"\r\033[J{A.GOLD}❯{A.RESET} {text}")
         if cur < len(text):
             bw = _dw(text[:cur])
             self._w(f"\033[{3 + bw}G")
