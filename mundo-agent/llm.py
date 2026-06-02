@@ -2,6 +2,7 @@
 
 import os
 import json
+import time
 import urllib.request
 import urllib.error
 from pathlib import Path
@@ -79,16 +80,31 @@ class LLMClient:
             "Authorization": f"Bearer {self.api_key}",
         }
         data = json.dumps(payload).encode("utf-8")
-        req = urllib.request.Request(url, data=data, headers=headers, method="POST")
 
-        try:
-            with urllib.request.urlopen(req, timeout=120) as resp:
-                return json.loads(resp.read().decode("utf-8"))
-        except urllib.error.HTTPError as e:
-            err_body = e.read().decode("utf-8", errors="replace")
-            raise RuntimeError(f"LLM API 错误 {e.code}: {err_body[:300]}") from e
-        except urllib.error.URLError as e:
-            raise RuntimeError(f"网络错误: {e.reason}") from e
+        last_error = None
+        for attempt in range(3):
+            req = urllib.request.Request(url, data=data, headers=headers, method="POST")
+            try:
+                with urllib.request.urlopen(req, timeout=120) as resp:
+                    return json.loads(resp.read().decode("utf-8"))
+            except urllib.error.HTTPError as e:
+                err_body = e.read().decode("utf-8", errors="replace")
+                if e.code >= 500 and attempt < 2:
+                    time.sleep(2 * (attempt + 1))
+                    continue
+                raise RuntimeError(f"LLM API 错误 {e.code}: {err_body[:300]}") from e
+            except urllib.error.URLError as e:
+                last_error = e.reason
+                if attempt < 2:
+                    time.sleep(2 * (attempt + 1))
+                    continue
+                raise RuntimeError(f"网络错误: {last_error}") from e
+            except Exception as e:
+                last_error = str(e)
+                if attempt < 2:
+                    time.sleep(2 * (attempt + 1))
+                    continue
+                raise RuntimeError(f"请求异常: {last_error}") from e
 
     def _request_stream(self, payload: Dict) -> Iterator[Dict]:
         """SSE 流式请求 — readline 方式，更稳定"""
