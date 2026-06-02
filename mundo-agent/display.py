@@ -216,18 +216,49 @@ class TaskConsole:
         from prompt_toolkit.formatted_text import ANSI as PT_ANSI
         from prompt_toolkit.history import FileHistory
         from prompt_toolkit.styles import Style
+        from prompt_toolkit.key_binding import KeyBindings
+        from prompt_toolkit.filters import Condition
 
         self._w(f"\n{self._status_line()}\n")
 
         hist_path = str(Path.home() / ".hermes" / "mundo-agent" / ".mundo_history")
         style = Style.from_dict({"prompt": "#d4a017 bold"})
-        session = PromptSession(history=FileHistory(hist_path), style=style)
+
+        kb = KeyBindings()
+
+        @kb.add("enter")
+        def _(event):
+            buf = event.current_buffer
+            # 光标在最后一行末尾 → 提交
+            text = buf.text
+            cursor = buf.cursor_position
+            if cursor >= len(text.rstrip()):
+                # 去掉末尾空白后提交
+                buf.text = text.rstrip()
+                buf.validate_and_handle()
+            else:
+                # 在文本中间 → 插入换行，允许自由编辑
+                buf.newline()
+
+        @kb.add("escape", "enter")
+        def _(event):
+            # Option+Enter 强制提交（不论光标位置）
+            buf = event.current_buffer
+            buf.text = buf.text.rstrip()
+            buf.validate_and_handle()
+
+        session = PromptSession(
+            history=FileHistory(hist_path),
+            style=style,
+            key_bindings=kb,
+            multiline=True,
+        )
 
         try:
             return session.prompt(
                     PT_ANSI(f"{A.GOLD}❯{A.RESET} "),
                     wrap_lines=True,
-                )
+                ).strip()
         except (EOFError, KeyboardInterrupt):
             return ""
 
