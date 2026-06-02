@@ -91,7 +91,7 @@ class LLMClient:
             raise RuntimeError(f"网络错误: {e.reason}") from e
 
     def _request_stream(self, payload: Dict) -> Iterator[Dict]:
-        """SSE 流式请求 — 逐行解析 data: {...}"""
+        """SSE 流式请求 — readline 方式，更稳定"""
         url = f"{self.base_url}/chat/completions"
         headers = {
             "Content-Type": "application/json",
@@ -108,26 +108,19 @@ class LLMClient:
         except urllib.error.URLError as e:
             raise RuntimeError(f"网络错误: {e.reason}") from e
 
-        buffer = ""
         try:
-            while True:
-                chunk = resp.read(1024)
-                if not chunk:
-                    break
-                buffer += chunk.decode("utf-8", errors="replace")
-                while "\n" in buffer:
-                    line, buffer = buffer.split("\n", 1)
-                    line = line.strip()
-                    if not line or line.startswith(":"):
+            for raw_line in resp:
+                line = raw_line.decode("utf-8", errors="replace").strip()
+                if not line or line.startswith(":"):
+                    continue
+                if line.startswith("data: "):
+                    payload_str = line[6:]
+                    if payload_str == "[DONE]":
+                        return
+                    try:
+                        yield json.loads(payload_str)
+                    except json.JSONDecodeError:
                         continue
-                    if line.startswith("data: "):
-                        payload_str = line[6:]
-                        if payload_str == "[DONE]":
-                            return
-                        try:
-                            yield json.loads(payload_str)
-                        except json.JSONDecodeError:
-                            continue
         finally:
             resp.close()
 

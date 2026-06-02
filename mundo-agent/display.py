@@ -271,6 +271,13 @@ class TaskConsole:
         self._stats = None
         self._w(f"\n  {A.GOLD_DIM}▸{A.RESET} {A.SUBTEXT}思考中...{A.RESET} {A.DIM}(Turn {turn}){A.RESET}\n")
 
+    def log_task_accepted(self, task_text: str):
+        """任务已接收反馈"""
+        preview = task_text[:60].replace("\n", " ")
+        if len(task_text) > 60:
+            preview += "..."
+        self._w(f"\n  {A.SUCCESS}▸{A.RESET} {A.DIM}已接收{A.RESET} {A.SUBTEXT}{preview}{A.RESET}\n")
+
     def log_tool_start(self, tool_name: str, tool_args: dict):
         info = self._fmt_tool_info(tool_name, tool_args)
         # 清除实时状态行，打印工具信息

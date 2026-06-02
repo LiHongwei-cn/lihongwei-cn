@@ -758,6 +758,9 @@ class MundoCLI:
             except Exception:
                 pass
 
+        # 明确反馈：任务已接收
+        self.console.log_task_accepted(line)
+
         self._engine_busy = True
         self.console.start_task()
 
