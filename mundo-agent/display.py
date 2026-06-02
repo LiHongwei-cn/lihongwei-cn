@@ -61,9 +61,8 @@ class TaskConsole:
         self._was_streamed = False
 
     def _w(self, t: str):
-        from prompt_toolkit import print_formatted_text
-        from prompt_toolkit.formatted_text import ANSI as PT_ANSI
-        print_formatted_text(PT_ANSI(t), end="", flush=True)
+        sys.stdout.write(t)
+        sys.stdout.flush()
 
     def _fmt_tok(self, n: int) -> str:
         if n < 1000:
@@ -231,12 +230,11 @@ class TaskConsole:
     # ═══════════════════════════════════════
 
     def read_input(self) -> str:
-        from prompt_toolkit import PromptSession, print_formatted_text
+        from prompt_toolkit import PromptSession
         from prompt_toolkit.formatted_text import ANSI as PT_ANSI
         from prompt_toolkit.history import FileHistory
         from prompt_toolkit.styles import Style
         from prompt_toolkit.key_binding import KeyBindings
-        from prompt_toolkit.filters import Condition
 
         self._w(f"\n{self._status_line()}\n")
 

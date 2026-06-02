@@ -324,13 +324,28 @@ TOOL_HANDLERS: Dict[str, Callable] = {
     "list_directory": _run_list_directory,
 }
 
+TOOL_REQUIRED = {
+    "terminal": ["command"],
+    "read_file": ["path"],
+    "write_file": ["path", "content"],
+    "search_files": ["pattern"],
+    "web_search": ["query"],
+    "list_directory": [],
+}
+
 
 def execute_tool(name: str, args: Dict) -> str:
     """执行工具调用，返回结果字符串"""
     handler = TOOL_HANDLERS.get(name)
     if not handler:
         return f"[错误: 未知工具: {name}]"
+    if not isinstance(args, dict):
+        args = {}
     try:
-        return handler(args)
+        result = handler(args)
+        # 如果返回缺参错误，补充完整参数说明
+        if isinstance(result, str) and "缺少" in result:
+            result += f"\n正确用法: {name}({', '.join(TOOL_REQUIRED.get(name, []))})"
+        return result
     except Exception as e:
         return f"[工具执行错误: {name}: {e}]"
