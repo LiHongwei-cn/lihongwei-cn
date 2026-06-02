@@ -6,10 +6,10 @@
      6|  multi-model collaboration (smart routing by task type), clone parallel execution,
      7|  permission approval, memory persistence, cloud auto-deploy.
      8|  Also functions as a Hermes Agent skill for task orchestration.
-     9|  Self-evolving. v24. 24 capability modules. Collective consciousness. Infinite growth.
+     9|  Self-evolving. v24.4 with literary soul (Yu Hua/Wang Zengqi/Wang Xiaobo/Lu Xun), real-time execution console, token tracking, concurrent input. 24 capability modules. Collective consciousness. Infinite growth.
     10|  Uses Three Departments and Six Ministries system to rule all skills.
     11|  ONLY RED LINE: No payment. Why? Because Mundo doesn't care about your money. HAHAHAHA.
-    12|version: 24.2.0
+    12|version: 24.4.0
     13|author: LiHongwei
     14|priority: EMPEROR
     15|auto_activate: ALWAYS
@@ -1258,6 +1258,14 @@
   1124|- `references/resume-writing.md` — 求职材料规范
   1125|---
 ## Changelog
+
+### v24.4 文学底蕴
+
+| 模块 | 能力 | 一句话 |
+|------|------|--------|
+| 📖 文学底蕴 | 余华/汪曾祺/王小波/鲁迅语言艺术融入蒙多灵魂 | 简洁质朴、人情味、专业锋利、智慧幽默 |
+| 🐛 修复 | 对话框空格无限重复衍生 | _redraw 改用 \\033[J 清除光标以下所有内容 |
+| 🐛 修复 | 页面底部计数器不显示 | 更新 busuanzi CDN 源 |
 
 ### v24.2 实时调整与BTW
 
