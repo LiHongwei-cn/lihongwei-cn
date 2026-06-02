@@ -189,23 +189,58 @@ class TaskConsole:
         self._stream_buf = ""
         self._stream_line_count = 0
         self._was_streamed = True
+        self._stream_chunk_count = 0
         sys.stdout.write(f"\n")
         sys.stdout.flush()
+        # 显示初始状态栏
+        self._show_stream_status()
 
     def stream_text(self, text: str):
-        """流式输出 — 逐字符/逐 chunk 打印"""
+        """流式输出 — 逐字符/逐 chunk 打印 + 定期更新状态栏"""
         self._stream_buf += text
-        # 直接输出到终端
+        self._stream_chunk_count += 1
+        # 实时估算 token（中文1字≈2token，英文1词≈1token）
+        if self._stats:
+            est_tokens = len(self._stream_buf) * 2 // 3
+            self._stats.completion_tokens = max(self._stats.completion_tokens, est_tokens)
+            self._stats.total_tokens = self._stats.prompt_tokens + self._stats.completion_tokens
         from prompt_toolkit import print_formatted_text
         from prompt_toolkit.formatted_text import ANSI as PT_ANSI
         print_formatted_text(PT_ANSI(f"{A.TEXT}{text}{A.RESET}"), end="", flush=True)
+        # 每 20 个 chunk 更新一次状态栏（避免过于频繁）
+        if self._stream_chunk_count % 20 == 0:
+            self._show_stream_status()
 
     def stream_end(self, turn: int):
         """流式输出结束"""
         if self._stream_buf and not self._stream_buf.endswith("\n"):
             sys.stdout.write("\n")
             sys.stdout.flush()
+        # 清除状态栏
+        sys.stdout.write(f"\r{A.CLEAR_LINE}")
+        sys.stdout.flush()
         self._stream_buf = ""
+
+    def _show_stream_status(self):
+        """流式输出期间的实时状态栏（终端底部单行）"""
+        elapsed = self._elapsed(self._task_start) if self._task_start > 0 else "0s"
+        tok = self._fmt_tok(self._stats.total_tokens) if self._stats else "0"
+        turn = self._stats.turns if self._stats else 1
+        tools = self._stats.tool_calls_count if self._stats else 0
+
+        parts = [
+            f"{A.GOLD}T{turn}{A.RESET}",
+            f"{A.CYAN}{tok} tok{A.RESET}",
+            f"{A.GOLD_DIM}⏱{elapsed}{A.RESET}",
+        ]
+        if tools > 0:
+            parts.append(f"{A.INFO}{tools}tools{A.RESET}")
+        if self._stats and self._stats.clones_count > 0:
+            parts.append(f"{A.PURPLE}×{self._stats.clones_count}{A.RESET}")
+
+        status = f" {A.DIM}·{A.RESET} ".join(parts)
+        sys.stdout.write(f"\r{A.CLEAR_LINE}  {A.DIM}▸{A.RESET} {status} ")
+        sys.stdout.flush()
 
     # ═══════════════════════════════════════
     # 输入（prompt_toolkit）
@@ -268,7 +303,6 @@ class TaskConsole:
 
     def log_thinking(self, turn: int):
         self._task_start = _time.time()
-        self._stats = None
         self._w(f"\n  {A.GOLD_DIM}▸{A.RESET} {A.SUBTEXT}思考中...{A.RESET} {A.DIM}(Turn {turn}){A.RESET}\n")
 
     def log_task_accepted(self, task_text: str):
@@ -380,6 +414,10 @@ class TaskConsole:
 
     def stop_task(self):
         self._is_running = False
+
+    def _update_stats(self, stats):
+        """同步引擎 stats 到 console（实时状态栏用）"""
+        self._stats = stats
 
     def cleanup(self):
         self._w(A.SHOW_CURSOR + A.RESET)
