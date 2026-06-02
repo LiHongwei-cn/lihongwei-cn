@@ -61,8 +61,33 @@ tool_calls 在流式模式下分多 chunk 到达，需按 index 累积拼接。
 
 ### 9. 流式输出状态嵌入
 
-`print_formatted_text` 和 `sys.stdout.write` 混用会冲突。
-流式输出期间嵌入状态：`print_formatted_text(PT_ANSI(f"{text}  [{status}]"), end="")`。
+流式输出期间嵌入实时状态（token/时间/turn）。`print_formatted_text` 和 `sys.stdout.write` 混用会冲突，选一种。
+
+```python
+sys.stdout.write(text)
+sys.stdout.flush()
+if chunk_count % 15 == 0:
+    status = f"T{turn} · {tok}tok · {elapsed}"
+    sys.stdout.write(f"  \033[2m[{status}]\033[0m")
+    sys.stdout.flush()
+```
+
+### 10. tool_call 参数 JSON 修复（CRITICAL）
+
+LLM 可能返回截断的 JSON（如 `{"path`）。三层防御：
+
+**第1层：引擎修复** — 补全缺失的括号/引号
+**第2层：过滤无效 tool_calls** — 无法修复的丢弃，不存入 messages
+**第3层：API 发送前清洗** — `sanitize_messages()` 将损坏 arguments 替换为 `"{}"`
+
+### 11. 工具参数验证
+
+所有 tool handler 用 `args.get()` 而非 `args[]`，缺参返回清晰错误：
+```python
+path = args.get("path", "")
+if not path:
+    return "[错误: tool 缺少 path 参数]"
+```
 
 ## 详细参考
 
