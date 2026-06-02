@@ -78,7 +78,10 @@ MAX_OUTPUT_CHARS = 8000
 def _truncate(text: str, limit: int = MAX_OUTPUT_CHARS) -> str:
     if len(text) <= limit:
         return text
-    return text[:limit] + f"\n... (截断，共 {len(text)} 字符)"
+    # 智能截断：保留首尾，中间省略
+    head = text[:int(limit * 0.6)]
+    tail = text[-int(limit * 0.3):]
+    return f"{head}\n... ({len(text)} 字符，省略中间部分) ...\n{tail}"
 
 
 # ═══════════════════════════════════════════════
@@ -101,6 +104,14 @@ def _terminal(args: Dict) -> str:
             output += f"\n[stderr]\n{result.stderr}"
         if result.returncode != 0:
             output += f"\n[exit code: {result.returncode}]"
+            # 提供修复建议
+            stderr = result.stderr or ""
+            if "command not found" in stderr:
+                output += "\n提示: 命令未找到，检查拼写或安装对应包"
+            elif "Permission denied" in stderr:
+                output += "\n提示: 权限不足，尝试加 sudo 或检查文件权限"
+            elif "No such file" in stderr:
+                output += "\n提示: 文件/目录不存在，检查路径"
         return _truncate(output or "(无输出)")
     except subprocess.TimeoutExpired:
         return f"[超时: 命令执行超过 {timeout} 秒]"
