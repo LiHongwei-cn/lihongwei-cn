@@ -27,6 +27,109 @@ Build independent AI agents that connect directly to LLM APIs with tool calling 
 - Max turn limit (default 30) to prevent infinite loops
 - Error handling: LLM failure → return error, don't crash
 
+## Streaming Output (v25.0+)
+
+Real-time LLM output via SSE (Server-Sent Events). Users see text as it's generated, not after the full response completes.
+
+### Architecture
+
+```
+LLMClient.chat_stream()  →  SSE iterator (data: {...} lines)
+         ↓
+MundoEngine._accumulate_stream()  →  accumulates text + tool_calls from deltas
+         ↓
+on_stream_text callback  →  console.stream_text() prints chunk immediately
+```
+
+### SSE Parsing (stdlib urllib, no deps)
+
+```python
+def _request_stream(self, payload):
+    payload["stream"] = True
+    resp = urllib.request.urlopen(req, timeout=120)
+    buffer = ""
+    while True:
+        chunk = resp.read(1024)
+        if not chunk: break
+        buffer += chunk.decode("utf-8", errors="replace")
+        while "\n" in buffer:
+            line, buffer = buffer.split("\n", 1)
+            line = line.strip()
+            if line.startswith("data: "):
+                payload_str = line[6:]
+                if payload_str == "[DONE]": return
+                yield json.loads(payload_str)
+```
+
+### Tool Calls Accumulation from Deltas
+
+In streaming mode, tool_calls arrive incrementally across multiple chunks:
+1. First chunk: `{"index": 0, "id": "call_xxx", "function": {"name": "terminal"}}`
+2. Subsequent chunks: `{"index": 0, "function": {"arguments": '{"co"}}` then `{"index": 0, "function": {"arguments": 'mmand"}}`
+
+Must accumulate by index:
+```python
+tool_calls_map: Dict[int, Dict] = {}
+for tc_delta in delta["tool_calls"]:
+    idx = tc_delta.get("index", 0)
+    if idx not in tool_calls_map:
+        tool_calls_map[idx] = {"id": "", "type": "function", "function": {"name": "", "arguments": ""}}
+    tc = tool_calls_map[idx]
+    if tc_delta.get("id"): tc["id"] = tc_delta["id"]
+    fn = tc_delta.get("function", {})
+    if fn.get("name"): tc["function"]["name"] = fn["name"]
+    if fn.get("arguments"): tc["function"]["arguments"] += fn["arguments"]
+```
+
+### Streaming Fallback (MANDATORY)
+
+Not all providers support streaming. Always wrap in try/except and fall back to non-streaming:
+
+```python
+try:
+    stream_iter = client.chat_stream(messages=messages, tools=tools)
+    assistant_msg = accumulate_stream(stream_iter)
+except (RuntimeError, Exception):
+    self._use_streaming = False  # disable for rest of session
+    result = client.chat(messages=messages, tools=tools)
+    assistant_msg = extract_response(result)
+```
+
+### Duplicate Output Prevention
+
+When streaming prints text in real-time AND the caller also prints the response, text appears twice. Use a `_was_streamed` flag:
+
+```python
+# In display:
+def stream_start(self, turn):
+    self._was_streamed = True  # set flag
+
+def log_response(self, text):
+    if self._was_streamed:
+        self._was_streamed = False
+        return  # skip — already streamed
+    # ... print normally
+```
+
+Also skip in `-q` mode (which doesn't go through `_execute_task`):
+```python
+if args.query:
+    response = cli.engine.run(args.query)
+    if not cli.console._was_streamed:
+        print(response)
+```
+
+### Callback Chain
+
+```python
+engine.on_stream_start = lambda turn: console.stream_start(turn)
+engine.on_stream_text = lambda text: console.stream_text(text)  # called per chunk
+engine.on_stream_end = lambda turn: console.stream_end(turn)
+```
+
+### See Also
+- `references/sse-streaming-patterns.md` — full implementation, provider quirks, delta parsing
+
 ## Permission System
 
 Three-level classification (Claude Code style):
@@ -353,6 +456,11 @@ Embed these as iron rules in the agent's system prompt so ALL output reflects pr
 - **Emotional intelligence**: MUST be in system prompt. User wants MUNDO to be a friend, not a machine. "先共情再解决". NEVER use platitudes like "别担心" or "我理解你的感受". See `references/emotional-intelligence-pattern.md`.
 - **Token optimization**: Keep system prompt compact (~100 chars). Full prompt wastes tokens on simple conversations. Tools always available but LLM decides when to use them.
 - **UI洁癖**: User has extreme cleanliness preferences. No duplicate elements, no extra icons, no visual noise. Every UI change is scrutinized line by line. When in doubt, simpler is always better.
+- **dict.get() None trap**: `d.get("key", "")` returns `None` (NOT `""`) when the key EXISTS but its value IS None. This is the #1 crash cause in LLM message processing. Tool_calls assistant messages have `content: null`. Always use `d.get("key") or ""` for any field that could be None. Applies to: `content`, `tool_calls`, `delta`, `choices`. See `references/sse-streaming-patterns.md`.
+- **extract_stream_delta safety**: `chunk.get("choices", [{}])[0]` crashes if choices is empty. Use: `choice = chunk.get("choices") or [{}]; first = choice[0] if choice else {}; delta = first.get("delta") or {}`.
+- **Usage in streaming**: Many providers don't return `usage` in streaming chunks (only in the last chunk, if at all). Always `usage = msg.get("_usage") or {}` — never assume it exists.
+- **Tool execution exceptions**: Wrap `execute_tool()` in try/except. A crashing tool shouldn't kill the entire agentic loop. Return `f"[工具执行异常: {e}]"` and continue.
+- **Memory compress on every task**: `compress_conversation` and `extract_from_conversation` run at the START of each task (before engine.run). Wrap in try/except — memory failures must not block task execution.
 
 ## References
 
