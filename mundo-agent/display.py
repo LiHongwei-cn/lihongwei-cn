@@ -116,11 +116,10 @@ class TaskConsole:
     # ── 输入 ──
 
     def read_input(self) -> str:
-        import readline  # 必须：macOS 下 input() 靠它处理 Ctrl+R/历史/退格
-        self._w(f"\n{self._status_line()}\n")
-        prompt = f"{A.GOLD}❯{A.RESET} "
+        import readline
+        print(f"\n{self._status_line()}", flush=True)
         try:
-            return input(prompt)
+            return input(f"{A.GOLD}❯{A.RESET} ")
         except EOFError:
             return ""
 
