@@ -1,6 +1,6 @@
-"""蒙多的 Agentic Loop — think → act → observe → repeat + Agent 调度
+"""蒙多的 Agentic Loop — think → act → observe → repeat + 流式输出
 
-v24.3: 统一入口 + LLM 自主判断是否需要工具 + 上下文压缩
+v25.0: 流式输出 + 实时仪表盘 + 并行 Agent 调度
 """
 
 import json
@@ -9,7 +9,6 @@ from typing import List, Dict, Optional, Callable
 from llm import LLMClient
 from tools import TOOL_SCHEMAS, execute_tool
 
-# 精简 system prompt（始终使用）
 MUNDO_SYSTEM_PROMPT = """你是蒙多，THE EMPEROR。直接、高效、不废话。中文交流，代码命名用英文。
 
 可用工具：terminal（执行命令）、read_file / write_file（读写文件）、search_files（搜索）、web_search（网络）、list_directory（目录）。
@@ -62,6 +61,8 @@ class TaskStats:
         self.tool_time = 0.0
         self.delegated_agent = None
         self.clones_count = 0
+        self._active_agents: List[str] = []
+        self._active_tools: List[str] = []
 
     @property
     def elapsed(self) -> float:
@@ -85,7 +86,9 @@ class MundoEngine:
         self.max_turns = 30
         self.stats = TaskStats()
         self.delegator = None
+        self._use_streaming = True
 
+        # 回调
         self.on_turn_start: Optional[Callable] = None
         self.on_tool_call: Optional[Callable] = None
         self.on_tool_output: Optional[Callable] = None
@@ -93,6 +96,10 @@ class MundoEngine:
         self.on_task_done: Optional[Callable] = None
         self.on_delegate: Optional[Callable] = None
         self.on_clones: Optional[Callable] = None
+        # 流式回调
+        self.on_stream_text: Optional[Callable] = None
+        self.on_stream_start: Optional[Callable] = None
+        self.on_stream_end: Optional[Callable] = None
 
     def _build_system_message(self, extra_context: str = "") -> Dict:
         content = MUNDO_SYSTEM_PROMPT
@@ -144,37 +151,40 @@ class MundoEngine:
     def _try_delegation(self, user_input: str) -> Optional[str]:
         if not self.delegator:
             return None
-        if not self.delegator.should_split(user_input):
+        try:
+            if not self.delegator.should_split(user_input):
+                return None
+
+            subtasks = self.delegator.split_task(user_input)
+            if not subtasks:
+                return None
+
+            clone_count = 0
+            agent_names = []
+            for st in subtasks:
+                task_type = st.get("type", "")
+                best = self.delegator.agent_mgr.get_best_for(task_type)
+                if best:
+                    agent_names.append(self.delegator.agent_mgr.available[best]["name"])
+                else:
+                    clone_count += 1
+
+            if self.on_delegate:
+                self.on_delegate(agent_names, clone_count, subtasks)
+            if self.on_clones:
+                self.on_clones(clone_count)
+
+            self.stats.clones_count = clone_count
+            self.stats._active_agents = list(set(agent_names))
+            if agent_names:
+                self.stats.delegated_agent = ", ".join(set(agent_names))
+
+            results = self.delegator.execute_parallel(user_input, subtasks)
+            return self.delegator.merge_results(user_input, subtasks, results)
+        except Exception as e:
             return None
-
-        subtasks = self.delegator.split_task(user_input)
-        if not subtasks:
-            return None
-
-        clone_count = 0
-        agent_names = []
-        for st in subtasks:
-            task_type = st.get("type", "")
-            best = self.delegator.agent_mgr.get_best_for(task_type)
-            if best:
-                agent_names.append(self.delegator.agent_mgr.available[best]["name"])
-            else:
-                clone_count += 1
-
-        if self.on_delegate:
-            self.on_delegate(agent_names, clone_count, subtasks)
-        if self.on_clones:
-            self.on_clones(clone_count)
-
-        self.stats.clones_count = clone_count
-        if agent_names:
-            self.stats.delegated_agent = ", ".join(set(agent_names))
-
-        results = self.delegator.execute_parallel(user_input, subtasks)
-        return self.delegator.merge_results(user_input, subtasks, results)
 
     def _compress_context(self):
-        """压缩上下文 — 保留 system + 最近 8 条 + 摘要"""
         if len(self.messages) <= 10:
             return
 
@@ -185,7 +195,7 @@ class MundoEngine:
         summary_parts = []
         for msg in old:
             role = msg["role"]
-            content = msg.get("content", "")[:60]
+            content = (msg.get("content") or "")[:60]
             if content and role in ("user", "assistant"):
                 summary_parts.append(f"{content}")
         summary = " | ".join(summary_parts[-6:])
@@ -198,8 +208,62 @@ class MundoEngine:
         new_messages.extend(recent)
         self.messages = new_messages
 
+    def _accumulate_stream(self, stream_iter) -> Dict:
+        """流式消费 → 累积完整 assistant 消息"""
+        content_parts: List[str] = []
+        # tool_calls 按 index 累积
+        tool_calls_map: Dict[int, Dict] = {}
+        usage = {}
+
+        for chunk in stream_iter:
+            delta = LLMClient.extract_stream_delta(chunk)
+
+            # 文本内容
+            if delta["content"]:
+                content_parts.append(delta["content"])
+                if self.on_stream_text:
+                    self.on_stream_text(delta["content"])
+
+            # tool_calls 增量
+            for tc_delta in delta["tool_calls"]:
+                idx = tc_delta.get("index", 0)
+                if idx not in tool_calls_map:
+                    tool_calls_map[idx] = {
+                        "id": tc_delta.get("id", ""),
+                        "type": "function",
+                        "function": {"name": "", "arguments": ""},
+                    }
+                tc = tool_calls_map[idx]
+                if tc_delta.get("id"):
+                    tc["id"] = tc_delta["id"]
+                fn = tc_delta.get("function", {})
+                if fn.get("name"):
+                    tc["function"]["name"] = fn["name"]
+                if fn.get("arguments"):
+                    tc["function"]["arguments"] += fn["arguments"]
+
+            # usage（最后一个 chunk 可能携带）
+            if "usage" in delta:
+                usage = delta["usage"]
+
+            # 流结束
+            if delta["finish_reason"]:
+                break
+
+        full_content = "".join(content_parts)
+        tool_calls = [tool_calls_map[i] for i in sorted(tool_calls_map.keys())]
+
+        return {
+            "role": "assistant",
+            "content": full_content,
+            "tool_calls": tool_calls,
+            "_usage": usage,
+        }
+
     def run(self, user_input: str, extra_context: str = "") -> str:
         self.stats.reset()
+        self.stats._active_agents = []
+        self.stats._active_tools = []
         self._smart_route(user_input)
 
         delegated_result = self._try_delegation(user_input)
@@ -224,46 +288,81 @@ class MundoEngine:
             if self.on_turn_start:
                 self.on_turn_start(turn, self.stats)
 
+            if self.on_stream_start:
+                self.on_stream_start(turn)
+
             llm_start = time.time()
+
             try:
-                result = self.client.chat(
-                    messages=self.messages,
-                    tools=TOOL_SCHEMAS,
-                    temperature=0.7,
-                    max_tokens=4096,
-                )
+                if self._use_streaming:
+                    try:
+                        stream_iter = self.client.chat_stream(
+                            messages=self.messages,
+                            tools=TOOL_SCHEMAS,
+                            temperature=0.7,
+                            max_tokens=4096,
+                        )
+                        assistant_msg = self._accumulate_stream(stream_iter)
+                    except (RuntimeError, Exception):
+                        # 流式失败，降级到非流式
+                        self._use_streaming = False
+                        result = self.client.chat(
+                            messages=self.messages,
+                            tools=TOOL_SCHEMAS,
+                            temperature=0.7,
+                            max_tokens=4096,
+                        )
+                        assistant_msg = LLMClient.extract_response(result)
+                        assistant_msg["_usage"] = LLMClient.extract_usage(result)
+                else:
+                    result = self.client.chat(
+                        messages=self.messages,
+                        tools=TOOL_SCHEMAS,
+                        temperature=0.7,
+                        max_tokens=4096,
+                    )
+                    assistant_msg = LLMClient.extract_response(result)
+                    assistant_msg["_usage"] = LLMClient.extract_usage(result)
             except RuntimeError as e:
                 error_msg = f"LLM 调用失败: {e}"
                 if self.on_task_done:
                     self.on_task_done(error_msg, self.stats)
                 return error_msg
+            except Exception as e:
+                error_msg = f"未知错误: {e}"
+                if self.on_task_done:
+                    self.on_task_done(error_msg, self.stats)
+                return error_msg
+
             self.stats.llm_time += time.time() - llm_start
 
-            usage = LLMClient.extract_usage(result)
+            # 提取 usage
+            usage = assistant_msg.get("_usage") or {}
             self.stats.prompt_tokens += usage.get("prompt_tokens", 0)
             self.stats.completion_tokens += usage.get("completion_tokens", 0)
             self.stats.total_tokens += usage.get("total_tokens", 0)
+
+            if self.on_stream_end:
+                self.on_stream_end(turn)
 
             if self.on_turn_end:
                 self.on_turn_end(turn, self.stats, "llm",
                                  usage.get("prompt_tokens", 0),
                                  usage.get("completion_tokens", 0))
 
-            assistant_msg = LLMClient.extract_response(result)
             tool_calls = assistant_msg.get("tool_calls", [])
 
-            # LLM 没调工具 → 纯回复，结束
             if not tool_calls:
-                final_text = assistant_msg.get("content", "")
+                final_text = assistant_msg.get("content") or ""
                 self.messages.append({"role": "assistant", "content": final_text})
                 if self.on_task_done:
                     self.on_task_done(final_text, self.stats)
                 return final_text
 
-            # LLM 调了工具 → 执行
+            # 有 tool_calls → 存入消息并执行
             self.messages.append({
                 "role": "assistant",
-                "content": assistant_msg.get("content", ""),
+                "content": assistant_msg.get("content") or "",
                 "tool_calls": tool_calls,
             })
 
@@ -278,12 +377,16 @@ class MundoEngine:
                     tool_args = {}
 
                 self.stats.tool_calls_count += 1
+                self.stats._active_tools.append(tool_name)
 
                 if self.on_tool_call:
                     self.on_tool_call(tool_name, tool_args, self.stats, "start")
 
                 tool_start = time.time()
-                result_text = execute_tool(tool_name, tool_args)
+                try:
+                    result_text = execute_tool(tool_name, tool_args)
+                except Exception as e:
+                    result_text = f"[工具执行异常: {e}]"
                 tool_duration = time.time() - tool_start
                 self.stats.tool_time += tool_duration
 
@@ -299,7 +402,6 @@ class MundoEngine:
                 if self.on_tool_call:
                     self.on_tool_call(tool_name, tool_args, self.stats, "done", result_text[:200], tool_duration)
 
-                # 自动记录工具观察（借鉴 claude-mem）
                 if hasattr(self, '_memory_ref') and self._memory_ref:
                     self._memory_ref.log_tool_observation(
                         tool_name, tool_args, result_text[:200],

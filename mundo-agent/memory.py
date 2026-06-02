@@ -255,7 +255,7 @@ class MundoMemoryV2:
 
         summary_parts = []
         for um in user_msgs[-5:]:
-            content = um.get("content", "")[:200]
+            content = (um.get("content") or "")[:200]
             summary_parts.append(f"用户: {content}")
 
         summary = " | ".join(summary_parts)
@@ -263,11 +263,13 @@ class MundoMemoryV2:
             summary = summary[:500] + "..."
 
         now = datetime.now().isoformat()
+        # content 可能为 None（tool_calls 消息），必须 or ""
+        safe_len = sum(len(m.get("content") or "") for m in messages)
         with sqlite3.connect(str(self.db_path)) as conn:
             conn.execute(
                 "INSERT INTO conversations (id, summary, created_at, message_count, total_tokens) VALUES (?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET summary=?, message_count=?, total_tokens=?",
-                (conv_id, summary, now, len(messages), sum(len(m.get("content", "")) for m in messages),
-                 summary, len(messages), sum(len(m.get("content", "")) for m in messages))
+                (conv_id, summary, now, len(messages), safe_len,
+                 summary, len(messages), safe_len)
             )
 
         return summary

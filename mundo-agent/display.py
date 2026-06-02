@@ -1,20 +1,9 @@
-"""蒙多执行控制台 v9 — 专业配色 + Claude Code 风格布局
+"""蒙多执行控制台 v10 — 流式输出 + 实时仪表盘
 
 配色方案：基于 Catppuccin Mocha + 金色点缀（蒙多身份色）
-  背景：终端原生深色
-  文本：柔和白 #cdd6f4
-  暗淡：灰色 #6c7086
-  金色：低饱和金 #f2c57c（蒙多标识色）
-  绿色：柔和绿 #a6e3a1（成功）
-  红色：柔和红 #f38ba8（错误）
-  蓝色：柔和蓝 #89b4fa（信息/工具）
-  紫色：柔和紫 #cba6f7（代码关键字）
-  黄色：柔和黄 #f9e2af（警告）
-  青色：柔和青 #94e2d5（数据）
-
-布局：Claude Code 风格三段式
-  顶部：状态行
-  中间：输出区
+布局：Hermes Agent / Claude Code 风格
+  顶部：状态行（模型、tokens、时间、agents、工具）
+  中间：输出区（流式文本 + 工具执行）
   底部：❯ 提示符
 """
 
@@ -25,31 +14,35 @@ import time as _time
 
 
 class A:
-    # ── 基础 ──
     RESET = "\033[0m"
     BOLD = "\033[1m"
     DIM = "\033[2m"
+    ITALIC = "\033[3m"
+    UNDERLINE = "\033[4m"
     CLEAR_LINE = "\033[2K\r"
 
-    # ── Catppuccin Mocha 调色板 ──
-    TEXT = "\033[38;5;252m"          # 柔和白
-    SUBTEXT = "\033[38;5;249m"       # 浅灰
-    OVERLAY = "\033[38;5;243m"       # 中灰
-    SURFACE = "\033[38;5;240m"       # 深灰
+    TEXT = "\033[38;5;252m"
+    SUBTEXT = "\033[38;5;249m"
+    OVERLAY = "\033[38;5;243m"
+    SURFACE = "\033[38;5;240m"
 
-    # ── 语义色（低饱和）──
-    GOLD = "\033[38;5;221m"          # 蒙多标识色（温暖金）
-    GOLD_DIM = "\033[38;5;180m"      # 暗金
-    SUCCESS = "\033[38;5;150m"       # 柔和绿
-    ERROR = "\033[38;5;210m"         # 柔和红
-    WARNING = "\033[38;5;223m"       # 柔和黄
-    INFO = "\033[38;5;111m"          # 柔和蓝
-    CYAN = "\033[38;5;116m"          # 柔和青
-    PURPLE = "\033[38;5;183m"        # 柔和紫
+    GOLD = "\033[38;5;221m"
+    GOLD_DIM = "\033[38;5;180m"
+    SUCCESS = "\033[38;5;150m"
+    ERROR = "\033[38;5;210m"
+    WARNING = "\033[38;5;223m"
+    INFO = "\033[38;5;111m"
+    CYAN = "\033[38;5;116m"
+    PURPLE = "\033[38;5;183m"
 
-    # ── 工具 ──
     HIDE_CURSOR = "\033[?25l"
     SHOW_CURSOR = "\033[?25h"
+
+    # 光标移动
+    CURSOR_UP = "\033[{}A"
+    CURSOR_DOWN = "\033[{}B"
+    SAVE_CURSOR = "\033[s"
+    RESTORE_CURSOR = "\033[u"
 
 
 class TaskConsole:
@@ -62,6 +55,10 @@ class TaskConsole:
         self._is_running = False
         self._task_start = 0.0
         self._session_start = _time.time()
+        self._stream_buf = ""
+        self._stream_line_count = 0
+        self._live_status = ""
+        self._was_streamed = False
 
     def _w(self, t: str):
         from prompt_toolkit import print_formatted_text
@@ -89,15 +86,15 @@ class TaskConsole:
     def _bar(self) -> str:
         return A.GOLD_DIM + "─" * self._cols + A.RESET
 
-    # ── 初始化 ──
-
     def init_screen(self, model_display: str, version: str = ""):
         self._model = model_display
         self._version = version
         self._cols = shutil.get_terminal_size((80, 24)).columns
         self._session_start = _time.time()
 
-    # ── 状态行 ──
+    # ═══════════════════════════════════════
+    # 状态行（Claude Code 风格顶部栏）
+    # ═══════════════════════════════════════
 
     def _status_line(self) -> str:
         tok = self._stats.total_tokens if self._stats else 0
@@ -105,17 +102,114 @@ class TaskConsole:
         session_t = self._elapsed(self._session_start)
         task_t = self._elapsed(self._task_start) if self._is_running else ""
 
-        line = (
-            f"  {A.GOLD}{A.BOLD}MUNDO{A.RESET}"
-            f" {A.DIM}·{A.RESET} {A.SUBTEXT}{model}{A.RESET}"
-            f" {A.DIM}·{A.RESET} {A.CYAN}{self._fmt_tok(tok)} tokens{A.RESET}"
-            f" {A.DIM}·{A.RESET} {A.OVERLAY}{session_t}{A.RESET}"
-        )
-        if self._is_running and task_t:
-            line += f" {A.DIM}·{A.RESET} {A.GOLD_DIM}⏱ {task_t}{A.RESET}"
-        return line
+        parts = [
+            f"{A.GOLD}{A.BOLD}MUNDO{A.RESET}",
+            f"{A.DIM}·{A.RESET} {A.SUBTEXT}{model}{A.RESET}",
+            f"{A.DIM}·{A.RESET} {A.CYAN}{self._fmt_tok(tok)} tok{A.RESET}",
+            f"{A.DIM}·{A.RESET} {A.OVERLAY}{session_t}{A.RESET}",
+        ]
 
-    # ── 输入（prompt_toolkit：和 Hermes Agent 同架构）──
+        if self._is_running and task_t:
+            parts.append(f"{A.DIM}·{A.RESET} {A.GOLD_DIM}⏱{task_t}{A.RESET}")
+
+        if self._stats and self._stats.turns > 0:
+            parts.append(f"{A.DIM}·{A.RESET} {A.OVERLAY}T{self._stats.turns}{A.RESET}")
+
+        if self._stats and self._stats.tool_calls_count > 0:
+            parts.append(f"{A.DIM}·{A.RESET} {A.INFO}{self._stats.tool_calls_count}tools{A.RESET}")
+
+        if self._stats and self._stats.clones_count > 0:
+            parts.append(f"{A.DIM}·{A.RESET} {A.PURPLE}{self._stats.clones_count}分身{A.RESET}")
+
+        if self._stats and self._stats._active_agents:
+            agents = ",".join(self._stats._active_agents[:3])
+            parts.append(f"{A.DIM}·{A.RESET} {A.SUCCESS}{agents}{A.RESET}")
+
+        return "  ".join(parts)
+
+    # ═══════════════════════════════════════
+    # 实时仪表盘（单行状态 + 工具/Agent 信息）
+    # ═══════════════════════════════════════
+
+    def _live_dashboard(self) -> str:
+        """实时状态行 — 执行期间持续更新"""
+        if not self._is_running or not self._stats:
+            return ""
+
+        s = self._stats
+        parts = []
+
+        # Turn
+        parts.append(f"{A.GOLD}T{s.turns}{A.RESET}")
+
+        # Tokens
+        if s.total_tokens > 0:
+            parts.append(f"{A.CYAN}{self._fmt_tok(s.total_tokens)}tok{A.RESET}")
+
+        # Elapsed
+        parts.append(f"{A.GOLD_DIM}⏱{s.elapsed_str}{A.RESET}")
+
+        # LLM vs Tool time ratio
+        total_time = max(s.elapsed, 0.01)
+        if s.llm_time > 0 or s.tool_time > 0:
+            llm_pct = int(s.llm_time / total_time * 100)
+            tool_pct = int(s.tool_time / total_time * 100)
+            parts.append(f"{A.DIM}L{llm_pct}% T{tool_pct}%{A.RESET}")
+
+        # Active tools
+        if s._active_tools:
+            last_tool = s._active_tools[-1]
+            parts.append(f"{A.INFO}{last_tool}{A.RESET}")
+
+        # Agents
+        if s._active_agents:
+            parts.append(f"{A.SUCCESS}{'|'.join(s._active_agents[:2])}{A.RESET}")
+
+        # Clones
+        if s.clones_count > 0:
+            parts.append(f"{A.PURPLE}×{s.clones_count}{A.RESET}")
+
+        return f"  {A.DIM}│{A.RESET} ".join(parts)
+
+    def update_live_status(self, stats=None):
+        """更新实时状态栏（单行覆盖）"""
+        if stats:
+            self._stats = stats
+        status = self._live_dashboard()
+        if status:
+            sys.stdout.write(f"\r{A.CLEAR_LINE}  {A.DIM}▸{A.RESET} {status} ")
+            sys.stdout.flush()
+
+    # ═══════════════════════════════════════
+    # 流式输出
+    # ═══════════════════════════════════════
+
+    def stream_start(self, turn: int):
+        """流式输出开始"""
+        self._stream_buf = ""
+        self._stream_line_count = 0
+        self._was_streamed = True
+        sys.stdout.write(f"\n")
+        sys.stdout.flush()
+
+    def stream_text(self, text: str):
+        """流式输出 — 逐字符/逐 chunk 打印"""
+        self._stream_buf += text
+        # 直接输出到终端
+        from prompt_toolkit import print_formatted_text
+        from prompt_toolkit.formatted_text import ANSI as PT_ANSI
+        print_formatted_text(PT_ANSI(f"{A.TEXT}{text}{A.RESET}"), end="", flush=True)
+
+    def stream_end(self, turn: int):
+        """流式输出结束"""
+        if self._stream_buf and not self._stream_buf.endswith("\n"):
+            sys.stdout.write("\n")
+            sys.stdout.flush()
+        self._stream_buf = ""
+
+    # ═══════════════════════════════════════
+    # 输入（prompt_toolkit）
+    # ═══════════════════════════════════════
 
     def read_input(self) -> str:
         from prompt_toolkit import PromptSession, print_formatted_text
@@ -137,13 +231,9 @@ class TaskConsole:
         except (EOFError, KeyboardInterrupt):
             return ""
 
-    def log_print(self, text: str):
-        """prompt_toolkit 安全输出（在 patch_stdout 环境内调用）"""
-        from prompt_toolkit import print_formatted_text
-        from prompt_toolkit.formatted_text import ANSI as PT_ANSI
-        print_formatted_text(PT_ANSI(text))
-
-    # ── 日志输出 ──
+    # ═══════════════════════════════════════
+    # 日志输出
+    # ═══════════════════════════════════════
 
     def log_thinking(self, turn: int):
         self._task_start = _time.time()
@@ -152,7 +242,12 @@ class TaskConsole:
 
     def log_tool_start(self, tool_name: str, tool_args: dict):
         info = self._fmt_tool_info(tool_name, tool_args)
+        # 清除实时状态行，打印工具信息
+        sys.stdout.write(f"\r{A.CLEAR_LINE}")
         self._w(f"\n  {A.INFO}▸{A.RESET} {A.TEXT}{tool_name}{A.RESET}  {A.DIM}{info}{A.RESET}\n")
+        # 更新活跃工具
+        if self._stats:
+            self._stats._active_tools.append(tool_name)
 
     def log_tool_output(self, tool_name: str, output: str, is_error: bool = False):
         mark = f"{A.ERROR}✗{A.RESET}" if is_error else f"{A.DIM}│{A.RESET}"
@@ -167,6 +262,7 @@ class TaskConsole:
             self._w(f"  {A.SUCCESS}✓{A.RESET} {A.SUBTEXT}{tool_name}{A.RESET} {A.DIM}({duration:.1f}s){A.RESET}\n")
 
     def log_delegation(self, agent_names: list, clone_count: int, total: int):
+        sys.stdout.write(f"\r{A.CLEAR_LINE}")
         self._w(f"\n  {A.CYAN}━━ 分发 ━━{A.RESET}\n")
         for name in set(agent_names):
             self._w(f"  {A.SUCCESS}  ▸ {name}{A.RESET}\n")
@@ -179,12 +275,16 @@ class TaskConsole:
             self._w(f"  {A.GOLD}  分身 #{i}{A.RESET}\n")
 
     def log_response(self, text: str):
+        if self._was_streamed:
+            self._was_streamed = False
+            return
         self._w("\n")
         for line in text.split("\n"):
             self._w(f"  {A.TEXT}{line}{A.RESET}\n")
         self._w("\n")
 
     def log_error(self, error: str):
+        sys.stdout.write(f"\r{A.CLEAR_LINE}")
         self._w(f"\n  {A.ERROR}✗{A.RESET} {A.ERROR}{error}{A.RESET}\n\n")
 
     def log_done(self, stats):
@@ -196,17 +296,23 @@ class TaskConsole:
         llm_pct = f"{stats.llm_time / max(stats.elapsed, 0.01) * 100:.0f}%"
         tool_pct = f"{stats.tool_time / max(stats.elapsed, 0.01) * 100:.0f}%"
 
+        sys.stdout.write(f"\r{A.CLEAR_LINE}")
+
         self._w(f"\n{self._bar()}\n")
         self._w(
             f"  {A.SUCCESS}✓{A.RESET}"
             f" {A.DIM}·{A.RESET} {A.GOLD_DIM}⏱ {elapsed}{A.RESET}"
-            f" {A.DIM}·{A.RESET} {A.CYAN}{tok} tokens{A.RESET}"
+            f" {A.DIM}·{A.RESET} {A.CYAN}{tok} tok{A.RESET}"
             f" {A.DIM}({tok_in}→{tok_out}){A.RESET}"
             f" {A.DIM}·{A.RESET} {A.OVERLAY}T{stats.turns}{A.RESET}"
             f" {A.DIM}·{A.RESET} {A.OVERLAY}LLM {llm_pct} Tools {tool_pct}{A.RESET}"
         )
         if stats.tool_calls_count > 0:
             self._w(f" {A.DIM}·{A.RESET} {A.OVERLAY}{stats.tool_calls_count} tools{A.RESET}")
+        if stats._active_agents:
+            self._w(f" {A.DIM}·{A.RESET} {A.SUCCESS}{'|'.join(stats._active_agents)}{A.RESET}")
+        if stats.clones_count > 0:
+            self._w(f" {A.DIM}·{A.RESET} {A.PURPLE}{stats.clones_count}分身{A.RESET}")
         self._w(f"\n{self._bar()}\n")
 
         self._is_running = False
