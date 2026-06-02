@@ -204,10 +204,11 @@ The user has extreme UI cleanliness standards. Study Claude Code / Hermes / Code
 - **Status line**: flat, dot-separated: `MUNDO · model · tokens · time`
 - **Output**: colored scroll stream (green ✓, red ✗, blue tool names, purple keywords)
 - **Prompt**: bare `❯ ` — no decoration, no bars, no emoji
-- **Completion**: gold separator lines (`━` * cols) with stats between them
+### Completion: gold separator lines (`━` * cols) with stats between them
 - **No scroll regions** — direct stdout.write() only
 - **No status bar redraws between log lines** — only at task start/done
 - **No emoji** in status/input area
+- **Live dashboard** (v25.0+): During execution, show inline status: `▸ T1 · 1.2K tok · ⏱3.2s · L60% T40% · terminal · hermes · ×2分身`. Updated after each tool call via `update_live_status(stats)`. Uses `sys.stdout.write("\r" + CLEAR_LINE)` for in-place update.
 
 ### What NOT to Do (user rejected each of these)
 
@@ -476,6 +477,7 @@ Embed these as iron rules in the agent's system prompt so ALL output reflects pr
 - `references/claude-mem-integration.md` — Tool observation logging, session summary generation
 - `references/color-scheme-aesthetics.md` — Catppuccin Mocha palette, ANSI codes, syntax highlighting
 - `references/aesthetic-principles.md` — Professional design philosophy, anti-patterns, system prompt rules
+- `references/sse-streaming-patterns.md` — SSE parsing, tool_calls accumulation, fallback, None safety, dedup
 
 ## User Preferences (from MUNDO development)
 
