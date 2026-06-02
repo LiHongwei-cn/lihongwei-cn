@@ -411,10 +411,10 @@ source ~/.zshrc
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v25-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v25.0/mundo-v25-macos.zip) |
-| Windows | [mundo-v25-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v25.0/mundo-v25-windows.zip) |
-| Linux | [mundo-v25-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v25.0/mundo-v25-linux.zip) |
-| 全平台 | [mundo-v25-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v25.0/mundo-v25-all.zip) |
+| macOS | [mundo-v26-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v26.0/mundo-v26-macos.zip) |
+| Windows | [mundo-v26-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v26.0/mundo-v26-windows.zip) |
+| Linux | [mundo-v26-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v26.0/mundo-v26-linux.zip) |
+| 全平台 | [mundo-v26-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v26.0/mundo-v26-all.zip) |
 
 - **[👉 全部 Release](https://github.com/LiHongwei-cn/lihongwei-cn/releases)**
 
@@ -424,7 +424,7 @@ source ~/.zshrc
 
 ## 🇬🇧 English
 
-### MUNDO Agent v25.0 — Independent AI Agent
+### MUNDO Agent v26.0 — Independent AI Agent
 
 MUNDO is no longer just a Skill. MUNDO is an independent AI Agent with its own LLM client, tool engine, and Agentic Loop.
 
