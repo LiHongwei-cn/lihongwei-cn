@@ -79,7 +79,10 @@ class LLMClient:
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}",
         }
-        data = json.dumps(payload).encode("utf-8")
+        # 清洗消息：确保所有 content 为字符串，移除空消息
+        if "messages" in payload:
+            payload["messages"] = self._sanitize_messages(payload["messages"])
+        data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
 
         last_error = None
         for attempt in range(3):
@@ -113,7 +116,10 @@ class LLMClient:
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}",
         }
-        data = json.dumps(payload).encode("utf-8")
+        # 清洗消息
+        if "messages" in payload:
+            payload["messages"] = self._sanitize_messages(payload["messages"])
+        data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         req = urllib.request.Request(url, data=data, headers=headers, method="POST")
 
         try:
@@ -139,6 +145,27 @@ class LLMClient:
                         continue
         finally:
             resp.close()
+
+    @staticmethod
+    def _sanitize_messages(messages: List[Dict]) -> List[Dict]:
+        """清洗消息：确保 content 为字符串，移除空消息"""
+        cleaned = []
+        for msg in messages:
+            if not isinstance(msg, dict):
+                continue
+            m = dict(msg)
+            # content 必须是字符串（None → 空串）
+            if "content" in m:
+                if m["content"] is None:
+                    m["content"] = ""
+                elif not isinstance(m["content"], str):
+                    m["content"] = str(m["content"])
+            # tool_calls 消息保留（content 可为空）
+            # 移除完全空的消息（无 content、无 tool_calls、无 tool_call_id）
+            if not m.get("content") and not m.get("tool_calls") and not m.get("tool_call_id"):
+                continue
+            cleaned.append(m)
+        return cleaned if cleaned else [{"role": "user", "content": "继续"}]
 
     @staticmethod
     def extract_stream_delta(chunk: Dict) -> Dict:

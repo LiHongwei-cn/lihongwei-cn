@@ -126,7 +126,9 @@ TOOL_SCHEMAS = [
 # ═══════════════════════════════════════════════
 
 def _run_terminal(args: Dict) -> str:
-    cmd = args["command"]
+    cmd = args.get("command", "")
+    if not cmd:
+        return "[错误: terminal 缺少 command 参数]"
     workdir = args.get("workdir") or os.getcwd()
     timeout = args.get("timeout", 120)
 
@@ -152,7 +154,10 @@ def _run_terminal(args: Dict) -> str:
 
 
 def _run_read_file(args: Dict) -> str:
-    path = os.path.expanduser(args["path"])
+    path = args.get("path", "")
+    if not path:
+        return "[错误: read_file 缺少 path 参数]"
+    path = os.path.expanduser(path)
     offset = args.get("offset", 1)
     limit = args.get("limit", 500)
 
@@ -181,8 +186,13 @@ def _run_read_file(args: Dict) -> str:
 
 
 def _run_write_file(args: Dict) -> str:
-    path = os.path.expanduser(args["path"])
-    content = args["content"]
+    path = args.get("path", "")
+    if not path:
+        return "[错误: write_file 缺少 path 参数]"
+    content = args.get("content", "")
+    if not content:
+        return "[错误: write_file 缺少 content 参数]"
+    path = os.path.expanduser(path)
 
     try:
         os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
@@ -196,7 +206,9 @@ def _run_write_file(args: Dict) -> str:
 def _run_search_files(args: Dict) -> str:
     import re
 
-    pattern = args["pattern"]
+    pattern = args.get("pattern", "")
+    if not pattern:
+        return "[错误: search_files 缺少 pattern 参数]"
     path = os.path.expanduser(args.get("path") or ".")
     target = args.get("target", "content")
 
@@ -238,7 +250,9 @@ def _run_search_files(args: Dict) -> str:
 
 
 def _run_web_search(args: Dict) -> str:
-    query = args["query"]
+    query = args.get("query", "")
+    if not query:
+        return "[错误: web_search 缺少 query 参数]"
     limit = args.get("limit", 5)
 
     # 使用 Hermes 的 web_search 如果可用，否则用 DuckDuckGo
