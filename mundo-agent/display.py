@@ -116,7 +116,6 @@ class TaskConsole:
     # ── 输入 ──
 
     def read_input(self) -> str:
-        import readline
 
         self._w(f"\n{self._status_line()}\n")
         prompt = f"{A.GOLD}❯{A.RESET} "
