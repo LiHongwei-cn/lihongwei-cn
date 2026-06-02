@@ -192,8 +192,6 @@ class MundoCLI:
 
         self.engine.on_tool_output = _on_tool_output
 
-        self.engine.on_turn_end = lambda *a: None
-
         def _on_done(text, stats):
             if "失败" in text or "错误" in text:
                 self.console.log_error(text[:100])
