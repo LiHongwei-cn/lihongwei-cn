@@ -368,6 +368,38 @@ class MundoEngine:
 
             tool_calls = assistant_msg.get("tool_calls", [])
 
+            # 过滤掉无效的 tool_calls（无 name 或参数 JSON 损坏）
+            valid_tool_calls = []
+            for tc in tool_calls:
+                func = tc.get("function", {})
+                name = func.get("name", "")
+                if not name:
+                    continue
+                # 尝试修复截断的 JSON 参数
+                raw_args = func.get("arguments", "{}")
+                try:
+                    json.loads(raw_args)
+                    valid_tool_calls.append(tc)
+                except json.JSONDecodeError:
+                    # 尝试修复：补全缺失的括号/引号
+                    fixed = self._repair_json(raw_args)
+                    if fixed is not None:
+                        tc["function"]["arguments"] = json.dumps(fixed, ensure_ascii=False)
+                        valid_tool_calls.append(tc)
+                    # 无法修复的 tool_call 直接丢弃
+
+            if not valid_tool_calls:
+                # 所有 tool_calls 都无效，当作纯文本回复处理
+                final_text = assistant_msg.get("content") or ""
+                if not final_text:
+                    final_text = "蒙多生成了无效的工具调用，已跳过。"
+                self.messages.append({"role": "assistant", "content": final_text})
+                if self.on_task_done:
+                    self.on_task_done(final_text, self.stats)
+                return final_text
+
+            tool_calls = valid_tool_calls
+
             if not tool_calls:
                 final_text = assistant_msg.get("content") or ""
                 self.messages.append({"role": "assistant", "content": final_text})
@@ -434,6 +466,28 @@ class MundoEngine:
         if self.on_task_done:
             self.on_task_done(final, self.stats)
         return final
+
+    @staticmethod
+    def _repair_json(raw: str):
+        """尝试修复截断的 JSON 字符串"""
+        if not raw or not raw.strip():
+            return {}
+        raw = raw.strip()
+        try:
+            return json.loads(raw)
+        except json.JSONDecodeError:
+            pass
+        open_braces = raw.count("{") - raw.count("}")
+        open_brackets = raw.count("[") - raw.count("]")
+        quote_count = raw.count('"') - raw.count('\\"')
+        if quote_count % 2 != 0:
+            raw += '"'
+        raw += "]" * max(0, open_brackets)
+        raw += "}" * max(0, open_braces)
+        try:
+            return json.loads(raw)
+        except json.JSONDecodeError:
+            return None
 
     def reset(self):
         self.messages = []
