@@ -1,7 +1,11 @@
-"""蒙多执行控制台 v26.1 — 全 Rich 渲染（Hermes Agent 同源架构）
+"""蒙多执行控制台 v26.2 — Hermes 活动流 + Rich 渲染
 
-根治 ANSI 乱码：Rich 处理所有格式化输出，prompt_toolkit 只管输入。
-不再混用 raw ANSI + patch_stdout。
+核心改进：借鉴 Hermes Agent 的 ┊ 活动流模式
+- 工具开始: ┊ ⚡ preparing terminal…
+- 工具输出: ┊ 输出行（带颜色）
+- 工具完成: ┊ 💻 $  ls -la  0.3s
+- 完成汇总: 金色分隔线 + 统计
+- 输入提示: ❯ （清晰醒目）
 """
 
 import sys
@@ -13,11 +17,7 @@ from typing import Optional
 from rich.console import Console
 from rich.text import Text
 from rich.panel import Panel
-from rich.table import Table
-from rich.style import Style as RichStyle
 from rich.theme import Theme
-from rich.live import Live
-from rich.spinner import Spinner
 
 # ═══════════════════════════════════════════════
 # Catppuccin Mocha + 金色主题
@@ -35,17 +35,34 @@ MUNDO_THEME = Theme({
     "muted": "#5c6370",
     "text": "#abb2bf",
     "subtext": "#9da5b4",
+    "feed": "#636d83",  # ┊ 活动流颜色
 })
 
-# Rich Console — 全局唯一渲染器
 console = Console(theme=MUNDO_THEME, highlight=False, force_terminal=True)
 
+# 活动流前缀字符（Hermes 风格）
+_FEED = "┊"
 
-# ═══════════════════════════════════════════════
-# Spinner 动画（Hermes KawaiiSpinner 风格）
-# ═══════════════════════════════════════════════
+# 工具 emoji 映射（Hermes 风格）
+TOOL_EMOJI = {
+    "terminal": "💻",
+    "read_file": "📖",
+    "write_file": "✍️ ",
+    "edit_file": "🔧",
+    "search_files": "🔎",
+    "web_search": "🔍",
+    "list_directory": "📁",
+}
 
-_SPINNER_FACES = ["◐", "◓", "◑", "◒"]
+TOOL_VERB = {
+    "terminal": "$",
+    "read_file": "read",
+    "write_file": "write",
+    "edit_file": "edit",
+    "search_files": "grep",
+    "web_search": "search",
+    "list_directory": "ls",
+}
 
 
 def _fmt_tok(n: int) -> str:
@@ -68,8 +85,18 @@ def _elapsed(start: float) -> str:
     return f"{int(m // 60)}h{m % 60}m"
 
 
+def _trunc(s: str, n: int = 40) -> str:
+    s = str(s)
+    return (s[:n-3] + "...") if len(s) > n else s
+
+
+def _path_short(p: str, n: int = 35) -> str:
+    p = str(p)
+    return ("..." + p[-(n-3):]) if len(p) > n else p
+
+
 # ═══════════════════════════════════════════════
-# TaskConsole — 所有输出通过 Rich
+# TaskConsole — Hermes 活动流模式
 # ═══════════════════════════════════════════════
 
 class TaskConsole:
@@ -81,41 +108,30 @@ class TaskConsole:
         self._task_start = 0.0
         self._session_start = _time.time()
         self._was_streamed = False
-        self._spinner_idx = 0
+        self._current_tool_start = 0.0
+        self._last_tool_args = {}
 
     def init_screen(self, model_display: str, version: str = ""):
         self._model = model_display
         self._session_start = _time.time()
 
     # ═══════════════════════════════════════
-    # 状态行 — Rich Text
+    # 状态行 — 精简一行
     # ═══════════════════════════════════════
 
     def _build_status(self) -> Text:
         tok = self._stats.total_tokens if self._stats else 0
         model = self._model.split("/")[-1] if "/" in self._model else self._model
-
         t = Text()
         t.append("MUNDO", style="bold gold")
         t.append(" · ", style="muted")
         t.append(model, style="text")
-
         if tok > 0:
             t.append(" · ", style="muted")
             t.append(f"{_fmt_tok(tok)} tok", style="cyan")
-
         if self._is_running and self._task_start > 0:
             t.append(" · ", style="muted")
             t.append(f"⏱{_elapsed(self._task_start)}", style="gold.dim")
-
-        if self._stats and self._stats.turns > 0:
-            t.append(" · ", style="muted")
-            t.append(f"T{self._stats.turns}", style="muted")
-
-        if self._stats and self._stats.tool_calls_count > 0:
-            t.append(" · ", style="muted")
-            t.append(f"{self._stats.tool_calls_count} tools", style="info")
-
         return t
 
     def print_status(self):
@@ -126,7 +142,7 @@ class TaskConsole:
             self._stats = stats
 
     # ═══════════════════════════════════════
-    # 流式输出 — 直接写 sys.stdout，不经 Rich
+    # 流式输出 — 直接写 sys.stdout
     # ═══════════════════════════════════════
 
     def stream_start(self, turn: int):
@@ -137,8 +153,7 @@ class TaskConsole:
     def stream_text(self, text: str):
         if self._stats:
             self._stats.completion_tokens = max(
-                self._stats.completion_tokens,
-                len(text) * 2 // 3
+                self._stats.completion_tokens, len(text) * 2 // 3
             )
             self._stats.total_tokens = self._stats.prompt_tokens + self._stats.completion_tokens
         sys.stdout.write(text)
@@ -149,7 +164,7 @@ class TaskConsole:
         sys.stdout.flush()
 
     # ═══════════════════════════════════════
-    # 输入 — prompt_toolkit（只管输入，不管渲染）
+    # 输入 — prompt_toolkit 只管输入
     # ═══════════════════════════════════════
 
     def read_input(self) -> str:
@@ -158,11 +173,9 @@ class TaskConsole:
         from prompt_toolkit.styles import Style
         from prompt_toolkit.key_binding import KeyBindings
 
-        # 状态行通过 Rich 打印（在 prompt 之前）
         self.print_status()
 
         hist_path = str(Path.home() / ".hermes" / "mundo-agent" / ".mundo_history")
-        # prompt_toolkit 只负责输入框样式
         style = Style.from_dict({"prompt": "#d4a017 bold"})
 
         kb = KeyBindings()
@@ -191,61 +204,71 @@ class TaskConsole:
             multiline=True,
         )
         try:
-            # prompt_toolkit 用原生 prompt 字符串，不用 PT_ANSI
             return session.prompt("❯ ").strip()
         except (EOFError, KeyboardInterrupt):
             return ""
 
     # ═══════════════════════════════════════
-    # 日志输出 — 全部通过 Rich
+    # 日志 — Hermes ┊ 活动流模式
     # ═══════════════════════════════════════
 
     def log_thinking(self, turn: int):
         self._task_start = _time.time()
-        console.print(f"  [gold.dim]▸[/] [subtext]思考中...[/] [dim](Turn {turn})[/]")
+        console.print(f"  [gold.dim]{_FEED}[/] [subtext]思考中...[/] [dim](Turn {turn})[/]")
 
     def log_task_accepted(self, task_text: str):
-        preview = task_text[:60].replace("\n", " ")
-        if len(task_text) > 60:
-            preview += "..."
-        console.print(f"\n  [success]▸[/] [dim]已接收[/] [subtext]{preview}[/]")
+        preview = _trunc(task_text.replace("\n", " "), 60)
+        console.print(f"\n  [success]{_FEED}[/] [dim]已接收[/] [subtext]{preview}[/]")
 
     def log_tool_start(self, tool_name: str, tool_args: dict):
-        info = self._fmt_tool_info(tool_name, tool_args)
-        console.print(f"\n  [info]▸[/] [text]{tool_name}[/]  [dim]{info}[/]")
+        """Hermes 风格：┊ ⚡ preparing terminal…"""
+        emoji = TOOL_EMOJI.get(tool_name, "⚡")
+        info = self._fmt_tool_preview(tool_name, tool_args)
+        console.print(f"  [feed]{_FEED}[/] {emoji} [dim]preparing[/] [text]{tool_name}[/] [dim]{info}[/]")
+        self._current_tool_start = _time.time()
         if self._stats:
             self._stats._active_tools.append(tool_name)
 
     def log_tool_output(self, tool_name: str, output: str, is_error: bool = False):
+        """Hermes 风格：┊ 输出行"""
         if not output:
-            console.print(f"  [dim]│[/] [dim](无输出)[/]")
             return
-        mark = "[error]✗[/]" if is_error else "[dim]│[/]"
         lines = output.strip().split("\n")
-        if len(lines) > 30:
-            display = lines[:15] + [f"  ... ({len(lines) - 20} 行省略)"] + lines[-5:]
+        # 限制显示行数
+        if len(lines) > 20:
+            display = lines[:10] + [f"  ... ({len(lines) - 15} 行省略)"] + lines[-5:]
         else:
             display = lines
         for line in display:
             colored = self._color_line(line, tool_name, is_error)
-            console.print(f"  {mark} {colored}")
+            console.print(f"  [feed]{_FEED}[/] {colored}")
 
     def log_tool_done(self, tool_name: str, duration: float):
-        if duration > 0.5:
-            console.print(f"  [success]✓[/] [subtext]{tool_name}[/] [dim]({duration:.1f}s)[/]")
+        """Hermes 风格：┊ 💻 $  ls -la  0.3s"""
+        emoji = TOOL_EMOJI.get(tool_name, "⚡")
+        verb = TOOL_VERB.get(tool_name, tool_name)
+        preview = self._fmt_tool_preview(tool_name, self._last_tool_args)
+        dur = f"{duration:.1f}s"
+        if duration > 0.1:
+            if preview:
+                console.print(f"  [feed]{_FEED}[/] {emoji} [text]{verb:9}[/] [subtext]{preview}[/]  [dim]{dur}[/]")
+            else:
+                console.print(f"  [feed]{_FEED}[/] {emoji} [text]{verb:9}[/] [dim]{dur}[/]")
 
     def log_response(self, text: str):
         if self._was_streamed:
             self._was_streamed = False
             return
         console.print()
-        console.print(f"  [text]{text}[/]")
+        for line in text.split("\n"):
+            console.print(f"  [text]{line}[/]")
         console.print()
 
     def log_error(self, error: str):
-        console.print(f"\n  [error]✗[/] [error]{error}[/]\n")
+        console.print(f"\n  [error]{_FEED}[/] [error]{error}[/]\n")
 
     def log_done(self, stats):
+        """完成汇总 — 金色分隔线"""
         self._stats = stats
         tok = _fmt_tok(stats.total_tokens)
         tok_in = _fmt_tok(stats.prompt_tokens)
@@ -253,10 +276,10 @@ class TaskConsole:
         elapsed = stats.elapsed_str
 
         bar = "─" * 50
-        console.print(f"\n[gold.dim]{bar}[/]")
+        console.print(f"\n  [gold.dim]{bar}[/]")
 
         t = Text()
-        t.append("  ✓", style="success")
+        t.append(f"  ✓", style="success")
         t.append(f" · ⏱ {elapsed}", style="gold.dim")
         t.append(f" · {tok} tok", style="cyan")
         t.append(f" ({tok_in}→{tok_out})", style="dim")
@@ -264,8 +287,7 @@ class TaskConsole:
         if stats.tool_calls_count > 0:
             t.append(f" · {stats.tool_calls_count} tools", style="muted")
         console.print(t)
-
-        console.print(f"[gold.dim]{bar}[/]")
+        console.print(f"  [gold.dim]{bar}[/]\n")
 
         self._is_running = False
         self._task_start = 0.0
@@ -315,17 +337,17 @@ class TaskConsole:
             return f"[cyan]{line}[/]"
         return f"[subtext]{line}[/]"
 
-    # ── 格式化 ──
+    # ── 工具预览 ──
 
-    def _fmt_tool_info(self, name: str, args: dict) -> str:
+    def _fmt_tool_preview(self, name: str, args: dict) -> str:
         if name == "terminal":
-            return args.get("command", "")[:60]
+            return _trunc(args.get("command", ""), 42)
         if name in ("read_file", "write_file", "edit_file"):
-            return args.get("path", "")
+            return _path_short(args.get("path", ""))
         if name == "search_files":
-            return args.get("pattern", "")
+            return _trunc(args.get("pattern", ""), 35)
         if name == "web_search":
-            return args.get("query", "")
+            return _trunc(args.get("query", ""), 42)
         if name == "list_directory":
-            return args.get("path", ".")
-        return str(args)[:60]
+            return _path_short(args.get("path", "."))
+        return ""
