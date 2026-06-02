@@ -190,57 +190,41 @@ class TaskConsole:
         self._stream_line_count = 0
         self._was_streamed = True
         self._stream_chunk_count = 0
+        self._last_status_len = 0
         sys.stdout.write(f"\n")
         sys.stdout.flush()
-        # 显示初始状态栏
-        self._show_stream_status()
 
     def stream_text(self, text: str):
-        """流式输出 — 逐字符/逐 chunk 打印 + 定期更新状态栏"""
+        """流式输出 — 逐 chunk 打印 + 状态行追加"""
         self._stream_buf += text
         self._stream_chunk_count += 1
-        # 实时估算 token（中文1字≈2token，英文1词≈1token）
+        # 实时估算 token
         if self._stats:
             est_tokens = len(self._stream_buf) * 2 // 3
             self._stats.completion_tokens = max(self._stats.completion_tokens, est_tokens)
             self._stats.total_tokens = self._stats.prompt_tokens + self._stats.completion_tokens
         from prompt_toolkit import print_formatted_text
         from prompt_toolkit.formatted_text import ANSI as PT_ANSI
-        print_formatted_text(PT_ANSI(f"{A.TEXT}{text}{A.RESET}"), end="", flush=True)
-        # 每 20 个 chunk 更新一次状态栏（避免过于频繁）
-        if self._stream_chunk_count % 20 == 0:
-            self._show_stream_status()
+        # 每 15 个 chunk 在行尾追加状态
+        if self._stream_chunk_count % 15 == 0:
+            status = self._build_stream_status()
+            print_formatted_text(PT_ANSI(f"{A.TEXT}{text}{A.RESET}{A.DIM}  [{status}]{A.RESET}"), end="", flush=True)
+        else:
+            print_formatted_text(PT_ANSI(f"{A.TEXT}{text}{A.RESET}"), end="", flush=True)
 
     def stream_end(self, turn: int):
         """流式输出结束"""
         if self._stream_buf and not self._stream_buf.endswith("\n"):
             sys.stdout.write("\n")
             sys.stdout.flush()
-        # 清除状态栏
-        sys.stdout.write(f"\r{A.CLEAR_LINE}")
-        sys.stdout.flush()
         self._stream_buf = ""
 
-    def _show_stream_status(self):
-        """流式输出期间的实时状态栏（终端底部单行）"""
+    def _build_stream_status(self) -> str:
+        """构建流式状态文本"""
         elapsed = self._elapsed(self._task_start) if self._task_start > 0 else "0s"
         tok = self._fmt_tok(self._stats.total_tokens) if self._stats else "0"
         turn = self._stats.turns if self._stats else 1
-        tools = self._stats.tool_calls_count if self._stats else 0
-
-        parts = [
-            f"{A.GOLD}T{turn}{A.RESET}",
-            f"{A.CYAN}{tok} tok{A.RESET}",
-            f"{A.GOLD_DIM}⏱{elapsed}{A.RESET}",
-        ]
-        if tools > 0:
-            parts.append(f"{A.INFO}{tools}tools{A.RESET}")
-        if self._stats and self._stats.clones_count > 0:
-            parts.append(f"{A.PURPLE}×{self._stats.clones_count}{A.RESET}")
-
-        status = f" {A.DIM}·{A.RESET} ".join(parts)
-        sys.stdout.write(f"\r{A.CLEAR_LINE}  {A.DIM}▸{A.RESET} {status} ")
-        sys.stdout.flush()
+        return f"T{turn} · {tok}tok · {elapsed}"
 
     # ═══════════════════════════════════════
     # 输入（prompt_toolkit）
