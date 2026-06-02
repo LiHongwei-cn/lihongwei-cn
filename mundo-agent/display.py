@@ -64,8 +64,9 @@ class TaskConsole:
         self._session_start = _time.time()
 
     def _w(self, t: str):
-        sys.stdout.write(t)
-        sys.stdout.flush()
+        from prompt_toolkit import print_formatted_text
+        from prompt_toolkit.formatted_text import ANSI as PT_ANSI
+        print_formatted_text(PT_ANSI(t), end="", flush=True)
 
     def _fmt_tok(self, n: int) -> str:
         if n < 1000:
@@ -122,7 +123,7 @@ class TaskConsole:
         from prompt_toolkit.history import FileHistory
         from prompt_toolkit.styles import Style
 
-        print(f"\n{self._status_line()}", flush=True)
+        self._w(f"\n{self._status_line()}\n")
 
         hist_path = str(Path.home() / ".hermes" / "mundo-agent" / ".mundo_history")
         style = Style.from_dict({"prompt": "#d4a017 bold"})

@@ -31,7 +31,7 @@ from display import TaskConsole, StatusBar
 
 MUNDO_HOME = Path.home() / ".hermes" / "mundo-agent"
 MUNDO_MEMORY_DB = MUNDO_HOME / "memory.db"
-VERSION = "24.4.0"
+VERSION = "24.5.0"
 
 
 # ═══════════════════════════════════════════════
