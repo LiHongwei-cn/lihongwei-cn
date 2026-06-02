@@ -248,23 +248,32 @@ class TaskConsole:
         @kb.add("enter")
         def _(event):
             buf = event.current_buffer
-            # 光标在最后一行末尾 → 提交
             text = buf.text
             cursor = buf.cursor_position
+            # 光标在末尾（忽略尾部空白）→ 提交
             if cursor >= len(text.rstrip()):
-                # 去掉末尾空白后提交
                 buf.text = text.rstrip()
                 buf.validate_and_handle()
             else:
-                # 在文本中间 → 插入换行，允许自由编辑
                 buf.newline()
 
         @kb.add("escape", "enter")
         def _(event):
-            # Option+Enter 强制提交（不论光标位置）
+            # Option+Enter 强制提交
             buf = event.current_buffer
             buf.text = buf.text.rstrip()
             buf.validate_and_handle()
+
+        @kb.add("c-v")  # Ctrl+V 粘贴
+        def _(event):
+            # 获取剪贴板内容，清理尾部空白后插入
+            try:
+                from prompt_toolkit.clipboard import pyperclip
+                text = pyperclip.paste()
+                if text:
+                    event.current_buffer.insert_text(text.strip())
+            except Exception:
+                pass
 
         session = PromptSession(
             history=FileHistory(hist_path),

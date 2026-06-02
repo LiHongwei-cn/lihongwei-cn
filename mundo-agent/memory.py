@@ -363,7 +363,7 @@ class MundoMemoryV2:
                     temperature=0.1, max_tokens=100
                 )
                 from llm import LLMClient as LC
-                summary = LC.extract_response(result).get("content", "").strip()
+                summary = LC.extract_response(result).get("content") or "".strip()
                 if summary:
                     # 保存为会话摘要
                     self.remember(
@@ -374,7 +374,7 @@ class MundoMemoryV2:
                         tags=session_id
                     )
                     return summary
-            except Exception:
+            except Exception:  # 操作失败静默跳过
                 pass
 
         # Fallback: 直接拼接
