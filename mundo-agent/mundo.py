@@ -31,7 +31,7 @@ from display import TaskConsole, StatusBar
 
 MUNDO_HOME = Path.home() / ".hermes" / "mundo-agent"
 MUNDO_MEMORY_DB = MUNDO_HOME / "memory.db"
-VERSION = "24.5.0"
+VERSION = "25.0.0"
 
 
 # ═══════════════════════════════════════════════
@@ -157,12 +157,19 @@ class MundoCLI:
 
         self.engine.on_turn_start = lambda turn, stats: self.console.log_thinking(turn)
 
+        # 流式输出回调
+        self.engine.on_stream_start = lambda turn: self.console.stream_start(turn)
+        self.engine.on_stream_text = lambda text: self.console.stream_text(text)
+        self.engine.on_stream_end = lambda turn: self.console.stream_end(turn)
+
         # 工具调用开始 → console 显示工具名和参数
         def _on_tool_start(tool_name, tool_args, stats, phase, result_preview=None, duration=0):
             if phase == "start":
                 self.console.log_tool_start(tool_name, tool_args)
+                self.console.update_live_status(stats)
             elif phase == "done":
                 self.console.log_tool_done(tool_name, duration)
+                self.console.update_live_status(stats)
 
         self.engine.on_tool_call = _on_tool_start
 
@@ -311,7 +318,7 @@ class MundoCLI:
             return
 
         msg_count = len(self.engine.messages)
-        total_chars = sum(len(m.get("content", "")) for m in self.engine.messages)
+        total_chars = sum(len(m.get("content") or "") for m in self.engine.messages)
 
         # 保留 system prompt + 最近 4 轮对话
         system_msg = self.engine.messages[0] if self.engine.messages[0]["role"] == "system" else None
@@ -321,7 +328,7 @@ class MundoCLI:
         summary_parts = []
         for msg in self.engine.messages[1:-8] if len(self.engine.messages) > 9 else []:
             role = msg["role"]
-            content = msg.get("content", "")[:100]
+            content = (msg.get("content") or "")[:100]
             if content:
                 summary_parts.append(f"[{role}] {content}")
 
@@ -338,7 +345,7 @@ class MundoCLI:
         new_messages.extend(recent)
 
         self.engine.messages = new_messages
-        new_chars = sum(len(m.get("content", "")) for m in self.engine.messages)
+        new_chars = sum(len(m.get("content") or "") for m in self.engine.messages)
 
         print(f"  {C.SUCCESS}✓ 上下文已压缩{C.RESET}")
         print(f"  {C.DIM}  {msg_count} 条消息 → {len(self.engine.messages)} 条消息{C.RESET}")
@@ -351,7 +358,7 @@ class MundoCLI:
             return
 
         msg_count = len(self.engine.messages)
-        total_chars = sum(len(m.get("content", "")) for m in self.engine.messages)
+        total_chars = sum(len(m.get("content") or "") for m in self.engine.messages)
         est_tokens = total_chars // 3  # 粗略估算 1 token ≈ 3 字符
 
         # 假设上下文窗口 128K tokens
@@ -742,28 +749,31 @@ class MundoCLI:
 
     def _execute_task(self, line: str):
         """执行任务"""
-        # 智能记忆注入
         extra = self.memory.get_context_budget(line)
 
-        # 对话结束后自动提取事实
         if self.engine.messages:
-            self.memory.extract_from_conversation(self.engine.messages, self.engine.client)
-            self.memory.compress_conversation(self.engine.messages, self.session_id)
+            try:
+                self.memory.extract_from_conversation(self.engine.messages, self.engine.client)
+                self.memory.compress_conversation(self.engine.messages, self.session_id)
+            except Exception:
+                pass
 
-        # 标记引擎忙
         self._engine_busy = True
         self.console.start_task()
 
         try:
             response = self.engine.run(line, extra_context=extra)
-            self.console.log_response(response)
+            # 流式模式下文本已实时输出，跳过重复打印
+            if not self.console._was_streamed:
+                self.console.log_response(response)
+            else:
+                self.console._was_streamed = False
         except Exception as e:
             self.console.log_error(str(e))
         finally:
             self._engine_busy = False
             self.console.stop_task()
 
-            # 生成会话摘要（借鉴 claude-mem）
             try:
                 self.memory.generate_session_summary(
                     self.session_id, self.engine.client
@@ -790,7 +800,11 @@ def main():
 
     if args.query:
         response = cli.engine.run(args.query)
-        print(response)
+        # 流式模式下文本已实时输出，跳过重复打印
+        if not cli.console._was_streamed:
+            print(response)
+        else:
+            cli.console._was_streamed = False
         return
 
     if not args.no_banner:

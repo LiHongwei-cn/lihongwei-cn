@@ -1,11 +1,11 @@
-"""蒙多的 LLM 多模型客户端 — 全量 AI 模型支持"""
+"""蒙多的 LLM 多模型客户端 — 全量 AI 模型支持 + 流式输出"""
 
 import os
 import json
 import urllib.request
 import urllib.error
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Iterator, Callable, Optional
 
 ENV_PATH = Path.home() / ".hermes" / ".env"
 MUNDO_ENV = Path.home() / ".hermes" / "mundo-agent" / ".env"
@@ -24,12 +24,10 @@ def _load_env():
 
 _load_env()
 
-# 从 setup.py 导入全量 provider 配置
 from setup import PROVIDERS
 
 
 class LLMClient:
-    """蒙多的多模型 LLM 客户端"""
 
     def __init__(self, provider: str = "xiaomi", model: str = None, api_key: str = None):
         cfg = PROVIDERS.get(provider)
@@ -59,6 +57,21 @@ class LLMClient:
             payload["tool_choice"] = "auto"
         return self._request(payload)
 
+    def chat_stream(self, messages: List[Dict], tools: List[Dict] = None,
+                    temperature: float = 0.7, max_tokens: int = 4096) -> Iterator[Dict]:
+        """流式输出 — 逐 chunk yield，支持实时显示"""
+        payload = {
+            "model": self.model,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "stream": True,
+        }
+        if tools:
+            payload["tools"] = tools
+            payload["tool_choice"] = "auto"
+        yield from self._request_stream(payload)
+
     def _request(self, payload: Dict) -> Dict:
         url = f"{self.base_url}/chat/completions"
         headers = {
@@ -76,6 +89,61 @@ class LLMClient:
             raise RuntimeError(f"LLM API 错误 {e.code}: {err_body[:300]}") from e
         except urllib.error.URLError as e:
             raise RuntimeError(f"网络错误: {e.reason}") from e
+
+    def _request_stream(self, payload: Dict) -> Iterator[Dict]:
+        """SSE 流式请求 — 逐行解析 data: {...}"""
+        url = f"{self.base_url}/chat/completions"
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}",
+        }
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(url, data=data, headers=headers, method="POST")
+
+        try:
+            resp = urllib.request.urlopen(req, timeout=120)
+        except urllib.error.HTTPError as e:
+            err_body = e.read().decode("utf-8", errors="replace")
+            raise RuntimeError(f"LLM API 错误 {e.code}: {err_body[:300]}") from e
+        except urllib.error.URLError as e:
+            raise RuntimeError(f"网络错误: {e.reason}") from e
+
+        buffer = ""
+        try:
+            while True:
+                chunk = resp.read(1024)
+                if not chunk:
+                    break
+                buffer += chunk.decode("utf-8", errors="replace")
+                while "\n" in buffer:
+                    line, buffer = buffer.split("\n", 1)
+                    line = line.strip()
+                    if not line or line.startswith(":"):
+                        continue
+                    if line.startswith("data: "):
+                        payload_str = line[6:]
+                        if payload_str == "[DONE]":
+                            return
+                        try:
+                            yield json.loads(payload_str)
+                        except json.JSONDecodeError:
+                            continue
+        finally:
+            resp.close()
+
+    @staticmethod
+    def extract_stream_delta(chunk: Dict) -> Dict:
+        choice = chunk.get("choices") or [{}]
+        first = choice[0] if choice else {}
+        delta = first.get("delta") or {}
+        result = {
+            "content": delta.get("content") or "",
+            "tool_calls": delta.get("tool_calls") or [],
+            "finish_reason": first.get("finish_reason"),
+        }
+        if "usage" in chunk:
+            result["usage"] = chunk["usage"]
+        return result
 
     @staticmethod
     def extract_response(result: Dict) -> Dict:
