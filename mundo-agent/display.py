@@ -117,24 +117,30 @@ class TaskConsole:
     # ── 输入（prompt_toolkit：和 Hermes Agent 同架构）──
 
     def read_input(self) -> str:
-        from prompt_toolkit import PromptSession
+        from prompt_toolkit import PromptSession, print_formatted_text
+        from prompt_toolkit.formatted_text import ANSI as PT_ANSI
         from prompt_toolkit.history import FileHistory
-        from prompt_toolkit.patch_stdout import patch_stdout
+        from prompt_toolkit.styles import Style
 
         print(f"\n{self._status_line()}", flush=True)
 
         hist_path = str(Path.home() / ".hermes" / "mundo-agent" / ".mundo_history")
-        session = PromptSession(history=FileHistory(hist_path))
+        style = Style.from_dict({"prompt": "#d4a017 bold"})
+        session = PromptSession(history=FileHistory(hist_path), style=style)
 
         try:
-            with patch_stdout():
-                return session.prompt(
-                    f"{A.GOLD}❯{A.RESET} ",
-                    multiline=False,
+            return session.prompt(
+                    PT_ANSI(f"{A.GOLD}❯{A.RESET} "),
                     wrap_lines=True,
                 )
         except (EOFError, KeyboardInterrupt):
             return ""
+
+    def log_print(self, text: str):
+        """prompt_toolkit 安全输出（在 patch_stdout 环境内调用）"""
+        from prompt_toolkit import print_formatted_text
+        from prompt_toolkit.formatted_text import ANSI as PT_ANSI
+        print_formatted_text(PT_ANSI(text))
 
     # ── 日志输出 ──
 
