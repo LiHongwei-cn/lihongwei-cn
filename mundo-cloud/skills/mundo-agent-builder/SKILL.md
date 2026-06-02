@@ -43,23 +43,27 @@ on_stream_text callback  →  console.stream_text() prints chunk immediately
 
 ### SSE Parsing (stdlib urllib, no deps)
 
+**Prefer `readline()` over `read(1024)`** — `read(1024)` can block waiting for a full 1024 bytes, causing visible delays for small SSE chunks. `readline()` returns as soon as a `\n` arrives.
+
 ```python
 def _request_stream(self, payload):
     payload["stream"] = True
     resp = urllib.request.urlopen(req, timeout=120)
-    buffer = ""
-    while True:
-        chunk = resp.read(1024)
-        if not chunk: break
-        buffer += chunk.decode("utf-8", errors="replace")
-        while "\n" in buffer:
-            line, buffer = buffer.split("\n", 1)
-            line = line.strip()
+    try:
+        for raw_line in resp:  # iterates by line — non-blocking
+            line = raw_line.decode("utf-8", errors="replace").strip()
+            if not line or line.startswith(":"):
+                continue
             if line.startswith("data: "):
                 payload_str = line[6:]
-                if payload_str == "[DONE]": return
+                if payload_str == "[DONE]":
+                    return
                 yield json.loads(payload_str)
+    finally:
+        resp.close()
 ```
+
+**Pitfall**: `resp` must be a file-like object from `urlopen()`. The `for line in resp` iterator works because `HTTPResponse` implements `__iter__`. Each iteration reads until `\n`.
 
 ### Tool Calls Accumulation from Deltas
 
@@ -166,6 +170,51 @@ shutil.which("opencode") # → OpenCode
 
 ### Result Merging
 LLM summarizes all subtask results: dedup, resolve conflicts, check completeness.
+
+### Subtask Progress Callbacks (v25.0+)
+
+During parallel execution, fire progress callbacks so the user sees real-time status:
+
+```python
+# In TaskDelegator.__init__:
+self.on_subtask_progress: Optional[Callable] = None  # (id, desc, agent, phase, preview)
+
+# In execute_parallel, fire for each subtask:
+for a in assignments:
+    if self.on_subtask_progress:
+        self.on_subtask_progress(st["id"], st["task"], agent_name, "start", None)
+
+for future in as_completed(futures):
+    completed += 1
+    try:
+        result = future.result(timeout=600)
+        if self.on_subtask_progress:
+            self.on_subtask_progress(st["id"], st["task"], agent_name, "done", result[:80])
+    except Exception as e:
+        if self.on_subtask_progress:
+            self.on_subtask_progress(st["id"], st["task"], agent_name, "error", str(e)[:80])
+```
+
+**Merge start indicator**: Before `merge_results()`, fire `on_merge_start` callback to show "汇总中..." so the user knows parallel execution finished and synthesis is starting.
+
+```python
+results = self.delegator.execute_parallel(user_input, subtasks)
+if self.on_merge_start:
+    self.on_merge_start()
+return self.delegator.merge_results(user_input, subtasks, results)
+```
+
+**Console display pattern**:
+```
+  ▸ [1] 研究硬件价格 → Claude Code 执行中...
+  ▸ [2] 设计前端UI → 分身#2 执行中...
+  ✓ [2] 设计前端UI → 分身#2
+  │ 已生成 HTML 框架...
+  ✓ [1] 研究硬件价格 → Claude Code
+  │ 已整理 CPU/GPU/主板...
+
+  ▸ 汇总中...
+```
 
 ### Status Bar Display
 ```
@@ -282,19 +331,40 @@ See `references/context-management-commands.md` for implementation details.
 
 ## Sync Workflow (MANDATORY — User will call you out if you skip this)
 
-After ANY code change to Mundo agent files, sync ALL FOUR places **without being asked**. User has been extremely frustrated by missed syncs.
+After ANY code change to Mundo agent files, sync ALL places **without being asked**. User has been extremely frustrated by missed syncs.
+
+### Sync Points (all mandatory)
+
+1. **Local install** — `cp` changed files to `~/.hermes/mundo-agent/`
+2. **Repo** — files in `~/Desktop/lihongwei-cn/mundo-agent/`
+3. **README.md** (root) — version, features, download links (all 4 languages: zh/en/jp/kr)
+4. **mundo-agent/README.md** — project-level README with features, commands, architecture
+5. **mundo-agent/index.html** — version, changelog, download links
+6. **GitHub Release** — `gh release create <tag>` with zip packages for macOS/Windows/Linux
+7. **Git push** — `git add` + `git commit` + `git push`
+
+### Version Bump Checklist
+
+When bumping version (e.g. v24.5 → v25.0):
+- [ ] `mundo.py` VERSION constant
+- [ ] `version.txt`
+- [ ] `index.html` all version strings (meta, badge, changelog, hero, download section)
+- [ ] `README.md` all 4 language sections
+- [ ] `mundo-agent/README.md`
+- [ ] Download links point to new release tag
+- [ ] GitHub Release created with zip packages
+
+### Create Release Packages
 
 ```bash
-cd ~/Desktop/lihongwei-cn
-# 1. Local install
-cp mundo-cloud/agent/display.py ~/.hermes/mundo-agent/display.py
-cp mundo-cloud/agent/mundo.py ~/.hermes/mundo-agent/mundo.py
-cp mundo-cloud/agent/engine.py ~/.hermes/mundo-agent/engine.py
-cp mundo-cloud/agent/memory.py ~/.hermes/mundo-agent/memory.py
-# 2. README.md — update version, features, commands (all 4 languages)
-# 3. mundo-agent/index.html — update version, features, terminal preview
-# 4. Git
-git add -A && git commit -m "type: description" && git push
+# Build zip from current local install
+cd /tmp && rm -rf mundo-v-build && mkdir -p mundo-v-build/mundo-agent
+cp ~/.hermes/mundo-agent/*.py ~/.hermes/mundo-agent/version.txt ~/.hermes/mundo-agent/*.sh ~/.hermes/mundo-agent/*.bat ~/.hermes/mundo-agent/*.command mundo-v-build/mundo-agent/ 2>/dev/null
+cp -r ~/.hermes/mundo-agent/config ~/.hermes/mundo-agent/static ~/.hermes/mundo-agent/templates mundo-v-build/mundo-agent/ 2>/dev/null
+cd mundo-v-build && zip -r mundo-vN-macos.zip mundo-agent/ && cp mundo-vN-macos.zip mundo-vN-windows.zip && cp mundo-vN-macos.zip mundo-vN-linux.zip && cp mundo-vN-macos.zip mundo-vN-all.zip
+
+# Create release
+gh release create mundo-vN.0 *.zip --title "MUNDO Agent vN.0 — <summary>" --notes "## vN.0 更新\n..."
 ```
 
 **User's exact complaint**: "有没有更新到本地还有GitHub自述文件内容还有网址项目内容，每次都要我说一遍"
