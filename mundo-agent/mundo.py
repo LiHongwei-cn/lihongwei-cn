@@ -219,7 +219,7 @@ class MundoCLI:
                 count = auto_sync_new_skills()
                 if count > 0:
                     print(f"  {C.DIM}☁ 已同步 {count} 个新 Skill 到云仓库{C.RESET}")
-        except Exception:
+        except Exception:  # 操作失败静默跳过
             pass
 
     def _import_memory_if_first_run(self):
@@ -243,7 +243,7 @@ class MundoCLI:
 
             # 标记导入完成（无论是否有数据都标记，避免重复扫描）
             import_flag.write_text("done")
-        except Exception:
+        except Exception:  # 操作失败静默跳过
             pass
 
     def show_banner(self):
@@ -607,7 +607,7 @@ class MundoCLI:
             info = check_update()
             if info["available"]:
                 print(f"  {C.AMBER}发现新版本 v{info['remote']}（当前 v{info['local']}）。输入 /update 更新。{C.RESET}")
-        except Exception:
+        except Exception:  # 操作失败静默跳过
             pass
 
     def cmd_audit(self):
@@ -769,7 +769,7 @@ class MundoCLI:
             try:
                 self.memory.extract_from_conversation(self.engine.messages, self.engine.client)
                 self.memory.compress_conversation(self.engine.messages, self.session_id)
-            except Exception:
+            except Exception:  # 操作失败静默跳过
                 pass
 
         # 明确反馈：任务已接收
@@ -795,7 +795,7 @@ class MundoCLI:
                 self.memory.generate_session_summary(
                     self.session_id, self.engine.client
                 )
-            except Exception:
+            except Exception:  # 操作失败静默跳过
                 pass
 
 

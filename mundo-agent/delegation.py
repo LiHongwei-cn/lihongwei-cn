@@ -90,7 +90,7 @@ class TaskDelegator:
             subtasks = json.loads(content)
             if isinstance(subtasks, list):
                 return subtasks
-        except (json.JSONDecodeError, Exception):
+        except (json.JSONDecodeError, Exception):  # 操作失败静默跳过
             pass
         return []
 

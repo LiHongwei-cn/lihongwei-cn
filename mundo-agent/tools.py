@@ -189,7 +189,7 @@ def _run_write_file(args: Dict) -> str:
     path = args.get("path", "")
     if not path:
         return "[错误: write_file 缺少 path 参数]"
-    content = args.get("content", "")
+    content = args.get("content") or ""
     if not content:
         return "[错误: write_file 缺少 content 参数]"
     path = os.path.expanduser(path)

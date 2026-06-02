@@ -146,7 +146,7 @@ class MundoEngine:
                         self.client = LLMClient(provider=prov, model=mod)
                         self.provider = prov
                         self.model_name = mod
-                    except Exception:
+                    except Exception:  # 操作失败静默跳过
                         pass
 
     def _try_delegation(self, user_input: str) -> Optional[str]:
@@ -475,7 +475,7 @@ class MundoEngine:
         raw = raw.strip()
         try:
             return json.loads(raw)
-        except json.JSONDecodeError:
+        except json.JSONDecodeError:  # 操作失败静默跳过
             pass
         open_braces = raw.count("{") - raw.count("}")
         open_brackets = raw.count("[") - raw.count("]")

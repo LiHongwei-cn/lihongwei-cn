@@ -199,7 +199,7 @@ class LLMClient:
         message = choice.get("message", {})
         return {
             "role": "assistant",
-            "content": message.get("content", ""),
+            "content": message.get("content") or "",
             "tool_calls": message.get("tool_calls", []),
         }
 
