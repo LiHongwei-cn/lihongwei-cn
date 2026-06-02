@@ -22,6 +22,15 @@ if ($minor -lt 10) {
 }
 Write-Host "✓ $pyVer"
 
+# 安装依赖
+Write-Host "▸ 检查依赖..."
+python -c "import prompt_toolkit" 2>$null
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "  安装 prompt_toolkit..."
+    python -m pip install prompt_toolkit --quiet 2>$null
+}
+Write-Host "✓ 依赖就绪"
+
 # 检查 Git
 try { $gitVer = git --version 2>&1 } catch { $gitVer = "" }
 if (-not $gitVer) {
