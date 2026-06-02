@@ -152,6 +152,16 @@ class MundoCLI:
 
         self.engine.on_delegate = _on_delegate
         self.engine.on_clones = _on_clones
+
+        # 子任务实时进度
+        def _on_subtask_progress(subtask_id, task_desc, agent_name, phase, preview):
+            self.console.log_subtask_progress(subtask_id, task_desc, agent_name, phase, preview)
+
+        self.delegator.on_subtask_progress = _on_subtask_progress
+
+        # 汇总开始提示
+        self.engine.on_merge_start = lambda: self.console.log_merging()
+
         self.engine._memory_ref = self.memory
         self.engine._session_id = self.session_id
 

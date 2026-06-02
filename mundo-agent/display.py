@@ -312,6 +312,22 @@ class TaskConsole:
         for i in range(1, count + 1):
             self._w(f"  {A.GOLD}  分身 #{i}{A.RESET}\n")
 
+    def log_subtask_progress(self, subtask_id, task_desc, agent_name, phase, preview=None):
+        """子任务实时进度"""
+        desc = (task_desc or "")[:40].replace("\n", " ")
+        if phase == "start":
+            self._w(f"  {A.INFO}▸{A.RESET} [{subtask_id}] {A.SUBTEXT}{desc}{A.RESET} → {A.SUCCESS}{agent_name}{A.RESET} {A.DIM}执行中...{A.RESET}\n")
+        elif phase == "done":
+            self._w(f"  {A.SUCCESS}✓{A.RESET} [{subtask_id}] {A.SUBTEXT}{desc}{A.RESET} → {A.SUCCESS}{agent_name}{A.RESET}\n")
+            if preview:
+                self._w(f"  {A.DIM}│ {preview}{A.RESET}\n")
+        elif phase == "error":
+            self._w(f"  {A.ERROR}✗{A.RESET} [{subtask_id}] {A.SUBTEXT}{desc}{A.RESET} → {A.ERROR}{preview}{A.RESET}\n")
+
+    def log_merging(self):
+        """汇总开始提示"""
+        self._w(f"\n  {A.GOLD_DIM}▸{A.RESET} {A.SUBTEXT}汇总中...{A.RESET}\n")
+
     def log_response(self, text: str):
         if self._was_streamed:
             self._was_streamed = False
