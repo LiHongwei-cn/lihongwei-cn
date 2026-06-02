@@ -1,8 +1,8 @@
-# 👑 MUNDO Agent v26.1 — THE EMPEROR
+# 👑 MUNDO Agent v26.2 — THE EMPEROR
 
 独立 AI Agent：LLM 直连 + 工具调用 + Agentic Loop + Agent 调度 + 流式输出
 
-## v26.1 — 融合 Hermes Agent + Claude Code 精华
+## v26.2 — 融合 Hermes Agent + Claude Code 精华
 
 架构大换血，只保留最优秀的基因：
 
@@ -90,10 +90,10 @@ cloud_sync.py   云仓库同步
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v26.1-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v26.1/mundo-v26.1-macos.zip) |
-| Windows | [mundo-v26.1-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v26.1/mundo-v26.1-windows.zip) |
-| Linux | [mundo-v26.1-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v26.1/mundo-v26.1-linux.zip) |
-| 全平台 | [mundo-v26.1-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v26.1/mundo-v26.1-all.zip) |
+| macOS | [mundo-v26.2-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v26.2/mundo-v26.2-macos.zip) |
+| Windows | [mundo-v26.2-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v26.2/mundo-v26.2-windows.zip) |
+| Linux | [mundo-v26.2-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v26.2/mundo-v26.2-linux.zip) |
+| 全平台 | [mundo-v26.2-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v26.2/mundo-v26.2-all.zip) |
 
 ## 许可证
 
