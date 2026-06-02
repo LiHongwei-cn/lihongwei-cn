@@ -1,7 +1,8 @@
-"""蒙多的 Agent 检测系统 — 自动发现本地所有可用 Agent"""
+"""蒙多的 Agent 检测系统 — 自动发现本地所有可用 Agent + 重试 + 降级"""
 
 import os
 import shutil
+import time
 import subprocess
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -22,6 +23,33 @@ def _get_version(cmd: str, args: List[str] = None) -> str:
         return r.stdout.strip().split("\n")[0][:60]
     except Exception:
         return ""
+
+
+def _retry_run(cmd: list, timeout: int = 600, max_retries: int = 2, label: str = "") -> str:
+    """带重试的 subprocess 执行"""
+    for attempt in range(max_retries + 1):
+        try:
+            r = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+            output = r.stdout.strip()
+            if output:
+                return output
+            if attempt < max_retries:
+                time.sleep(2 * (attempt + 1))
+                continue
+            return f"[{label} 无输出]"
+        except subprocess.TimeoutExpired:
+            if attempt < max_retries:
+                time.sleep(3 * (attempt + 1))
+                continue
+            return f"[{label} 超时 ({timeout}s)]"
+        except FileNotFoundError:
+            return f"[{label} 未安装]"
+        except Exception as e:
+            if attempt < max_retries:
+                time.sleep(2 * (attempt + 1))
+                continue
+            return f"[{label} 错误: {e}]"
+    return f"[{label} 重试耗尽]"
 
 
 # ═══════════════════════════════════════════════
@@ -69,22 +97,15 @@ AGENT_REGISTRY = {
 
 
 # ═══════════════════════════════════════════════
-# Agent 执行器
+# Agent 执行器（带重试）
 # ═══════════════════════════════════════════════
 
 def _run_hermes(prompt: str, **kwargs) -> str:
-    max_turns = kwargs.get("max_turns", 30)
     workdir = kwargs.get("workdir")
     cmd = ["hermes", "chat", "-q", prompt]
     if workdir:
         cmd.extend(["--workdir", workdir])
-    try:
-        r = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
-        return r.stdout
-    except subprocess.TimeoutExpired:
-        return "[Hermes 超时]"
-    except FileNotFoundError:
-        return "[Hermes 未安装]"
+    return _retry_run(cmd, timeout=300, max_retries=2, label="Hermes")
 
 
 def _run_claude(prompt: str, **kwargs) -> str:
@@ -98,31 +119,17 @@ def _run_claude(prompt: str, **kwargs) -> str:
     ]
     if workdir:
         cmd.extend(["--cwd", workdir])
-    try:
-        r = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
-        return r.stdout
-    except subprocess.TimeoutExpired:
-        return "[Claude Code 超时]"
-    except FileNotFoundError:
-        return "[Claude Code 未安装]"
+    return _retry_run(cmd, timeout=600, max_retries=1, label="Claude Code")
 
 
 def _run_codex(prompt: str, **kwargs) -> str:
     cmd = ["codex", "--full-auto", prompt]
-    try:
-        r = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
-        return r.stdout
-    except (subprocess.TimeoutExpired, FileNotFoundError):
-        return "[Codex 不可用]"
+    return _retry_run(cmd, timeout=600, max_retries=1, label="Codex")
 
 
 def _run_opencode(prompt: str, **kwargs) -> str:
     cmd = ["opencode", "-p", prompt]
-    try:
-        r = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
-        return r.stdout
-    except (subprocess.TimeoutExpired, FileNotFoundError):
-        return "[OpenCode 不可用]"
+    return _retry_run(cmd, timeout=300, max_retries=1, label="OpenCode")
 
 
 # ═══════════════════════════════════════════════
@@ -130,7 +137,6 @@ def _run_opencode(prompt: str, **kwargs) -> str:
 # ═══════════════════════════════════════════════
 
 class AgentManager:
-    """蒙多的 Agent 调度中心"""
 
     def __init__(self):
         self.available: Dict[str, dict] = {}
@@ -157,7 +163,6 @@ class AgentManager:
         return len(self.available)
 
     def get_best_for(self, task_type: str) -> Optional[str]:
-        """根据任务类型选择最佳 Agent"""
         scores = {}
         for key, agent in self.available.items():
             score = 0
@@ -174,14 +179,12 @@ class AgentManager:
         return max(scores, key=scores.get)
 
     def delegate(self, agent_key: str, prompt: str, **kwargs) -> str:
-        """委托任务给指定 Agent"""
         agent = self.available.get(agent_key)
         if not agent:
             return f"[Agent {agent_key} 不可用]"
         return agent["run"](prompt, **kwargs)
 
     def delegate_best(self, task_type: str, prompt: str, **kwargs) -> tuple:
-        """自动选择最佳 Agent 并委托。返回 (agent_key, result)"""
         best = self.get_best_for(task_type)
         if not best:
             return None, None
@@ -190,11 +193,10 @@ class AgentManager:
 
 
 # ═══════════════════════════════════════════════
-# 蒙多分身（当没有外部 Agent 时）
+# 蒙多分身（带重试 + 指数退避）
 # ═══════════════════════════════════════════════
 
 class MundoClone:
-    """蒙多分身 — 用独立 LLM 会话并行执行子任务"""
 
     def __init__(self, clone_id: int, llm_client):
         self.id = clone_id
@@ -202,21 +204,33 @@ class MundoClone:
         self.task = ""
         self.result = ""
 
-    def execute(self, system_prompt: str, task: str) -> str:
+    def execute(self, system_prompt: str, task: str, max_retries: int = 3) -> str:
         self.task = task
-        try:
-            result = self.client.chat(
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": task},
-                ],
-                temperature=0.7,
-                max_tokens=4096,
-            )
-            from llm import LLMClient
-            msg = LLMClient.extract_response(result)
-            self.result = msg.get("content", "")
-            return self.result
-        except Exception as e:
-            self.result = f"[分身 {self.id} 失败: {e}]"
-            return self.result
+        last_error = None
+        for attempt in range(max_retries):
+            try:
+                result = self.client.chat(
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": task},
+                    ],
+                    temperature=0.7,
+                    max_tokens=4096,
+                )
+                from llm import LLMClient
+                msg = LLMClient.extract_response(result)
+                content = msg.get("content") or ""
+                if content:
+                    self.result = content
+                    return self.result
+                # 空回复视为失败
+                last_error = "空回复"
+            except Exception as e:
+                last_error = str(e)
+
+            if attempt < max_retries - 1:
+                wait = 2 * (attempt + 1)
+                time.sleep(wait)
+
+        self.result = f"[分身 {self.id} 失败 ({max_retries}次重试): {last_error}]"
+        return self.result

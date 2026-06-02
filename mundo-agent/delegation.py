@@ -98,7 +98,6 @@ class TaskDelegator:
         results = {}
         max_workers = min(len(subtasks), 4)
         total = len(subtasks)
-        completed = 0
 
         assignments = []
         for st in subtasks:
@@ -118,14 +117,13 @@ class TaskDelegator:
                     self.on_subtask_progress(st["id"], st["task"], agent_name, "start", None)
 
                 if agent_key:
-                    future = executor.submit(self._run_external_agent, agent_key, prompt, st)
+                    future = executor.submit(self._run_external_with_fallback, agent_key, prompt, st, task)
                 else:
                     future = executor.submit(self._run_mundo_clone, st, task)
                 futures[future] = (st, agent_name)
 
             for future in as_completed(futures):
                 st, agent_name = futures[future]
-                completed += 1
                 try:
                     result = future.result(timeout=600)
                     results[st["id"]] = result
@@ -138,6 +136,15 @@ class TaskDelegator:
                         self.on_subtask_progress(st["id"], st["task"], agent_name, "error", str(e)[:80])
 
         return results
+
+    def _run_external_with_fallback(self, agent_key: str, prompt: str, subtask: Dict, original_task: str) -> str:
+        """外部 Agent 执行，失败时降级到蒙多分身"""
+        result = self._run_external_agent(agent_key, prompt, subtask)
+        # 检查是否失败（超时/未安装/错误/无输出）
+        if any(k in result for k in ["超时", "未安装", "不可用", "错误", "失败", "重试耗尽", "无输出"]):
+            # 降级到蒙多分身
+            return self._run_mundo_clone(subtask, original_task)
+        return result
 
     def _run_external_agent(self, agent_key: str, prompt: str, subtask: Dict) -> str:
         agent_name = self.agent_mgr.available.get(agent_key, {}).get("name", agent_key)
