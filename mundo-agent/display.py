@@ -19,9 +19,7 @@
 """
 
 import sys
-import os
 import shutil
-import unicodedata
 import time as _time
 
 
@@ -51,16 +49,6 @@ class A:
     # ── 工具 ──
     HIDE_CURSOR = "\033[?25l"
     SHOW_CURSOR = "\033[?25h"
-
-
-def _dw(text: str) -> int:
-    w = 0
-    for ch in text:
-        if ord(ch) < 32:
-            continue
-        eaw = unicodedata.east_asian_width(ch)
-        w += 2 if eaw in ("W", "F") else 1
-    return w
 
 
 class TaskConsole:
@@ -128,112 +116,14 @@ class TaskConsole:
     # ── 输入 ──
 
     def read_input(self) -> str:
-        import termios
-        import tty
+        import readline
 
         self._w(f"\n{self._status_line()}\n")
-        self._w(f"{A.GOLD}❯{A.RESET} ")
-
-        buf = []
-        cur = 0
-
-        fd = sys.stdin.fileno()
-        old = termios.tcgetattr(fd)
+        prompt = f"{A.GOLD}❯{A.RESET} "
         try:
-            tty.setraw(fd)
-            while True:
-                ch = os.read(fd, 1)
-                if not ch:
-                    continue
-
-                if ch in (b"\r", b"\n"):
-                    self._w(A.SHOW_CURSOR + "\n")
-                    return "".join(buf)
-
-                if ch == b"\x03":
-                    self._w(A.SHOW_CURSOR + "\n")
-                    raise KeyboardInterrupt
-
-                if ch == b"\x04":
-                    if not buf:
-                        self._w(A.SHOW_CURSOR)
-                        return ""
-                    continue
-
-                if ch in (b"\x7f", b"\x08"):
-                    if cur > 0:
-                        buf.pop(cur - 1)
-                        cur -= 1
-                    self._redraw(buf, cur)
-                    continue
-
-                if ch == b"\x15":
-                    buf = buf[cur:]
-                    cur = 0
-                    self._redraw(buf, cur)
-                    continue
-
-                if ch == b"\x17":
-                    if cur > 0:
-                        i = cur - 1
-                        while i > 0 and buf[i - 1] == " ":
-                            i -= 1
-                        while i > 0 and buf[i - 1] != " ":
-                            i -= 1
-                        del buf[i:cur]
-                        cur = i
-                    self._redraw(buf, cur)
-                    continue
-
-                if ch == b"\x1b":
-                    seq = os.read(fd, 2)
-                    if seq == b"[C" and cur < len(buf):
-                        cur += 1
-                    elif seq == b"[D" and cur > 0:
-                        cur -= 1
-                    self._redraw(buf, cur)
-                    continue
-
-                if ch[0] > 0x7f:
-                    if ch[0] & 0xE0 == 0xC0:
-                        ch += os.read(fd, 1)
-                    elif ch[0] & 0xF0 == 0xE0:
-                        ch += os.read(fd, 2)
-                    elif ch[0] & 0xF8 == 0xF0:
-                        ch += os.read(fd, 3)
-
-                try:
-                    buf.insert(cur, ch.decode("utf-8"))
-                    cur += 1
-                except UnicodeDecodeError:
-                    continue
-
-                self._redraw(buf, cur)
-        finally:
-            termios.tcsetattr(fd, termios.TCSADRAIN, old)
-
-    def _redraw(self, buf, cur):
-        text = "".join(buf)
-        cols = shutil.get_terminal_size((80, 24)).columns
-        usable = max(cols - 3, 10)
-        text_w = _dw(text)
-        lines = max(1, (text_w + usable - 1) // usable) if text_w > 0 else 1
-        # 回到输入起始行
-        if lines > 1:
-            self._w(f"\033[{lines - 1}A")
-        self._w(f"\r\033[J")
-        # 重绘
-        self._w(f"{A.GOLD}❯{A.RESET} {text}")
-        # 光标定位（重写后光标在文本末尾）
-        if cur < len(text):
-            bw = _dw(text[:cur])
-            target_line = bw // usable if usable > 0 else 0
-            total_lines = lines
-            move_up = total_lines - 1 - target_line
-            if move_up > 0:
-                self._w(f"\033[{move_up}A")
-            self._w(f"\r\033[{3 + (bw % usable)}G")
-        self._w(A.SHOW_CURSOR)
+            return input(prompt)
+        except EOFError:
+            return ""
 
     # ── 日志输出 ──
 
