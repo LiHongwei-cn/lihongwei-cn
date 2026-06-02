@@ -165,7 +165,10 @@ class MundoCLI:
         self.engine._memory_ref = self.memory
         self.engine._session_id = self.session_id
 
-        self.engine.on_turn_start = lambda turn, stats: self.console.log_thinking(turn)
+        self.engine.on_turn_start = lambda turn, stats: (
+            self.console.log_thinking(turn),
+            self.console._update_stats(stats),
+        )
 
         # 流式输出回调
         self.engine.on_stream_start = lambda turn: self.console.stream_start(turn)
