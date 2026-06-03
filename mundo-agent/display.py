@@ -1,4 +1,4 @@
-"""蒙多执行控制台 v29.2 — 极简艺术家
+"""蒙多执行控制台 v29.3 — 极简艺术家
 
 设计原则：
 - 少即是多。每一像素都有存在的理由
@@ -356,10 +356,9 @@ class TaskConsole:
 
     def log_llm_stats(self, prompt_tokens: int, completion_tokens: int,
                       cached_tokens: int = 0, total_context: int = 0):
-        self.update_cache_stats(
-            self._cached_tokens + cached_tokens,
-            self._total_prompt_tokens + prompt_tokens
-        )
+        # 累积缓存统计（跨多轮）
+        self._cached_tokens += cached_tokens
+        self._total_prompt_tokens += prompt_tokens
         if total_context > 0:
             self.update_context_tokens(total_context)
 
@@ -368,6 +367,9 @@ class TaskConsole:
     def start_task(self):
         self._is_running = True
         self._task_start = _time.time()
+        # 重置缓存统计（每次任务独立计算）
+        self._cached_tokens = 0
+        self._total_prompt_tokens = 0
 
     def stop_task(self):
         self._is_running = False
