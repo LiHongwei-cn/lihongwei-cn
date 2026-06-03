@@ -307,6 +307,7 @@ open ~/.hermes/mundo-agent/MUNDO.command
 | **极简 UI** | 一行状态平铺 + 分隔线 + 输入提示符（Hermes 风格） |
 | **智能路由** | LLM 自主判断是否需要工具，不预判不误判，精简 prompt 省 token |
 | **多模态** | 图像/视频/PDF 理解 |
+| **Superpowers 方法论** | 14个开发方法论技能（TDD/调试/计划/审查/并行） |
 
 ---
 
@@ -376,7 +377,7 @@ pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple Pillow
 蒙多启动时自动检查新版本。发现新版本后提示：
 
 ```
-发现新版本 v25.0.0（当前 v24.6.0）。输入 /update 更新。
+发现新版本 v25.0.0（当前 v24.7.0）。输入 /update 更新。
 ```
 
 执行 `/update` 更新时：
