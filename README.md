@@ -18,7 +18,7 @@
 
 ---
 
-## 👑 MUNDO Agent v29.0 — 独立 AI Agent
+## 👑 MUNDO Agent v29.1 — 独立 AI Agent
 
 蒙多不再只是一个 Skill。蒙多是独立的 AI Agent，拥有自己的 LLM 直连、工具引擎、Agentic Loop。
 
@@ -380,7 +380,7 @@ pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple Pillow
 蒙多启动时自动检查新版本。发现新版本后提示：
 
 ```
-发现新版本 v28.1.0（当前 v29.0.0）。输入 /update 更新。
+发现新版本 v28.1.0（当前 v29.1.0）。输入 /update 更新。
 ```
 
 执行 `/update` 更新时：
