@@ -1,4 +1,4 @@
-# 👑 MUNDO Agent v29.0 — THE EMPEROR
+# 👑 MUNDO Agent v29.5 — THE EMPEROR
 
 独立 AI Agent：LLM 直连 + 10 工具 + Agentic Loop + Agent 调度 + 流式输出
 
@@ -123,10 +123,10 @@ cloud_sync.py   云仓库同步
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v29.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.0/mundo-v29.0-macos.zip) |
-| Windows | [mundo-v29.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.0/mundo-v29.0-windows.zip) |
-| Linux | [mundo-v29.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.0/mundo-v29.0-linux.zip) |
-| 全平台 | [mundo-v29.0-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.0/mundo-v29.0-all.zip) |
+| macOS | [mundo-v29.5-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.5/mundo-v29.5-macos.zip) |
+| Windows | [mundo-v29.5-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.5/mundo-v29.5-windows.zip) |
+| Linux | [mundo-v29.5-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.5/mundo-v29.5-linux.zip) |
+| 全平台 | [mundo-v29.5-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.5/mundo-v29.5-all.zip) |
 
 ## 许可证
 
