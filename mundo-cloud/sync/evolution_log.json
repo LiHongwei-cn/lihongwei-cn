@@ -1,6 +1,20 @@
 {
   "entries": [
     {
+      "timestamp": "2026-06-03T11:28:17Z",
+      "action": "sync",
+      "synced_count": 1,
+      "skills": [
+        {
+          "skill": "mundo",
+          "from_version": "0.0",
+          "to_version": "19.2",
+          "score": 86,
+          "content_hash": "82d7cbdab95c8a3aebe86dac230ec0a09651c687fb637c3b02dd2eddeab03dd6"
+        }
+      ]
+    },
+    {
       "timestamp": "2026-06-01T23:53:43Z",
       "action": "sync",
       "synced_count": 32,
