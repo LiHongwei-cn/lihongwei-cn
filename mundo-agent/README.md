@@ -2,15 +2,16 @@
 
 独立 AI Agent：LLM 直连 + 工具调用 + Agentic Loop + Agent 调度 + 流式输出
 
-## v28.0 — UI 全面升级 + Claude 六套记忆架构
+## v28.0 — 帝王美学 + Claude 六套记忆架构
 
 核心改进：
 
-- **Hermes 风格状态栏** — 模型 │ 上下文 │ [进度条] │ 缓存命中率 │ 会话时间 │ 任务计时
+- **蒙多帝王美学** — 帝王色系（金+深紫+暗红+墨黑）· ▰▱进度条 · ┃活动流 · ✦完成标记 · 金色粗线分隔
+- **Hermes 风格状态栏** — 👑模型 ┃ 上下文 ┃ ▰▰▰▰▱▱▱▱▱▱▱▱ ┃ 缓存命中率 ┃ 会话时间 ┃ 任务计时
 - **实时 Token 消耗** — 每次 LLM 调用后自动更新状态栏
 - **缓存命中率** — 从 API usage 中提取 cached_tokens，显示命中百分比
-- **醒目输入栏** — 带金色分隔线，prompt_toolkit + Tab 自动补全
-- **任务完成反馈** — 金色分隔线 + 统计（tok/turns/tools/errors/retries）
+- **醒目输入栏** — 金色粗线分隔 + prompt_toolkit Tab 自动补全
+- **任务完成反馈** — 金色分隔线 + ✦统计行（tok/turns/tools/errors/retries）
 - **Claude 六套记忆架构**：
   - 自动 Memory — 从对话中自动提取关键信息（轻量规则，不调 LLM）
   - 对话搜索 — FTS5 全文搜索历史对话

@@ -127,11 +127,21 @@ class MundoCLI:
         from rich.text import Text
 
         banner_text = Text()
-        banner_text.append("           M  U  N  D  O\n", style="bold gold")
-        banner_text.append("            THE EMPEROR\n", style="dim")
-        banner_text.append(f"            v{VERSION}\n", style="dim")
+        banner_text.append("  ╔══════════════════════════════════════╗\n", style="gold.dim")
+        banner_text.append("  ║  ", style="gold.dim")
+        banner_text.append("👑  ", style="gold")
+        banner_text.append("M  U  N  D  O", style="bold gold")
+        banner_text.append("  👑", style="gold")
+        banner_text.append("  ║\n", style="gold.dim")
+        banner_text.append("  ║      ", style="gold.dim")
+        banner_text.append("THE EMPEROR", style="dim")
+        banner_text.append("          ║\n", style="gold.dim")
+        banner_text.append(f"  ║           ", style="gold.dim")
+        banner_text.append(f"v{VERSION}", style="dim")
+        banner_text.append("              ║\n", style="gold.dim")
+        banner_text.append("  ╚══════════════════════════════════════╝", style="gold.dim")
 
-        console.print(Panel(banner_text, border_style="gold", expand=False))
+        console.print(banner_text)
 
         model_disp = f"{self.provider}/{self._model_display()}"
         self.console.init_screen(model_disp, VERSION)
