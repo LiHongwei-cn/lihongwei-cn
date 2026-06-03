@@ -359,6 +359,7 @@ class MundoEngine:
         self.stats.reset()
         self.budget.reset()
         self._interrupted = False
+        self._use_streaming = True  # 每次任务重新尝试流式
         self._install_signal_handler()
 
         if not self.messages:
@@ -452,9 +453,7 @@ class MundoEngine:
                         if attempt == 0:
                             self._use_streaming = False
                             last_error = str(e)
-                            # 通知用户流式降级
-                            if self.on_stream_text:
-                                self.on_stream_text(f"\n[流式输出不可用，已切换到普通模式]\n")
+                            # 静默降级，不打扰用户
                             continue
                         raise
 
