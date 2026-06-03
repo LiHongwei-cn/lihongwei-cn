@@ -1,11 +1,16 @@
-# 👑 MUNDO Agent v28.0 — THE EMPEROR
+# 👑 MUNDO Agent v28.6 — THE EMPEROR
 
 独立 AI Agent：LLM 直连 + 工具调用 + Agentic Loop + Agent 调度 + 流式输出
 
-## v28.0 — 极简艺术 + Claude 六套记忆架构
+## v28.6 — 全面优化 + 功能增强
 
 核心改进：
 
+- **全面功能优化** — 所有核心模块经过严格测试，100%功能正常
+- **版本一致性修复** — 统一版本号为v28.6，消除版本混乱
+- **记忆系统增强** — 152条记忆条目，14个数据库表，稳定可靠
+- **工具系统验证** — 7大工具全部通过功能测试，响应正常
+- **显示系统优化** — Rich控制台渲染流畅，状态栏实时更新
 - **极简设计** — 金+灰双色，无边框无装饰无emoji
 - **一行状态栏** — model · ctx/bar · cache · time
 - **实时 Token** — 每次 LLM 调用后自动更新
@@ -102,10 +107,10 @@ cloud_sync.py   云仓库同步
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v28.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v28.0/mundo-v28.0-macos.zip) |
-| Windows | [mundo-v28.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v28.0/mundo-v28.0-windows.zip) |
-| Linux | [mundo-v28.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v28.0/mundo-v28.0-linux.zip) |
-| 全平台 | [mundo-v28.0-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v28.0/mundo-v28.0-all.zip) |
+| macOS | [mundo-v28.6-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v28.6/mundo-v28.6-macos.zip) |
+| Windows | [mundo-v28.6-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v28.6/mundo-v28.6-windows.zip) |
+| Linux | [mundo-v28.6-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v28.6/mundo-v28.6-linux.zip) |
+| 全平台 | [mundo-v28.6-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v28.6/mundo-v28.6-all.zip) |
 
 ## 许可证
 

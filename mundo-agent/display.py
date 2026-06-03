@@ -1,4 +1,4 @@
-"""蒙多执行控制台 v28.7 — 极简艺术家
+"""蒙多执行控制台 v28.8 — 极简艺术家
 
 设计原则：
 - 少即是多。每一像素都有存在的理由
@@ -232,6 +232,7 @@ class TaskConsole:
         hist_path = str(Path.home() / ".hermes" / "mundo-agent" / ".mundo_history")
         style = Style.from_dict({
             "prompt": "#d4a017 bold",
+            "mundo-prompt": "#d4a017 bold",
         })
 
         kb = KeyBindings()
@@ -265,8 +266,10 @@ class TaskConsole:
         )
 
         try:
-            # prompt 为空，因为 ❯ 已在 print_status 中打印
-            return session.prompt(" ").strip()
+            # 金色 ❯ 提示符 — 通过 prompt_toolkit 原生渲染
+            return session.prompt([
+                ("class:mundo-prompt", " ❯ "),
+            ]).strip()
         except (EOFError, KeyboardInterrupt):
             return ""
 
