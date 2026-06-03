@@ -2,7 +2,7 @@
 
 独立 AI Agent：LLM 直连 + 工具调用 + Agentic Loop + Agent 调度 + 流式输出
 
-## v28.0 — UI 全面升级（借鉴 Hermes Agent）
+## v28.0 — UI 全面升级 + Claude 六套记忆架构
 
 核心改进：
 
@@ -11,11 +11,17 @@
 - **缓存命中率** — 从 API usage 中提取 cached_tokens，显示命中百分比
 - **醒目输入栏** — 带金色分隔线，prompt_toolkit + Tab 自动补全
 - **任务完成反馈** — 金色分隔线 + 统计（tok/turns/tools/errors/retries）
+- **Claude 六套记忆架构**：
+  - 自动 Memory — 从对话中自动提取关键信息（轻量规则，不调 LLM）
+  - 对话搜索 — FTS5 全文搜索历史对话
+  - Code Memory — 代码模式、项目结构、技术偏好
+  - Agents Memory — Agent 任务执行结果、成功/失败模式
+  - Projects 隔离 — 按工作目录隔离记忆上下文
+  - 自我整理 — 定期合并重复、淘汰过时、压缩低价值记忆
 - **智能上下文压缩** — 优先压缩 tool 输出，保留对话，自动触发
 - **LLM 错误自动重试** — 429/5xx 自动重试，上下文溢出自动压缩恢复
 - **消息清洗增强** — surrogate 字符修复，content 类型强制转换
 - **上下文管理**（借鉴 Claude Code）— /compact + /context，用户可控
-- **简化记忆系统** — 三层(热/温/冷) → 双层(事实+摘要)，不再白耗 token
 - **Ctrl+C 中断** — 执行中随时优雅停止
 - **7 大工具** — terminal / read_file / write_file / edit_file / search_files / web_search / list_directory
 - **28 个 AI 模型** — MiMo/DeepSeek/Qwen/GLM/Kimi/ERNIE/豆包/OpenAI/Claude/Gemini/Mistral/Grok/OpenRouter...
@@ -23,12 +29,12 @@
 ## 核心特性
 
 - **流式输出**：实时看蒙多思考过程，逐字输出不等待
-- **实时指示器**：token/turns/工具，精简不喧宾夺主
+- **实时状态栏**：模型 │ 上下文 │ 进度条 │ 缓存命中率 │ 会话时间
+- **六套记忆**：自动提取 + 对话搜索 + Code Memory + Agent Memory + 项目隔离 + 自我整理
 - **7 大工具**：含 edit_file 精确编辑（Claude Code 风格）
 - **28 个 AI 模型**：首次向导选择，支持多模型协同
 - **Agent 调度**：自动检测 Hermes/Claude Code/Codex，按任务类型分发
 - **分身并行**：复杂任务自动拆分，多线程并行执行
-- **记忆系统**：双层架构（事实+摘要），相关性检索，token 预算控制
 - **上下文管理**：/compact 压缩、/context 可视化、/effort 推理深度
 - **连接稳定性**：LLM API 3次重试+指数退避，流式失败自动降级
 - **中断支持**：Ctrl+C 优雅停止当前任务
@@ -55,7 +61,7 @@ python3 mundo.py
 ```
 /help            帮助手册
 /quit            退出
-/status          蒙多状态
+/status          蒙多状态（含六套记忆统计）
 /reset           重置对话上下文
 /model           查看当前模型
 /models          已配置模型列表
@@ -68,6 +74,8 @@ python3 mundo.py
 /recall K        回忆事实
 /memories        列出所有记忆
 /memory          记忆系统状态
+/search Q        搜索历史对话
+/projects        列出所有项目
 /tools           列出所有工具
 /setup           重新运行设置向导
 !command         直接执行 shell 命令
@@ -76,12 +84,12 @@ python3 mundo.py
 ## 架构
 
 ```
-mundo.py        入口 + CLI + 命令处理（精简 ~450 行）
-core.py         Agentic Loop（中断支持 + 上下文预算 + 流式降级）
+mundo.py        入口 + CLI + 命令处理
+core.py         Agentic Loop + IterationBudget + ContextCompressor + 错误重试
 llm.py          多模型 LLM 客户端（消息清洗 + reasoning 支持）
 tools.py        工具注册表 + 7 个工具实现
-display.py      执行控制台（KawaiiSpinner 风格 + 精简状态栏）
-memory.py       双层记忆系统（事实 + 摘要）
+display.py      执行控制台（Hermes 状态栏 + 活动流 + 醒目输入）
+memory.py       六套记忆架构（自动/对话搜索/Code/Agent/项目隔离/自我整理）
 delegation.py   Agent 检测 + 任务拆分 + 并行执行 + 分身
 approval.py     权限审批（danger/caution/safe）
 setup.py        首次设置向导 + 28 个 Provider

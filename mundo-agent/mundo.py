@@ -171,12 +171,14 @@ class MundoCLI:
   [dim]Option+Enter         强制提交[/]
   [dim]!command             直接执行 shell 命令[/]
 
-[gold.dim]记忆[/]
+[gold.dim]记忆（六套架构）[/]
   [subtext]/remember K V[/]    记住事实
   [subtext]/recall K[/]        回忆事实
   [subtext]/forget K[/]        遗忘事实
   [subtext]/memories[/]        列出所有记忆
   [subtext]/memory[/]          记忆系统状态
+  [subtext]/search Q[/]        搜索历史对话
+  [subtext]/projects[/]        列出项目上下文
 
 [gold.dim]工具[/]
   [subtext]/tools[/]           列出所有工具
@@ -187,21 +189,28 @@ class MundoCLI:
         console.print(help_text)
 
     def show_status(self):
-        stats = self.memory.get_stats() if self.memory else {"total_memories": 0, "total_tokens": 0, "profile_keys": 0}
+        stats = self.memory.get_stats() if self.memory else {"total_memories": 0, "total_tokens": 0, "profile_keys": 0, "projects": 0, "by_category": {}}
         s = self.engine.stats
         b = self.engine.budget
+        cat = stats.get('by_category', {})
         console.print(f"""
 [bold gold]═══ 蒙多帝国状态 ═══[/]
 [gold.dim]Provider[/]:  {self.provider}
 [gold.dim]Model[/]:     {self._model_display()}
 [gold.dim]Effort[/]:    {self._effort}
-[gold.dim]Memory[/]:    {stats['total_memories']} 条记忆 ({stats['total_tokens']} 字符)
-[gold.dim]Profile[/]:   {stats['profile_keys']} 项画像
 [gold.dim]Tokens[/]:    {s.total_tokens} (本次会话)
 [gold.dim]Budget[/]:    {b.prompt_tokens_used:,}/{b.max_prompt_tokens:,} prompt ({int(b.usage_ratio*100)}%)
 [gold.dim]Turns[/]:     {b.turns_used}/{b.max_turns}
 [gold.dim]Tools[/]:     {len(tool_registry.schemas)} 个可用
 [gold.dim]Errors[/]:    {s.errors_count} 错误 · {s.retries_count} 重试
+
+[bold gold]═══ 六套记忆 ═══[/]
+[gold.dim]自动 Memory[/]:  {cat.get('fact', 0) + cat.get('preference', 0) + cat.get('constraint', 0) + cat.get('rule', 0)} 条
+[gold.dim]对话搜索[/]:    {stats['conversations']} 条对话
+[gold.dim]Code Memory[/]:  {cat.get('code_pattern', 0)} 条代码模式
+[gold.dim]Agent Memory[/]: {cat.get('agent_result', 0)} 条执行记录
+[gold.dim]Projects[/]:     {stats['projects']} 个项目
+[gold.dim]总记忆[/]:       {stats['total_memories']} 条 ({stats['total_tokens']} 字符)
 """)
 
     # ─────────────────────────────────────────
@@ -321,19 +330,59 @@ class MundoCLI:
             console.print("[dim]记忆系统未初始化[/]")
             return
         stats = self.memory.get_stats()
-        console.print(f"\n  [bold gold]蒙多记忆系统[/]")
-        console.print(f"  [gold.dim]总记忆[/]:     {stats['total_memories']} 条")
-        console.print(f"  [gold.dim]总字符[/]:     {stats['total_tokens']}")
-        console.print(f"  [gold.dim]对话记录[/]:   {stats['conversations']} 条")
-        console.print(f"  [gold.dim]用户画像[/]:   {stats['profile_keys']} 项")
+        cat = stats.get('by_category', {})
+        console.print(f"\n  [bold gold]蒙多六套记忆系统[/]")
+        console.print(f"  [gold.dim]1. 自动 Memory[/]:   {cat.get('fact', 0) + cat.get('preference', 0) + cat.get('constraint', 0) + cat.get('rule', 0)} 条 (从对话自动提取)")
+        console.print(f"  [gold.dim]2. 对话搜索[/]:     {stats['conversations']} 条对话 (FTS5 全文搜索)")
+        console.print(f"  [gold.dim]3. Code Memory[/]:   {cat.get('code_pattern', 0)} 条代码模式")
+        console.print(f"  [gold.dim]4. Agent Memory[/]:  {cat.get('agent_result', 0)} 条执行记录")
+        console.print(f"  [gold.dim]5. Projects[/]:      {stats['projects']} 个项目上下文")
+        console.print(f"  [gold.dim]6. 自我整理[/]:     自动去重+淘汰过时")
+        console.print(f"  [gold.dim]用户画像[/]:       {stats['profile_keys']} 项")
+        console.print(f"  [gold.dim]总记忆[/]:         {stats['total_memories']} 条 ({stats['total_tokens']} 字符)")
         cat = stats.get('by_category', {})
         if cat:
             console.print(f"\n  [dim]分类:[/]")
             for c, n in cat.items():
                 console.print(f"    {c}: {n}")
         if self.memory:
-            self.memory.consolidate()
-        console.print(f"\n  [dim]双层架构: 事实(持久) + 摘要(近期) | 注入预算: {2000} 字符/次[/]\n")
+            result = self.memory.consolidate()
+            if result["duplicates_removed"] or result["expired_removed"]:
+                console.print(f"\n  [info]自我整理: 去重 {result['duplicates_removed']} 条，淘汰 {result['expired_removed']} 条[/]")
+        console.print(f"\n  [dim]注入预算: {3000} 字符/次 | 项目隔离: 按工作目录[/]\n")
+
+    def cmd_search(self, args):
+        if not self.memory:
+            console.print("[dim]记忆系统未初始化[/]")
+            return
+        if not args:
+            console.print("[error]用法: /search <关键词>[/]")
+            return
+        query = " ".join(args)
+        results = self.memory.search_conversations(query, limit=5)
+        if not results:
+            console.print(f"  [dim]未找到与 '{query}' 相关的对话[/]")
+            return
+        console.print(f"\n  [gold]搜索结果: '{query}'[/]")
+        for r in results:
+            console.print(f"  [gold.dim]{r['date']}[/] [{r['messages']}条] {r['title'][:60]}")
+
+    def cmd_projects(self):
+        if not self.memory:
+            console.print("[dim]记忆系统未初始化[/]")
+            return
+        projects = self.memory.get_all_projects()
+        if not projects:
+            console.print("  [dim]还没有项目上下文[/]")
+            return
+        console.print(f"\n  [gold]项目上下文[/]")
+        for p in projects:
+            console.print(f"  [gold.dim]{p['path']}[/]")
+            if p['name']:
+                console.print(f"    名称: {p['name']}")
+            if p['tech']:
+                console.print(f"    技术栈: {p['tech']}")
+            console.print(f"    最近: {p['seen']}")
 
     # ─────────────────────────────────────────
     # 模型命令
@@ -439,6 +488,8 @@ class MundoCLI:
             "/context": lambda: self.cmd_context(),
             "/effort": lambda: self.cmd_effort(args[0] if args else ""),
             "/models": lambda: self.cmd_models(),
+            "/search": lambda: self.cmd_search(args),
+            "/projects": lambda: self.cmd_projects(),
         }
         if cmd in handlers:
             handlers[cmd]()
@@ -490,11 +541,20 @@ class MundoCLI:
                 self._exit()
 
     def _execute_task(self, line: str):
-        extra = self.memory.get_context_budget(line) if self.memory else ""
+        # 检测项目路径
+        project = os.getcwd()
+
+        extra = self.memory.get_context_budget(line, project=project) if self.memory else ""
 
         if self.engine.messages and self.memory:
             try:
-                self.memory.compress_conversation(self.engine.messages, self.session_id)
+                self.memory.save_conversation(
+                    conv_id=self.session_id,
+                    title=line[:100],
+                    summary="",
+                    messages=self.engine.messages,
+                    project=project
+                )
             except Exception:
                 pass
 
@@ -502,6 +562,7 @@ class MundoCLI:
         self._engine_busy = True
         self.console.start_task()
 
+        response = ""
         try:
             response = self.engine.run(line, extra_context=extra)
             if not self.console._was_streamed:
@@ -516,6 +577,9 @@ class MundoCLI:
 
             if self.memory:
                 try:
+                    # 自动提取记忆
+                    self.memory.auto_extract(line, response, project=project)
+                    # 保存对话摘要
                     self.memory.generate_session_summary(self.session_id, self.engine.messages)
                 except Exception:
                     pass
