@@ -149,16 +149,21 @@ class LLMClient:
         except urllib.error.URLError as e:
             raise RuntimeError(f"网络错误: {e.reason}") from e
 
-        import select
         import socket
 
         last_data_time = time.time()
         STREAM_IDLE_TIMEOUT = 120  # 120 秒无数据 → 超时
+        chunk_count = 0
 
         try:
-            sock = resp.fp.raw._sock if hasattr(resp.fp.raw, '_sock') else None
             for raw_line in resp:
-                last_data_time = time.time()
+                now = time.time()
+                # 检查 idle timeout
+                if now - last_data_time > STREAM_IDLE_TIMEOUT:
+                    raise RuntimeError(f"流式读取超时（{STREAM_IDLE_TIMEOUT}s 无数据）")
+                last_data_time = now
+                chunk_count += 1
+
                 line = raw_line.decode("utf-8", errors="replace").strip()
                 if not line or line.startswith(":"):
                     continue
@@ -172,9 +177,12 @@ class LLMClient:
                         continue
         except socket.timeout:
             raise RuntimeError(f"流式读取超时（{STREAM_IDLE_TIMEOUT}s 无数据）")
+        except RuntimeError:
+            raise
         except Exception as e:
-            if "timed out" in str(e).lower() or "timeout" in str(e).lower():
-                raise RuntimeError(f"流式读取超时: {e}")
+            err = str(e).lower()
+            if "timed out" in err or "timeout" in err or "reset" in err or "broken pipe" in err:
+                raise RuntimeError(f"流式连接中断: {e}")
             raise
         finally:
             try:

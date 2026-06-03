@@ -101,10 +101,13 @@ def _terminal(args: Dict) -> str:
         )
         output = result.stdout
         if result.stderr:
-            output += f"\n[stderr]\n{result.stderr}"
+            # stderr 截断到 2000 字符
+            stderr = result.stderr[:2000]
+            if len(result.stderr) > 2000:
+                stderr += f"\n... ({len(result.stderr)} 字符，已截断)"
+            output += f"\n[stderr]\n{stderr}"
         if result.returncode != 0:
             output += f"\n[exit code: {result.returncode}]"
-            # 提供修复建议
             stderr = result.stderr or ""
             if "command not found" in stderr:
                 output += "\n提示: 命令未找到，检查拼写或安装对应包"
@@ -115,8 +118,10 @@ def _terminal(args: Dict) -> str:
         return _truncate(output or "(无输出)")
     except subprocess.TimeoutExpired:
         return f"[超时: 命令执行超过 {timeout} 秒]"
+    except PermissionError:
+        return "[错误: 权限不足]"
     except Exception as e:
-        return f"[错误: {e}]"
+        return f"[错误: {type(e).__name__}: {e}]"
 
 
 def _read_file(args: Dict) -> str:
