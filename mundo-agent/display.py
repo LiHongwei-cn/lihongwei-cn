@@ -1,4 +1,4 @@
-"""蒙多执行控制台 v29.3 — 极简艺术家
+"""蒙多执行控制台 v29.4 — 极简艺术家
 
 设计原则：
 - 少即是多。每一像素都有存在的理由
@@ -227,8 +227,6 @@ class TaskConsole:
         from prompt_toolkit.history import FileHistory
         from prompt_toolkit.styles import Style
         from prompt_toolkit.key_binding import KeyBindings
-
-        self.print_status()
 
         hist_path = str(Path.home() / ".hermes" / "mundo-agent" / ".mundo_history")
         style = Style.from_dict({
