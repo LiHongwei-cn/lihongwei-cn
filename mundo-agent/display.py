@@ -1,4 +1,4 @@
-"""蒙多执行控制台 v28.8 — 极简艺术家
+"""蒙多执行控制台 v28.9 — 极简艺术家
 
 设计原则：
 - 少即是多。每一像素都有存在的理由
@@ -266,10 +266,9 @@ class TaskConsole:
         )
 
         try:
-            # 金色 ❯ 提示符 — 通过 prompt_toolkit 原生渲染
-            return session.prompt([
-                ("class:mundo-prompt", " ❯ "),
-            ]).strip()
+            # 金色 ❯ 提示符 — 用 ANSI 转义码确保显示
+            # prompt_toolkit 的 tuple 格式在某些终端不渲染
+            return session.prompt("\x1b[1;33m ❯ \x1b[0m").strip()
         except (EOFError, KeyboardInterrupt):
             return ""
 
