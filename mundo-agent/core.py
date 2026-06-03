@@ -292,12 +292,19 @@ class MundoEngine:
             self.on_compress(old_count, new_count, old_tokens, new_tokens)
 
     def _accumulate_stream(self, stream_iter) -> Dict:
-        """流式消费 → 累积完整 assistant 消息"""
+        """流式消费 → 累积完整 assistant 消息（含超时保护）"""
         content_parts: List[str] = []
         tool_calls_map: Dict[int, Dict] = {}
         usage = {}
+        last_activity = time.time()
+        ACCUMULATE_TIMEOUT = 180  # 3 分钟总超时
 
         for chunk in stream_iter:
+            # 检查总超时
+            if time.time() - last_activity > ACCUMULATE_TIMEOUT:
+                raise RuntimeError(f"流式累积超时（{ACCUMULATE_TIMEOUT}s）")
+            last_activity = time.time()
+
             delta = LLMClient.extract_stream_delta(chunk)
 
             if delta["content"]:
@@ -437,10 +444,16 @@ class MundoEngine:
         return final
 
     def _call_llm(self, max_retries: int = 2) -> Optional[Dict]:
-        """调用 LLM，流式优先，失败降级，自动重试"""
+        """调用 LLM，流式优先，失败降级，自动重试（含总超时）"""
         last_error = None
+        call_start = time.time()
+        CALL_TIMEOUT = 300  # 5 分钟总超时
 
         for attempt in range(max_retries):
+            # 检查总超时
+            if time.time() - call_start > CALL_TIMEOUT:
+                last_error = f"LLM 调用总超时（{CALL_TIMEOUT}s）"
+                break
             try:
                 if self._use_streaming:
                     try:
