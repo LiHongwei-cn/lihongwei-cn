@@ -28,7 +28,7 @@ from delegation import TaskDelegator, AgentManager
 from display import TaskConsole, console
 
 MUNDO_HOME = Path.home() / ".hermes" / "mundo-agent"
-VERSION = "29.4.0"
+VERSION = "29.5.0"
 
 
 def safe_execute_tool(name: str, args: dict) -> str:

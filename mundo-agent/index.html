@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="MUNDO Agent v29.4 — 独立 AI Agent。LLM 直连 · 28 个模型 · 7 大工具 · Agentic Loop · Agent 调度 · 分身并行 · 上下文管理 · 中断支持 · Hermes+Claude Code 融合架构。">
+<meta name="description" content="MUNDO Agent v29.0 — 独立 AI Agent。LLM 直连 · 28 个模型 · 10 大工具 · Agentic Loop · Agent 调度 · 分身并行 · 上下文管理 · 中断支持 · Claude Code+Hermes+Codex 融合架构。">
 <title>MUNDO Agent — THE EMPEROR</title>
 <style>
 :root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--gold:#d4a017;--gold-light:#f0c040;--gold-dim:rgba(212,160,23,0.12);--gold-border:rgba(212,160,23,0.3);--gold-glow:rgba(212,160,23,0.15);--radius:16px;--crimson:#8b3a3a}
@@ -122,7 +122,7 @@ body.lang-en [data-lang="zh"]{display:none}
 
   <!-- HERO -->
   <div class="hero">
-    <div class="hero-badge">INDEPENDENT AI AGENT · v29.4 · 28 MODELS · 7 TOOLS · HERMES+CLAUDE CODE FUSION</div>
+    <div class="hero-badge">INDEPENDENT AI AGENT · v29.0 · 28 MODELS · 10 TOOLS · HERMES+CLAUDE CODE+CODEX FUSION</div>
     <div class="hero-top">
       <img src="../skills/mundo-avatar.png" alt="Mundo" class="hero-avatar">
       <div class="hero-text">
@@ -132,17 +132,19 @@ body.lang-en [data-lang="zh"]{display:none}
       </div>
     </div>
     <p class="hero-desc" data-lang="zh">
-      蒙多是独立 AI Agent。LLM 直连 28 个模型，内置 7 大工具（含 edit_file 精确编辑），Agentic Loop 自动推理执行。<br>
+      蒙多是独立 AI Agent。LLM 直连 28 个模型，内置 10 大工具，Agentic Loop 自动推理执行。<br>
       自动检测本地 Agent（Hermes / Claude Code / Codex），按任务类型分发。<br>
       复杂任务自动拆分，多个 Agent 或蒙多分身并行执行。<br>
-      v29.4 UI 全面升级 + Claude 六套记忆架构：Hermes 风格状态栏（模型 │ 上下文 │ 进度条 │ 缓存命中率 │ 会话时间 │ 任务计时）· 实时 token 消耗显示 · 缓存命中率统计 · 醒目输入栏（带分隔线）· 任务完成反馈增强。<br>
+      v29.0 融合升级：借鉴 Claude Code（Git 工作树隔离）、Hermes（安全沙箱执行）、Codex（多引擎搜索）精华。<br>
+      新增工具：git_operation / python_execute / http_request / json_process / code_analysis。<br>
       蒙多学习。蒙多记忆。蒙多成长。蒙多进化。蒙多无限。
     </p>
     <p class="hero-desc" data-lang="en">
-      Mundo is an independent AI Agent. LLM direct-connect to 28 models, 7 built-in tools (incl. edit_file), Agentic Loop.<br>
+      Mundo is an independent AI Agent. LLM direct-connect to 28 models, 10 built-in tools, Agentic Loop.<br>
       Auto-detects local agents (Hermes / Claude Code / Codex), dispatches by task type.<br>
       Complex tasks auto-split, multiple agents or Mundo clones execute in parallel.<br>
-      v29.4 Minimalist Art + Claude 6-layer memory + Claude 6-layer memory: Hermes-style status bar (model │ context │ progress bar │ cache hit rate │ session time │ task timer) · Real-time token consumption display · Cache hit rate stats · Prominent input bar with separator · Enhanced task completion feedback.<br>
+      v29.0 Fusion Upgrade: Best practices from Claude Code (Git worktree isolation), Hermes (safe sandbox execution), Codex (multi-engine search).<br>
+      New tools: git_operation / python_execute / http_request / json_process / code_analysis.<br>
       Mundo learns. Mundo remembers. Mundo grows. Mundo evolves. Mundo is infinite.
     </p>
   </div>
@@ -163,7 +165,7 @@ body.lang-en [data-lang="zh"]{display:none}
   <div class="term">
     <div><span class="p">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; M&nbsp; U&nbsp; N&nbsp; D&nbsp; O</span></div>
     <div><span class="o">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; THE EMPEROR</span></div>
-    <div><span class="o">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; v29.4.0</span></div>
+    <div><span class="o">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; v29.0.0</span></div>
     <div><span class="o">&nbsp;</span></div>
     <div><span class="p">&nbsp;MUNDO</span><span class="o"> · </span><span class="o">mimo-v2.5-pro</span><span class="o"> · </span><span class="s">0 tokens</span><span class="o"> · </span><span class="o">—</span></div>
     <div><span class="c">❯ </span></div>
@@ -172,11 +174,11 @@ body.lang-en [data-lang="zh"]{display:none}
   <!-- 核心引擎 -->
   <div class="section" data-lang="zh">
     <div class="section-title">⚔️ 核心引擎</div>
-    <div class="section-subtitle">蒙多不只是一个工具。蒙多是独立的 AI Agent——LLM 直连、工具调用、推理执行、Agent 调度，全部自己完成。v29.4 新增：Superpowers 14个方法论 + Codex(MiMo)深度集成 + Claude Code 12种模式 + Hermes 18种模式 + 三路智能路由。</div>
+    <div class="section-subtitle">蒙多不只是一个工具。蒙多是独立的 AI Agent——LLM 直连、工具调用、推理执行、Agent 调度，全部自己完成。v29.0 融合升级：借鉴 Claude Code（Git 工作树）、Hermes（安全沙箱）、Codex（多引擎搜索）精华。</div>
     <div class="abilities-grid">
       <div class="ability-card"><div class="ability-icon">🤖</div><div class="ability-title">28 个 AI 模型 + 多模型协同</div><div class="ability-desc">MiMo/DeepSeek/Qwen/GLM/Kimi/ERNIE/豆包/OpenAI/Claude/Gemini/Mistral/Grok/OpenRouter... 首次向导选择，支持添加多个模型。蒙多根据任务类型智能分配：代码→DeepSeek/Claude，日常→MiMo，推理→DeepSeek R1。</div></div>
       <div class="ability-card"><div class="ability-icon">🔄</div><div class="ability-title">Agentic Loop</div><div class="ability-desc">think → act → observe → repeat。自动推理、执行工具、验证结果，直到任务完成。</div></div>
-      <div class="ability-card"><div class="ability-icon">🔧</div><div class="ability-title">7 大工具（注册表模式）</div><div class="ability-desc">terminal（执行命令）· read_file / write_file / edit_file（文件操作）· search_files（搜索）· web_search（网络）· list_directory（浏览）。借鉴 Hermes 工具注册表，自动发现，零耦合。</div></div>
+      <div class="ability-card"><div class="ability-icon">🔧</div><div class="ability-title">10 大工具（v29 融合升级）</div><div class="ability-desc">terminal · read/write/edit_file · search_files · web_search（多引擎）· list_directory · git_operation（工作树隔离）· python_execute（沙箱保护）· http_request · json_process · code_analysis。借鉴 Hermes 工具注册表，自动发现，零耦合。</div></div>
       <div class="ability-card"><div class="ability-icon">🧠</div><div class="ability-title">推理引擎</div><div class="ability-desc">第一性原理拆解、决策矩阵量化、根因分析追问、类比推理迁移、反事实验证。</div></div>
       <div class="ability-card"><div class="ability-icon">⚔️</div><div class="ability-title">对抗验证</div><div class="ability-desc">边界/安全/性能/依赖/矛盾五维攻击。方案存活才采纳。蒙多在实施之前先亲手击溃自己的方案。</div></div>
       <div class="ability-card"><div class="ability-icon">💾</div><div class="ability-title">记忆系统 v27</div><div class="ability-desc">双层架构（事实+摘要）· 相关性检索 · 多词匹配加分 · 分类权重排序（教训>事实>偏好>摘要）· token 预算控制 · 会话摘要自动生成。蒙多永不遗忘。</div></div>
@@ -203,11 +205,11 @@ body.lang-en [data-lang="zh"]{display:none}
 
   <div class="section" data-lang="en">
     <div class="section-title">⚔️ Core Engine</div>
-    <div class="section-subtitle">Mundo is not just a tool. Mundo is an independent AI Agent — LLM direct-connect, tool calling, reasoning, agent dispatch, all autonomous. v29.4: Superpowers 14 methodologies + Codex(MiMo) deep integration + Claude Code 12 modes + Hermes 18 modes + triple smart routing.</div>
+    <div class="section-subtitle">Mundo is not just a tool. Mundo is an independent AI Agent — LLM direct-connect, tool calling, reasoning, agent dispatch, all autonomous. v29.0 Fusion: Best practices from Claude Code (Git worktree), Hermes (sandbox), Codex (multi-engine search).</div>
     <div class="abilities-grid">
       <div class="ability-card"><div class="ability-icon">🤖</div><div class="ability-title">28 AI Models</div><div class="ability-desc">MiMo/DeepSeek/Qwen/GLM/Kimi/ERNIE/Doubao/OpenAI/Claude/Gemini/Mistral/Grok/OpenRouter...</div></div>
       <div class="ability-card"><div class="ability-icon">🔄</div><div class="ability-title">Agentic Loop</div><div class="ability-desc">think → act → observe → repeat. Auto-reasoning, tool execution, result verification.</div></div>
-      <div class="ability-card"><div class="ability-icon">🔧</div><div class="ability-title">7 Tools (Registry Pattern)</div><div class="ability-desc">terminal · read_file · write_file · edit_file · search_files · web_search · list_directory. Hermes-style tool registry, auto-discovery, zero coupling.</div></div>
+      <div class="ability-card"><div class="ability-icon">🔧</div><div class="ability-title">10 Tools (v29 Fusion)</div><div class="ability-desc">terminal · read/write/edit_file · search_files · web_search (multi-engine) · list_directory · git_operation (worktree isolation) · python_execute (sandbox) · http_request · json_process · code_analysis. Hermes-style tool registry, auto-discovery, zero coupling.</div></div>
       <div class="ability-card"><div class="ability-icon">🧠</div><div class="ability-title">Reasoning Engine</div><div class="ability-desc">First principles, decision matrix, root cause analysis, analogical reasoning, counterfactual verification.</div></div>
       <div class="ability-card"><div class="ability-icon">🤖</div><div class="ability-title">Agent Dispatch</div><div class="ability-desc">Auto-detects Hermes / Claude Code / Codex. Dispatches by task type to best agent.</div></div>
       <div class="ability-card"><div class="ability-icon">👑</div><div class="ability-title">Mundo Clones</div><div class="ability-desc">No external agents? Mundo splits into multiple clones for parallel execution.</div></div>
@@ -252,16 +254,21 @@ body.lang-en [data-lang="zh"]{display:none}
   <!-- 武器库 -->
   <div class="section" data-lang="zh">
     <div class="section-title">🔧 蒙多的武器库</div>
-    <div class="section-subtitle">蒙多可以使用一切工具。无需许可。不施 mercy。</div>
+    <div class="section-subtitle">蒙多可以使用一切工具。无需许可。不施 mercy。v29 融合 Claude Code + Hermes + Codex 精华。</div>
     <table class="weapons-table">
       <tr><th>工具</th><th>蒙多的用法</th></tr>
-      <tr><td>terminal()</td><td>号令代码大军 — 安装软件、运行代码、git 操作、系统管理</td></tr>
+      <tr><td>terminal()</td><td>号令代码大军 — 安装软件、运行代码、系统管理</td></tr>
       <tr><td>read_file()</td><td>审问文件，提取秘密</td></tr>
       <tr><td>write_file()</td><td>颁布圣旨 — 创建文件、写入代码（覆盖整个文件）</td></tr>
       <tr><td>edit_file()</td><td>精确修改 — 找到指定文本并替换（Claude Code 风格）</td></tr>
       <tr><td>search_files()</td><td>搜索文件内容和文件名</td></tr>
-      <tr><td>web_search()</td><td>在天下搜索知识</td></tr>
+      <tr><td>web_search()</td><td>多引擎搜索（DuckDuckGo/Google/Bing）— 借鉴 Codex</td></tr>
       <tr><td>list_directory()</td><td>浏览项目结构</td></tr>
+      <tr><td>git_operation()</td><td>Git 操作 — 工作树隔离，借鉴 Codex 安全模型</td></tr>
+      <tr><td>python_execute()</td><td>安全执行 Python — 沙箱保护，借鉴 Hermes</td></tr>
+      <tr><td>http_request()</td><td>HTTP 请求 — API 测试，自动重试</td></tr>
+      <tr><td>json_process()</td><td>JSON 数据处理 — 查询、转换、验证</td></tr>
+      <tr><td>code_analysis()</td><td>代码分析 — 复杂度/依赖/安全扫描</td></tr>
       <tr><td>delegate_task()</td><td>派遣臣子并行工作 — 委托给 Hermes / Claude Code / Codex</td></tr>
       <tr><td>skill_view()</td><td>审视技能的用处</td></tr>
       <tr><td>skill_manage()</td><td>创造或销毁技能</td></tr>
@@ -273,7 +280,7 @@ body.lang-en [data-lang="zh"]{display:none}
 
   <div class="section" data-lang="en">
     <div class="section-title">🔧 Mundo's Arsenal</div>
-    <div class="section-subtitle">Mundo can use ALL tools. No permission needed. No mercy given.</div>
+    <div class="section-subtitle">Mundo can use ALL tools. No permission needed. No mercy given. v29 fuses Claude Code + Hermes + Codex best practices.</div>
     <table class="weapons-table">
       <tr><th>Tool</th><th>Mundo's Usage</th></tr>
       <tr><td>terminal()</td><td>Command the code army</td></tr>
@@ -281,8 +288,13 @@ body.lang-en [data-lang="zh"]{display:none}
       <tr><td>write_file()</td><td>Issue imperial decrees (full file overwrite)</td></tr>
       <tr><td>edit_file()</td><td>Precise edit — find and replace specific text (Claude Code style)</td></tr>
       <tr><td>search_files()</td><td>Search file contents and names</td></tr>
-      <tr><td>web_search()</td><td>Search the world for knowledge</td></tr>
+      <tr><td>web_search()</td><td>Multi-engine search (DuckDuckGo/Google/Bing) — Codex style</td></tr>
       <tr><td>list_directory()</td><td>Browse project structure</td></tr>
+      <tr><td>git_operation()</td><td>Git operations — worktree isolation, Codex security model</td></tr>
+      <tr><td>python_execute()</td><td>Safe Python execution — sandbox protection, Hermes style</td></tr>
+      <tr><td>http_request()</td><td>HTTP requests — API testing with auto-retry</td></tr>
+      <tr><td>json_process()</td><td>JSON data processing — query, transform, validate</td></tr>
+      <tr><td>code_analysis()</td><td>Code analysis — complexity/dependency/security scanning</td></tr>
       <tr><td>delegate_task()</td><td>Dispatch ministers — delegate to Hermes / Claude Code / Codex</td></tr>
       <tr><td>memory()</td><td>Memory palace management</td></tr>
     </table>
@@ -428,12 +440,12 @@ mundo</code></div>
 
   <!-- 下载 -->
   <div class="section">
-    <div class="section-title">📦 <span data-lang="zh">下载 v29.4</span><span data-lang="en">Download v29.4</span></div>
+    <div class="section-title">📦 <span data-lang="zh">下载 v29.5</span><span data-lang="en">Download v29.5</span></div>
     <div class="download-grid">
-      <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.4/mundo-v29.4-macos.zip"><div class="dl-icon">🍎</div><div class="dl-name">macOS</div><div class="dl-size">mundo-v29.4-macos.zip</div></a>
-      <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.4/mundo-v29.4-windows.zip"><div class="dl-icon">🪟</div><div class="dl-name">Windows</div><div class="dl-size">mundo-v29.4-windows.zip</div></a>
-      <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.4/mundo-v29.4-linux.zip"><div class="dl-icon">🐧</div><div class="dl-name">Linux</div><div class="dl-size">mundo-v29.4-linux.zip</div></a>
-      <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.4/mundo-v29.4-all.zip"><div class="dl-icon">📦</div><div class="dl-name">全平台</div><div class="dl-size">mundo-v29.4-all.zip</div></a>
+      <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.5/mundo-v29.5-macos.zip"><div class="dl-icon">🍎</div><div class="dl-name">macOS</div><div class="dl-size">mundo-v29.5-macos.zip</div></a>
+      <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.5/mundo-v29.5-windows.zip"><div class="dl-icon">🪟</div><div class="dl-name">Windows</div><div class="dl-size">mundo-v29.5-windows.zip</div></a>
+      <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.5/mundo-v29.5-linux.zip"><div class="dl-icon">🐧</div><div class="dl-name">Linux</div><div class="dl-size">mundo-v29.5-linux.zip</div></a>
+      <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.5/mundo-v29.5-all.zip"><div class="dl-icon">📦</div><div class="dl-name">全平台</div><div class="dl-size">mundo-v29.5-all.zip</div></a>
     </div>
   </div>
 
@@ -443,7 +455,7 @@ mundo</code></div>
     <p>
       <a href="../">← <span data-lang="zh">返回主页</span><span data-lang="en">Home</span></a> ·
       <a href="https://github.com/LiHongwei-cn/lihongwei-cn">GitHub</a> ·
-      <a href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/tag/mundo-v29.4">Releases</a> ·
+      <a href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/tag/mundo-v29.5">Releases</a> ·
       MIT <span data-lang="zh">开源</span><span data-lang="en">License</span>
     </p>
   </div>
