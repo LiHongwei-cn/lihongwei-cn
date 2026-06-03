@@ -1,13 +1,11 @@
-"""蒙多执行控制台 v28.1 — 蒙多帝王美学
+"""蒙多执行控制台 v28.1 — 极简艺术家
 
-设计理念：蒙多是皇帝，不是工匠。
-- 帝王色系：金色 + 深紫 + 暗红 + 墨黑
-- 力量感符号：┃ 而不是 ┊，✦ 而不是 ✓
-- 沉稳的分隔线：用蒙多风格的花纹
-- 状态栏紧凑优雅，不喧宾夺主
-- 输入栏醒目但不粗暴
-
-核心功能完全保留，只改视觉。
+设计原则：
+- 少即是多。每一像素都有存在的理由
+- 金色是唯一强调色，其余全是灰
+- 没有边框、没有装饰、没有噪音
+- 状态栏一行，输入栏一个提示符，完成栏两行
+- 蒙多不需要炫耀。蒙多的存在本身就是炫耀
 """
 
 import sys
@@ -18,50 +16,31 @@ from typing import Optional, List
 
 from rich.console import Console
 from rich.text import Text
-from rich.panel import Panel
 from rich.theme import Theme
 
 # ═══════════════════════════════════════════════
-# 帝王色系 — Catppuccin Mocha + 皇家金
+# 极简色系 — 金 + 灰
 # ═══════════════════════════════════════════════
 
 MUNDO_THEME = Theme({
     "gold": "bold #d4a017",
-    "gold.dim": "#b8860b",
-    "royal": "#c9a0dc",
-    "crimson": "#ff6b6b",
-    "success": "#a6e3a1",
-    "error": "#f38ba8",
-    "warning": "#f9e2af",
-    "info": "#89b4fa",
-    "cyan": "#94e2d5",
-    "purple": "#cba6f7",
-    "muted": "#585b70",
-    "text": "#cdd6f4",
-    "subtext": "#a6adc8",
-    "feed": "#6c7086",
-    "bar_good": "#a6e3a1",
-    "bar_warn": "#f9e2af",
-    "bar_bad": "#f38ba8",
-    "dim": "#45475a",
-    "surface": "#313244",
+    "gold.dim": "#a08030",
+    "ok": "#7ec699",
+    "err": "#f07178",
+    "warn": "#f0c674",
+    "hi": "#6a9ee5",
+    "dim": "#555555",
+    "muted": "#444444",
+    "text": "#cccccc",
+    "sub": "#888888",
 })
 
 console = Console(theme=MUNDO_THEME, highlight=False, force_terminal=True)
 
-# 蒙多风格符号
-_SEP = "┃"       # 活动流前缀（力量感）
-_BAR = "━"       # 分隔线（粗线）
-_DOT = "◆"       # 装饰点
-_ARR = "▸"       # 箭头
-_STAR = "✦"      # 完成标记
-_WARN = "▲"      # 警告
-_ERR = "✖"       # 错误
-
 TOOL_EMOJI = {
-    "terminal": "⬢", "read_file": "◈", "write_file": "◇",
-    "edit_file": "⬡", "search_files": "◉", "web_search": "◎",
-    "list_directory": "▤",
+    "terminal": ">", "read_file": "r", "write_file": "w",
+    "edit_file": "e", "search_files": "f", "web_search": "s",
+    "list_directory": "l",
 }
 
 TOOL_VERB = {
@@ -112,32 +91,11 @@ def _path_short(p: str, n: int = 35) -> str:
     return ("..." + p[-(n-3):]) if len(p) > n else p
 
 
-def _build_context_bar(percent: Optional[int], width: int = 12) -> str:
-    """进度条 ▰▰▰▰▱▱▱▱▱▱▱▱（蒙多风格）"""
+def _bar(percent: Optional[int], w: int = 8) -> str:
     if percent is None:
-        return f"{'▱' * width}"
-    filled = max(0, min(width, round(width * percent / 100)))
-    return f"{'▰' * filled}{'▱' * (width - filled)}"
-
-
-def _bar_color(percent: Optional[int]) -> str:
-    if percent is None:
-        return "muted"
-    if percent < 50:
-        return "bar_good"
-    if percent < 75:
-        return "bar_warn"
-    return "bar_bad"
-
-
-def _separator(width: int = 56) -> str:
-    """蒙多风格分隔线 ━━━━━━━━━━━━━━━━━━━━━━━"""
-    return f"[dim]{_BAR * width}[/]"
-
-
-def _gold_separator(width: int = 56) -> str:
-    """金色分隔线 ━━━━━━━━━━━━━━━━━━━━━━━"""
-    return f"[gold.dim]{_BAR * width}[/]"
+        return "·" * w
+    filled = max(0, min(w, round(w * percent / 100)))
+    return "█" * filled + "·" * (w - filled)
 
 
 # ═══════════════════════════════════════════════
@@ -163,7 +121,7 @@ class SlashCompleter:
 
 
 # ═══════════════════════════════════════════════
-# TaskConsole — 蒙多帝王美学
+# TaskConsole — 极简
 # ═══════════════════════════════════════════════
 
 class TaskConsole:
@@ -187,46 +145,43 @@ class TaskConsole:
         self._session_start = _time.time()
 
     # ═══════════════════════════════════════
-    # 状态栏 — 帝王紧凑风格
+    # 状态栏 — 一行极简
     # ═══════════════════════════════════════
 
     def _build_status_bar(self) -> str:
-        """👑 model ┃ 186K/1M ┃ ▰▰▰▰▱▱▱▱▱▱▱▱ 18% ┃ 🗄 45% ┃ ⏱20h 20m"""
+        """model · 186K/1M · █████··· 18% · 45% cache · 20m"""
         model = self._model.split("/")[-1] if "/" in self._model else self._model
-        if len(model) > 24:
-            model = model[:21] + "..."
+        if len(model) > 20:
+            model = model[:17] + "..."
 
         ctx_used = _fmt_tok(self._context_tokens)
         ctx_total = _fmt_tok(self._context_limit)
-        ctx_label = f"{ctx_used}/{ctx_total}"
 
         percent = round(self._context_tokens / self._context_limit * 100) if self._context_limit > 0 else 0
         percent = max(0, min(100, percent))
-        bar = _build_context_bar(percent, width=12)
-        color = _bar_color(percent)
+        bar = _bar(percent, 8)
 
         session_elapsed = _elapsed(self._session_start)
 
         parts = [
-            f"[gold]👑[/] [text]{model}[/]",
-            f"[dim]{_SEP}[/] [cyan]{ctx_label}[/]",
-            f"[dim]{_SEP}[/] [{color}]{bar}[/] [{color}]{percent}%[/]",
+            f"[gold]{model}[/]",
+            f"[dim]{ctx_used}/{ctx_total}[/]",
+            f"[dim]{bar}[/] [dim]{percent}%[/]",
         ]
 
         if self._total_prompt_tokens > 0:
             cache_rate = round(self._cached_tokens / self._total_prompt_tokens * 100)
-            parts.append(f"[dim]{_SEP}[/] [info]🗄{cache_rate}%[/]")
+            parts.append(f"[dim]{cache_rate}% cache[/]")
 
-        parts.append(f"[dim]{_SEP}[/] [gold.dim]⏱{session_elapsed}[/]")
+        parts.append(f"[dim]{session_elapsed}[/]")
 
         if self._is_running and self._task_start > 0:
-            parts.append(f"[dim]{_SEP}[/] [warning]⏲{_elapsed(self._task_start)}[/]")
+            parts.append(f"[gold.dim]{_elapsed(self._task_start)}[/]")
 
-        return " ".join(parts)
+        return " · ".join(parts)
 
     def print_status(self):
-        bar = self._build_status_bar()
-        console.print(f"\n  {bar}")
+        console.print(f"\n  [dim]{self._build_status_bar()}[/]")
 
     def update_live_status(self, stats=None):
         if stats:
@@ -264,7 +219,7 @@ class TaskConsole:
         sys.stdout.flush()
 
     # ═══════════════════════════════════════
-    # 输入 — 帝王 prompt
+    # 输入 — 一个提示符
     # ═══════════════════════════════════════
 
     def read_input(self) -> str:
@@ -276,10 +231,7 @@ class TaskConsole:
         self.print_status()
 
         hist_path = str(Path.home() / ".hermes" / "mundo-agent" / ".mundo_history")
-        style = Style.from_dict({
-            "prompt": "#d4a017 bold",
-            "": "#cdd6f4",
-        })
+        style = Style.from_dict({"prompt": "#d4a017 bold"})
 
         kb = KeyBindings()
 
@@ -311,52 +263,50 @@ class TaskConsole:
             complete_while_typing=True,
         )
 
-        # 帝王输入栏：金色粗线分隔
-        console.print(f"  [gold.dim]{_BAR * 56}[/]")
         try:
-            return session.prompt("❯ ").strip()
+            return session.prompt("> ").strip()
         except (EOFError, KeyboardInterrupt):
             return ""
 
     # ═══════════════════════════════════════
-    # 日志 — 帝王活动流
+    # 日志 — 极简活动流
     # ═══════════════════════════════════════
 
     def log_thinking(self, turn: int):
         self._task_start = _time.time()
-        console.print(f"  [gold.dim]{_SEP}[/] [subtext]蒙多沉思[/] [dim](Turn {turn})[/]")
+        console.print(f"  [dim]thinking {turn}[/]")
 
     def log_task_accepted(self, task_text: str):
         preview = _trunc(task_text.replace("\n", " "), 60)
-        console.print(f"\n  [success]{_SEP}[/] [dim]{_ARR}[/] [subtext]{preview}[/]")
+        console.print(f"  [sub]{preview}[/]")
 
     def log_tool_start(self, tool_name: str, tool_args: dict):
-        emoji = TOOL_EMOJI.get(tool_name, "⚡")
+        tag = TOOL_EMOJI.get(tool_name, "?")
         info = self._fmt_tool_preview(tool_name, tool_args)
-        console.print(f"  [feed]{_SEP}[/] {emoji} [dim]调用[/] [text]{tool_name}[/] [dim]{info}[/]")
+        console.print(f"  [dim]{tag}[/] [text]{tool_name}[/] [dim]{info}[/]")
         self._current_tool_start = _time.time()
 
     def log_tool_output(self, tool_name: str, output: str, is_error: bool = False):
         if not output:
             return
         lines = output.strip().split("\n")
-        if len(lines) > 20:
-            display = lines[:10] + [f"  ... ({len(lines) - 15} 行省略)"] + lines[-5:]
+        if len(lines) > 15:
+            display = lines[:8] + [f"  ... +{len(lines) - 12}"] + lines[-4:]
         else:
             display = lines
         for line in display:
             colored = self._color_line(line, tool_name, is_error)
-            console.print(f"  [feed]{_SEP}[/] {colored}")
+            console.print(f"  [dim]│[/] {colored}")
 
     def log_tool_done(self, tool_name: str, duration: float):
-        emoji = TOOL_EMOJI.get(tool_name, "⚡")
+        tag = TOOL_EMOJI.get(tool_name, "?")
         verb = TOOL_VERB.get(tool_name, tool_name)
         preview = self._fmt_tool_preview(tool_name, self._last_tool_args)
         dur = f"{duration:.1f}s"
         if preview:
-            console.print(f"  [feed]{_SEP}[/] {emoji} [text]{verb:9}[/] [subtext]{preview}[/]  [dim]{dur}[/]")
+            console.print(f"  [dim]{tag}[/] [dim]{verb}[/] [sub]{preview}[/] [dim]{dur}[/]")
         else:
-            console.print(f"  [feed]{_SEP}[/] {emoji} [text]{verb:9}[/] [dim]{dur}[/]")
+            console.print(f"  [dim]{tag}[/] [dim]{verb}[/] [dim]{dur}[/]")
 
     def log_response(self, text: str):
         if self._was_streamed:
@@ -368,40 +318,36 @@ class TaskConsole:
         console.print()
 
     def log_error(self, error: str):
-        console.print(f"\n  [error]{_SEP}[/] [error]{_ERR} {error}[/]\n")
+        console.print(f"\n  [err]{error}[/]\n")
 
     def log_budget_warning(self, budget):
         ratio = int(budget.usage_ratio * 100)
-        console.print(f"  [warning]{_SEP}[/] [warning]{_WARN} 上下文使用率 {ratio}%，建议 /compact[/]")
+        console.print(f"  [warn]context {ratio}% — /compact[/]")
 
     def log_compress(self, old_count, new_count, old_tokens, new_tokens):
         saved = old_tokens - new_tokens
-        console.print(f"  [info]{_SEP}[/] [info]自动压缩[/] {old_count}→{new_count} 条消息，节省 ~{_fmt_tok(saved)} tok")
+        console.print(f"  [dim]compressed {old_count}→{new_count}, saved ~{_fmt_tok(saved)} tok[/]")
 
     def log_done(self, stats):
-        """任务完成 — 帝王统计"""
+        """完成 — 两行极简"""
         self._stats = stats
         tok = _fmt_tok(stats.total_tokens)
         tok_in = _fmt_tok(stats.prompt_tokens)
         tok_out = _fmt_tok(stats.completion_tokens)
         elapsed = stats.elapsed_str
 
-        console.print(f"\n  {_gold_separator(56)}")
-
         t = Text()
-        t.append(f"  {_STAR}", style="gold")
-        t.append(f"  ⏱ {elapsed}", style="gold.dim")
-        t.append(f"  {tok} tok", style="cyan")
-        t.append(f" ({tok_in}→{tok_out})", style="dim")
+        t.append("  ──", style="dim")
+        t.append(f"  {elapsed}", style="gold.dim")
+        t.append(f"  {tok} tok", style="dim")
+        t.append(f" ({tok_in}→{tok_out})", style="muted")
         t.append(f"  T{stats.turns}", style="muted")
         if stats.tool_calls_count > 0:
             t.append(f"  {stats.tool_calls_count} tools", style="muted")
-        if stats.retries_count > 0:
-            t.append(f"  {stats.retries_count} retries", style="warning")
         if stats.errors_count > 0:
-            t.append(f"  {stats.errors_count} errors", style="error")
+            t.append(f"  {stats.errors_count} err", style="err")
         console.print(t)
-        console.print(f"  {_gold_separator(56)}\n")
+        console.print()
 
         self._is_running = False
         self._task_start = 0.0
@@ -435,30 +381,24 @@ class TaskConsole:
     def _color_line(self, line: str, tool: str, is_error: bool = False) -> str:
         s = line.strip()
         if is_error or any(k in s.lower() for k in ["error", "err:", "错误", "failed", "fatal", "traceback"]):
-            return f"[error]{line}[/]"
+            return f"[err]{line}[/]"
         if any(k in s.lower() for k in ["warn", "warning", "警告"]):
-            return f"[warning]{line}[/]"
+            return f"[warn]{line}[/]"
         if any(k in s for k in ["✓", "success", "ok", "完成", "done"]):
-            return f"[success]{line}[/]"
+            return f"[ok]{line}[/]"
         if tool == "terminal":
             return self._code_color(line)
-        if "/" in s and " " not in s[:20]:
-            return f"[info]{line}[/]"
-        return f"[subtext]{line}[/]"
+        return f"[sub]{line}[/]"
 
     def _code_color(self, line: str) -> str:
         s = line.strip()
         if s.startswith("$") or s.startswith("#"):
-            return f"[success]{line}[/]"
+            return f"[ok]{line}[/]"
         kw = ["def ", "class ", "import ", "from ", "if ", "elif ", "return ",
               "for ", "while ", "try:", "except", "with ", "async "]
         if any(s.startswith(k) or f" {k}" in s for k in kw):
-            return f"[purple]{line}[/]"
-        if s.startswith("//") or s.startswith("--"):
-            return f"[dim]{line}[/]"
-        if s and s[0].isdigit():
-            return f"[cyan]{line}[/]"
-        return f"[subtext]{line}[/]"
+            return f"[hi]{line}[/]"
+        return f"[sub]{line}[/]"
 
     def _fmt_tool_preview(self, name: str, args: dict) -> str:
         if name == "terminal":

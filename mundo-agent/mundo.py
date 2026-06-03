@@ -123,32 +123,14 @@ class MundoCLI:
             self.memory = None
 
     def show_banner(self):
-        from rich.panel import Panel
-        from rich.text import Text
-
-        banner_text = Text()
-        banner_text.append("  ╔══════════════════════════════════════╗\n", style="gold.dim")
-        banner_text.append("  ║  ", style="gold.dim")
-        banner_text.append("👑  ", style="gold")
-        banner_text.append("M  U  N  D  O", style="bold gold")
-        banner_text.append("  👑", style="gold")
-        banner_text.append("  ║\n", style="gold.dim")
-        banner_text.append("  ║      ", style="gold.dim")
-        banner_text.append("THE EMPEROR", style="dim")
-        banner_text.append("          ║\n", style="gold.dim")
-        banner_text.append(f"  ║           ", style="gold.dim")
-        banner_text.append(f"v{VERSION}", style="dim")
-        banner_text.append("              ║\n", style="gold.dim")
-        banner_text.append("  ╚══════════════════════════════════════╝", style="gold.dim")
-
-        console.print(banner_text)
+        console.print(f"  [gold]mundo[/] [dim]v{VERSION}[/]")
 
         model_disp = f"{self.provider}/{self._model_display()}"
         self.console.init_screen(model_disp, VERSION)
         agents = self.agent_mgr.list_available()
         if agents:
             names = ", ".join(a["name"] for a in agents)
-            console.print(f"  [dim]Agents: {names}[/]")
+            console.print(f"  [dim]{names}[/]")
         console.print()
 
     def show_help(self):
