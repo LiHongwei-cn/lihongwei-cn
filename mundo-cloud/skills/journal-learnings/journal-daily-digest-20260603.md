@@ -20,14 +20,14 @@ category: journal-learnings
 
 ### Nature
 
-1. **Author Correction: CHIT1-positive microglia drive motor neuron ageing in the primate spinal cord**
-   [阅读原文](https://www.nature.com/articles/s41586-026-10728-9)
+1. **Why a synthetic human genome is still worth building**
+   [阅读原文](https://www.nature.com/articles/d41586-026-01725-z)
 
-2. **Publisher Correction: White matter micro- and macrostructure brain charts for the human lifespan**
-   [阅读原文](https://www.nature.com/articles/s41586-026-10693-3)
+2. **Book of Cron Job**
+   [阅读原文](https://www.nature.com/articles/d41586-026-01716-0)
 
-3. **Global plastics treaty must be built on a foundation of monitoring**
-   [阅读原文](https://www.nature.com/articles/d41586-026-01775-3)
+3. **Microsoft upgrades controversial quantum chip — researchers are still sceptical**
+   [阅读原文](https://www.nature.com/articles/d41586-026-01788-y)
 
 
 ---
