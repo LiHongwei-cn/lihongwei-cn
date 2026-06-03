@@ -1,4 +1,4 @@
-"""蒙多 Codex 深度集成 v24.7 — OpenAI Codex CLI 全能力封装
+"""蒙多 Codex 深度集成 v24.9 — OpenAI Codex CLI 全能力封装（MiMo v2.5 Pro 驱动）
 
 能力：
 - 一次性任务执行（codex exec）
@@ -18,6 +18,7 @@ from typing import Dict, List, Optional
 
 
 CODEX_CMD = shutil.which("codex")
+DEFAULT_MODEL = "mimo-v2.5-pro"  # CC Switch 配置的默认模型
 
 
 def _run_codex(
@@ -87,6 +88,7 @@ class CodexAgent:
         args = ["exec", prompt]
         if model:
             args += ["--model", model]
+        # MiMo v2.5 Pro 已通过 CC Switch 配置为默认模型，无需额外指定
         return _run_codex(args, timeout=timeout, workdir=workdir)
 
     def exec_full_auto(
@@ -99,6 +101,7 @@ class CodexAgent:
         args = ["exec", "--full-auto", prompt]
         if model:
             args += ["--model", model]
+        # MiMo v2.5 Pro 已通过 CC Switch 配置为默认模型，无需额外指定
         return _run_codex(args, timeout=timeout, workdir=workdir)
 
     def exec_yolo(
@@ -111,6 +114,7 @@ class CodexAgent:
         args = ["exec", "--yolo", prompt]
         if model:
             args += ["--model", model]
+        # MiMo v2.5 Pro 已通过 CC Switch 配置为默认模型，无需额外指定
         return _run_codex(args, timeout=timeout, workdir=workdir)
 
     def exec_background(
@@ -202,9 +206,9 @@ def get_codex_agent() -> Optional[CodexAgent]:
 
 
 def smart_route(task_type: str) -> str:
-    """智能路由：根据任务类型选择 Claude Code 或 Codex
+    """智能路由：根据任务类型选择 Claude Code / Codex / Hermes
 
-    返回 "codex" 或 "claude"
+    返回 "codex" / "claude" / "hermes"
     """
     codex_strengths = {
         "快速原型", "一次性脚本", "代码生成", "新功能开发",
@@ -213,6 +217,10 @@ def smart_route(task_type: str) -> str:
     claude_strengths = {
         "代码编写", "重构", "调试", "多文件编辑", "Git 操作",
         "架构设计", "复杂重构", "测试编写", "代码审查",
+    }
+    hermes_strengths = {
+        "系统管理", "多平台通知", "定时任务", "记忆持久化",
+        "技能加载", "网关管理", "工具调用", "会话管理",
     }
 
     task_lower = task_type.lower()
@@ -223,10 +231,10 @@ def smart_route(task_type: str) -> str:
     claude_score = sum(
         1 for s in claude_strengths if s.lower() in task_lower
     )
+    hermes_score = sum(
+        1 for s in hermes_strengths if s.lower() in task_lower
+    )
 
-    if codex_score > claude_score:
-        return "codex"
-    if claude_score > codex_score:
-        return "claude"
-
-    return "claude"
+    scores = {"codex": codex_score, "claude": claude_score, "hermes": hermes_score}
+    best = max(scores, key=scores.get)
+    return best if scores[best] > 0 else "claude"
