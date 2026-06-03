@@ -105,7 +105,8 @@ class MundoCLI:
         self.engine.on_tool_output = _on_tool_output
 
         def _on_done(text, stats):
-            self.console.log_done(stats)
+            # 不在这里显示完成栏，由 _execute_task 在显示回复后调用
+            pass
         self.engine.on_task_done = _on_done
 
         # v27: 预算警告 + 自动压缩通知
@@ -566,6 +567,9 @@ class MundoCLI:
         finally:
             self._engine_busy = False
             self.console.stop_task()
+
+            # 在回复内容之后显示完成栏
+            self.console.log_done(self.engine.stats)
 
             if self.memory:
                 try:

@@ -1,11 +1,12 @@
-"""蒙多执行控制台 v28.1 — 极简艺术家
+"""蒙多执行控制台 v28.2 — 极简艺术家
 
 设计原则：
 - 少即是多。每一像素都有存在的理由
 - 金色是唯一强调色，其余全是灰
 - 没有边框、没有装饰、没有噪音
-- 状态栏一行，输入栏一个提示符，完成栏两行
-- 蒙多不需要炫耀。蒙多的存在本身就是炫耀
+- 状态栏一行，输入栏一个提示符，完成栏一行
+- 工具输出精简，不展示垃圾
+- 完成后必须有清晰的内容总结
 """
 
 import sys
@@ -139,6 +140,7 @@ class TaskConsole:
         self._context_limit = 128000
         self._cached_tokens = 0
         self._total_prompt_tokens = 0
+        self._tools_used: List[str] = []
 
     def init_screen(self, model_display: str, version: str = ""):
         self._model = model_display
@@ -149,18 +151,15 @@ class TaskConsole:
     # ═══════════════════════════════════════
 
     def _build_status_bar(self) -> str:
-        """model · 186K/1M · █████··· 18% · 45% cache · 20m"""
         model = self._model.split("/")[-1] if "/" in self._model else self._model
         if len(model) > 20:
             model = model[:17] + "..."
 
         ctx_used = _fmt_tok(self._context_tokens)
         ctx_total = _fmt_tok(self._context_limit)
-
         percent = round(self._context_tokens / self._context_limit * 100) if self._context_limit > 0 else 0
         percent = max(0, min(100, percent))
         bar = _bar(percent, 8)
-
         session_elapsed = _elapsed(self._session_start)
 
         parts = [
@@ -274,24 +273,28 @@ class TaskConsole:
 
     def log_thinking(self, turn: int):
         self._task_start = _time.time()
-        console.print(f"  [dim]thinking {turn}[/]")
+        self._tools_used = []
+        console.print(f"  [dim]. . .[/]")
 
     def log_task_accepted(self, task_text: str):
         preview = _trunc(task_text.replace("\n", " "), 60)
-        console.print(f"  [sub]{preview}[/]")
+        console.print(f"  [gold]{preview}[/]")
 
     def log_tool_start(self, tool_name: str, tool_args: dict):
         tag = TOOL_EMOJI.get(tool_name, "?")
         info = self._fmt_tool_preview(tool_name, tool_args)
-        console.print(f"  [dim]{tag}[/] [text]{tool_name}[/] [dim]{info}[/]")
+        if tool_name not in self._tools_used:
+            self._tools_used.append(tool_name)
+        console.print(f"  [dim]{tag} {tool_name}[/] [dim]{info}[/]")
         self._current_tool_start = _time.time()
 
     def log_tool_output(self, tool_name: str, output: str, is_error: bool = False):
         if not output:
             return
         lines = output.strip().split("\n")
-        if len(lines) > 15:
-            display = lines[:8] + [f"  ... +{len(lines) - 12}"] + lines[-4:]
+        # 工具输出精简：最多 5 行
+        if len(lines) > 5:
+            display = lines[:3] + [f"  +{len(lines) - 4} lines"] + lines[-1:]
         else:
             display = lines
         for line in display:
@@ -300,25 +303,19 @@ class TaskConsole:
 
     def log_tool_done(self, tool_name: str, duration: float):
         tag = TOOL_EMOJI.get(tool_name, "?")
-        verb = TOOL_VERB.get(tool_name, tool_name)
-        preview = self._fmt_tool_preview(tool_name, self._last_tool_args)
         dur = f"{duration:.1f}s"
-        if preview:
-            console.print(f"  [dim]{tag}[/] [dim]{verb}[/] [sub]{preview}[/] [dim]{dur}[/]")
-        else:
-            console.print(f"  [dim]{tag}[/] [dim]{verb}[/] [dim]{dur}[/]")
+        console.print(f"  [dim]{tag} done {dur}[/]")
 
     def log_response(self, text: str):
-        if self._was_streamed:
-            self._was_streamed = False
+        """显示回复内容 — 流式和非流式都走这里"""
+        if not text or not text.strip():
             return
         console.print()
-        for line in text.split("\n"):
+        for line in text.strip().split("\n"):
             console.print(f"  [text]{line}[/]")
-        console.print()
 
     def log_error(self, error: str):
-        console.print(f"\n  [err]{error}[/]\n")
+        console.print(f"\n  [err]{error}[/]")
 
     def log_budget_warning(self, budget):
         ratio = int(budget.usage_ratio * 100)
@@ -329,25 +326,24 @@ class TaskConsole:
         console.print(f"  [dim]compressed {old_count}→{new_count}, saved ~{_fmt_tok(saved)} tok[/]")
 
     def log_done(self, stats):
-        """完成 — 两行极简"""
+        """完成 — 一行极简统计"""
         self._stats = stats
-        tok = _fmt_tok(stats.total_tokens)
-        tok_in = _fmt_tok(stats.prompt_tokens)
-        tok_out = _fmt_tok(stats.completion_tokens)
         elapsed = stats.elapsed_str
+        tok = _fmt_tok(stats.total_tokens)
+        turns = stats.turns
+        tools_count = stats.tool_calls_count
 
-        t = Text()
-        t.append("  ──", style="dim")
-        t.append(f"  {elapsed}", style="gold.dim")
-        t.append(f"  {tok} tok", style="dim")
-        t.append(f" ({tok_in}→{tok_out})", style="muted")
-        t.append(f"  T{stats.turns}", style="muted")
-        if stats.tool_calls_count > 0:
-            t.append(f"  {stats.tool_calls_count} tools", style="muted")
+        parts = [f"[dim]{elapsed}[/]"]
+        if tok and tok != "0":
+            parts.append(f"[dim]{tok}[/]")
+        if turns > 1:
+            parts.append(f"[dim]T{turns}[/]")
+        if tools_count > 0:
+            parts.append(f"[dim]{tools_count} tools[/]")
         if stats.errors_count > 0:
-            t.append(f"  {stats.errors_count} err", style="err")
-        console.print(t)
-        console.print()
+            parts.append(f"[err]{stats.errors_count} err[/]")
+
+        console.print(f"\n  [dim]done · {' · '.join(parts)}[/]")
 
         self._is_running = False
         self._task_start = 0.0
