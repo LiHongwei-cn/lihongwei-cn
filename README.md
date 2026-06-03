@@ -380,7 +380,7 @@ pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple Pillow
 蒙多启动时自动检查新版本。发现新版本后提示：
 
 ```
-发现新版本 v28.1.0（当前 v28.2.0）。输入 /update 更新。
+发现新版本 v28.1.0（当前 v28.3.0）。输入 /update 更新。
 ```
 
 执行 `/update` 更新时：
