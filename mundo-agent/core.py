@@ -258,6 +258,7 @@ class MundoEngine:
         self.on_stream_end: Optional[Callable] = None
         self.on_budget_warn: Optional[Callable] = None
         self.on_compress: Optional[Callable] = None
+        self.on_llm_stats: Optional[Callable] = None
 
     def _build_system_message(self, extra_context: str = "") -> Dict:
         content = MUNDO_SYSTEM_PROMPT
@@ -523,10 +524,20 @@ class MundoEngine:
             })
 
     def _update_token_stats(self, assistant_msg: Dict):
-        """更新 token 统计"""
+        """更新 token 统计 — 提取 cached_tokens"""
         usage = assistant_msg.get("_usage") or {}
         api_prompt = usage.get("prompt_tokens", 0)
         api_completion = usage.get("completion_tokens", 0)
+
+        # 提取缓存命中 tokens（OpenAI 格式：usage.prompt_tokens_details.cached_tokens）
+        cached_tokens = 0
+        details = usage.get("prompt_tokens_details") or usage.get("prompt_tokens")
+        if isinstance(details, dict):
+            cached_tokens = details.get("cached_tokens", 0)
+        # 某些 provider 直接放在 usage 顶层
+        if not cached_tokens:
+            cached_tokens = usage.get("cache_read_input_tokens", 0) or usage.get("cached_tokens", 0)
+
         if api_prompt > 0:
             self.stats.prompt_tokens += api_prompt
         else:
@@ -538,6 +549,11 @@ class MundoEngine:
 
         # 更新预算
         self.budget.update(api_prompt, api_completion)
+
+        # 通知 UI 层 token 统计
+        if self.on_llm_stats:
+            total_context = ContextCompressor.estimate_tokens(self.messages)
+            self.on_llm_stats(api_prompt, api_completion, cached_tokens, total_context)
 
     def _install_signal_handler(self):
         """安装 Ctrl+C 信号处理器"""

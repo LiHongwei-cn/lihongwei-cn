@@ -28,7 +28,7 @@ from delegation import TaskDelegator, AgentManager
 from display import TaskConsole, console
 
 MUNDO_HOME = Path.home() / ".hermes" / "mundo-agent"
-VERSION = "27.0.0"
+VERSION = "28.0.0"
 
 
 def safe_execute_tool(name: str, args: dict) -> str:
@@ -111,6 +111,9 @@ class MundoCLI:
         # v27: 预算警告 + 自动压缩通知
         self.engine.on_budget_warn = lambda budget: self.console.log_budget_warning(budget)
         self.engine.on_compress = lambda *a: self.console.log_compress(*a)
+
+        # v28: 实时 token 统计 + 缓存命中率
+        self.engine.on_llm_stats = lambda prompt, completion, cached, ctx: self.console.log_llm_stats(prompt, completion, cached, ctx)
 
     def _init_memory(self):
         try:
