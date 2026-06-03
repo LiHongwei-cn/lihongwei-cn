@@ -1,4 +1,4 @@
-"""蒙多执行控制台 v29.1 — 极简艺术家
+"""蒙多执行控制台 v29.2 — 极简艺术家
 
 设计原则：
 - 少即是多。每一像素都有存在的理由
@@ -155,22 +155,23 @@ class TaskConsole:
         if len(model) > 20:
             model = model[:17] + "..."
 
-        ctx_used = _fmt_tok(self._context_tokens)
-        ctx_total = _fmt_tok(self._context_limit)
+        session_elapsed = _elapsed(self._session_start)
+
+        parts = [f"[gold]{model}[/]"]
+
+        # 缓存命中率 — 核心指标
+        if self._total_prompt_tokens > 0:
+            cache_rate = round(self._cached_tokens / self._total_prompt_tokens * 100)
+            cache_color = "ok" if cache_rate >= 50 else "warn" if cache_rate >= 20 else "dim"
+            parts.append(f"[{cache_color}]{cache_rate}% cache[/]")
+        else:
+            parts.append(f"[dim]--% cache[/]")
+
+        # 上下文使用率 — 用进度条
         percent = round(self._context_tokens / self._context_limit * 100) if self._context_limit > 0 else 0
         percent = max(0, min(100, percent))
         bar = _bar(percent, 8)
-        session_elapsed = _elapsed(self._session_start)
-
-        parts = [
-            f"[gold]{model}[/]",
-            f"[dim]{ctx_used}/{ctx_total}[/]",
-            f"[dim]{bar}[/] [dim]{percent}%[/]",
-        ]
-
-        if self._total_prompt_tokens > 0:
-            cache_rate = round(self._cached_tokens / self._total_prompt_tokens * 100)
-            parts.append(f"[dim]{cache_rate}% cache[/]")
+        parts.append(f"[dim]{bar}[/] [dim]{percent}%[/]")
 
         parts.append(f"[dim]{session_elapsed}[/]")
 

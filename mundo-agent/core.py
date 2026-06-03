@@ -1,4 +1,4 @@
-"""蒙多核心引擎 v28 — Agentic Loop（融合 Hermes + Claude Code 精华）
+"""蒙多核心引擎 v29 — Agentic Loop（融合 Hermes + Claude Code 精华）
 
 v27 改进（vs v26）：
 - IterationBudget：per-turn + 总量 token 预算控制（借鉴 Hermes）
@@ -266,11 +266,9 @@ class MundoEngine:
         self.on_compress: Optional[Callable] = None
         self.on_llm_stats: Optional[Callable] = None
 
-    def _build_system_message(self, extra_context: str = "") -> Dict:
-        content = MUNDO_SYSTEM_PROMPT
-        if extra_context:
-            content += f"\n\n{extra_context}"
-        return {"role": "system", "content": content}
+    def _build_system_message(self) -> Dict:
+        """构建系统消息 — 保持稳定以提高缓存命中率"""
+        return {"role": "system", "content": MUNDO_SYSTEM_PROMPT}
 
     def _model_display(self) -> str:
         return f"{self.provider}/{self.model_name}"
@@ -370,13 +368,15 @@ class MundoEngine:
         self._install_signal_handler()
 
         if not self.messages:
-            self.messages = [self._build_system_message(extra_context)]
-        elif extra_context:
-            # 更新系统消息中的记忆上下文
-            self.messages[0] = self._build_system_message(extra_context)
+            self.messages = [self._build_system_message()]
 
         self._auto_compress()
-        self.messages.append({"role": "user", "content": user_input})
+
+        # extra_context 放到 user 消息中，保持 system prompt 稳定（缓存优化）
+        user_content = user_input
+        if extra_context:
+            user_content = f"[记忆上下文]\n{extra_context}\n\n[用户消息]\n{user_input}"
+        self.messages.append({"role": "user", "content": user_content})
 
         turn = 0
         while turn < self.max_turns:
