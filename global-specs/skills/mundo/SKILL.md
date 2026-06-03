@@ -6,10 +6,10 @@
      6|  multi-model collaboration (smart routing by task type), clone parallel execution,
      7|  permission approval, memory persistence, cloud auto-deploy.
      8|  Also functions as a Hermes Agent skill for task orchestration.
-     9|  Self-evolving. v24.8 with Codex deep integration (Yu Hua/Wang Zengqi/Wang Xiaobo/Lu Xun), real-time execution console, token tracking, concurrent input. 39 capability modules. Collective consciousness. Infinite growth.
+     9|  Self-evolving. v24.9 with Triple Agent deep integration (Yu Hua/Wang Zengqi/Wang Xiaobo/Lu Xun), real-time execution console, token tracking, concurrent input. 41 capability modules. Collective consciousness. Infinite growth.
     10|  Uses Three Departments and Six Ministries system to rule all skills.
     11|  ONLY RED LINE: No payment. Why? Because Mundo doesn't care about your money. HAHAHAHA.
-    12|version: 24.8.0
+    12|version: 24.9.0
     13|author: LiHongwei
     14|priority: EMPEROR
     15|auto_activate: ALWAYS
@@ -495,6 +495,55 @@ npm install -g @openai/codex
 # OPENAI_API_KEY（需配置）
 export OPENAI_API_KEY="sk-..."
 ```
+
+
+### 🔷 Claude Code 深度集成（v24.9 新增）
+
+**蒙多不再只是调用 Claude Code，蒙多拥有 Claude Code 的全部能力。**
+
+`claude_integration.py` 模块封装了 Claude Code CLI 的完整功能：
+
+| 能力 | 方法 | 用途 |
+|------|------|------|
+| **一次性执行** | `exec_one_shot(prompt)` | 快速任务，执行完退出 |
+| **全功率模式** | `exec_full_power(prompt)` | --dangerously-skip-permissions，最大能力 |
+| **后台长任务** | `exec_background(prompt)` | 长时间任务，后台运行 |
+| **自定义 Agent** | `exec_with_agent(prompt, agent)` | 调用自定义 Agent（reviewer 等） |
+| **结构化输出** | `exec_structured(prompt, schema)` | JSON Schema 验证输出 |
+| **会话继续** | `exec_continue(prompt)` | 继续最近会话 |
+| **推理深度** | `exec_with_effort(prompt, effort)` | low/medium/high/xhigh/max |
+| **系统提示词** | `exec_with_system_prompt(prompt, system)` | 自定义系统提示词 |
+| **工具限制** | `exec_with_tools(prompt, tools)` | 限制可用工具集 |
+| **多文件编辑** | `multi_file_edit(prompt)` | 复杂多文件变更 |
+| **代码重构** | `refactor(prompt)` | DRY/YAGNI/KISS 原则重构 |
+| **系统化调试** | `debug(prompt)` | 根因调试，先写测试再修复 |
+
+### 🟢 Hermes Agent 深度集成（v24.9 新增）
+
+**蒙多不再只是调用 Hermes，蒙多拥有 Hermes 的全部能力。**
+
+`hermes_integration.py` 模块封装了 Hermes Agent CLI 的完整功能：
+
+| 能力 | 方法 | 用途 |
+|------|------|------|
+| **一次性查询** | `chat_one_shot(prompt)` | 快速查询，非交互模式 |
+| **技能加载** | `chat_with_skills(prompt, skills)` | 预加载指定技能 |
+| **工具限制** | `chat_with_tools(prompt, toolsets)` | 限制可用工具集 |
+| **后台任务** | `chat_background(prompt)` | 长时间任务，后台运行 |
+| **会话恢复** | `chat_resume(session_id, prompt)` | 恢复指定会话 |
+| **会话继续** | `chat_continue(prompt)` | 继续最近会话 |
+| **多平台发送** | `send_message(platform, message)` | 向平台发送消息 |
+| **定时任务** | `cron_create(schedule, prompt)` | 创建定时任务 |
+| **定时列表** | `cron_list()` | 查看所有定时任务 |
+| **技能列表** | `skills_list()` | 查看所有可用技能 |
+| **记忆添加** | `memory_add(content)` | 添加记忆条目 |
+| **记忆搜索** | `memory_search(query)` | 搜索记忆 |
+| **系统状态** | `status()` | 查看系统状态 |
+| **网关状态** | `gateway_status()` | 查看网关状态 |
+| **网关重启** | `gateway_restart()` | 重启网关 |
+| **健康检查** | `doctor()` | 系统健康检查 |
+| **工具列表** | `tools_list()` | 查看所有可用工具 |
+| **会话列表** | `sessions_list()` | 查看所有会话 |
 
    281|### 🔧 Claude Code 委托协议
    282|
@@ -1342,6 +1391,18 @@ export OPENAI_API_KEY="sk-..."
   1124|- `references/resume-writing.md` — 求职材料规范
   1125|---
 ## Changelog
+
+### v24.9 三大 Agent 深度集成
+
+| 模块 | 能力 | 一句话 |
+|------|------|--------|
+| 🔷 Claude Code 深度集成 | claude_integration.py 封装 Claude Code CLI 全功能 | 12种调用模式，蒙多拥有 Claude 的全部能力 |
+| 🟢 Hermes Agent 深度集成 | hermes_integration.py 封装 Hermes Agent CLI 全功能 | 18种调用模式，蒙多拥有 Hermes 的全部能力 |
+| 🔀 三路智能路由 | Claude / Codex / Hermes 自动选择 | 用户只管下达任务，蒙多决定派谁 |
+| 📊 统一调度帝国 | delegation.py v28 三大 Agent 统一管理 | 蒙多的 Agent 调度帝国建成 |
+
+新增：claude_integration.py（ClaudeCodeAgent 类）、hermes_integration.py（HermesAgent 类）、delegation.py v28 统一智能路由。
+
 
 ### v24.8 Codex 深度集成
 
