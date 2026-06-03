@@ -1,23 +1,19 @@
-# 👑 MUNDO Agent v27.0 — THE EMPEROR
+# 👑 MUNDO Agent v28.0 — THE EMPEROR
 
 独立 AI Agent：LLM 直连 + 工具调用 + Agentic Loop + Agent 调度 + 流式输出
 
-## v27.0 — 底层架构优化（借鉴 Hermes + Claude Code）
+## v28.0 — UI 全面升级（借鉴 Hermes Agent）
 
 核心改进：
 
-- **IterationBudget** — Token 预算控制，per-turn + 总量监控，预算警告
-- **智能上下文压缩** — 优先压缩 tool 输出，保留对话上下文，自动触发
+- **Hermes 风格状态栏** — 模型 │ 上下文 │ [进度条] │ 缓存命中率 │ 会话时间 │ 任务计时
+- **实时 Token 消耗** — 每次 LLM 调用后自动更新状态栏
+- **缓存命中率** — 从 API usage 中提取 cached_tokens，显示命中百分比
+- **醒目输入栏** — 带金色分隔线，prompt_toolkit + Tab 自动补全
+- **任务完成反馈** — 金色分隔线 + 统计（tok/turns/tools/errors/retries）
+- **智能上下文压缩** — 优先压缩 tool 输出，保留对话，自动触发
 - **LLM 错误自动重试** — 429/5xx 自动重试，上下文溢出自动压缩恢复
-- **Slash 命令自动补全** — 输入 / 后按 Tab 显示可用命令
 - **消息清洗增强** — surrogate 字符修复，content 类型强制转换
-- **工具错误信息增强** — terminal 失败时提供修复建议（权限/路径/命令）
-- **记忆检索优化** — 多词匹配加分，分类权重排序（教训>事实>偏好>摘要）
-- **流式降级通知** — 流式不可用时告知用户，不再静默降级
-- **智能截断** — 大输出保留首尾，中间省略（vs 旧版只保留头部）
-- **增强消息清洗**（借鉴 Hermes message_sanitization）— surrogate 修复、JSON 修复
-- **KawaiiSpinner 动画**（借鉴 Hermes）— 执行中的动画反馈
-- **edit_file 精确编辑**（借鉴 Claude Code）— 替换整文件覆盖，精准修改
 - **上下文管理**（借鉴 Claude Code）— /compact + /context，用户可控
 - **简化记忆系统** — 三层(热/温/冷) → 双层(事实+摘要)，不再白耗 token
 - **Ctrl+C 中断** — 执行中随时优雅停止
@@ -97,10 +93,10 @@ cloud_sync.py   云仓库同步
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v27.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v27.0/mundo-v27.0-macos.zip) |
-| Windows | [mundo-v27.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v27.0/mundo-v27.0-windows.zip) |
-| Linux | [mundo-v27.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v27.0/mundo-v27.0-linux.zip) |
-| 全平台 | [mundo-v27.0-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v27.0/mundo-v27.0-all.zip) |
+| macOS | [mundo-v28.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v28.0/mundo-v28.0-macos.zip) |
+| Windows | [mundo-v28.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v28.0/mundo-v28.0-windows.zip) |
+| Linux | [mundo-v28.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v28.0/mundo-v28.0-linux.zip) |
+| 全平台 | [mundo-v28.0-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v28.0/mundo-v28.0-all.zip) |
 
 ## 许可证
 
