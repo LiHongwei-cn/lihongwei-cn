@@ -1,4 +1,4 @@
-"""蒙多 LLM 客户端 v27 — 多 provider + 流式 + 重试 + 消息清洗
+"""蒙多 LLM 客户端 v28 — 多 provider + 流式 + 重试 + 消息清洗
 
 v27 改进（vs v26）：
 - 消息清洗增强：surrogate 字符修复、content 类型强制转换
@@ -105,7 +105,7 @@ class LLMClient:
         for attempt in range(max_retries):
             req = urllib.request.Request(url, data=data, headers=headers, method="POST")
             try:
-                with urllib.request.urlopen(req, timeout=120) as resp:
+                with urllib.request.urlopen(req, timeout=180) as resp:  # 3 分钟连接+读取超时
                     return json.loads(resp.read().decode("utf-8"))
             except urllib.error.HTTPError as e:
                 err_body = e.read().decode("utf-8", errors="replace")
@@ -140,7 +140,7 @@ class LLMClient:
         data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         req = urllib.request.Request(url, data=data, headers=headers, method="POST")
         try:
-            resp = urllib.request.urlopen(req, timeout=120)
+            resp = urllib.request.urlopen(req, timeout=180)  # 3 分钟连接超时
         except urllib.error.HTTPError as e:
             err_body = e.read().decode("utf-8", errors="replace")
             if _is_context_overflow(e.code, err_body):
@@ -149,8 +149,16 @@ class LLMClient:
         except urllib.error.URLError as e:
             raise RuntimeError(f"网络错误: {e.reason}") from e
 
+        import select
+        import socket
+
+        last_data_time = time.time()
+        STREAM_IDLE_TIMEOUT = 120  # 120 秒无数据 → 超时
+
         try:
+            sock = resp.fp.raw._sock if hasattr(resp.fp.raw, '_sock') else None
             for raw_line in resp:
+                last_data_time = time.time()
                 line = raw_line.decode("utf-8", errors="replace").strip()
                 if not line or line.startswith(":"):
                     continue
@@ -162,8 +170,17 @@ class LLMClient:
                         yield json.loads(payload_str)
                     except json.JSONDecodeError:
                         continue
+        except socket.timeout:
+            raise RuntimeError(f"流式读取超时（{STREAM_IDLE_TIMEOUT}s 无数据）")
+        except Exception as e:
+            if "timed out" in str(e).lower() or "timeout" in str(e).lower():
+                raise RuntimeError(f"流式读取超时: {e}")
+            raise
         finally:
-            resp.close()
+            try:
+                resp.close()
+            except Exception:
+                pass
 
     @staticmethod
     def extract_stream_delta(chunk: Dict) -> Dict:

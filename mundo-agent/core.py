@@ -1,4 +1,4 @@
-"""蒙多核心引擎 v27 — Agentic Loop（融合 Hermes + Claude Code 精华）
+"""蒙多核心引擎 v28 — Agentic Loop（融合 Hermes + Claude Code 精华）
 
 v27 改进（vs v26）：
 - IterationBudget：per-turn + 总量 token 预算控制（借鉴 Hermes）
@@ -246,6 +246,12 @@ class MundoEngine:
         self.budget = IterationBudget(max_turns=self.max_turns)
         self._use_streaming = True
         self._interrupted = False
+        self._consecutive_errors = 0  # 连续工具错误计数
+        self._last_error_tool = ""  # 上一次出错的工具名
+        self._same_error_streak = 0  # 同一工具连续错误次数
+        self._stuck_threshold = 3  # 连续 3 次同样错误 → 强制跳出
+        self._last_activity_time = time.time()  # 最后活动时间
+        self._idle_timeout = 300  # 5 分钟无活动 → 警告
 
         # 回调（解耦显示/统计/委托）
         self.on_turn_start: Optional[Callable] = None
@@ -419,7 +425,12 @@ class MundoEngine:
             # 每轮结束后检查是否需要压缩
             self._auto_compress()
 
-        final = "蒙多已达到最大推理轮次。" if not self._interrupted else "蒙多被中断。"
+        if self._interrupted:
+            final = "蒙多被中断。"
+        elif self._consecutive_errors >= 5:
+            final = "蒙多遇到连续错误，无法继续。请检查任务描述或换个方式提问。"
+        else:
+            final = "蒙多已达到最大推理轮次。"
         if self.on_task_done:
             self.on_task_done(final, self.stats)
         return final
@@ -474,6 +485,8 @@ class MundoEngine:
                 last_error = str(e)
                 break
 
+        if last_error is None:
+            last_error = "LLM 返回空响应"
         error_msg = f"LLM 调用失败: {last_error}"
         self.stats.errors_count += 1
         if self.on_task_done:
