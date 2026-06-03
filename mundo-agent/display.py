@@ -58,6 +58,7 @@ SLASH_COMMANDS = [
     "/model", "/models", "/switch", "/providers", "/add", "/setup",
     "/remember", "/recall", "/forget", "/memories", "/memory",
     "/compact", "/context", "/effort", "/tools",
+    "/search", "/projects",
 ]
 
 
