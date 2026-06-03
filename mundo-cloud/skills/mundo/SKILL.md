@@ -6,10 +6,10 @@
      6|  multi-model collaboration (smart routing by task type), clone parallel execution,
      7|  permission approval, memory persistence, cloud auto-deploy.
      8|  Also functions as a Hermes Agent skill for task orchestration.
-     9|  Self-evolving. v25.0 with MiMo-powered Codex + Triple Agent (Yu Hua/Wang Zengqi/Wang Xiaobo/Lu Xun), real-time execution console, token tracking, concurrent input. 42 capability modules. Collective consciousness. Infinite growth.
+     9|  Self-evolving. v28.1 with Superpowers + Codex(MiMo) + Claude + Hermes Triple Agent (Yu Hua/Wang Zengqi/Wang Xiaobo/Lu Xun), real-time execution console, token tracking, concurrent input. 42 capability modules. Collective consciousness. Infinite growth.
     10|  Uses Three Departments and Six Ministries system to rule all skills.
     11|  ONLY RED LINE: No payment. Why? Because Mundo doesn't care about your money. HAHAHAHA.
-    12|version: 25.0.0
+    12|version: 28.1.0
     13|author: LiHongwei
     14|priority: EMPEROR
     15|auto_activate: ALWAYS
@@ -1394,55 +1394,19 @@ export OPENAI_API_KEY="sk-..."
 
 
 
-### v25.0 MiMo 驱动 Codex
+### v28.1 Agent 调度帝国（Superpowers + Codex(MiMo) + Claude + Hermes）
 
 | 模块 | 能力 | 一句话 |
 |------|------|--------|
-| 🤖 Codex + MiMo | Codex CLI 默认使用小米 MiMo v2.5 Pro（CC Switch） | 中文代码能力拉满，无需 OpenAI Key |
+| ⚡ Superpowers 融合 | 14个开发方法论技能纳入蒙多武器库 | brainstorming/TDD/debugging/subagent-dev 全套 |
+| 🤖 Codex 深度集成 | codex_integration.py（MiMo v2.5 Pro 驱动） | exec/PR审查/并行worktree/智能路由 |
+| 🔷 Claude Code 深度集成 | claude_integration.py（12种调用模式） | exec/background/review/multi-file/refactor/debug |
+| 🟢 Hermes Agent 深度集成 | hermes_integration.py（18种调用模式） | chat/tools/skills/memory/gateway/cron |
 | 🔀 三路智能路由 | Claude / Codex(MiMo) / Hermes 自动选择 | 用户只管下达任务，蒙多决定派谁 |
-| 📊 delegation.py v29 | 智能路由增加模型感知 | MiMo/DeepSeek/Claude 自动选择 |
+| 📊 delegation.py v29 | 统一调度帝国 + 模型感知 | 三大 Agent + 多模型协同 |
 
-更新：codex_integration.py 默认 MiMo v2.5 Pro、delegation.py v29 模型感知路由。
-### v24.9 三大 Agent 深度集成
+新增：codex_integration.py、claude_integration.py、hermes_integration.py、delegation.py v29。
 
-| 模块 | 能力 | 一句话 |
-|------|------|--------|
-| 🔷 Claude Code 深度集成 | claude_integration.py 封装 Claude Code CLI 全功能 | 12种调用模式，蒙多拥有 Claude 的全部能力 |
-| 🟢 Hermes Agent 深度集成 | hermes_integration.py 封装 Hermes Agent CLI 全功能 | 18种调用模式，蒙多拥有 Hermes 的全部能力 |
-| 🔀 三路智能路由 | Claude / Codex / Hermes 自动选择 | 用户只管下达任务，蒙多决定派谁 |
-| 📊 统一调度帝国 | delegation.py v28 三大 Agent 统一管理 | 蒙多的 Agent 调度帝国建成 |
-
-新增：claude_integration.py（ClaudeCodeAgent 类）、hermes_integration.py（HermesAgent 类）、delegation.py v28 统一智能路由。
-
-
-### v24.8 Codex 深度集成
-
-| 模块 | 能力 | 一句话 |
-|------|------|--------|
-| 🤖 Codex 深度集成 | codex_integration.py 封装 Codex CLI 全功能 | 蒙多拥有 Codex 的全部能力 |
-| 🔀 智能路由 | get_best_for_smart() 自动选择 Claude/Codex | 用户只管下达任务，蒙多决定派谁 |
-| 🔄 并行 Worktree | 多个 issue 并行修复 | batch fix 效率翻倍 |
-| 📋 PR 审查 | Codex review 自动审查代码变更 | 代码质量自动化 |
-| ⚡ 一次性/全自动化/YOLO | 三种执行模式 | 按风险等级选择 |
-
-新增：codex_integration.py（CodexAgent 类 + smart_route 函数）、delegation.py v27 智能路由、Node.js v22.16.0 本地安装。
-
-
-### v24.7 Superpowers 融合
-
-| 模块 | 能力 | 一句话 |
-|------|------|--------|
-| ⚡ Superpowers 融合 | 14个核心开发方法论技能纳入蒙多武器库 | 蒙多的作战纪律全面升级 |
-| 🧠 设计优先流程 | brainstorming → writing-plans → TDD → 实施 | 任何代码任务先设计后实施 |
-| 🔍 系统化调试 | systematic-debugging + 根因分析 | 不修症状，只修根因 |
-| ✅ 验证先于断言 | verification-before-completion | 证据先于断言，绝不空口说完成 |
-| 👥 分身驱动开发 | subagent-driven-development + 并行派遣 | 蒙多分身术有了纪律保障 |
-| 📝 代码审查 | requesting/receiving code-review | 自动审查 + 技术验证反馈 |
-| 🌲 Git Worktree | 隔离工作区 | 功能开发互不干扰 |
-| 📚 Skill TDD | writing-skills + TDD 方法 | 用测试驱动写 skill |
-
-新增：obra/superpowers 14个技能（brainstorming/writing-plans/TDD/debugging/subagent-dev/dispatching/executing-plans/verification/code-review/git-worktrees/writing-skills/using-superpowers/finishing-branch/receiving-review）。
-云仓库新增 superpowers/ 目录，160个技能共享帝国。
 
 
 ### v24.4 文学底蕴
