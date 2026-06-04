@@ -70,14 +70,16 @@
 git clone https://github.com/LiHongwei-cn/lihongwei-cn.git
 cd lihongwei-cn/mundo-agent
 
+# 安装（自动创建虚拟环境，需要Python 3.10+）
+chmod +x install.sh && ./install.sh
+
 # 配置 API Key
 cp .env.example .env
 # 编辑 .env 填入你的 API Key
 
 # 启动
-python3 mundo.py
+./run.sh
 ```
-
 ## 命令
 
 ```
