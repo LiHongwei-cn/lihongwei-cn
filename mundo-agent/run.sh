@@ -9,4 +9,4 @@ if [ ! -d "venv" ]; then
 fi
 
 source venv/bin/activate
-python mundo.py "$@"
+exec python3 mundo.py "$@"

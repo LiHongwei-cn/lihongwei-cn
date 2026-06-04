@@ -1,10 +1,9 @@
-"""蒙多任务委托 v26 — 合并 Agent 检测 + 任务拆分 + 并行执行
+"""蒙多任务委托 v29 — 合并 Agent 检测 + 任务拆分 + 并行执行 + Codex 深度集成
 
-改进（vs v25）：
-- agents.py 和 delegation.py 合并为一个文件
-- 任务拆分不再用关键词匹配，直接让 LLM 判断
-- 外部 Agent 失败自动降级到蒙多分身
-- 进度回调实时通知
+改进（vs v28）：
+- Codex 默认使用 MiMo v2.5 Pro（CC Switch 配置）
+- 智能路由增加模型感知（MiMo/DeepSeek/Claude 自动选择）
+- 三大 Agent + 多模型协同，蒙多的调度帝国全面升级
 """
 
 import os
@@ -15,6 +14,21 @@ import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict, Optional, Callable
 from llm import LLMClient
+try:
+    from codex_integration import CodexAgent, smart_route
+except ImportError:
+    CodexAgent = None
+    smart_route = None
+
+try:
+    from claude_integration import ClaudeCodeAgent
+except ImportError:
+    ClaudeCodeAgent = None
+
+try:
+    from hermes_integration import HermesAgent
+except ImportError:
+    HermesAgent = None
 
 
 # ═══════════════════════════════════════════════
@@ -51,37 +65,71 @@ def _retry_run(cmd: list, timeout: int = 600, max_retries: int = 2, label: str =
     return f"[{label} 重试耗尽]"
 
 
+
+
+def _codex_run(prompt: str, **kw) -> str:
+    """Codex 调用入口 — 使用 codex_integration.py 的 exec 子命令"""
+    try:
+        from codex_integration import CodexAgent
+        agent = CodexAgent()
+        if not agent.is_available():
+            return "[Codex 未安装]"
+        workdir = kw.get('workdir')
+        return agent.exec_full_auto(prompt, workdir=workdir)
+    except Exception as e:
+        return f"[Codex 错误: {e}]"
+
+
+
+def _claude_run(prompt: str, **kw) -> str:
+    """Claude Code 调用入口 — 使用 claude_integration.py 的全功能封装"""
+    try:
+        from claude_integration import ClaudeCodeAgent
+        agent = ClaudeCodeAgent()
+        if not agent.is_available():
+            return "[Claude Code 未安装]"
+        workdir = kw.get('workdir')
+        return agent.exec_full_power(prompt, workdir=workdir)
+    except Exception as e:
+        return f"[Claude Code 错误: {e}]"
+
+
+
+def _hermes_run(prompt: str, **kw) -> str:
+    """Hermes Agent 调用入口 — 使用 hermes_integration.py 的全功能封装"""
+    try:
+        from hermes_integration import HermesAgent
+        agent = HermesAgent()
+        if not agent.is_available():
+            return "[Hermes Agent 未安装]"
+        return agent.chat_one_shot(prompt)
+    except Exception as e:
+        return f"[Hermes 错误: {e}]"
+
 AGENT_REGISTRY = {
     "hermes": {
         "name": "Hermes Agent",
         "cmd": "hermes",
         "detect": lambda: _check_cmd("hermes"),
-        "run": lambda prompt, **kw: _retry_run(
-            ["hermes", "chat", "-q", prompt], timeout=300, max_retries=2, label="Hermes"
-        ),
-        "strengths": ["工具调用", "多平台网关", "记忆系统", "技能管理"],
-        "best_for": ["系统管理", "多平台通知", "定时任务", "记忆持久化"],
+        "run": lambda prompt, **kw: _hermes_run(prompt, **kw),
+        "strengths": ["工具调用", "多平台网关", "记忆系统", "技能管理", "定时任务", "会话管理"],
+        "best_for": ["系统管理", "多平台通知", "定时任务", "记忆持久化", "技能加载", "网关管理"],
     },
     "claude": {
         "name": "Claude Code",
         "cmd": "claude",
         "detect": lambda: _check_cmd("claude"),
-        "run": lambda prompt, **kw: _retry_run(
-            ["claude", "-p", prompt, "--max-turns", "25", "--dangerously-skip-permissions", "--model", "sonnet"],
-            timeout=600, max_retries=1, label="Claude Code"
-        ),
-        "strengths": ["代码编写", "重构", "调试", "多文件编辑", "Git 操作"],
-        "best_for": ["代码编写", "重构", "调试", "新功能开发", "测试编写"],
+        "run": lambda prompt, **kw: _claude_run(prompt, **kw),
+        "strengths": ["代码编写", "重构", "调试", "多文件编辑", "Git 操作", "结构化输出", "自定义Agent"],
+        "best_for": ["代码编写", "重构", "调试", "新功能开发", "测试编写", "代码审查"],
     },
     "codex": {
         "name": "OpenAI Codex",
         "cmd": "codex",
         "detect": lambda: _check_cmd("codex"),
-        "run": lambda prompt, **kw: _retry_run(
-            ["codex", "--full-auto", prompt], timeout=600, max_retries=1, label="Codex"
-        ),
-        "strengths": ["代码生成", "全自动化", "沙箱执行"],
-        "best_for": ["快速原型", "代码生成", "一次性脚本"],
+        "run": lambda prompt, **kw: _codex_run(prompt, **kw),
+        "strengths": ["代码生成", "全自动化", "沙箱执行", "PR审查", "并行worktree", "MiMo驱动"],
+        "best_for": ["快速原型", "代码生成", "一次性脚本", "batch fix", "issue修复", "PR审查", "中文代码"],
     },
 }
 
@@ -121,6 +169,16 @@ class AgentManager:
                 scores[key] = score
         return max(scores, key=scores.get) if scores else None
 
+
+    def get_best_for_smart(self, task_type: str) -> Optional[str]:
+        """智能路由：根据任务类型自动选择最佳 Agent（Claude vs Codex）"""
+        if smart_route:
+            route = smart_route(task_type)
+            if route == 'codex' and 'codex' in self.available:
+                return 'codex'
+            if route == 'claude' and 'claude' in self.available:
+                return 'claude'
+        return self.get_best_for(task_type)
     def delegate(self, agent_key: str, prompt: str, **kwargs) -> str:
         agent = self.available.get(agent_key)
         if not agent:
@@ -226,7 +284,7 @@ class TaskDelegator:
             futures = {}
             for st in subtasks:
                 task_type = st.get("type", "")
-                best_agent = self.agent_mgr.get_best_for(task_type)
+                best_agent = self.agent_mgr.get_best_for_smart(task_type)
                 agent_name = self.agent_mgr.available.get(best_agent, {}).get("name", f"分身#{st['id']}") if best_agent else f"分身#{st['id']}"
                 prompt = f"任务: {st['task']}\n\n原始上下文: {task}"
 
