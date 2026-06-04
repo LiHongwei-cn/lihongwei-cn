@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import warnings
+warnings.filterwarnings("ignore", message="urllib3 v2 only")
 """
 MUNDO Agent v26.1 — THE EMPEROR
 独立 AI Agent：LLM 直连 + 工具调用 + Agentic Loop + 权限审批
