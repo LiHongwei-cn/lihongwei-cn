@@ -163,8 +163,8 @@ class MundoCLI:
             return VERSION
 
     def show_banner(self):
-        model_disp = f"{self.provider}/{self._model_display()}"
-        self.console.init_screen(model_disp, VERSION)
+        model_disp = self._model_display()
+        self.console.init_screen(f"{self.provider}/{model_disp}", VERSION)
 
         # 蒙多标识
         console.print()
@@ -174,8 +174,7 @@ class MundoCLI:
         console.print()
 
         # 状态行
-        tok = _fmt_tok(self.console._total_prompt_tokens) if hasattr(self.console, '_total_prompt_tokens') else "0"
-        console.print(f"  [gold]MUNDO[/][dim] · [/][dim]{model_disp}[/][dim] · [/][ok]{tok} tokens[/][dim] · [/][dim]—[/]")
+        console.print(f"  [gold]MUNDO[/][dim] · [/][dim]{model_disp}[/]")
 
         latest = self._check_latest_version()
         if latest == VERSION:
