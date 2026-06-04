@@ -27,7 +27,7 @@ from setup import (
 )
 from approval import approve_tool_call
 from delegation import TaskDelegator, AgentManager
-from display import TaskConsole, console
+from display import TaskConsole, console, _fmt_tok
 
 MUNDO_HOME = Path.home() / ".hermes" / "mundo-agent"
 VERSION = "1.2.0"
