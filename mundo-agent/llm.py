@@ -63,6 +63,7 @@ class LLMClient:
         self.provider = provider
         self.model = model or cfg["model"]
         self.base_url = cfg["base_url"]
+        self.anthropic_base_url = cfg.get("anthropic_base_url", "")
         self.api_key = api_key or os.environ.get(cfg["env_key"], "")
         if not self.api_key:
             raise ValueError(
