@@ -123,15 +123,27 @@ class MundoCLI:
         except Exception:
             self.memory = None
 
-    def show_banner(self):
-        console.print(f"  [gold]mundo[/] [dim]v{VERSION}[/]")
+    def _check_latest_version(self) -> str:
+        """从GitHub获取最新版本号"""
+        try:
+            import urllib.request
+            url = "https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/mundo-agent/version.txt"
+            req = urllib.request.Request(url, headers={"User-Agent": "mundo-agent"})
+            with urllib.request.urlopen(req, timeout=3) as resp:
+                return resp.read().decode().strip()
+        except Exception:
+            return VERSION
 
+    def show_banner(self):
         model_disp = f"{self.provider}/{self._model_display()}"
         self.console.init_screen(model_disp, VERSION)
-        agents = self.agent_mgr.list_available()
-        if agents:
-            names = ", ".join(a["name"] for a in agents)
-            console.print(f"  [dim]{names}[/]")
+
+        latest = self._check_latest_version()
+        if latest == VERSION:
+            console.print(f"  [gold]mundo[/] [dim]v{VERSION}[/] [ok]✓ 已是最新版[/]")
+        else:
+            console.print(f"  [gold]mundo[/] [dim]v{VERSION}[/] [warn]→ 新版 {latest} 可用[/]")
+
         console.print()
 
     def show_help(self):
