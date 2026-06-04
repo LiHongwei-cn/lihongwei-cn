@@ -1,32 +1,42 @@
 [
   {
-    "title": "Editorial Expression of Concern: Functional proteomic identification of DNA replication proteins by induced proteolysis <i>in vivo</i>",
-    "link": "https://www.nature.com/articles/s41586-026-10727-w",
+    "title": "This mysterious lung disease affects millions of people – a drug tested in mice shows promise",
+    "link": "https://www.nature.com/articles/d41586-026-01789-x",
     "summary": "",
-    "published": "2026-06-03",
+    "published": "2026-06-04",
     "journal": "Nature",
     "category": "multidisciplinary",
-    "hash": "7bb8610bd6931449",
-    "crawled_at": "2026-06-04T06:53:55.607790"
+    "hash": "1207cd348b88080a",
+    "crawled_at": "2026-06-04T10:51:16.516200"
   },
   {
-    "title": "AI in science recruitment: friend or foe? Join our free webinar",
-    "link": "https://www.nature.com/articles/d41586-026-01774-4",
+    "title": "What’s behind China’s historically high counts of corresponding authors?",
+    "link": "https://www.nature.com/articles/d41586-026-01623-4",
     "summary": "",
-    "published": "2026-06-03",
+    "published": "2026-06-04",
     "journal": "Nature",
     "category": "multidisciplinary",
-    "hash": "0bfb9af444e72a6e",
-    "crawled_at": "2026-06-04T06:53:55.607806"
+    "hash": "8151e540605a8555",
+    "crawled_at": "2026-06-04T10:51:16.516216"
   },
   {
-    "title": "Your phone can use tiny skin-colour changes to measure your heart rate",
-    "link": "https://www.nature.com/articles/d41586-026-01793-1",
+    "title": "Reply to: The size of tropical vegetation gross primary production",
+    "link": "https://www.nature.com/articles/s41586-026-10561-0",
     "summary": "",
     "published": "2026-06-03",
     "journal": "Nature",
     "category": "multidisciplinary",
-    "hash": "5bb89f40678a5325",
-    "crawled_at": "2026-06-04T06:53:55.607813"
+    "hash": "bda4b3010bf05499",
+    "crawled_at": "2026-06-04T10:51:16.516225"
+  },
+  {
+    "title": "Explicit dynamic cross-strand interactions for DNA sequence language modelling",
+    "link": "https://www.nature.com/articles/s42256-026-01249-1",
+    "summary": "",
+    "published": "2026-06-04",
+    "journal": "Nature Machine Intelligence",
+    "category": "ai",
+    "hash": "528bf77d47018f86",
+    "crawled_at": "2026-06-04T10:51:18.379261"
   }
 ]
