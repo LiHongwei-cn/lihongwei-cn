@@ -17,6 +17,8 @@ v29 新增工具：
 - code_analysis: 代码分析（复杂度/依赖/安全扫描）
 """
 
+import warnings
+warnings.filterwarnings("ignore", message="urllib3 v2 only")
 import os
 import json
 import re
