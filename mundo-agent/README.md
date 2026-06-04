@@ -1,8 +1,19 @@
-# MUNDO Agent v1.1.9 — THE EMPEROR
+# MUNDO Agent v1.2.0 — THE EMPEROR
 
 独立 AI Agent：LLM 直连 + 10 工具 + Agentic Loop + Agent 调度 + 流式输出
 
 > 融合 Claude Code（Git 工作树）、Hermes（安全沙箱）、Codex（多引擎搜索）精华
+
+## 启动标识
+
+```
+             M  U  N  D  O
+             THE EMPEROR
+             v1.2.0
+
+  MUNDO · xiaomi/mimo-v2.5-pro · 0 tokens · —
+  ❯
+```
 
 ## 快速开始
 
@@ -107,10 +118,10 @@ cloud_sync.py   云仓库同步
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v1.1.9-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.1.9/mundo-v1.1.9-macos.zip) |
-| Windows | [mundo-v1.1.9-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.1.9/mundo-v1.1.9-windows.zip) |
-| Linux | [mundo-v1.1.9-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.1.9/mundo-v1.1.9-linux.zip) |
-| 全平台 | [mundo-v1.1.9-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.1.9/mundo-v1.1.9-all.zip) |
+| macOS | [mundo-v1.2.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.2.0/mundo-v1.2.0-macos.zip) |
+| Windows | [mundo-v1.2.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.2.0/mundo-v1.2.0-windows.zip) |
+| Linux | [mundo-v1.2.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.2.0/mundo-v1.2.0-linux.zip) |
+| 全平台 | [mundo-v1.2.0-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.2.0/mundo-v1.2.0-all.zip) |
 
 ## 许可证
 
