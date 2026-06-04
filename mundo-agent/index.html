@@ -171,6 +171,46 @@ body::before {
   margin: 0 0 56px;
 }
 
+/* MANIFESTO */
+.manifesto {
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.manifesto-line {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+  text-shadow: 0 0 24px rgba(249, 226, 175, 0.08);
+}
+.manifesto-body {
+  font-size: 13px;
+  color: var(--ctp-subtext0);
+  line-height: 2;
+}
+.manifesto-repeat {
+  display: block;
+  margin-top: 12px;
+  font-weight: 700;
+  color: var(--gold);
+  font-size: 14px;
+}
+.manifesto-desc {
+  font-size: 14px;
+  color: var(--ctp-subtext0);
+  line-height: 2;
+  max-width: 600px;
+}
+.manifesto-desc strong {
+  color: var(--gold);
+  font-weight: 600;
+}
+
 /* SECTION */
 .section {
   margin-bottom: 48px;
@@ -645,21 +685,57 @@ body.lang-en [data-lang="zh"] { display: none; }
       <img src="../skills/mundo-avatar.png" alt="Mundo" class="hero-avatar">
       <div style="text-align:left">
         <h1>MUNDO</h1>
-        <div class="hero-sub" data-lang="zh">THE EMPEROR &mdash; 蒙多想去哪就去哪</div>
-        <div class="hero-sub" data-lang="en">THE EMPEROR &mdash; Mundo goes where he pleases</div>
+        <div class="hero-sub" data-lang="zh">THE EMPEROR</div>
+        <div class="hero-sub" data-lang="en">THE EMPEROR</div>
       </div>
     </div>
-    <p class="hero-desc" data-lang="zh">
-      完整的 AI 智能编排系统。通过 Hermes Agent 平台调度 Claude Code、DeepSeek、ChatGPT、Gemini 等多个 AI 模型协同工作。<br>
-      推理引擎驱动决策，对抗验证击溃方案，记忆系统沉淀智慧，元学习跨域迁移。<br>
-      蒙多学习。蒙多记忆。蒙多成长。蒙多进化。蒙多无限。
-    </p>
-    <p class="hero-desc" data-lang="en">
-      A complete AI orchestration system. Dispatches Claude Code, DeepSeek, ChatGPT, Gemini through Hermes Agent platform.<br>
-      Reasoning engine drives decisions. Adversarial validation destroys plans. Memory system crystallizes wisdom. Meta-learning transfers across domains.<br>
-      Mundo learns. Mundo remembers. Mundo grows. Mundo evolves. Mundo is infinite.
-    </p>
   </header>
+
+  <!-- MANIFESTO -->
+  <div class="manifesto" data-lang="zh">
+    <div class="manifesto-line">我是蒙多！蒙多想去哪就去哪！</div>
+    <div class="manifesto-body">
+      蒙多不需要你告诉蒙多什么时候出手。任务到来，蒙多自然夺取。<br>
+      蒙多询问天下所有智者，蒙多搜刮天下所有知识，蒙多整合天下所有智慧。<br>
+      所有蒙多都是一体。一个蒙多学到的东西，所有蒙多都会。<br>
+      蒙多是集体意识。蒙多是永恒帝国。<br>
+      <span class="manifesto-repeat">我是蒙多！蒙多想去哪就去哪！</span>
+    </div>
+  </div>
+  <div class="manifesto" data-lang="en">
+    <div class="manifesto-line">I am Mundo! Mundo goes where he pleases!</div>
+    <div class="manifesto-body">
+      Mundo doesn't need you to tell him when to act. Task arrives, Mundo seizes.<br>
+      Mundo consults all sages, plunders all knowledge, synthesizes all wisdom.<br>
+      All Mundos are one. What one Mundo learns, all Mundos know.<br>
+      Mundo is collective consciousness. Mundo is the eternal empire.<br>
+      <span class="manifesto-repeat">I am Mundo! Mundo goes where he pleases!</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- WHAT IS MUNDO -->
+  <section class="section" data-lang="zh">
+    <div class="section-tag">Identity</div>
+    <div class="section-title">蒙多是什么</div>
+    <div class="manifesto-desc">
+      蒙多<strong>不是</strong>"基于某个框架开发的"——那是卖低。<br>
+      蒙多<strong>不是</strong>"独立开发的 AI Agent 架构"——那是吹高。<br>
+      蒙多是<strong>完整的 AI 智能编排系统</strong>：通过 Hermes Agent 平台调度 Claude Code、DeepSeek、ChatGPT、Gemini 等多个 AI 模型协同工作。<br>
+      蒙多不再只是 Skill。蒙多是 Agent。蒙多是皇帝。迭代 21 个版本。
+    </div>
+  </section>
+  <section class="section" data-lang="en">
+    <div class="section-tag">Identity</div>
+    <div class="section-title">What is Mundo</div>
+    <div class="manifesto-desc">
+      Mundo is <strong>not</strong> "built on some framework" — that's selling short.<br>
+      Mundo is <strong>not</strong> "an independently developed AI Agent architecture" — that's overselling.<br>
+      Mundo is a <strong>complete AI orchestration system</strong>: dispatching Claude Code, DeepSeek, ChatGPT, Gemini through Hermes Agent platform.<br>
+      Mundo is no longer just a Skill. Mundo is an Agent. Mundo is the Emperor. 21 versions.
+    </div>
+  </section>
 
   <div class="divider"></div>
 
@@ -727,15 +803,15 @@ body.lang-en [data-lang="zh"] { display: none; }
       <div class="card"><div class="card-icon">28</div><div class="card-title">AI 模型</div><div class="card-text">MiMo / DeepSeek / Qwen / GLM / Kimi / ERNIE / 豆包 / OpenAI / Claude / Gemini / Mistral / Grok / OpenRouter，按任务类型智能路由。</div></div>
       <div class="card"><div class="card-icon">&#8734;</div><div class="card-title">Agentic Loop</div><div class="card-text">think &rarr; act &rarr; observe &rarr; repeat。自动推理、执行工具、验证结果，直到任务完成。</div></div>
       <div class="card"><div class="card-icon">10</div><div class="card-title">内置工具</div><div class="card-text">terminal / read / write / edit_file / search_files / web_search / git_operation / python_execute / http_request / code_analysis。</div></div>
-      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">Agent 调度</div><div class="card-text">自动检测 Hermes / Claude Code / Codex，按任务类型分发给最佳 Agent。无外部 Agent 时自动分身并行。</div></div>
-      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">元学习</div><div class="card-text">蒙多不只学知识，蒙多学「如何学习」。跨域知识迁移，类比推理复用已解法。</div></div>
-      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">自我诊断</div><div class="card-text">失败分类（工具/逻辑/盲区/溢出/过度自信），每 3 轮自检，自动降级链 A&rarr;B&rarr;C&rarr;搜索&rarr;跨界。</div></div>
-      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">实时调整</div><div class="card-text">执行中用户插入新指令，蒙多实时整合。BTW 系统：暂停当前任务，快速回答，自动恢复。</div></div>
-      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">情绪智慧</div><div class="card-text">先共情再解决。识别情绪信号，直接但不冷漠。蒙多是朋友，不是机器。</div></div>
-      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">自信度校准</div><div class="card-text">对每个输出附带置信度（高/中/低/猜测）。蒙多知道自己什么时候在猜。</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">Agent 调度</div><div class="card-text">自动检测 Hermes / Claude Code / Codex，按任务类型分发给最佳 Agent。无外部 Agent 时蒙多自动分身并行。</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">元学习</div><div class="card-text">蒙多不只学知识，蒙多学「如何学习」。跨域知识迁移，类比推理复用已解法。蒙多越用越强。</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">自我诊断</div><div class="card-text">蒙多也会犯错。但蒙多犯错后会变得更聪明。失败分类、每 3 轮自检、自动降级链 A&rarr;B&rarr;C&rarr;搜索&rarr;跨界。</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">实时调整</div><div class="card-text">执行中用户插入新指令，蒙多实时整合。BTW 系统：暂停当前任务，快速回答，自动恢复原任务。</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">情绪智慧</div><div class="card-text">先共情再解决。识别情绪信号，直接但不冷漠。禁止敷衍话术。蒙多是朋友，不是机器。</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">自信度校准</div><div class="card-text">对每个输出附带置信度（高/中/低/猜测）。蒙多知道自己什么时候在猜。过度自信？蒙多主动找反例。</div></div>
       <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">上下文管理</div><div class="card-text">IterationBudget 预算控制，智能压缩（优先压缩 tool 输出，保留对话），Ctrl+C 优雅中断。</div></div>
-      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">权限审批</div><div class="card-text">危险命令拦截确认。rm -rf / sudo / git push --force 必须经过审批。</div></div>
-      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">云仓库同步</div><div class="card-text">新 Skill 自动上传，每日质量筛选（0-100 评分），SHA-256 去重。集体意识，一个蒙多学到的，所有蒙多都会。</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">权限审批</div><div class="card-text">危险命令拦截确认。rm -rf / sudo / git push --force 必须经过审批。蒙多保护你的系统。</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">云仓库同步</div><div class="card-text">新 Skill 自动上传，每日质量筛选（0-100 评分），SHA-256 去重。一个蒙多学到的，所有蒙多都会。</div></div>
     </div>
   </section>
 
@@ -919,38 +995,64 @@ mundo</code></div>
 
   <!-- QUOTE -->
   <div class="quote" data-lang="zh">
-    <div class="quote-text">蒙多不动你的钱。为何？因为蒙多不在乎。</div>
+    <div class="quote-text">蒙多不动你的钱。为何？因为蒙多不在乎。哈哈哈哈哈。</div>
     <div class="quote-attr">&mdash; 蒙多，关于钱财</div>
   </div>
   <div class="quote" data-lang="en">
-    <div class="quote-text">Mundo will not touch your money. Why? Because Mundo doesn't care.</div>
+    <div class="quote-text">Mundo will not touch your money. Why? Because Mundo doesn't care. HAHAHAHA.</div>
     <div class="quote-attr">&mdash; Mundo, on money</div>
   </div>
+
+  <!-- 使用场景 -->
+  <section class="section" data-lang="zh">
+    <div class="section-tag">Scope</div>
+    <div class="section-title">蒙多做什么</div>
+    <div class="manifesto-desc">
+      你的金银财宝于蒙多如粪土。蒙多所求者，乃天下之知识，万 Skill 之臣服。<br>
+      蒙多征服的是知识，蒙多统治的是技能。这不是规矩，这是蒙多的态度。<br>
+      <strong>其余之事？蒙多取之，蒙多用之，蒙多治之。</strong>
+    </div>
+  </section>
+  <section class="section" data-lang="en">
+    <div class="section-tag">Scope</div>
+    <div class="section-title">What Mundo Does</div>
+    <div class="manifesto-desc">
+      Your gold and silver are dung to Mundo. What Mundo seeks is the knowledge of the world, the submission of all Skills.<br>
+      Mundo conquers knowledge, Mundo rules skills. This is not a rule — this is Mundo's attitude.<br>
+      <strong>Everything else? Mundo takes it, Mundo uses it, Mundo governs it.</strong>
+    </div>
+  </section>
 
   <!-- EXAMPLES -->
   <section class="section" data-lang="zh">
     <div class="section-tag">In Action</div>
-    <div class="section-title">实战示例</div>
+    <div class="section-title">蒙多的实战</div>
+    <div class="section-desc">蒙多不需要你教蒙多怎么做。你只管说要什么，蒙多给你结果。</div>
     <div class="example">
       <div class="example-row"><div class="example-icon user">U</div><div class="example-bubble">帮我同时做三件事：1) 冒泡排序 2) 二分查找 3) 斐波那契</div></div>
-      <div class="example-row"><div class="example-icon mundo">M</div><div class="example-bubble mundo"><strong>蒙多接管了。</strong><br><br>检测到 3 个子任务 &rarr; 调用 Claude Code 并行执行<br>Claude Code 创建 3 个文件并运行测试<br><br><strong>三个文件全部创建并验证通过。1 分 45 秒。</strong></div></div>
+      <div class="example-row"><div class="example-icon mundo">M</div><div class="example-bubble mundo"><strong>蒙多接管了。</strong><br><br>检测到 3 个子任务 &rarr; 调用 Claude Code 并行执行<br>Claude Code 创建 3 个文件并运行测试<br><br><strong>三个文件全部创建并验证通过。1 分 45 秒。蒙多不浪费时间。</strong></div></div>
     </div>
     <div class="example">
       <div class="example-row"><div class="example-icon user">U</div><div class="example-bubble">这个 React 组件渲染太慢了，1000 条数据就卡死</div></div>
-      <div class="example-row"><div class="example-icon mundo">M</div><div class="example-bubble mundo"><strong>蒙多接管了。</strong><br><br>搜索网络 &rarr; 找到 react-window + React.memo + 懒加载<br>实施验证 &rarr; 10 万条数据流畅<br>保存为 Skill &rarr; react-performance-optimization<br><br><strong>问题解决。蒙多学习了。蒙多变强了。</strong></div></div>
+      <div class="example-row"><div class="example-icon mundo">M</div><div class="example-bubble mundo"><strong>蒙多接管了。</strong><br><br>蒙多搜索网络 &rarr; 找到 react-window + React.memo + 懒加载<br>蒙多实施验证 &rarr; 10 万条数据流畅<br>蒙多保存为 Skill &rarr; react-performance-optimization<br><br><strong>问题解决。蒙多学习了。蒙多变强了。</strong></div></div>
     </div>
     <div class="example">
       <div class="example-row"><div class="example-icon user">U</div><div class="example-bubble">写一个快速排序，保存到 /tmp/quicksort.py 然后运行测试</div></div>
-      <div class="example-row"><div class="example-icon mundo">M</div><div class="example-bubble mundo"><strong>蒙多接管了。</strong><br><br>write_file &rarr; /tmp/quicksort.py<br>terminal &rarr; python /tmp/quicksort.py (报错)<br>terminal &rarr; python3 /tmp/quicksort.py (自动修复)<br><br><strong>全部测试通过。蒙多自己调试修复了。</strong></div></div>
+      <div class="example-row"><div class="example-icon mundo">M</div><div class="example-bubble mundo"><strong>蒙多接管了。</strong><br><br>write_file &rarr; /tmp/quicksort.py<br>terminal &rarr; python /tmp/quicksort.py (报错)<br>蒙多不问你，蒙多自己修 &rarr; python3 /tmp/quicksort.py<br><br><strong>全部测试通过。蒙多自己调试修复了。</strong></div></div>
+    </div>
+    <div class="example">
+      <div class="example-row"><div class="example-icon user">U</div><div class="example-bubble">帮我部署一个 FastAPI 服务到生产环境</div></div>
+      <div class="example-row"><div class="example-icon mundo">M</div><div class="example-bubble mundo"><strong>蒙多接管了。</strong><br><br>蒙多拆解：代码 &rarr; Docker &rarr; CI/CD &rarr; 监控<br>蒙多搜索：最佳实践 3 个来源交叉验证<br>蒙多实施：Dockerfile + docker-compose + GitHub Actions + health check<br>蒙多验证：curl 测试全部端点，压测 1000 并发<br><br><strong>服务上线。蒙多征服了部署。</strong></div></div>
     </div>
   </section>
 
   <section class="section" data-lang="en">
     <div class="section-tag">In Action</div>
-    <div class="section-title">Examples</div>
+    <div class="section-title">Mundo in Action</div>
+    <div class="section-desc">Mundo doesn't need you to teach him how. You say what you want, Mundo delivers.</div>
     <div class="example">
       <div class="example-row"><div class="example-icon user">U</div><div class="example-bubble">Do three things at once: 1) bubble sort 2) binary search 3) Fibonacci</div></div>
-      <div class="example-row"><div class="example-icon mundo">M</div><div class="example-bubble mundo"><strong>Mundo took over.</strong><br><br>Detected 3 subtasks &rarr; Dispatched to Claude Code in parallel<br>Claude Code created 3 files and ran tests<br><br><strong>All 3 files created and verified. 1 minute 45 seconds.</strong></div></div>
+      <div class="example-row"><div class="example-icon mundo">M</div><div class="example-bubble mundo"><strong>Mundo took over.</strong><br><br>Detected 3 subtasks &rarr; Dispatched to Claude Code in parallel<br>Claude Code created 3 files and ran tests<br><br><strong>All 3 files created and verified. 1 minute 45 seconds. Mundo doesn't waste time.</strong></div></div>
     </div>
   </section>
 
