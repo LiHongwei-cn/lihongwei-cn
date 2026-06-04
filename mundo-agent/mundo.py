@@ -30,7 +30,7 @@ from delegation import TaskDelegator, AgentManager
 from display import TaskConsole, console
 
 MUNDO_HOME = Path.home() / ".hermes" / "mundo-agent"
-VERSION = "1.2.0"
+VERSION = "1.1.9"
 
 
 def safe_execute_tool(name: str, args: dict) -> str:
@@ -140,16 +140,22 @@ class MundoCLI:
         model_disp = f"{self.provider}/{self._model_display()}"
         self.console.init_screen(model_disp, VERSION)
 
+        # 蒙多标识
         console.print()
-        console.print("  [gold]M  U  N  D  O[/]")
-        console.print(f"  [dim]             THE EMPEROR[/]")
-        console.print(f"  [dim]             v{VERSION}[/]")
+        console.print("[gold]             M  U  N  D  O[/]")
+        console.print("[dim]             THE EMPEROR[/]")
+        console.print(f"[dim]             v{VERSION}[/]")
+        console.print()
+
+        # 状态行
+        tok = _fmt_tok(self.console._total_prompt_tokens) if hasattr(self.console, '_total_prompt_tokens') else "0"
+        console.print(f"  [gold]MUNDO[/][dim] · [/][dim]{model_disp}[/][dim] · [/][ok]{tok} tokens[/][dim] · [/][dim]—[/]")
 
         latest = self._check_latest_version()
         if latest == VERSION:
-            console.print(f"  [dim]             [/][ok]✓ 已是最新版[/]")
+            console.print(f"  [dim]v{VERSION} [ok]✓ 已是最新版[/][/]")
         else:
-            console.print(f"  [dim]             [/][warn]→ 新版 {latest} 可用[/]")
+            console.print(f"  [dim]v{VERSION} [warn]→ 新版 {latest} 可用[/][/]")
 
         console.print()
 
