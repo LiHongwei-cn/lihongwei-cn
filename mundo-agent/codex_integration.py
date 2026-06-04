@@ -1,0 +1,56 @@
+"""蒙多 Codex 集成 — 自动路由到 OpenAI 兼容端点
+
+Codex CLI 使用 OPENAI_API_KEY + OPENAI_BASE_URL。
+蒙多根据当前 provider 自动设置，无需手动配置。
+"""
+
+import os
+import shutil
+import subprocess
+
+
+class CodexAgent:
+    """OpenAI Codex CLI 封装"""
+
+    def __init__(self):
+        self.cmd = shutil.which("codex")
+
+    def is_available(self) -> bool:
+        return self.cmd is not None
+
+    def exec_full_auto(self, prompt: str, workdir: str = None) -> str:
+        """全自动模式执行 Codex"""
+        if not self.is_available():
+            return "[Codex 未安装]"
+
+        cmd = [self.cmd, "--full-auto", prompt]
+        env = os.environ.copy()
+
+        try:
+            result = subprocess.run(
+                cmd, capture_output=True, text=True,
+                timeout=300, cwd=workdir, env=env,
+            )
+            if result.returncode == 0:
+                return result.stdout.strip()
+            return f"[Codex 退出码 {result.returncode}] {result.stderr.strip()[:500]}"
+        except subprocess.TimeoutExpired:
+            return "[Codex 超时 (300s)]"
+        except Exception as e:
+            return f"[Codex 异常: {e}]"
+
+
+def smart_route(task_type: str) -> str:
+    """智能路由：判断任务应该用 Codex 还是 Claude Code"""
+    codex_keywords = [
+        "脚本", "批量", "batch", "quick", "原型", "prototype",
+        "一次", "生成", "generate", "scaffold", "init",
+    ]
+    claude_keywords = [
+        "重构", "refactor", "调试", "debug", "复杂", "complex",
+        "架构", "architecture", "审查", "review", "测试", "test",
+    ]
+    task_lower = task_type.lower()
+    codex_score = sum(1 for kw in codex_keywords if kw in task_lower)
+    claude_score = sum(1 for kw in claude_keywords if kw in task_lower)
+    return "codex" if codex_score >= claude_score else "claude"

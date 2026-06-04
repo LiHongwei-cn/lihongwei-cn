@@ -452,8 +452,8 @@ class MundoMemory:
             keyword_score = keyword_hits * 2
             if keyword_hits >= 2:
                 keyword_score += keyword_hits
-            importance_score = imp * 0.5
-            access_score = min(acc, 10) * 0.2
+            importance_score = (float(imp) if imp is not None else 5.0) * 0.5
+            access_score = min(int(acc) if acc is not None else 0, 10) * 0.2
             cat_weights = {
                 "lesson": 1.5, "code_pattern": 1.3, "agent_result": 1.2,
                 "fact": 1.1, "preference": 1.0, "constraint": 1.4,

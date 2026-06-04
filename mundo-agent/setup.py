@@ -29,6 +29,7 @@ PROVIDERS = {
         "model": "mimo-v2.5-pro",
         "env_key": "XIAOMI_API_KEY",
         "base_url": "https://token-plan-cn.xiaomimimo.com/v1",
+        "anthropic_base_url": "https://token-plan-cn.xiaomimimo.com/anthropic",
         "desc": "国产大模型，性价比极高，国内直连",
         "url": "https://xiaoai.mi.com/mimo",
         "region": "cn",

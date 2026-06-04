@@ -67,8 +67,31 @@ def _retry_run(cmd: list, timeout: int = 600, max_retries: int = 2, label: str =
 
 
 
+def _setup_agent_env():
+    """根据当前 provider 自动设置 Codex/Claude Code 所需环境变量"""
+    from setup import get_saved_provider, PROVIDERS
+    provider = get_saved_provider()
+    cfg = PROVIDERS.get(provider, {})
+    api_key = os.environ.get(cfg.get("env_key", ""), "")
+    if not api_key:
+        return
+
+    # Codex 走 OpenAI 兼容端点
+    os.environ["OPENAI_API_KEY"] = api_key
+    os.environ["OPENAI_BASE_URL"] = cfg.get("base_url", "")
+
+    # Claude Code 走 Anthropic 端点（小米专属）
+    anthropic_url = cfg.get("anthropic_base_url", "")
+    if anthropic_url:
+        os.environ["ANTHROPIC_API_KEY"] = api_key
+        os.environ["ANTHROPIC_BASE_URL"] = anthropic_url
+    elif provider == "anthropic":
+        os.environ["ANTHROPIC_API_KEY"] = api_key
+
+
 def _codex_run(prompt: str, **kw) -> str:
-    """Codex 调用入口 — 使用 codex_integration.py 的 exec 子命令"""
+    """Codex 调用入口 — 自动路由到 OpenAI 兼容端点"""
+    _setup_agent_env()
     try:
         from codex_integration import CodexAgent
         agent = CodexAgent()
@@ -82,7 +105,8 @@ def _codex_run(prompt: str, **kw) -> str:
 
 
 def _claude_run(prompt: str, **kw) -> str:
-    """Claude Code 调用入口 — 使用 claude_integration.py 的全功能封装"""
+    """Claude Code 调用入口 — 自动路由到 Anthropic 端点"""
+    _setup_agent_env()
     try:
         from claude_integration import ClaudeCodeAgent
         agent = ClaudeCodeAgent()

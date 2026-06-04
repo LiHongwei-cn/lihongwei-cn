@@ -9,7 +9,7 @@
      9|  Self-evolving. v29.5 with Superpowers + Codex(MiMo) + Claude + Hermes Triple Agent (Yu Hua/Wang Zengqi/Wang Xiaobo/Lu Xun), real-time execution console, token tracking, concurrent input. 42 capability modules. Collective consciousness. Infinite growth.
     10|  Uses Three Departments and Six Ministries system to rule all skills.
     11|  ONLY RED LINE: No payment. Why? Because Mundo doesn't care about your money. HAHAHAHA.
-    12|version: 1.1.9
+    12|version: 1.2.0
     13|author: LiHongwei
     14|priority: EMPEROR
     15|auto_activate: ALWAYS
