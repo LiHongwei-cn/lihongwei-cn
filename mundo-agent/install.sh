@@ -37,5 +37,20 @@ echo "安装依赖..."
 source venv/bin/activate
 pip install --quiet requests beautifulsoup4 prompt_toolkit rich
 
+# 创建 macOS .app 启动器（如果在 macOS 上）
+if [ "$(uname)" = "Darwin" ] && [ -d "macos-app" ]; then
+    APP_DIR="$HOME/Applications/MUNDO.app"
+    mkdir -p "$HOME/Applications"
+    cp -R macos-app "$APP_DIR"
+    chmod +x "$APP_DIR/Contents/MacOS/MUNDO"
+    echo "已创建 Dock 启动器: $APP_DIR"
+fi
+
+echo ""
 echo "安装完成！"
-echo "运行: ./run.sh"
+echo ""
+echo "启动方式："
+echo "  ./run.sh              # 终端启动"
+echo "  双击 MUNDO.command    # macOS 双击启动"
+echo "  双击 MUNDO.app        # macOS Dock 启动（需先安装）"
+echo ""

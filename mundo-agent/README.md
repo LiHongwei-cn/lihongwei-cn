@@ -11,7 +11,7 @@
 git clone https://github.com/LiHongwei-cn/lihongwei-cn.git
 cd lihongwei-cn/mundo-agent
 
-# 安装（自动创建虚拟环境，需要 Python 3.10+）
+# 安装（自动创建虚拟环境 + macOS Dock 启动器，需要 Python 3.10+）
 chmod +x install.sh && ./install.sh
 
 # 配置 API Key
@@ -22,15 +22,21 @@ cp .env.example .env
 ./run.sh
 ```
 
-### macOS 双击启动
+### macOS 启动方式
 
-双击 `MUNDO.command` 即可启动。
+| 方式 | 操作 |
+|------|------|
+| 终端 | `./run.sh` |
+| 双击脚本 | 双击 `MUNDO.command` |
+| Dock 启动器 | 双击 `MUNDO.app`（install.sh 自动创建到 ~/Applications/） |
 
-### Windows 启动
-
-双击 `mundo.bat` 或在终端运行：
+### Windows 启动方式
 
 ```cmd
+# PowerShell 安装
+irm https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/mundo-agent/install.ps1 | iex
+
+# 或手动
 mundo.bat
 ```
 
