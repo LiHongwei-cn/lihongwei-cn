@@ -1,8 +1,8 @@
-# 👑 MUNDO Agent v29.5 — THE EMPEROR
+# 👑 MUNDO Agent v1.1.9 — THE EMPEROR
 
 独立 AI Agent：LLM 直连 + 10 工具 + Agentic Loop + Agent 调度 + 流式输出
 
-> **v29 融合升级**：借鉴 Claude Code（Git 工作树）、Hermes（安全沙箱）、Codex（多引擎搜索）精华
+> **v1.1 融合升级**：借鉴 Claude Code（Git 工作树）、Hermes（安全沙箱）、Codex（多引擎搜索）精华
 
 ## v28.7 — web_search 全面优化 + 多引擎支持
 
@@ -31,7 +31,7 @@
 - **消息清洗增强** — surrogate 字符修复，content 类型强制转换
 - **上下文管理**（借鉴 Claude Code）— /compact + /context，用户可控
 - **Ctrl+C 中断** — 执行中随时优雅停止
-- **10 大工具**（v29 融合升级）：
+- **10 大工具**（v1.1 融合升级）：
   - terminal / read_file / write_file / edit_file / search_files / web_search（多引擎） / list_directory
   - git_operation（工作树隔离，借鉴 Codex）
   - python_execute（沙箱保护，借鉴 Hermes）
@@ -43,7 +43,7 @@
 - **流式输出**：实时看蒙多思考过程，逐字输出不等待
 - **实时状态栏**：模型 │ 上下文 │ 进度条 │ 缓存命中率 │ 会话时间
 - **六套记忆**：自动提取 + 对话搜索 + Code Memory + Agent Memory + 项目隔离 + 自我整理
-- **10 大工具**（v29 融合升级）：
+- **10 大工具**（v1.1 融合升级）：
   - `terminal` - 执行 shell 命令
   - `read_file / write_file / edit_file` - 文件操作
   - `search_files` - 搜索文件内容
@@ -109,7 +109,7 @@ python3 mundo.py
 mundo.py        入口 + CLI + 命令处理
 core.py         Agentic Loop + IterationBudget + ContextCompressor + 错误重试
 llm.py          多模型 LLM 客户端（消息清洗 + reasoning 支持）
-tools.py        工具注册表 + 10 个工具实现（v29 融合升级）
+tools.py        工具注册表 + 10 个工具实现（v1.1 融合升级）
 display.py      执行控制台（Hermes 状态栏 + 活动流 + 醒目输入）
 memory.py       六套记忆架构（自动/对话搜索/Code/Agent/项目隔离/自我整理）
 delegation.py   Agent 检测 + 任务拆分 + 并行执行 + 分身
@@ -123,10 +123,10 @@ cloud_sync.py   云仓库同步
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v29.5-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.5/mundo-v29.5-macos.zip) |
-| Windows | [mundo-v29.5-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.5/mundo-v29.5-windows.zip) |
-| Linux | [mundo-v29.5-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.5/mundo-v29.5-linux.zip) |
-| 全平台 | [mundo-v29.5-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v29.5/mundo-v29.5-all.zip) |
+| macOS | [mundo-v1.1.9-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.1.9/mundo-v1.1.9-macos.zip) |
+| Windows | [mundo-v1.1.9-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.1.9/mundo-v1.1.9-windows.zip) |
+| Linux | [mundo-v1.1.9-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.1.9/mundo-v1.1.9-linux.zip) |
+| 全平台 | [mundo-v1.1.9-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.1.9/mundo-v1.1.9-all.zip) |
 
 ## 许可证
 
