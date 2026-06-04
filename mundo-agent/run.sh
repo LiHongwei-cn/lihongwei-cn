@@ -8,5 +8,4 @@ if [ ! -d "venv" ]; then
     bash install.sh
 fi
 
-source venv/bin/activate
 exec python3 mundo.py "$@"

@@ -2,7 +2,7 @@
 import warnings
 warnings.filterwarnings("ignore", message="urllib3 v2 only")
 """
-MUNDO Agent v26.1 — THE EMPEROR
+MUNDO Agent v1.2.0 — THE EMPEROR
 独立 AI Agent：LLM 直连 + 工具调用 + Agentic Loop + 权限审批
 融合 Hermes Agent + Claude Code 精华架构
 Rich 渲染所有输出，prompt_toolkit 只管输入
@@ -10,10 +10,37 @@ Rich 渲染所有输出，prompt_toolkit 只管输入
 
 import os
 import sys
+import subprocess
 import queue
 from pathlib import Path
 from typing import Optional
 import uuid
+
+MUNDO_HOME = Path.home() / ".hermes" / "mundo-agent"
+VENV_DIR = MUNDO_HOME / "venv"
+
+def ensure_venv():
+    """确保在虚拟环境中运行，如果不在则自动激活并重启"""
+    if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
+        return True  # 已在虚拟环境中
+    
+    venv_python = VENV_DIR / "bin" / "python3"
+    if not venv_python.exists():
+        print("首次运行，正在安装虚拟环境...")
+        subprocess.run([sys.executable, "-m", "venv", str(VENV_DIR)], check=True)
+        subprocess.run([str(venv_python), "-m", "pip", "install", "--upgrade", "pip"], 
+                      capture_output=True, check=True)
+        # 安装依赖
+        requirements = MUNDO_HOME / "requirements.txt"
+        if requirements.exists():
+            subprocess.run([str(venv_python), "-m", "pip", "install", "-r", str(requirements)], 
+                          capture_output=True, check=True)
+    
+    # 在虚拟环境中重新启动自己
+    os.execv(str(venv_python), [str(venv_python)] + sys.argv)
+
+# 确保在虚拟环境中运行
+ensure_venv()
 
 sys.path.insert(0, str(Path(__file__).parent))
 
@@ -29,7 +56,6 @@ from approval import approve_tool_call
 from delegation import TaskDelegator, AgentManager
 from display import TaskConsole, console, _fmt_tok
 
-MUNDO_HOME = Path.home() / ".hermes" / "mundo-agent"
 VERSION = "1.2.0"
 
 
