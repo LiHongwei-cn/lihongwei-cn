@@ -347,7 +347,7 @@ class TaskConsole:
         if stats.errors_count > 0:
             parts.append(f"[err]{stats.errors_count} err[/]")
 
-        console.print(f"\n  [dim]done · {' · '.join(parts)}[/]")
+        console.print(f"\n  [gold]✓[/] [dim]{' · '.join(parts)}[/]")
 
         self._is_running = False
         self._task_start = 0.0
