@@ -201,11 +201,12 @@ class TaskConsole:
     # ═══════════════════════════════════════
 
     def stream_start(self, turn: int):
-        self._was_streamed = True
+        self._was_streamed = False  # 每轮重置，只在实际收到内容时设 True
         sys.stdout.write("\n")
         sys.stdout.flush()
 
     def stream_text(self, text: str):
+        self._was_streamed = True  # 确实有内容流出才标记
         if self._stats:
             self._stats.completion_tokens = max(
                 self._stats.completion_tokens, len(text) * 2 // 3
