@@ -1,0 +1,153 @@
+{
+  "date": "2026-06-05",
+  "source": "https://aihot.virxact.com/",
+  "count": 29,
+  "hotspots": [
+    {
+      "title": "Tencent Hy",
+      "link": "https://x.com/TencentHunyuan/status/2062803141314437391",
+      "source": "article"
+    },
+    {
+      "title": "Alibaba Cloud",
+      "link": "https://x.com/alibaba_cloud/status/2062777684120244656",
+      "source": "article"
+    },
+    {
+      "title": "ginobefun",
+      "link": "https://x.com/hongming731/status/2062764845494317493",
+      "source": "article"
+    },
+    {
+      "title": "NVIDIA AI Blog",
+      "link": "https://blogs.nvidia.com/blog/korea-ecosystem-2026",
+      "source": "article"
+    },
+    {
+      "title": "Hacker News 热门（buzzing.cc 中文翻译）",
+      "link": "https://github.com/alibaba/open-code-review",
+      "source": "article"
+    },
+    {
+      "title": "IT之家（RSS）",
+      "link": "https://www.ithome.com/0/960/323.htm",
+      "source": "article"
+    },
+    {
+      "title": "DogeDesigner",
+      "link": "https://x.com/cb_doge/status/2062681226633523250",
+      "source": "article"
+    },
+    {
+      "title": "OpenRouter：Announcements（RSS）",
+      "link": "https://openrouter.ai/announcements/royale-last-agent-standing",
+      "source": "article"
+    },
+    {
+      "title": "Google Gemini",
+      "link": "https://x.com/GeminiApp/status/2062652523945836770",
+      "source": "article"
+    },
+    {
+      "title": "NotebookLM",
+      "link": "https://x.com/NotebookLM/status/2062653124326863077",
+      "source": "article"
+    },
+    {
+      "title": "Ethan Mollick：One Useful Thing（RSS）",
+      "link": "https://www.oneusefulthing.org/p/co-existence-and-the-end-of-co-intelligence",
+      "source": "article"
+    },
+    {
+      "title": "NVIDIA",
+      "link": "https://x.com/nvidia/status/2062647600424128773",
+      "source": "article"
+    },
+    {
+      "title": "OpenAI：官网动态（RSS · 排除企业/客户案例）",
+      "link": "https://openai.com/index/biodefense-in-the-intelligence-age",
+      "source": "article"
+    },
+    {
+      "title": "Google Research：Blog（网页）",
+      "link": "https://research.google/blog/towards-passive-heart-health-monitoring-via-smartphone-camera",
+      "source": "article"
+    },
+    {
+      "title": "OpenAI Developers",
+      "link": "https://x.com/OpenAIDevs/status/2062619558440267801",
+      "source": "article"
+    },
+    {
+      "title": "Hugging Face：Blog（RSS）",
+      "link": "https://huggingface.co/blog/nvidia/nemotron-3-5-content-safety",
+      "source": "article"
+    },
+    {
+      "title": "Google AI Developers",
+      "link": "https://x.com/googleaidevs/status/2062603374789263646",
+      "source": "article"
+    },
+    {
+      "title": "Replit ⠕",
+      "link": "https://x.com/Replit/status/2062594881625940379",
+      "source": "article"
+    },
+    {
+      "title": "Anthropic：The Institute（旗舰研究长文 · 网页）",
+      "link": "https://www.anthropic.com/institute/recursive-self-improvement",
+      "source": "article"
+    },
+    {
+      "title": "Dwarkesh Patel：Podcast & Blog（RSS）",
+      "link": "https://www.dwarkesh.com/p/alex-imas-phil-trammell",
+      "source": "article"
+    },
+    {
+      "title": "LMSYS：Blog（Chatbot Arena 团队）",
+      "link": "https://www.lmsys.org/blog/2026-06-04-higgs-audio-v3-tts",
+      "source": "article"
+    },
+    {
+      "title": "SiliconFlow",
+      "link": "https://x.com/SiliconFlowAI/status/2062549952266723493",
+      "source": "article"
+    },
+    {
+      "title": "The Verge：订阅版科技（RSS）",
+      "link": "https://www.theverge.com/tech/943066/tsmc-ai-demand-struggles",
+      "source": "article"
+    },
+    {
+      "title": "OpenRouter",
+      "link": "https://x.com/OpenRouter/status/2062538625225548118",
+      "source": "article"
+    },
+    {
+      "title": "NVIDIA Technical Blog（开发者技术博客 · RSS）",
+      "link": "https://developer.nvidia.com/blog/nvidia-nemotron-3-ultra-powers-faster-more-efficient-reasoning-for-long-running-agents",
+      "source": "article"
+    },
+    {
+      "title": "Chubby♨️",
+      "link": "https://x.com/kimmonismus/status/2062517474277675102",
+      "source": "article"
+    },
+    {
+      "title": "Bloomberg：Technology（RSS）",
+      "link": "https://www.bloomberg.com/news/newsletters/2026-06-04/microsoft-says-anthropic-models-are-too-expensive",
+      "source": "article"
+    },
+    {
+      "title": "MarkTechPost（RSS）",
+      "link": "https://www.marktechpost.com/2026/06/03/meet-openjarvis-a-local-first-framework-for-on-device-personal-ai-agents-with-tools-memory-and-learning",
+      "source": "article"
+    },
+    {
+      "title": "HuggingFace Daily Papers（社区热门论文）",
+      "link": "https://arxiv.org/abs/2606.04513",
+      "source": "article"
+    }
+  ],
+  "crawled_at": "2026-06-05T16:00:38.772898"
+}
