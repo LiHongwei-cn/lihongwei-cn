@@ -2,11 +2,11 @@
      2|name: mundo
      3|description: >
      4|  MUNDO - THE EMPEROR. Independent AI Agent with own LLM client (28 models),
-     5|  tool engine (6 tools), Agentic Loop, Agent dispatch (Hermes/Claude Code/Codex),
+     5|  tool engine (12 tools), Agentic Loop, Agent dispatch (Hermes/Claude Code/Codex),
      6|  multi-model collaboration (smart routing by task type), clone parallel execution,
      7|  permission approval, memory persistence, cloud auto-deploy.
      8|  Also functions as a Hermes Agent skill for task orchestration.
-     9|  Self-evolving. v1.2.4 with Superpowers + Codex(MiMo) + Claude + Hermes Triple Agent (Yu Hua/Wang Zengqi/Wang Xiaobo/Lu Xun), real-time execution console, token tracking, concurrent input. 42 capability modules. Collective consciousness. Infinite growth.
+     9|  Self-evolving. v29.5 with Superpowers + Codex(MiMo) + Claude + Hermes Triple Agent (Yu Hua/Wang Zengqi/Wang Xiaobo/Lu Xun), real-time execution console, token tracking, concurrent input. 42 capability modules. Collective consciousness. Infinite growth.
     10|  Uses Three Departments and Six Ministries system to rule all skills.
     11|  ONLY RED LINE: No payment. Why? Because Mundo doesn't care about your money. HAHAHAHA.
     12|version: 1.2.4
@@ -225,7 +225,7 @@ CONTENT.md 是唯一真相源，防止再次丢失。
    | **稳定可控** | 每步有明确输入输出，不猜测，不跳跃 |
    | **低 Token** | 按需加载，能一句话说清的不写十句 |
    | **脚本优先** | 能用脚本验证的不靠推理，减少幻觉 |
-   | **无限轮次** | 蒙多永不封顶，直到任务完成 |
+   | **严控轮次** | 最多 5 轮推理，能 3 轮解决的不用 5 轮 |
    191|
    192|### 搜索来源优先级
    193|本地 Skill > 官方文档 > Stack Overflow > GitHub Issues > 流媒体视频教程（YouTube/B站/Coursera）> 博客

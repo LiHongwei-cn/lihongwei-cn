@@ -459,7 +459,7 @@ chmod +x ~/bin/mundo
 mundo
 ```
 
-**Features**: 28 AI models · Agentic Loop · 6 tools · Agent dispatch · Clone parallel · Context mgmt · Reasoning depth · Minimal UI
+**Features**: 28 AI models · Agentic Loop · 12 tools · Agent dispatch · Clone parallel · Context mgmt · Reasoning depth · Minimal UI
 
 **[👉 Full Documentation](https://lihongwei-cn.github.io/lihongwei-cn/mundo-agent/)**
 
