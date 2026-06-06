@@ -25,14 +25,20 @@ JOURNAL_FEEDS = {
         "rss": "https://www.nature.com/nature.rss",
         "category": "multidisciplinary"
     },
-    "science": {
-        "name": "Science",
-        "rss": "https://www.science.org/action/showFeed?type=etoc&feed=rss&jc=science",
-        "category": "multidisciplinary"
+    # Science暂时不可用(2026-06)
+    # "science": {
+    #     "name": "Science",
+    #     "rss": "https://www.science.org/action/showFeed?type=etoc&feed=rss&jc=science",
+    #     "category": "multidisciplinary"
+    # },
+    "arxiv_ai": {
+        "name": "arXiv AI",
+        "rss": "http://export.arxiv.org/rss/cs.AI",
+        "category": "ai"
     },
     "cell": {
         "name": "Cell",
-        "rss": "https://www.cell.com/cell/rss",
+        "rss": "https://www.cell.com/cell/current.rss",
         "category": "biology"
     },
     "nature_energy": {
@@ -79,30 +85,75 @@ def article_hash(title, link):
 
 
 def fetch_rss_scrapling(url):
-    """使用Scrapling抓取RSS"""
-    try:
-        page = Fetcher.get(url, timeout=30)
-        # Scrapling使用body属性而不是text
-        if hasattr(page, 'body') and page.body:
-            return str(page.body)
-        return page.text
-    except Exception as e:
-        print(f"  Scrapling抓取失败: {e}")
-        return None
+    """使用Scrapling抓取RSS（带重试）"""
+    import time
+    for attempt in range(2):
+        try:
+            timeout = 45 if 'science.org' in url else 30
+            page = Fetcher.get(url, timeout=timeout)
+            # Scrapling使用body属性而不是text
+            if hasattr(page, 'body') and page.body:
+                return str(page.body)
+            return page.text
+        except Exception as e:
+            print(f"  Scrapling抓取失败 (尝试 {attempt+1}/2): {e}")
+            if attempt < 1:
+                time.sleep(3)
+    return None
 
 
-def fetch_rss_requests(url):
-    """使用requests抓取RSS"""
+def fetch_rss_requests(url, max_retries=3):
+    """使用requests抓取RSS（带重试）"""
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+        'Accept': 'application/rss+xml, application/xml, text/xml, */*',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept-Encoding': 'gzip, deflate',  # 不使用br，requests不支持自动解压brotli
+        'Connection': 'keep-alive',
+        'Cache-Control': 'no-cache',
+    }
+    
+    for attempt in range(max_retries):
+        try:
+            timeout = 45 if 'science.org' in url else 30
+            resp = requests.get(url, headers=headers, timeout=timeout)
+            resp.raise_for_status()
+            return resp.text
+        except requests.exceptions.Timeout:
+            print(f"  超时 (尝试 {attempt+1}/{max_retries})")
+            if attempt < max_retries - 1:
+                import time
+                time.sleep(2 * (attempt + 1))
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 403:
+                print(f"  403被拦截，尝试备用方案")
+                return fetch_rss_alternative(url)
+            print(f"  HTTP错误: {e}")
+            return None
+        except Exception as e:
+            print(f"  请求失败: {e}")
+            if attempt < max_retries - 1:
+                import time
+                time.sleep(2)
+    return None
+
+
+def fetch_rss_alternative(url):
+    """备用抓取方案（针对反爬虫网站）"""
     try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-        }
-        resp = requests.get(url, headers=headers, timeout=30)
-        resp.raise_for_status()
-        return resp.text
+        import subprocess
+        # 使用curl作为备用（更不容易被拦截）
+        result = subprocess.run(
+            ['curl', '-sL', '-m', '45', '-A', 
+             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+             url],
+            capture_output=True, text=True, timeout=60
+        )
+        if result.returncode == 0 and result.stdout:
+            return result.stdout
     except Exception as e:
-        print(f"  requests抓取失败: {e}")
-        return None
+        print(f"  备用方案失败: {e}")
+    return None
 
 
 def fetch_rss(url):
@@ -136,7 +187,7 @@ def parse_rss_xml(xml_content):
         return text.strip()
     
     # 提取所有文章链接（RDF格式）
-    rdf_links = re.findall(r'rdf:resource="(https://www\.nature\.com/articles/[^"]+)"', xml_content)
+    rdf_links = re.findall(r'rdf:resource="(https?://[^"]+)"', xml_content)
     
     # 提取标题（处理CDATA）
     titles = re.findall(r'<title[^>]*>(.*?)</title>', xml_content, re.DOTALL)
