@@ -1,0 +1,182 @@
+[
+  {
+    "title": "Briefing chat: Spinosaurs with salt glands could have lived in marine environments",
+    "link": "https://www.nature.com/",
+    "summary": "",
+    "published": "2026-06-05",
+    "journal": "Nature",
+    "category": "multidisciplinary",
+    "hash": "6fa2ffa26b336863",
+    "crawled_at": "2026-06-07T06:00:38.412959"
+  },
+  {
+    "title": "First precise genome editing of human embryos triggers praise and alarm",
+    "link": "https://www.nature.com/uploads/product/nature/rss.png",
+    "summary": "",
+    "published": "2026-06-05",
+    "journal": "Nature",
+    "category": "multidisciplinary",
+    "hash": "1a088c949c07838f",
+    "crawled_at": "2026-06-07T06:00:38.412987"
+  },
+  {
+    "title": "Europe is ditching US tech — what does this mean for researchers?",
+    "link": "https://www.nature.com/articles/d41586-026-01831-y",
+    "summary": "",
+    "published": "2026-06-05",
+    "journal": "Nature",
+    "category": "multidisciplinary",
+    "hash": "281e370d7bb15fe0",
+    "crawled_at": "2026-06-07T06:00:38.412998"
+  },
+  {
+    "title": "I Know What You Meme, Even If it Emerged Today: Understanding Evolving Memes through Open-World Knowledge Acquisition",
+    "link": "https://arxiv.org/abs/2606.05316",
+    "summary": "arXiv:2606.05316v1 Announce Type: new Abstract: Multimodal memes are dynamic and often require up to date background knowledge for interpretation. Existing methods often overlook such knowledge or rely on fixed parametric knowledge of pretrained models that may be incomplete, outdated, or unavailable for emerging memes. We introduce Query Retrieve Conclude, a zero shot framework that identifies missing knowledge, retrieves open web evidence, and synthesizes evidence grounded background knowledge",
+    "published": "Sat, 06 Jun 2026 00:00:00 -0400",
+    "journal": "arXiv AI",
+    "category": "ai",
+    "hash": "c12cfb41cb854ef6",
+    "crawled_at": "2026-06-07T06:00:40.377693"
+  },
+  {
+    "title": "GITCO: Gated Inference-Time Context Optimization in TSFMs",
+    "link": "https://arxiv.org/abs/2606.05332",
+    "summary": "arXiv:2606.05332v1 Announce Type: new Abstract: Patch-based Time Series Foundation Models (TSFMs) suffer from context poisoning: structurally anomalous patches capture disproportionate attention and silently degrade zero-shot forecast quality. We propose improving TSFM accuracy at inference time by optimizing the input context rather than modifying model weights. We present GITCO (Gated Inference-Time Context Optimization), a lightweight three-component framework: Gate, Router, and Critic that s",
+    "published": "Sat, 06 Jun 2026 00:00:00 -0400",
+    "journal": "arXiv AI",
+    "category": "ai",
+    "hash": "132c3edd64026ec0",
+    "crawled_at": "2026-06-07T06:00:40.377708"
+  },
+  {
+    "title": "Uncertainty Aware Functional Behavior Prediction and Material Fatigue Assessment for Circular Factory",
+    "link": "https://arxiv.org/abs/2606.05334",
+    "summary": "arXiv:2606.05334v1 Announce Type: new Abstract: Returned products in circular factories re-enter production with heterogeneous degradation states, usage histories, and remaining capability. Reuse cannot be decided from the current inspection alone, because future function fulfillment and component integrity may evolve differently under the next service scenario. Existing PHM approaches support degradation prediction, but often target fixed operating conditions or isolated component benchmarks, w",
+    "published": "Sat, 06 Jun 2026 00:00:00 -0400",
+    "journal": "arXiv AI",
+    "category": "ai",
+    "hash": "428069dbcb21c0b2",
+    "crawled_at": "2026-06-07T06:00:40.377712"
+  },
+  {
+    "title": "Autoantibodies in long COVID: A mechanistic foothold in a heterogeneous disease",
+    "link": "https://www.cell.com/cell/fulltext/S0092-8674(26)00510-6?rss=yes",
+    "summary": "Two studies in this issue of Cell, by Bintu et al. and Brann et al., overturn the long-standing zonal model of olfactory receptor organization. Using image-based spatial transcriptomics, they reveal that receptors occupy reproducible positions along continuous gradients, coupling receptor choice to axonal targeting through a shared molecular code.",
+    "published": "2026-05-28",
+    "journal": "Cell",
+    "category": "biology",
+    "hash": "60d224f13d2415ff",
+    "crawled_at": "2026-06-07T06:00:41.750172"
+  },
+  {
+    "title": "B cells just got a workout",
+    "link": "https://www.cell.com/cell/fulltext/S0092-8674(26)00511-8?rss=yes",
+    "summary": "Long COVID is a heterogeneous, multi-system disease that poses challenges for patients, health systems, and economies. Two papers in Cell and Cell Reports Medicine from independent groups suggest that autoantibodies in a subset of long COVID patients can directly drive symptoms such as pain, fatigue, or neurocognitive problems.",
+    "published": "2026-05-28",
+    "journal": "Cell",
+    "category": "biology",
+    "hash": "2d3214681e9cd05a",
+    "crawled_at": "2026-06-07T06:00:41.750201"
+  },
+  {
+    "title": "Mesenchymal drift: A convergent framework for the hallmarks of aging",
+    "link": "https://www.cell.com/cell/fulltext/S0092-8674(26)00513-1?rss=yes",
+    "summary": "In this issue of Cell, Mao et al. reveal that B cells play an unexpected, immune-independent role in exercise physiology by facilitating multi-organ communication. Secreting TGF-β1, they transcriptionally reprogram hepatic glutamine metabolism via GLS2 and SLC7A5, preserving skeletal muscle glutamate levels, which sustain mitochondrial function, Ca2⁺ signaling, and ATP production, enhancing exercise capacity.",
+    "published": "2026-05-28",
+    "journal": "Cell",
+    "category": "biology",
+    "hash": "ba9ad450aa7f1670",
+    "crawled_at": "2026-06-07T06:00:41.750213"
+  },
+  {
+    "title": "Understanding interconnected ion and water transport in anion exchange membrane zero-gap CO<sub>2</sub> electrolysers",
+    "link": "https://www.nature.com/",
+    "summary": "",
+    "published": "2026-06-05",
+    "journal": "Nature Energy",
+    "category": "energy",
+    "hash": "d88de11dc1255022",
+    "crawled_at": "2026-06-07T06:00:42.567046"
+  },
+  {
+    "title": "Aligning global shipping climate policies with life cycle perspective",
+    "link": "https://www.nature.com/uploads/product/nenergy/rss.png",
+    "summary": "",
+    "published": "2026-05-29",
+    "journal": "Nature Energy",
+    "category": "energy",
+    "hash": "1efbe8d98c594051",
+    "crawled_at": "2026-06-07T06:00:42.567075"
+  },
+  {
+    "title": "Marine fuel choices and related life-cycle environmental impacts under global shipping policies",
+    "link": "https://www.nature.com/articles/s41560-026-02052-3",
+    "summary": "",
+    "published": "2026-05-29",
+    "journal": "Nature Energy",
+    "category": "energy",
+    "hash": "14451658678ac4b3",
+    "crawled_at": "2026-06-07T06:00:42.567085"
+  },
+  {
+    "title": "Giant gate response of the charge in an electron–lattice condensate",
+    "link": "https://www.nature.com/",
+    "summary": "",
+    "published": "2026-06-04",
+    "journal": "Nature Electronics",
+    "category": "electronics",
+    "hash": "8d3e6c5c3a924ff6",
+    "crawled_at": "2026-06-07T06:00:43.358069"
+  },
+  {
+    "title": "Sensing exceptional potential",
+    "link": "https://www.nature.com/uploads/product/natelectron/rss.png",
+    "summary": "",
+    "published": "2026-05-29",
+    "journal": "Nature Electronics",
+    "category": "electronics",
+    "hash": "5a3dfed2a321fd59",
+    "crawled_at": "2026-06-07T06:00:43.358084"
+  },
+  {
+    "title": "Multielectrode arrays to visualize electrical signals in plants",
+    "link": "https://www.nature.com/articles/s41928-026-01636-x",
+    "summary": "",
+    "published": "2026-05-28",
+    "journal": "Nature Electronics",
+    "category": "electronics",
+    "hash": "3e4e17826fea19f3",
+    "crawled_at": "2026-06-07T06:00:43.358089"
+  },
+  {
+    "title": "Explicit dynamic cross-strand interactions for DNA sequence language modelling",
+    "link": "https://www.nature.com/",
+    "summary": "",
+    "published": "2026-06-04",
+    "journal": "Nature Machine Intelligence",
+    "category": "ai",
+    "hash": "8488af2c1aad05b8",
+    "crawled_at": "2026-06-07T06:00:44.081589"
+  },
+  {
+    "title": "Conditional Monge Gap enables generalizable single-cell perturbation modelling",
+    "link": "https://www.nature.com/uploads/product/natmachintell/rss.gif",
+    "summary": "",
+    "published": "2026-06-01",
+    "journal": "Nature Machine Intelligence",
+    "category": "ai",
+    "hash": "bd296983fc251f7c",
+    "crawled_at": "2026-06-07T06:00:44.081620"
+  },
+  {
+    "title": "Learning the coupled dynamics of global climate modes",
+    "link": "https://www.nature.com/articles/s42256-026-01249-1",
+    "summary": "",
+    "published": "2026-06-01",
+    "journal": "Nature Machine Intelligence",
+    "category": "ai",
+    "hash": "6996888007b5fa36",
+    "crawled_at": "2026-06-07T06:00:44.081632"
+  }
+]
