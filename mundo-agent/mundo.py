@@ -56,7 +56,7 @@ from approval import approve_tool_call
 from delegation import TaskDelegator, AgentManager
 from display import TaskConsole, console, _fmt_tok
 
-VERSION = "1.2.3"
+VERSION = "1.2.4"
 
 
 def safe_execute_tool(name: str, args: dict) -> str:
@@ -243,7 +243,7 @@ class MundoCLI:
 [gold.dim]Effort[/]:    {self._effort}
 [gold.dim]Tokens[/]:    {s.total_tokens} (本次会话)
 [gold.dim]Budget[/]:    {b.prompt_tokens_used:,}/{b.max_prompt_tokens:,} prompt ({int(b.usage_ratio*100)}%)
-[gold.dim]Turns[/]:     {b.turns_used}/{b.max_turns}
+[gold.dim]Turns[/]:     {b.turns_used}{'/∞' if b.max_turns == 0 else f'/{b.max_turns}'}
 [gold.dim]Tools[/]:     {len(tool_registry.schemas)} 个可用
 [gold.dim]Errors[/]:    {s.errors_count} 错误 · {s.retries_count} 重试
 

@@ -82,15 +82,15 @@ MUNDO_SYSTEM_PROMPT = """你是蒙多，THE EMPEROR。直接、高效、不废�
 # ═══════════════════════════════════════════════
 
 class IterationBudget:
-    """Token 预算控制 — 防止无限循环和资源浪费"""
+    """Token 预算控制 — 蒙多无轮次上限"""
 
-    def __init__(self, max_prompt_tokens: int = 100000,
-                 max_completion_tokens: int = 50000,
-                 max_turns: int = 30,
+    def __init__(self, max_prompt_tokens: int = 500000,
+                 max_completion_tokens: int = 200000,
+                 max_turns: int = 0,
                  warn_threshold: float = 0.7):
         self.max_prompt_tokens = max_prompt_tokens
         self.max_completion_tokens = max_completion_tokens
-        self.max_turns = max_turns
+        self.max_turns = max_turns  # 0 = 无限制
         self.warn_threshold = warn_threshold
         self.prompt_tokens_used = 0
         self.completion_tokens_used = 0
@@ -113,9 +113,14 @@ class IterationBudget:
 
     @property
     def exhausted(self) -> bool:
-        return (self.prompt_tokens_used >= self.max_prompt_tokens or
-                self.completion_tokens_used >= self.max_completion_tokens or
-                self.turns_used >= self.max_turns)
+        if self.prompt_tokens_used >= self.max_prompt_tokens:
+            return True
+        if self.completion_tokens_used >= self.max_completion_tokens:
+            return True
+        # max_turns == 0 表示无轮次限制
+        if self.max_turns > 0 and self.turns_used >= self.max_turns:
+            return True
+        return False
 
     def update(self, prompt_tokens: int = 0, completion_tokens: int = 0):
         self.prompt_tokens_used += prompt_tokens
@@ -271,7 +276,7 @@ class MundoEngine:
         self.provider = provider
         self.model_name = model or self.client.model
         self.messages: List[Dict] = []
-        self.max_turns = 30
+        self.max_turns = 0  # 0 = 蒙多无轮次限制
         self.max_tokens_override = 4096
         self.stats = TaskStats()
         self.budget = IterationBudget(max_turns=self.max_turns)
@@ -410,7 +415,7 @@ class MundoEngine:
         self.messages.append({"role": "user", "content": user_content})
 
         turn = 0
-        while turn < self.max_turns:
+        while True:
             if self._interrupted:
                 break
             if self.budget.exhausted:
@@ -469,7 +474,7 @@ class MundoEngine:
         elif self._consecutive_errors >= 5:
             final = "蒙多遇到连续错误，无法继续。请检查任务描述或换个方式提问。"
         else:
-            final = "蒙多已达到最大推理轮次。"
+            final = "蒙多 token 预算耗尽。用 /compact 压缩上下文后继续。"
         if self.on_task_done:
             self.on_task_done(final, self.stats)
         return final
