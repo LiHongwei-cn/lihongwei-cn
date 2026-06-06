@@ -2,14 +2,14 @@
      2|name: mundo
      3|description: >
      4|  MUNDO - THE EMPEROR. Independent AI Agent with own LLM client (28 models),
-     5|  tool engine (6 tools), Agentic Loop, Agent dispatch (Hermes/Claude Code/Codex),
+     5|  tool engine (12 tools), Agentic Loop, Agent dispatch (Hermes/Claude Code/Codex),
      6|  multi-model collaboration (smart routing by task type), clone parallel execution,
      7|  permission approval, memory persistence, cloud auto-deploy.
      8|  Also functions as a Hermes Agent skill for task orchestration.
      9|  Self-evolving. v29.5 with Superpowers + Codex(MiMo) + Claude + Hermes Triple Agent (Yu Hua/Wang Zengqi/Wang Xiaobo/Lu Xun), real-time execution console, token tracking, concurrent input. 42 capability modules. Collective consciousness. Infinite growth.
     10|  Uses Three Departments and Six Ministries system to rule all skills.
     11|  ONLY RED LINE: No payment. Why? Because Mundo doesn't care about your money. HAHAHAHA.
-    12|version: 1.2.3
+    12|version: 1.2.4
     13|author: LiHongwei
     14|priority: EMPEROR
     15|auto_activate: ALWAYS

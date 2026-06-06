@@ -41,13 +41,15 @@ console = Console(theme=MUNDO_THEME, highlight=False, force_terminal=True)
 TOOL_EMOJI = {
     "terminal": ">", "read_file": "r", "write_file": "w",
     "edit_file": "e", "search_files": "f", "web_search": "s",
-    "list_directory": "l",
+    "list_directory": "l", "git_operation": "g", "python_execute": "py",
+    "http_request": "h", "json_process": "j", "code_analysis": "a",
 }
 
 TOOL_VERB = {
     "terminal": "$", "read_file": "read", "write_file": "write",
     "edit_file": "edit", "search_files": "grep", "web_search": "search",
-    "list_directory": "ls",
+    "list_directory": "ls", "git_operation": "git", "python_execute": "exec",
+    "http_request": "http", "json_process": "json", "code_analysis": "analyze",
 }
 
 SLASH_COMMANDS = [
