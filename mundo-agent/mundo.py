@@ -144,7 +144,7 @@ class MundoCLI:
         self.engine.on_budget_warn = lambda budget: self.console.log_budget_warning(budget)
         self.engine.on_compress = lambda *a: self.console.log_compress(*a)
 
-        # v1.2.6: 实时 token 统计 + 缓存命中率
+        # v1.2.7: 实时 token 统计 + 缓存命中率
         self.engine.on_llm_stats = lambda prompt, completion, cached, ctx: self.console.log_llm_stats(prompt, completion, cached, ctx)
 
     def _init_memory(self):
