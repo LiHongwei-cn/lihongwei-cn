@@ -1,32 +1,52 @@
 [
   {
-    "title": "A causal link between autoantibodies and neurological symptoms in long COVID",
-    "link": "https://www.cell.com/cell/fulltext/S0092-8674(26)00455-1?rss=yes",
-    "summary": "Aging is marked by a systemic loss of tissue homeostasis. This review focuses on mesenchymal drift, where cells progressively lose lineage identity and acquire mesenchymal traits, as a convergent framework that integrates and fuels the hallmarks of aging, forming a potentially targetable molecular network to restore identity and counter multiple age-related pathologies.",
-    "published": "2026-05-28",
-    "journal": "Cell",
-    "category": "biology",
-    "hash": "a1735434ea297528",
-    "crawled_at": "2026-06-07T22:05:06.055565"
+    "title": "Europe is ditching US tech \\xe2\\x80\\x94 what does this mean for researchers?",
+    "link": "https://www.nature.com/articles/d41586-026-01831-y",
+    "summary": "",
+    "published": "2026-06-05",
+    "journal": "Nature",
+    "category": "multidisciplinary",
+    "hash": "b2ae95618dab99c5",
+    "crawled_at": "2026-06-07T22:07:54.500078"
   },
   {
-    "title": "Affinity-matured B cell responses neutralizing type-I interferons underlie severe viral infections",
-    "link": "https://www.cell.com/cell/fulltext/S0092-8674(26)00509-X?rss=yes",
-    "summary": "Passive transfer of IgG from long COVID patients induces pain behavior accompanied by intraepidermal nerve fiber damage in mice.",
-    "published": "2026-05-28",
-    "journal": "Cell",
-    "category": "biology",
-    "hash": "103b1b3a049a9d2d",
-    "crawled_at": "2026-06-07T22:05:06.055609"
+    "title": "See a helicopter destined for Mars and a spectacular flowery frame for the Milky Way \\xe2\\x80\\x94 May\\xe2\\x80\\x99s best science images",
+    "link": "https://www.nature.com/articles/d41586-026-01827-8",
+    "summary": "",
+    "published": "2026-06-05",
+    "journal": "Nature",
+    "category": "multidisciplinary",
+    "hash": "8ea48a46e86cfdce",
+    "crawled_at": "2026-06-07T22:07:54.500095"
   },
   {
-    "title": "B cell deficiency limits exercise capacity by remodeling liver glutamate metabolism",
-    "link": "https://www.cell.com/cell/fulltext/S0092-8674(26)00438-1?rss=yes",
-    "summary": "By integrating functional and structural approaches with AI-based analysis of autoantibodies against type-I IFNs, these neutralizing autoantibodies—linked to severe viral diseases in humans—are shown to arise from pre-existing autoimmunity driven by prolonged germinal center affinity maturation.",
-    "published": "2026-05-06",
-    "journal": "Cell",
-    "category": "biology",
-    "hash": "281055b075c21f86",
-    "crawled_at": "2026-06-07T22:05:06.055618"
+    "title": "Electric vehicles cut pollution in China \\xe2\\x80\\x93 and prevent 260,000 premature deaths",
+    "link": "https://www.nature.com/articles/d41586-026-01610-9",
+    "summary": "",
+    "published": "2026-06-05",
+    "journal": "Nature",
+    "category": "multidisciplinary",
+    "hash": "1f2b7f37cf9c000f",
+    "crawled_at": "2026-06-07T22:07:54.500098"
+  },
+  {
+    "title": "Giant gate response of the charge in an electron\\xe2\\x80\\x93lattice condensate",
+    "link": "https://www.nature.com/",
+    "summary": "",
+    "published": "2026-06-04",
+    "journal": "Nature Electronics",
+    "category": "electronics",
+    "hash": "20be870b88d9d3a1",
+    "crawled_at": "2026-06-07T22:07:59.861914"
+  },
+  {
+    "title": "Human\\xe2\\x80\\x93AI interactions reshape the self and our social networks",
+    "link": "https://www.nature.com/articles/s42256-026-01242-8",
+    "summary": "",
+    "published": "2026-05-28",
+    "journal": "Nature Machine Intelligence",
+    "category": "ai",
+    "hash": "941adbd5a8936373",
+    "crawled_at": "2026-06-07T22:08:01.782609"
   }
 ]
