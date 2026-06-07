@@ -1,6 +1,6 @@
 #!/bin/bash
 # MUNDO Agent — macOS 双击启动器
-# 启动前静默版本同步
+# 同步逻辑静默执行，Terminal 只显示蒙多
 
 SRC="$HOME/Desktop/lihongwei-cn/mundo-agent"
 DST="$HOME/.hermes/mundo-agent"
@@ -19,4 +19,5 @@ if [ -f "$SRC/version.txt" ] && [ -f "$DST/version.txt" ]; then
 fi
 
 cd "$HOME/.hermes/mundo-agent"
+source venv/bin/activate
 exec python3 mundo.py "$@"

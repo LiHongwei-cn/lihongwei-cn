@@ -301,7 +301,7 @@ class TaskConsole:
             multiline=True,
             completer=SlashCompleter(),
             complete_while_typing=True,
-            prompt_continuation=[("class:prompt", " █ ")],
+            prompt_continuation="",
         )
 
         try:
