@@ -203,7 +203,7 @@ class LLMClient:
                 raise RuntimeError(f"请求异常: {e}") from e
 
     def _request_stream_with_retry(self, payload: Dict, max_retries: int = None) -> Iterator[Dict]:
-        """流式请求，支持重试和超时检测（v28 流式无重试，v29 修复）"""
+        """流式请求，支持重试和超时检测"""
         max_retries = max_retries or TimeoutConfig.MAX_RETRIES
         url = f"{self.base_url}/chat/completions"
         headers = {
