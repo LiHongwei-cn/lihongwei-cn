@@ -231,25 +231,6 @@ class TaskConsole:
 
     _paste_counter = 0
 
-    def _collapse_paste(self, text: str) -> str:
-        """粘贴内容过长时，存文件 + 返回简洁占位符"""
-        lines = text.count('\n')
-        if lines < 1 and len(text) < 200:
-            return text
-
-        TaskConsole._paste_counter += 1
-        paste_dir = Path.home() / ".hermes" / "mundo-agent" / "pastes"
-        paste_dir.mkdir(parents=True, exist_ok=True)
-        paste_file = paste_dir / f"paste_{TaskConsole._paste_counter}_{_time.strftime('%H%M%S')}.txt"
-        paste_file.write_text(text, encoding="utf-8")
-
-        size_kb = len(text) / 1024
-        first_line = text.strip().split('\n')[0][:60]
-        if len(first_line) < len(text.strip().split('\n')[0]):
-            first_line += "..."
-        console.print(f"  [dim]📎 {lines+1}行 {size_kb:.1f}KB │ {first_line}[/]")
-        return f"[Pasted text #{TaskConsole._paste_counter}: {lines + 1} lines → {paste_file}]"
-
     @staticmethod
     def expand_paste_refs(text: str) -> str:
         """提交前展开占位符为原始内容"""
@@ -278,21 +259,33 @@ class TaskConsole:
         from prompt_toolkit.key_binding import KeyBindings
 
         hist_path = str(Path.home() / ".hermes" / "mundo-agent" / ".mundo_history")
-        style = Style.from_dict({
-            "prompt": "#d4a017 bold",
-        })
+        style = Style.from_dict({"prompt": "#d4a017 bold"})
 
         kb = KeyBindings()
+        stored = {"text": "", "file": None}
 
         @kb.add("enter")
         def _(event):
             buf = event.current_buffer
-            buf.text = buf.text.rstrip()
+            text = buf.text.rstrip()
+            if text.count('\n') >= 1 or len(text) > 200:
+                stored["text"] = text
+                stored["file"] = self._save_paste(text)
+                ref, label = stored["file"]
+                buf.text = label
+                buf.cursor_position = len(label)
             buf.validate_and_handle()
 
         @kb.add("escape", "enter")
         def _(event):
             event.current_buffer.newline()
+
+        def _on_accept():
+            if stored["text"]:
+                result = stored["text"]
+                stored["text"] = ""
+                return result
+            return None
 
         session = PromptSession(
             history=FileHistory(hist_path),
@@ -306,10 +299,28 @@ class TaskConsole:
 
         try:
             from prompt_toolkit.formatted_text import HTML
-            raw = session.prompt(HTML("<ansiyellow><b> ❯ </b></ansiyellow>"))
-            return self._collapse_paste(raw.strip())
+            session.prompt(HTML("<ansiyellow><b> ❯ </b></ansiyellow>"))
+            result = _on_accept()
+            if result is not None:
+                return result
+            return session.app.current_buffer.text.strip()
         except (EOFError, KeyboardInterrupt):
             return ""
+
+    def _save_paste(self, text: str) -> tuple:
+        """保存粘贴内容到文件，返回 (文件路径, 显示标签)"""
+        TaskConsole._paste_counter += 1
+        paste_dir = Path.home() / ".hermes" / "mundo-agent" / "pastes"
+        paste_dir.mkdir(parents=True, exist_ok=True)
+        n = TaskConsole._paste_counter
+        ts = _time.strftime('%H%M%S')
+        paste_file = paste_dir / f"paste_{n}_{ts}.txt"
+        paste_file.write_text(text, encoding="utf-8")
+        lines = text.count('\n') + 1
+        kb = len(text) / 1024
+        label = f"[{n}: {lines}行 {kb:.1f}KB → {paste_file}]"
+        console.print(f"  [dim]📎 {lines}行 {kb:.1f}KB[/]")
+        return (str(paste_file), label)
 
     # ═══════════════════════════════════════
     # 日志 — 极简活动流
