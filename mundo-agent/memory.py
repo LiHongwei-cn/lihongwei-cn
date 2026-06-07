@@ -1,4 +1,4 @@
-"""蒙多记忆系统 v1.2.7 — Claude 六套记忆架构
+"""蒙多记忆系统 v1.2.6 — Claude 六套记忆架构
 
 借鉴 Claude 的六套记忆机制：
 1. 自动 Memory — 从对话中自动提取关键信息（轻量规则，不调 LLM）
@@ -21,8 +21,8 @@ from typing import List, Dict, Optional, Tuple
 MUNDO_HOME = Path.home() / ".hermes" / "mundo-agent"
 MEMORY_DB = MUNDO_HOME / "memory.db"
 
-MAX_CONTEXT_TOKENS = 3000
-MAX_FACTS_INJECT = 15
+MAX_CONTEXT_TOKENS = 2000
+MAX_FACTS_INJECT = 8
 MAX_CONVERSATION_RESULTS = 5
 
 

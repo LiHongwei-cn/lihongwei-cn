@@ -10,7 +10,7 @@ if [ -f "$SRC/version.txt" ] && [ -f "$DST/version.txt" ]; then
     DST_VER=$(cat "$DST/version.txt" | tr -d '[:space:]')
 
     if [ "$SRC_VER" != "$DST_VER" ]; then
-        for f in mundo.py core.py llm.py setup.py tools.py approval.py display.py memory.py memory_import.py models.py agents.py delegation.py cloud_sync.py; do
+        for f in mundo.py core.py llm.py setup.py tools.py approval.py display.py memory.py cloud_sync.py; do
             [ -f "$SRC/$f" ] && cp "$SRC/$f" "$DST/$f"
         done
         cp "$SRC/version.txt" "$DST/version.txt"
