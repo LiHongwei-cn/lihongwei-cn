@@ -56,6 +56,9 @@ def _is_context_overflow(code: int, body: str) -> bool:
 
 class LLMClient:
 
+    def __repr__(self) -> str:
+        return f"LLMClient(provider={self.provider}, model={self.model})"
+
     def __init__(self, provider: str = "xiaomi", model: str = None, api_key: str = None):
         cfg = PROVIDERS.get(provider)
         if not cfg:
@@ -176,14 +179,14 @@ class LLMClient:
                         yield json.loads(payload_str)
                     except json.JSONDecodeError:
                         continue
-        except socket.timeout:
-            raise RuntimeError(f"流式读取超时（{STREAM_IDLE_TIMEOUT}s 无数据）")
+        except socket.timeout as e:
+            raise RuntimeError(f"流式读取超时（{STREAM_IDLE_TIMEOUT}s 无数据）") from e
         except RuntimeError:
             raise
         except Exception as e:
             err = str(e).lower()
             if "timed out" in err or "timeout" in err or "reset" in err or "broken pipe" in err:
-                raise RuntimeError(f"流式连接中断: {e}")
+                raise RuntimeError(f"流式连接中断: {e}") from e
             raise
         finally:
             try:

@@ -130,6 +130,9 @@ def _smart_effort(prompt: str) -> str:
 class ClaudeCodeAgent:
     """Claude Code CLI 封装 — Token 优化 + 上下文压缩版"""
 
+    def __repr__(self) -> str:
+        return f"ClaudeCodeAgent(available={self.is_available()})"
+
     def __init__(self):
         self.cmd = shutil.which("claude")
 

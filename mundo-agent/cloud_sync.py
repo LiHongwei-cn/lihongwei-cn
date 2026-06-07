@@ -20,8 +20,11 @@ UPLOAD_QUEUE = MUNDO_HOME / "upload_queue.json"
 # ═══════════════════════════════════════════════
 
 def _load_state() -> Dict:
-    if SYNC_STATE.exists():
-        return json.loads(SYNC_STATE.read_text())
+    try:
+        if SYNC_STATE.exists():
+            return json.loads(SYNC_STATE.read_text())
+    except (json.JSONDecodeError, OSError):
+        pass
     return {"uploaded": {}, "last_daily": None}
 
 
@@ -76,8 +79,11 @@ def find_new_skills() -> List[Dict]:
 def queue_upload(skill_name: str, skill_path: str):
     """将 Skill 加入上传队列"""
     queue = []
-    if UPLOAD_QUEUE.exists():
-        queue = json.loads(UPLOAD_QUEUE.read_text())
+    try:
+        if UPLOAD_QUEUE.exists():
+            queue = json.loads(UPLOAD_QUEUE.read_text())
+    except (json.JSONDecodeError, OSError):
+        pass
 
     entry = {
         "name": skill_name,
@@ -128,7 +134,10 @@ def process_upload_queue() -> Dict:
     if not UPLOAD_QUEUE.exists():
         return result
 
-    queue = json.loads(UPLOAD_QUEUE.read_text())
+    try:
+        queue = json.loads(UPLOAD_QUEUE.read_text())
+    except (json.JSONDecodeError, OSError):
+        return result
     remaining = []
 
     for entry in queue:
@@ -267,8 +276,11 @@ def daily_quality_audit() -> Dict:
         "results": results,
     }
     existing = []
-    if audit_log.exists():
-        existing = json.loads(audit_log.read_text())
+    try:
+        if audit_log.exists():
+            existing = json.loads(audit_log.read_text())
+    except (json.JSONDecodeError, OSError):
+        pass
     existing.append(audit_data)
     existing = existing[-30:]  # 保留最近30天
     audit_log.write_text(json.dumps(existing, indent=2, ensure_ascii=False))
@@ -304,7 +316,7 @@ def ensure_repo_cloned() -> Path:
             capture_output=True, timeout=120, check=True
         )
     except Exception as e:
-        raise RuntimeError(f"克隆云仓库失败: {e}")
+        raise RuntimeError(f"克隆云仓库失败: {e}") from e
     return REPO_LOCAL
 
 

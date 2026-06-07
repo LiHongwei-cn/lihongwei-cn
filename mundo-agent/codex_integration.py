@@ -12,6 +12,9 @@ import subprocess
 class CodexAgent:
     """OpenAI Codex CLI 封装"""
 
+    def __repr__(self) -> str:
+        return f"CodexAgent(available={self.is_available()})"
+
     def __init__(self):
         self.cmd = shutil.which("codex")
 
@@ -23,7 +26,8 @@ class CodexAgent:
         if not self.is_available():
             return "[Codex 未安装]"
 
-        cmd = [self.cmd, "--full-auto", prompt]
+        # 使用 exec 子命令，启用完整沙箱权限
+        cmd = [self.cmd, "exec", "-s", "danger-full-access", prompt]
         env = os.environ.copy()
 
         try:

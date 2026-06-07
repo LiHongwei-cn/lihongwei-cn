@@ -72,12 +72,15 @@ def _import_api_keys() -> int:
 
     # 读取已有的 Mundo env
     existing = {}
-    if mundo_env.exists():
-        for line in mundo_env.read_text().splitlines():
-            line = line.strip()
-            if line and not line.startswith("#") and "=" in line:
-                k, v = line.split("=", 1)
-                existing[k.strip()] = v.strip()
+    try:
+        if mundo_env.exists():
+            for line in mundo_env.read_text().splitlines():
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    existing[k.strip()] = v.strip()
+    except OSError:
+        pass
 
     # 从 Hermes env 读取 API keys
     api_key_patterns = [

@@ -66,6 +66,9 @@ def safe_execute_tool(name: str, args: dict) -> str:
 
 
 class MundoCLI:
+    def __repr__(self) -> str:
+        return f"MundoCLI(session={self.session_id})"
+
     def __init__(self, provider: str = None, model: str = None):
         self.memory = None
         self.console = TaskConsole()

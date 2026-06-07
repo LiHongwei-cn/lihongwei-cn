@@ -165,6 +165,9 @@ AGENT_REGISTRY = {
 
 class AgentManager:
 
+    def __repr__(self) -> str:
+        return f"AgentManager(available={list(self.available.keys())})"
+
     def __init__(self):
         self.available: Dict[str, dict] = {}
         self._detect_all()
@@ -217,6 +220,9 @@ class AgentManager:
 
 class MundoClone:
 
+    def __repr__(self) -> str:
+        return f"MundoClone(id={self.id})"
+
     def __init__(self, clone_id: int, llm_client):
         self.id = clone_id
         self.client = llm_client
@@ -262,6 +268,9 @@ MERGE_PROMPT = """你是蒙多的结果汇总器。给定多个子任务结果�
 
 
 class TaskDelegator:
+
+    def __repr__(self) -> str:
+        return "TaskDelegator()"
 
     def __init__(self, llm_client: LLMClient, agent_manager: AgentManager):
         self.client = llm_client
