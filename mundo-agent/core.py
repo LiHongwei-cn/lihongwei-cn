@@ -11,6 +11,7 @@ v1.2.6 改进：
 - 自动压缩触发：上下文 >70% 时自动压缩
 """
 
+import sys
 import json
 import time
 import signal
@@ -504,7 +505,8 @@ class MundoEngine:
         self.messages.append({"role": "user", "content": user_content})
 
         turn = 0
-        while True:
+        MAX_ITERATIONS = 50  # 硬性上限，防止无限循环
+        while turn < MAX_ITERATIONS:
             if self._interrupted:
                 break
             if self.budget.exhausted:
@@ -596,7 +598,7 @@ class MundoEngine:
                             temperature=0.7, max_tokens=self.max_tokens_override,
                         )
                         return self._accumulate_stream(stream_iter)
-                    except (RuntimeError, Exception) as e:
+                    except Exception as e:
                         if attempt == 0:
                             self._use_streaming = False
                             last_error = str(e)
@@ -667,7 +669,14 @@ class MundoEngine:
             try:
                 tool_args = json.loads(func.get("arguments", "{}"))
             except json.JSONDecodeError:
-                tool_args = {}
+                # LLM 返回的 arguments 格式错误，用 repair_json 尝试修复
+                raw = func.get("arguments", "{}")
+                try:
+                    fixed = repair_json(raw)
+                    tool_args = fixed if isinstance(fixed, dict) else {}
+                except Exception:
+                    tool_args = {}
+                    print(f"[core] tool_args JSON 解析失败，已降级为空参数: {raw[:100]}", file=sys.stderr)
 
             self.stats.tool_calls_count += 1
             self.stats._active_tools.append(tool_name)

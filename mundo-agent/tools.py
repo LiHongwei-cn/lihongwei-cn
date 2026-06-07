@@ -95,6 +95,8 @@ MAX_OUTPUT_CHARS = 8000
 
 
 def _truncate(text: str, limit: int = MAX_OUTPUT_CHARS) -> str:
+    if limit <= 0:
+        return text[:200] + "..." if len(text) > 200 else text
     if len(text) <= limit:
         return text
     # 智能截断：保留首尾，中间省略
@@ -282,6 +284,7 @@ def _web_search(args: Dict) -> str:
             if results:
                 return f"🔍 {engine_name} 搜索结果:\n\n" + "\n\n".join(results)
         except Exception as e:
+            print(f"[web_search] {engine_name} 失败: {e}", file=sys.stderr)
             continue
 
     # 如果所有搜索引擎都失败，尝试使用DuckDuckGo Instant Answer API
@@ -709,7 +712,6 @@ def _code_analysis(args: Dict) -> str:
             ]
             
             # 函数/类统计
-            import re
             functions = re.findall(r'def\s+(\w+)\s*\(', content)
             classes = re.findall(r'class\s+(\w+)\s*[\(:]', content)
             
@@ -729,7 +731,6 @@ def _code_analysis(args: Dict) -> str:
         
         elif analysis_type == "dependencies":
             # 依赖分析
-            import re
             imports = re.findall(r'^(?:from|import)\s+(\w+)', content, re.MULTILINE)
             unique_imports = sorted(set(imports))
             

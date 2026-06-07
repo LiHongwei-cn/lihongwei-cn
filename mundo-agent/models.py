@@ -159,10 +159,14 @@ TASK_TYPE_MAP = {
     "文档": "chinese",
     "通用": "general",
     "general": "general",
+    "chinese": "chinese",
     "日常": "general",
     "快速": "speed",
+    "speed": "speed",
     "批量": "speed",
     "简单": "speed",
+    "math": "math",
+    "reasoning": "reasoning",
 }
 
 # 协同模式：不同任务类型分配不同模型

@@ -168,24 +168,7 @@ class MundoCLI:
     def show_banner(self):
         model_disp = self._model_display()
         self.console.init_screen(f"{self.provider}/{model_disp}", VERSION)
-
-        # 蒙多标识
-        console.print()
-        console.print("[gold]             M  U  N  D  O[/]")
-        console.print("[dim]             THE EMPEROR[/]")
-        console.print(f"[dim]             v{VERSION}[/]")
-        console.print()
-
-        # 状态行
-        console.print(f"  [gold]MUNDO[/][dim] · [/][dim]{model_disp}[/]")
-
-        latest = self._check_latest_version()
-        if latest == VERSION:
-            console.print(f"  [dim]v{VERSION} [ok]✓ 已是最新版[/][/]")
-        else:
-            console.print(f"  [dim]v{VERSION} [warn]→ 新版 {latest} 可用[/][/]")
-
-        console.print()
+        console.print(f"\n[gold]  MUNDO[/] [dim]v{VERSION} · {model_disp}[/]")
 
     def show_help(self):
         help_text = """
@@ -211,11 +194,10 @@ class MundoCLI:
   [subtext]/effort[/]          推理深度（low/medium/high/max）
 
 [gold.dim]输入技巧[/]
-  [dim]输入 / 后按 Tab     自动补全命令[/]
-  [dim]Enter 在末尾         提交输入[/]
-  [dim]Enter 在中间         换行编辑[/]
-  [dim]Option+Enter         强制提交[/]
-  [dim]!command             直接执行 shell 命令[/]
+  [dim]Enter            提交输入[/]
+  [dim]Option+Enter     换行编辑[/]
+  [dim]输入 / + Tab     自动补全命令[/]
+  [dim]!command         直接执行 shell 命令[/]
 
 [gold.dim]记忆（六套架构）[/]
   [subtext]/remember K V[/]    记住事实
@@ -608,9 +590,12 @@ class MundoCLI:
         self._engine_busy = True
         self.console.start_task()
 
+        # 展开粘贴占位符为原始内容
+        full_text = TaskConsole.expand_paste_refs(line)
+
         response = ""
         try:
-            response = self.engine.run(line, extra_context=extra)
+            response = self.engine.run(full_text, extra_context=extra)
             if not self.console._was_streamed:
                 self.console.log_response(response)
             else:

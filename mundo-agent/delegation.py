@@ -307,7 +307,7 @@ class TaskDelegator:
                 content = content.strip()
             subtasks = json.loads(content)
             return subtasks if isinstance(subtasks, list) else []
-        except (json.JSONDecodeError, Exception):
+        except Exception:
             return []
 
     def execute_parallel(self, task: str, subtasks: List[Dict]) -> Dict:

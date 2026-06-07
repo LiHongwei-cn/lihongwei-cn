@@ -1,6 +1,7 @@
 """蒙多云仓库同步 — 新 Skill 自动上传 + 每日质量筛选"""
 
 import os
+import sys
 import json
 import hashlib
 import subprocess
@@ -59,7 +60,8 @@ def scan_local_skills() -> List[Dict]:
                 "size": size,
                 "modified": skill_md.stat().st_mtime,
             })
-        except Exception:
+        except Exception as e:
+            print(f"[cloud_sync] 扫描 Skill 失败 {skill_md}: {e}", file=sys.stderr)
             continue
     return skills
 
@@ -457,7 +459,8 @@ def get_remote_version() -> str:
         req = urllib.request.Request(url, headers={"User-Agent": "mundo-agent"})
         with urllib.request.urlopen(req, timeout=10) as resp:
             return resp.read().decode().strip()
-    except Exception:
+    except Exception as e:
+        print(f"[cloud_sync] 获取远程版本失败: {e}", file=sys.stderr)
         return get_local_version()
 
 
