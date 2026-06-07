@@ -267,13 +267,11 @@ class TaskConsole:
         @kb.add("enter")
         def _(event):
             buf = event.current_buffer
-            if stored["text"]:
-                buf.text = stored["text"]
-                buf.cursor_position = len(stored["text"])
+            if stored["text"] and buf.text.strip() == stored["label"]:
+                result = stored["text"]
             else:
-                buf.text = buf.text.rstrip()
-                buf.cursor_position = len(buf.text)
-            event.app.exit(result=buf.text)
+                result = buf.text.rstrip()
+            event.app.exit(result=result)
 
         @kb.add("escape", "enter")
         def _(event):
