@@ -2,7 +2,7 @@
 import warnings
 warnings.filterwarnings("ignore", message="urllib3 v2 only")
 """
-MUNDO Agent v1.2.5 — THE EMPEROR
+MUNDO Agent v1.2.6 — THE EMPEROR
 独立 AI Agent：LLM 直连 + 工具调用 + Agentic Loop + 权限审批
 融合 Hermes Agent + Claude Code 精华架构
 Rich 渲染所有输出，prompt_toolkit 只管输入
