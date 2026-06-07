@@ -1,18 +1,97 @@
 """蒙多核心引擎 v29 — Agentic Loop（融合 Hermes + Claude Code 精华）
 
-v27 改进（vs v26）：
-- IterationBudget：per-turn + 总量 token 预算控制（借鉴 Hermes）
+v29 改进（vs v28）：
+- 错误分类系统：6 类错误自动识别 + 用户友好提示 + 行动建议
+- 流式降级增强：流式失败 → 非流式，两层重试
+- 连续错误追踪：_consecutive_errors / _same_error_streak 实际生效
+- 卡死检测：同一工具连续失败 3 次 → 强制跳出
+- _accumulate_stream 超时与 llm.py 协调（300s 安全网）
+
+v27 基础：
+- IterationBudget：per-turn + 总量 token 预算控制
 - 智能上下文压缩：优先压缩 tool 输出，保留 user/assistant 对话
-- 错误重试：LLM 调用失败自动重试 + 指数退避
 - 自动压缩触发：上下文 >70% 时自动压缩
-- 工具失败反馈：错误信息包含修复建议
 """
 
 import json
 import time
 import signal
 from typing import List, Dict, Optional, Callable
-from llm import LLMClient, repair_json
+from llm import LLMClient, repair_json, _is_timeout_error
+
+
+# ═══════════════════════════════════════════════
+# 错误分类 → 用户友好提示
+# ═══════════════════════════════════════════════
+
+def _classify_error(error: Exception, raw_msg: str) -> Dict:
+    """将原始错误分类为结构化信息，包含用户友好提示"""
+    msg = raw_msg.lower()
+    result = {
+        "category": "unknown",
+        "retryable": False,
+        "user_tip": "",
+        "log_detail": raw_msg,
+    }
+
+    # 连接重置/断开（必须在超时之前检查，因为 _is_timeout_error 也会匹配这些）
+    if isinstance(error, (ConnectionResetError, ConnectionRefusedError, BrokenPipeError)):
+        result["category"] = "connection"
+        result["retryable"] = True
+        result["user_tip"] = "连接被中断，正在重试…"
+        return result
+    if any(kw in msg for kw in ["reset", "broken pipe", "eof", "远程主机", "connection reset"]):
+        result["category"] = "connection"
+        result["retryable"] = True
+        result["user_tip"] = "连接被中断，正在重试…"
+        return result
+
+    # DNS/连接类
+    if "dns" in msg or "解析失败" in msg or "connection refused" in msg:
+        result["category"] = "network"
+        result["retryable"] = True
+        result["user_tip"] = "无法连接到模型服务。请检查网络，或稍后重试。"
+        return result
+
+    # 超时类
+    if _is_timeout_error(error) or "超时" in raw_msg or "timed out" in msg or "timeout" in msg:
+        result["category"] = "timeout"
+        result["retryable"] = True
+        result["user_tip"] = "模型响应超时。可能是服务繁忙或网络波动，正在重试…"
+        return result
+
+    # 429 限流
+    if "429" in msg:
+        result["category"] = "ratelimit"
+        result["retryable"] = True
+        result["user_tip"] = "请求频率过高，正在等待后重试…"
+        return result
+
+    # 5xx 服务端错误
+    if any(code in msg for code in ["500", "502", "503", "504"]):
+        result["category"] = "server_error"
+        result["retryable"] = True
+        result["user_tip"] = "模型服务端出错，正在重试…"
+        return result
+
+    # 上下文过长
+    if "上下文过长" in raw_msg or "context" in msg or "too long" in msg:
+        result["category"] = "context_overflow"
+        result["retryable"] = False
+        result["user_tip"] = "对话上下文太长了。运行 /compact 压缩上下文后继续。"
+        return result
+
+    # API Key 问题
+    if any(kw in msg for kw in ["401", "unauthorized", "api key", "缺少"]):
+        result["category"] = "auth"
+        result["retryable"] = False
+        result["user_tip"] = "API Key 无效或缺失。运行 /setup 重新配置。"
+        return result
+
+    # 兜底
+    result["user_tip"] = "出了点问题，正在重试…"
+    result["retryable"] = True
+    return result
 from tools import registry as tool_registry
 
 
@@ -343,10 +422,10 @@ class MundoEngine:
         tool_calls_map: Dict[int, Dict] = {}
         usage = {}
         last_activity = time.time()
-        ACCUMULATE_TIMEOUT = 180  # 3 分钟总超时
+        ACCUMULATE_TIMEOUT = 300  # 5 分钟安全网（主要超时由 llm.py 控制）
 
         for chunk in stream_iter:
-            # 检查总超时
+            # 安全网超时（llm.py 的 STREAM_IDLE_TIMEOUT 会先触发）
             if time.time() - last_activity > ACCUMULATE_TIMEOUT:
                 raise RuntimeError(f"流式累积超时（{ACCUMULATE_TIMEOUT}s）")
             last_activity = time.time()
@@ -478,13 +557,19 @@ class MundoEngine:
             })
             self._execute_tool_calls(tool_calls)
 
+            # 卡死检测：同一工具连续失败 3 次 → 强制跳出
+            if self._same_error_streak >= self._stuck_threshold:
+                break
+
             # 每轮结束后检查是否需要压缩
             self._auto_compress()
 
         if self._interrupted:
             final = "蒙多被中断。"
+        elif self._same_error_streak >= self._stuck_threshold:
+            final = f"⚠️ 工具 {self._last_error_tool} 连续失败 {self._same_error_streak} 次，蒙多卡住了。\n建议：检查任务描述，或换个方式提问。"
         elif self._consecutive_errors >= 5:
-            final = "蒙多遇到连续错误，无法继续。请检查任务描述或换个方式提问。"
+            final = "⚠️ 蒙多遇到连续错误，无法继续。请检查任务描述或换个方式提问。"
         else:
             final = "蒙多 token 预算耗尽。用 /compact 压缩上下文后继续。"
         if self.on_task_done:
@@ -492,15 +577,18 @@ class MundoEngine:
         return final
 
     def _call_llm(self, max_retries: int = 2) -> Optional[Dict]:
-        """调用 LLM，流式优先，失败降级，自动重试（含总超时）"""
+        """调用 LLM，流式优先，失败降级，自动重试（含总超时 + 友好错误）"""
         last_error = None
+        last_error_info = None
         call_start = time.time()
         CALL_TIMEOUT = 300  # 5 分钟总超时
 
         for attempt in range(max_retries):
             # 检查总超时
             if time.time() - call_start > CALL_TIMEOUT:
-                last_error = f"LLM 调用总超时（{CALL_TIMEOUT}s）"
+                last_error = "模型响应总超时（5 分钟）"
+                last_error_info = {"category": "timeout", "retryable": False,
+                                   "user_tip": "模型长时间无响应。请稍后重试，或运行 /switch 换个 provider。"}
                 break
             try:
                 if self._use_streaming:
@@ -514,7 +602,7 @@ class MundoEngine:
                         if attempt == 0:
                             self._use_streaming = False
                             last_error = str(e)
-                            # 静默降级，不打扰用户
+                            # 静默降级到非流式，不打扰用户
                             continue
                         raise
 
@@ -528,27 +616,43 @@ class MundoEngine:
 
             except RuntimeError as e:
                 last_error = str(e)
+                last_error_info = _classify_error(e, last_error)
+
                 # 上下文溢出 → 自动压缩重试
-                if "context" in last_error.lower() or "too long" in last_error.lower():
+                if last_error_info["category"] == "context_overflow":
                     self.messages = ContextCompressor.compress(
                         self.messages, target_tokens=40000
                     )
                     self.stats.retries_count += 1
                     continue
-                # 429/5xx → 重试
-                if any(code in last_error for code in ["429", "500", "502", "503"]):
-                    time.sleep(2 ** attempt)
+
+                # 可重试错误 → 退避重试
+                if last_error_info["retryable"] and attempt < max_retries - 1:
+                    wait = min(2 ** attempt * 2, 30)
+                    time.sleep(wait)
                     self.stats.retries_count += 1
                     continue
-                break
-            except Exception as e:
-                last_error = str(e)
+
+                # 不可重试 → 直接跳出
                 break
 
-        if last_error is None:
-            last_error = "LLM 返回空响应"
-        error_msg = f"LLM 调用失败: {last_error}"
+            except Exception as e:
+                last_error = str(e)
+                last_error_info = _classify_error(e, last_error)
+                break
+
+        # 构建用户友好的错误信息
         self.stats.errors_count += 1
+        if last_error_info:
+            tip = last_error_info.get("user_tip", "")
+            category = last_error_info.get("category", "unknown")
+            error_msg = f"⚠️ {tip}"
+            # 附带简短诊断信息（给高级用户）
+            if category in ("timeout", "network", "connection"):
+                error_msg += f"\n[dim]诊断: {category} | {last_error[:80]}[/]"
+        else:
+            error_msg = f"⚠️ 蒙多遇到了未知错误。请重试，或运行 /switch 换个 provider。"
+
         if self.on_task_done:
             self.on_task_done(error_msg, self.stats)
         return None
@@ -582,6 +686,18 @@ class MundoEngine:
 
             if is_error:
                 self.stats.errors_count += 1
+                self._consecutive_errors += 1
+                # 追踪同一工具连续错误
+                if tool_name == self._last_error_tool:
+                    self._same_error_streak += 1
+                else:
+                    self._same_error_streak = 1
+                    self._last_error_tool = tool_name
+            else:
+                # 成功 → 重置连续错误计数
+                self._consecutive_errors = 0
+                self._same_error_streak = 0
+                self._last_error_tool = ""
 
             if self.on_tool_output:
                 display_text = result_text[:3000] if len(result_text) > 3000 else result_text

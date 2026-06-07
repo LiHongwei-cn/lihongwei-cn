@@ -1,19 +1,90 @@
-"""蒙多 LLM 客户端 v28 — 多 provider + 流式 + 重试 + 消息清洗
+"""蒙多 LLM 客户端 v29 — 多 provider + 流式 + 重试 + 消息清洗 + 超时增强
 
-v27 改进（vs v26）：
-- 消息清洗增强：surrogate 字符修复、content 类型强制转换
-- 流式读取更健壮：超时处理、连接断开恢复
-- 错误分类：区分可重试/不可重试错误
-- 上下文溢出检测：自动触发压缩
+v29 改进（vs v28）：
+- 流式请求支持重试（v28 流式无重试，卡死就死）★核心修复
+- 空闲超时 120s → 45s，更快检测卡死
+- DNS 预检：连接前 8s 内探测端点可达性，不可达直接报错
+- 渐进超时：首次 90s，重试 180s（模型可能慢）
+- 随机退避抖动防雪崩
+- 更精确的超时错误分类和用户提示
 """
 
 import os
 import json
 import time
+import socket
+import random
 import urllib.request
 import urllib.error
 from pathlib import Path
-from typing import List, Dict, Iterator
+from typing import List, Dict, Iterator, Optional
+
+
+# ═══════════════════════════════════════════════
+# 超时配置（集中管理，一处改全局生效）
+# ═══════════════════════════════════════════════
+
+class TimeoutConfig:
+    DNS_TIMEOUT = 8               # DNS 解析超时
+    READ_TIMEOUT_FIRST = 90       # 首次请求读取超时
+    READ_TIMEOUT_RETRY = 180      # 重试请求读取超时（模型可能慢）
+    STREAM_CONNECT_TIMEOUT = 30   # 流式连接超时
+    STREAM_IDLE_TIMEOUT = 45      # 流式空闲超时（45s 无数据 → 卡死）
+    STREAM_TOTAL_TIMEOUT = 300    # 流式总超时（5 分钟）
+    MAX_RETRIES = 3               # 最大重试
+    BACKOFF_MAX = 30              # 最大退避秒数
+
+
+RETRYABLE_CODES = {429, 500, 502, 503, 504}
+CONTEXT_OVERFLOW_CODES = {400, 413}
+
+
+def _is_retryable(code: int) -> bool:
+    return code in RETRYABLE_CODES
+
+
+def _is_context_overflow(code: int, body: str) -> bool:
+    if code in CONTEXT_OVERFLOW_CODES:
+        keywords = ["context", "too long", "maximum", "token", "limit"]
+        return any(kw in body.lower() for kw in keywords)
+    return False
+
+
+def _is_timeout_error(e: Exception) -> bool:
+    """判断是否为超时/连接类错误（应重试）"""
+    if isinstance(e, (socket.timeout, ConnectionError, ConnectionResetError,
+                       ConnectionRefusedError, BrokenPipeError, TimeoutError)):
+        return True
+    err = str(e).lower()
+    keywords = ["timed out", "timeout", "reset", "broken pipe",
+                "connection refused", "connection reset", "eof",
+                "remote end closed", "bad status line", "incomplete read"]
+    if any(kw in err for kw in keywords):
+        return True
+    if isinstance(e, urllib.error.URLError):
+        reason = str(getattr(e, 'reason', '')).lower()
+        return any(kw in reason for kw in ["timed out", "timeout", "refused", "reset", "eof"])
+    return False
+
+
+def _backoff_sleep(attempt: int):
+    """指数退避 + 随机抖动防雪崩"""
+    base = min(2 ** attempt * 2, TimeoutConfig.BACKOFF_MAX)
+    jitter = random.uniform(0, base * 0.3)
+    time.sleep(base + jitter)
+
+
+def _dns_precheck(host: str) -> bool:
+    """DNS 预检：8s 内探测域名可达性"""
+    old = socket.getdefaulttimeout()
+    try:
+        socket.setdefaulttimeout(TimeoutConfig.DNS_TIMEOUT)
+        socket.getaddrinfo(host, 443)
+        return True
+    except (socket.gaierror, socket.timeout, OSError):
+        return False
+    finally:
+        socket.setdefaulttimeout(old)
 
 ENV_PATH = Path.home() / ".hermes" / ".env"
 MUNDO_ENV = Path.home() / ".hermes" / "mundo-agent" / ".env"
@@ -35,23 +106,6 @@ _load_env()
 from setup import PROVIDERS
 
 
-# ═══════════════════════════════════════════════
-# 可重试错误判断
-# ═══════════════════════════════════════════════
-
-RETRYABLE_CODES = {429, 500, 502, 503, 504}
-CONTEXT_OVERFLOW_CODES = {400, 413}
-
-
-def _is_retryable(code: int) -> bool:
-    return code in RETRYABLE_CODES
-
-
-def _is_context_overflow(code: int, body: str) -> bool:
-    if code in CONTEXT_OVERFLOW_CODES:
-        keywords = ["context", "too long", "maximum", "token", "limit"]
-        return any(kw in body.lower() for kw in keywords)
-    return False
 
 
 class LLMClient:
@@ -62,16 +116,23 @@ class LLMClient:
     def __init__(self, provider: str = "xiaomi", model: str = None, api_key: str = None):
         cfg = PROVIDERS.get(provider)
         if not cfg:
-            raise ValueError(f"未知 provider: {provider}")
+            raise ValueError(f"未知 provider: {provider}. 可用: {list(PROVIDERS.keys())}")
         self.provider = provider
         self.model = model or cfg["model"]
         self.base_url = cfg["base_url"]
         self.anthropic_base_url = cfg.get("anthropic_base_url", "")
         self.api_key = api_key or os.environ.get(cfg["env_key"], "")
         if not self.api_key:
-            raise ValueError(
-                f"缺少 {cfg['env_key']}。运行 /setup 或 /add 配置。"
-            )
+            raise ValueError(f"缺少 {cfg['env_key']}。运行 /setup 或 /add 配置。")
+        # 提取 host 用于 DNS 预检
+        from urllib.parse import urlparse
+        self._host = urlparse(self.base_url).hostname
+
+    def _check_connectivity(self) -> Optional[str]:
+        """快速检查端点可达性，返回错误信息或 None"""
+        if not _dns_precheck(self._host):
+            return f"DNS 解析失败: {self._host}（请检查网络连接）"
+        return None
 
     def chat(self, messages: List[Dict], tools: List[Dict] = None,
              temperature: float = 0.7, max_tokens: int = 4096) -> Dict:
@@ -81,7 +142,7 @@ class LLMClient:
     def chat_stream(self, messages: List[Dict], tools: List[Dict] = None,
                     temperature: float = 0.7, max_tokens: int = 4096) -> Iterator[Dict]:
         payload = self._build_payload(messages, tools, temperature, max_tokens, stream=True)
-        yield from self._request_stream(payload)
+        yield from self._request_stream_with_retry(payload)
 
     def _build_payload(self, messages, tools, temperature, max_tokens, stream=False):
         payload = {
@@ -97,74 +158,113 @@ class LLMClient:
             payload["tool_choice"] = "auto"
         return payload
 
-    def _request_with_retry(self, payload: Dict, max_retries: int = 3) -> Dict:
+    def _request_with_retry(self, payload: Dict, max_retries: int = None) -> Dict:
+        max_retries = max_retries or TimeoutConfig.MAX_RETRIES
         url = f"{self.base_url}/chat/completions"
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}",
         }
         data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+
+        # DNS 预检：8s 内确认端点可达，不可达直接报错不等 3 分钟
+        conn_err = self._check_connectivity()
+        if conn_err:
+            raise RuntimeError(conn_err)
 
         last_error = None
         for attempt in range(max_retries):
+            # 渐进超时：首次 90s，重试 180s（模型可能慢）
+            timeout = TimeoutConfig.READ_TIMEOUT_FIRST if attempt == 0 else TimeoutConfig.READ_TIMEOUT_RETRY
             req = urllib.request.Request(url, data=data, headers=headers, method="POST")
             try:
-                with urllib.request.urlopen(req, timeout=180) as resp:  # 3 分钟连接+读取超时
+                with urllib.request.urlopen(req, timeout=timeout) as resp:
                     return json.loads(resp.read().decode("utf-8"))
             except urllib.error.HTTPError as e:
                 err_body = e.read().decode("utf-8", errors="replace")
-                # 上下文溢出 — 不重试，直接报错让引擎压缩
                 if _is_context_overflow(e.code, err_body):
                     raise RuntimeError(f"上下文过长 (HTTP {e.code}): 请减少输入或运行 /compact")
-                # 可重试错误
                 if _is_retryable(e.code) and attempt < max_retries - 1:
-                    wait = min(2 ** attempt * 2, 30)
-                    time.sleep(wait)
+                    _backoff_sleep(attempt)
                     continue
                 raise RuntimeError(f"LLM API 错误 {e.code}: {err_body[:300]}") from e
-            except urllib.error.URLError as e:
-                last_error = e.reason
+            except (urllib.error.URLError, socket.timeout, TimeoutError,
+                    ConnectionError, ConnectionResetError, BrokenPipeError, OSError) as e:
+                last_error = e
                 if attempt < max_retries - 1:
-                    time.sleep(2 * (attempt + 1))
+                    _backoff_sleep(attempt)
                     continue
-                raise RuntimeError(f"网络错误: {last_error}") from e
+                raise RuntimeError(f"网络错误 ({type(e).__name__}): {getattr(e, 'reason', e)}") from e
             except Exception as e:
-                last_error = str(e)
-                if attempt < max_retries - 1:
-                    time.sleep(2 * (attempt + 1))
+                last_error = e
+                if _is_timeout_error(e) and attempt < max_retries - 1:
+                    _backoff_sleep(attempt)
                     continue
-                raise RuntimeError(f"请求异常: {last_error}") from e
+                raise RuntimeError(f"请求异常: {e}") from e
 
-    def _request_stream(self, payload: Dict) -> Iterator[Dict]:
+    def _request_stream_with_retry(self, payload: Dict, max_retries: int = None) -> Iterator[Dict]:
+        """流式请求，支持重试和超时检测（v28 流式无重试，v29 修复）"""
+        max_retries = max_retries or TimeoutConfig.MAX_RETRIES
         url = f"{self.base_url}/chat/completions"
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {self.api_key}",
         }
         data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
-        req = urllib.request.Request(url, data=data, headers=headers, method="POST")
-        try:
-            resp = urllib.request.urlopen(req, timeout=180)  # 3 分钟连接超时
-        except urllib.error.HTTPError as e:
-            err_body = e.read().decode("utf-8", errors="replace")
-            if _is_context_overflow(e.code, err_body):
-                raise RuntimeError(f"上下文过长 (HTTP {e.code}): 请减少输入或运行 /compact")
-            raise RuntimeError(f"LLM API 错误 {e.code}: {err_body[:300]}") from e
-        except urllib.error.URLError as e:
-            raise RuntimeError(f"网络错误: {e.reason}") from e
 
-        import socket
+        # DNS 预检
+        conn_err = self._check_connectivity()
+        if conn_err:
+            raise RuntimeError(conn_err)
 
+        last_error = None
+        for attempt in range(max_retries):
+            resp = None
+            try:
+                req = urllib.request.Request(url, data=data, headers=headers, method="POST")
+                timeout = TimeoutConfig.STREAM_CONNECT_TIMEOUT if attempt == 0 else TimeoutConfig.READ_TIMEOUT_RETRY
+                resp = urllib.request.urlopen(req, timeout=timeout)
+                yield from self._read_stream(resp)
+                return  # 成功完成
+            except urllib.error.HTTPError as e:
+                err_body = e.read().decode("utf-8", errors="replace")
+                if _is_context_overflow(e.code, err_body):
+                    raise RuntimeError(f"上下文过长 (HTTP {e.code}): 请减少输入或运行 /compact")
+                if _is_retryable(e.code) and attempt < max_retries - 1:
+                    _backoff_sleep(attempt)
+                    continue
+                raise RuntimeError(f"LLM API 错误 {e.code}: {err_body[:300]}") from e
+            except (urllib.error.URLError, socket.timeout, TimeoutError,
+                    ConnectionError, ConnectionResetError, BrokenPipeError,
+                    OSError, RuntimeError) as e:
+                last_error = e
+                if (_is_timeout_error(e) or "流式" in str(e)) and attempt < max_retries - 1:
+                    _backoff_sleep(attempt)
+                    continue
+                raise
+            finally:
+                if resp:
+                    try:
+                        resp.close()
+                    except Exception:
+                        pass
+
+    def _read_stream(self, resp) -> Iterator[Dict]:
+        """读取流式响应，带空闲超时检测（45s 无数据 → 卡死）"""
         last_data_time = time.time()
-        STREAM_IDLE_TIMEOUT = 120  # 120 秒无数据 → 超时
+        stream_start = time.time()
         chunk_count = 0
+        idle_timeout = TimeoutConfig.STREAM_IDLE_TIMEOUT
 
         try:
             for raw_line in resp:
                 now = time.time()
-                # 检查 idle timeout
-                if now - last_data_time > STREAM_IDLE_TIMEOUT:
-                    raise RuntimeError(f"流式读取超时（{STREAM_IDLE_TIMEOUT}s 无数据）")
+                # 总超时
+                if now - stream_start > TimeoutConfig.STREAM_TOTAL_TIMEOUT:
+                    raise RuntimeError(f"流式总超时（{TimeoutConfig.STREAM_TOTAL_TIMEOUT}s），已收到 {chunk_count} 个 chunk")
+                # 空闲超时
+                if now - last_data_time > idle_timeout:
+                    raise RuntimeError(f"流式空闲超时（{idle_timeout}s 无数据），已收到 {chunk_count} 个 chunk")
                 last_data_time = now
                 chunk_count += 1
 
@@ -180,19 +280,14 @@ class LLMClient:
                     except json.JSONDecodeError:
                         continue
         except socket.timeout as e:
-            raise RuntimeError(f"流式读取超时（{STREAM_IDLE_TIMEOUT}s 无数据）") from e
+            raise RuntimeError(f"流式读取超时（socket.timeout），已运行 {time.time() - stream_start:.0f}s，收到 {chunk_count} 个 chunk") from e
         except RuntimeError:
             raise
         except Exception as e:
             err = str(e).lower()
-            if "timed out" in err or "timeout" in err or "reset" in err or "broken pipe" in err:
-                raise RuntimeError(f"流式连接中断: {e}") from e
+            if any(kw in err for kw in ["timed out", "timeout", "reset", "broken pipe", "eof", "incomplete"]):
+                raise RuntimeError(f"流式连接中断 ({type(e).__name__}): {e}") from e
             raise
-        finally:
-            try:
-                resp.close()
-            except Exception:
-                pass
 
     @staticmethod
     def extract_stream_delta(chunk: Dict) -> Dict:

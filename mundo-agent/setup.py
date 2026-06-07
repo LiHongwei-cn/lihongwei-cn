@@ -1,7 +1,6 @@
 """蒙多首次启动向导 — 全量 AI 模型选择"""
 
 import os
-import sys
 from pathlib import Path
 from typing import Optional, Dict, Tuple
 

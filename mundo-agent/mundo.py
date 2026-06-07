@@ -56,7 +56,7 @@ from approval import approve_tool_call
 from delegation import TaskDelegator, AgentManager
 from display import TaskConsole, console
 
-VERSION = "1.2.5"
+VERSION = "1.2.6"
 
 
 def safe_execute_tool(name: str, args: dict) -> str:
@@ -601,8 +601,8 @@ class MundoCLI:
                     messages=self.engine.messages,
                     project=project
                 )
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"[memory] 保存对话失败: {e}", file=sys.stderr)
 
         self.console.log_task_accepted(line)
         self._engine_busy = True
@@ -630,8 +630,8 @@ class MundoCLI:
                     self.memory.auto_extract(line, response, project=project)
                     # 保存对话摘要
                     self.memory.generate_session_summary(self.session_id, self.engine.messages)
-                except Exception:
-                    pass
+                except Exception as e:
+                    print(f"[memory] 记忆提取失败: {e}", file=sys.stderr)
 
 
 def main():

@@ -10,13 +10,11 @@
 """
 
 import sys
-import shutil
 import time as _time
 from pathlib import Path
 from typing import Optional, List
 
 from rich.console import Console
-from rich.text import Text
 from rich.theme import Theme
 
 # ═══════════════════════════════════════════════

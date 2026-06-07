@@ -10,6 +10,7 @@
 """
 
 import re
+import sys
 import json
 import sqlite3
 import hashlib
@@ -597,14 +598,14 @@ class MundoMemory:
                     continue
                 try:
                     conn.execute(f"DELETE FROM {table_name}")
-                except Exception:
-                    pass
+                except Exception as e:
+                    print(f"[memory] 清空表 {table_name} 失败: {e}", file=sys.stderr)
             
             # 清空FTS索引
             try:
                 conn.execute("DELETE FROM conversations_fts")
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"[memory] 清空 FTS 索引失败: {e}", file=sys.stderr)
 
     def generate_session_summary(self, session_id: str, messages: List[Dict]):
         user_msgs = [m for m in messages if m.get("role") == "user"]
