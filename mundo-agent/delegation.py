@@ -105,7 +105,7 @@ def _codex_run(prompt: str, **kw) -> str:
 
 
 def _claude_run(prompt: str, **kw) -> str:
-    """Claude Code 调用入口 — 自动路由到 Anthropic 端点"""
+    """Claude Code 调用入口 — 自动路由到 Anthropic 端点（智能模式）"""
     _setup_agent_env()
     try:
         from claude_integration import ClaudeCodeAgent
@@ -113,7 +113,8 @@ def _claude_run(prompt: str, **kw) -> str:
         if not agent.is_available():
             return "[Claude Code 未安装]"
         workdir = kw.get('workdir')
-        return agent.exec_full_power(prompt, workdir=workdir)
+        # 使用智能模式，根据任务复杂度自动选择努力级别
+        return agent.exec_smart(prompt, workdir=workdir)
     except Exception as e:
         return f"[Claude Code 错误: {e}]"
 
