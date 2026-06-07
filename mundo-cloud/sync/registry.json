@@ -3,11 +3,11 @@
   "skills": {
     "mundo": {
       "version": "19.2",
-      "score": 86,
+      "score": 76,
       "author": "LiHongwei",
-      "date": "2026-05-28T10:29:37Z",
+      "date": "2026-06-07T00:00:00Z",
       "path": "skills/mundo/SKILL.md",
-      "content_hash": "82d7cbdab95c8a3aebe86dac230ec0a09651c687fb637c3b02dd2eddeab03dd6"
+      "content_hash": "6d8b8abe0d33891b89309e654d0ee74bfc535fa051ce5f0ca7fa763e3b4e2902"
     },
     "code-tidy": {
       "version": "1.0.0",
@@ -21,9 +21,9 @@
       "version": "1.0.0",
       "score": 44,
       "author": "LiHongwei",
-      "date": "2026-05-27T08:36:49Z",
+      "date": "2026-06-07T00:00:00Z",
       "path": "skills/homepage-layout/SKILL.md",
-      "content_hash": "6d35a5f843383e85e85983c7dbfcf16540d4b19b6ec283ee396cb9af999c0b02"
+      "content_hash": "72c92788c0208bada7d129d9bccca4dd14b7aeabdaf9c0bedda98ed5514e4d61"
     },
     "neat-freak": {
       "version": "1.0.0",
@@ -37,9 +37,9 @@
       "version": "1.0.0",
       "score": 69,
       "author": "LiHongwei",
-      "date": "2026-05-27T08:36:49Z",
+      "date": "2026-06-07T00:00:00Z",
       "path": "skills/cross-platform-launcher/SKILL.md",
-      "content_hash": "9a693067693a9b4a20d738d2a4bd5734b036a61549c5c1d1351d22e8860c761f"
+      "content_hash": "40ad3abfd85bd1d12f8ac990fd8056cc1c1a70acaef8c4237bacb342fd6961fd"
     },
     "matlab-ai-generator": {
       "version": "1.0.0",
@@ -251,14 +251,38 @@
     },
     "蒙多": {
       "version": "16.0",
-      "score": 86,
+      "score": 76,
       "author": "LiHongwei",
-      "date": "2026-05-27T10:18:20Z",
+      "date": "2026-06-07T00:00:00Z",
       "path": "skills/蒙多/SKILL.md",
-      "content_hash": "dee79f9848a051ed276ae6d12e3ec6f926162d2436428c4eac94b32bd474b4b6"
+      "content_hash": "78ab4cd15b158ccb05117992ecf3bb9af9e7026b1b1ffe5636caa6f5763b9d47"
+    },
+    "hermes-s6-container-supervision": {
+      "version": "0.1",
+      "score": 73,
+      "author": "Hermes Agent",
+      "date": "2026-06-07T01:03:21Z",
+      "path": "skills/hermes-s6-container-supervision/SKILL.md",
+      "content_hash": "14d42314746571421ff7ca90cbc2cb34b428a09a6d4424fa942bc2ff79e344f2"
+    },
+    "macos-app-crash-debugging": {
+      "version": "0.1",
+      "score": 78,
+      "author": "unknown",
+      "date": "2026-06-07T01:03:22Z",
+      "path": "skills/macos-app-crash-debugging/SKILL.md",
+      "content_hash": "c08873e7b5cba05bb7ca2c31b7029b45394bcf782f0b730187085dff1681dd3f"
+    },
+    "macos-troubleshooting": {
+      "version": "0.1",
+      "score": 68,
+      "author": "unknown",
+      "date": "2026-06-07T01:03:24Z",
+      "path": "skills/macos-troubleshooting/SKILL.md",
+      "content_hash": "48dfd14ae48b3ea5bd1d671119e4a4c80d3dd39d97f0139d28eb3bfbdedb0fd0"
     }
   },
-  "last_sync": "2026-06-06T22:42:46Z",
-  "total_submissions": 35,
+  "last_sync": "2026-06-07T01:03:24Z",
+  "total_submissions": 38,
   "total_evolved": 354
 }
