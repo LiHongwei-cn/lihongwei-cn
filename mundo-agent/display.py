@@ -262,30 +262,22 @@ class TaskConsole:
         style = Style.from_dict({"prompt": "#d4a017 bold"})
 
         kb = KeyBindings()
-        stored = {"text": "", "file": None}
+        stored = {"text": "", "label": ""}
 
         @kb.add("enter")
         def _(event):
             buf = event.current_buffer
-            text = buf.text.rstrip()
-            if text.count('\n') >= 1 or len(text) > 200:
-                stored["text"] = text
-                stored["file"] = self._save_paste(text)
-                ref, label = stored["file"]
-                buf.text = label
-                buf.cursor_position = len(label)
-            buf.validate_and_handle()
+            if stored["text"]:
+                buf.text = stored["text"]
+                buf.cursor_position = len(stored["text"])
+            else:
+                buf.text = buf.text.rstrip()
+                buf.cursor_position = len(buf.text)
+            event.app.exit(result=buf.text)
 
         @kb.add("escape", "enter")
         def _(event):
             event.current_buffer.newline()
-
-        def _on_accept():
-            if stored["text"]:
-                result = stored["text"]
-                stored["text"] = ""
-                return result
-            return None
 
         session = PromptSession(
             history=FileHistory(hist_path),
@@ -297,13 +289,29 @@ class TaskConsole:
             prompt_continuation="",
         )
 
+        buf = session.app.current_buffer
+        collapsing = [False]
+
+        def _on_change(_buf):
+            if collapsing[0]:
+                return
+            text = _buf.text
+            if text.count('\n') < 1 and len(text) <= 200:
+                return
+            collapsing[0] = True
+            path, label = self._save_paste(text)
+            stored["text"] = text
+            stored["label"] = label
+            _buf.text = label
+            _buf.cursor_position = len(label)
+            collapsing[0] = False
+
+        buf.on_text_changed += _on_change
+
         try:
             from prompt_toolkit.formatted_text import HTML
-            session.prompt(HTML("<ansiyellow><b> ❯ </b></ansiyellow>"))
-            result = _on_accept()
-            if result is not None:
-                return result
-            return session.app.current_buffer.text.strip()
+            result = session.prompt(HTML("<ansiyellow><b> ❯ </b></ansiyellow>"))
+            return (result or "").strip()
         except (EOFError, KeyboardInterrupt):
             return ""
 
