@@ -28,6 +28,9 @@ MAX_CONVERSATION_RESULTS = 5
 
 class MundoMemory:
 
+    def __repr__(self) -> str:
+        return f"MundoMemory(db={self.db_path})"
+
     def __init__(self, db_path: Path = MEMORY_DB):
         self.db_path = db_path
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
@@ -467,6 +470,7 @@ class MundoMemory:
         scored.sort(key=lambda x: -x[0])
         selected = []
         total_tokens = 0
+        ids_to_update = []
         for score, mid, content, cat, tok in scored:
             if total_tokens + tok > MAX_CONTEXT_TOKENS:
                 break
@@ -474,8 +478,15 @@ class MundoMemory:
                 break
             selected.append((mid, content, cat))
             total_tokens += tok
+            ids_to_update.append(mid)
+
+        # 批量更新access_count
+        if ids_to_update:
             with sqlite3.connect(str(self.db_path)) as conn:
-                conn.execute("UPDATE memories SET access_count = access_count + 1 WHERE id = ?", (mid,))
+                conn.executemany(
+                    "UPDATE memories SET access_count = access_count + 1 WHERE id = ?",
+                    [(mid,) for mid in ids_to_update]
+                )
 
         if not selected:
             return self._get_essential_facts(max_items=5)
@@ -573,6 +584,28 @@ class MundoMemory:
         if not rows:
             return ""
         return "\n".join(f"- [{r[2][:10]}] {r[0] or r[1][:80]}" for r in rows)
+
+    def delete_all(self):
+        """删除所有记忆数据（测试用）"""
+        with sqlite3.connect(str(self.db_path)) as conn:
+            # 获取所有表
+            tables = conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
+            
+            # 删除数据表
+            for table in tables:
+                table_name = table[0]
+                if table_name.startswith('sqlite_') or table_name.endswith('_fts'):
+                    continue
+                try:
+                    conn.execute(f"DELETE FROM {table_name}")
+                except:
+                    pass
+            
+            # 清空FTS索引
+            try:
+                conn.execute("DELETE FROM conversations_fts")
+            except:
+                pass
 
     def generate_session_summary(self, session_id: str, messages: List[Dict]):
         user_msgs = [m for m in messages if m.get("role") == "user"]

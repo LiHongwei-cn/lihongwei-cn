@@ -24,6 +24,8 @@ import json
 import re
 import subprocess
 import glob as glob_mod
+import time
+import random
 from pathlib import Path
 from typing import Dict, Any, Callable, List, Optional
 import requests
@@ -41,6 +43,9 @@ class ToolRegistry:
         self._schemas: List[Dict] = []
         self._required: Dict[str, List[str]] = {}
         self._names: List[str] = []
+
+    def __repr__(self) -> str:
+        return f"ToolRegistry(tools={len(self._names)})"
 
     def register(self, name: str, description: str,
                  parameters: Dict, handler: Callable,
@@ -233,27 +238,44 @@ def _web_search(args: Dict) -> str:
     if not query:
         return "[错误: web_search 缺少 query 参数]"
     limit = args.get("limit", 5)
-    
+
     # 代理设置（从环境变量读取）
     proxies = {}
     if os.environ.get("HTTP_PROXY"):
         proxies["http"] = os.environ["HTTP_PROXY"]
     if os.environ.get("HTTPS_PROXY"):
         proxies["https"] = os.environ["HTTPS_PROXY"]
+
+    # 使用更真实的User-Agent列表
+    user_agents = [
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
+    ]
     
     headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        "User-Agent": random.choice(user_agents),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "DNT": "1",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
     }
-    
+
     # 尝试多个搜索引擎
     search_engines = [
         ("DuckDuckGo", f"https://html.duckduckgo.com/html/?q={requests.utils.quote(query)}", _parse_duckduckgo),
         ("Google", f"https://www.google.com/search?q={requests.utils.quote(query)}&num={limit}", _parse_google),
         ("Bing", f"https://www.bing.com/search?q={requests.utils.quote(query)}&count={limit}", _parse_bing),
     ]
-    
+
     for engine_name, url, parser in search_engines:
         try:
+            # 添加随机延迟
+            time.sleep(random.uniform(0.5, 2.0))
+            
             resp = requests.get(url, headers=headers, proxies=proxies, timeout=15)
             resp.raise_for_status()
             results = parser(resp.text, limit)
@@ -261,8 +283,34 @@ def _web_search(args: Dict) -> str:
                 return f"🔍 {engine_name} 搜索结果:\n\n" + "\n\n".join(results)
         except Exception as e:
             continue
-    
-    return "搜索未返回结果（所有搜索引擎均失败）"
+
+    # 如果所有搜索引擎都失败，尝试使用DuckDuckGo Instant Answer API
+    try:
+        api_url = f"https://api.duckduckgo.com/?q={requests.utils.quote(query)}&format=json&no_html=1&skip_disambig=1"
+        resp = requests.get(api_url, headers=headers, timeout=10)
+        if resp.status_code in [200, 202]:
+            data = resp.json()
+            results = []
+            
+            # 添加摘要
+            if data.get("Abstract"):
+                results.append(f"📖 摘要:\n{data['Abstract']}")
+            
+            # 添加相关主题
+            topics = data.get("RelatedTopics", [])
+            if topics:
+                results.append(f"\n🔗 相关主题:")
+                for i, topic in enumerate(topics[:limit]):
+                    if isinstance(topic, dict) and topic.get("Text"):
+                        results.append(f"  {i+1}. {topic['Text']}")
+            
+            if results:
+                return f"🔍 DuckDuckGo 搜索结果:\n\n" + "\n".join(results)
+    except Exception as e:
+        pass
+
+    # 如果所有方法都失败，返回错误信息
+    return f"搜索未返回结果（所有搜索引擎均失败）。查询: {query}"
 
 
 def _parse_duckduckgo(html: str, limit: int) -> list:
@@ -281,7 +329,7 @@ def _parse_duckduckgo(html: str, limit: int) -> list:
                     qs = parse_qs(parsed.query)
                     if "uddg" in qs:
                         href = unquote(qs["uddg"][0])
-                except:
+                except Exception:
                     pass
             results.append(f"• {title}\n  {href}")
     return results
@@ -495,7 +543,7 @@ def _python_execute(args: Dict) -> str:
         # 清理临时文件
         try:
             os.unlink(temp_path)
-        except:
+        except OSError:
             pass
         
         output = result.stdout
@@ -550,7 +598,7 @@ def _http_request(args: Dict) -> str:
         try:
             json_data = response.json()
             result_parts.append(json.dumps(json_data, indent=2, ensure_ascii=False)[:5000])
-        except:
+        except (ValueError, KeyError):
             result_parts.append(response.text[:5000])
         
         return "\n".join(result_parts)
@@ -634,17 +682,16 @@ def _code_analysis(args: Dict) -> str:
             # 简单的复杂度分析
             lines = content.split('\n')
             total_lines = len(lines)
-            code_lines = len([l for l in lines if l.strip() and not l.strip().startswith('#')])
-            comment_lines = len([l for l in lines if l.strip().startswith('#')])
-            blank_lines = len([l for l in lines if not l.strip()])
+            stripped_lines = [l.strip() for l in lines]
+            code_lines = sum(1 for l in stripped_lines if l and not l.startswith('#'))
+            comment_lines = sum(1 for l in stripped_lines if l.startswith('#'))
+            blank_lines = sum(1 for l in stripped_lines if not l)
             
             # 计算圈复杂度（简化版）
-            complexity_keywords = ['if', 'elif', 'else', 'for', 'while', 'try', 'except', 'finally', 'with', 'and', 'or']
-            complexity = 1
-            for line in lines:
-                for keyword in complexity_keywords:
-                    if keyword in line:
-                        complexity += 1
+            complexity_keywords = {'if', 'elif', 'else', 'for', 'while', 'try', 'except', 'finally', 'with', 'and', 'or'}
+            complexity = 1 + sum(
+                1 for line in lines for keyword in complexity_keywords if keyword in line
+            )
             
             result = [
                 f"代码分析: {path}",

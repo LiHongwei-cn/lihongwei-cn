@@ -106,6 +106,9 @@ def _bar(percent: Optional[int], w: int = 8) -> str:
 # ═══════════════════════════════════════════════
 
 class SlashCompleter:
+    def __repr__(self) -> str:
+        return f"SlashCompleter(commands={len(self.commands)})"
+
     def __init__(self, commands: List[str] = None):
         self.commands = commands or SLASH_COMMANDS
 
@@ -128,6 +131,9 @@ class SlashCompleter:
 # ═══════════════════════════════════════════════
 
 class TaskConsole:
+
+    def __repr__(self) -> str:
+        return f"TaskConsole(model={self._model})"
 
     def __init__(self):
         self._model = ""
