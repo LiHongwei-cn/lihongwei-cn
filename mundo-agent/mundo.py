@@ -11,7 +11,6 @@ Rich 渲染所有输出，prompt_toolkit 只管输入
 import os
 import sys
 import subprocess
-import queue
 from pathlib import Path
 from typing import Optional
 import uuid
@@ -53,7 +52,6 @@ from setup import (
     get_saved_provider, get_saved_model, add_provider_interactive,
 )
 from approval import approve_tool_call
-from delegation import TaskDelegator, AgentManager
 from display import TaskConsole, console
 
 VERSION = "1.2.7"
@@ -72,8 +70,6 @@ class MundoCLI:
     def __init__(self, provider: str = None, model: str = None):
         self.memory = None
         self.console = TaskConsole()
-        self._pending_inputs = queue.Queue()
-        self._engine_busy = False
         self.session_id = uuid.uuid4().hex[:12]
 
         if not is_setup_done() and not provider:
@@ -106,14 +102,9 @@ class MundoCLI:
 
     def _init_engine(self):
         self.engine = MundoEngine(provider=self.provider, model=self.model)
-        self.agent_mgr = AgentManager()
-        self.delegator = TaskDelegator(self.engine.client, self.agent_mgr)
 
         import core as eng
         eng.execute_tool = safe_execute_tool
-        self.engine.delegator = self.delegator
-
-        self.delegator.on_subtask_progress = lambda *a: None
 
         self.engine.on_stream_start = lambda turn: self.console.stream_start(turn)
         self.engine.on_stream_text = lambda text: self.console.stream_text(text)
@@ -555,8 +546,6 @@ class MundoCLI:
         """主循环 — 不使用 patch_stdout，Rich 处理所有输出"""
         while True:
             try:
-                while not self._pending_inputs.empty():
-                    self._pending_inputs.get_nowait()
                 line = self.console.read_input().strip()
                 if not line:
                     continue
@@ -587,7 +576,6 @@ class MundoCLI:
                 print(f"[memory] 保存对话失败: {e}", file=sys.stderr)
 
         self.console.log_task_accepted(line)
-        self._engine_busy = True
         self.console.start_task()
 
         # 展开粘贴占位符为原始内容
@@ -602,7 +590,6 @@ class MundoCLI:
         except Exception as e:
             self.console.log_error(str(e))
         finally:
-            self._engine_busy = False
             self.console.stop_task()
 
             # 在回复内容之后显示完成栏
