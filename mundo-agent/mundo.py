@@ -596,10 +596,9 @@ class MundoCLI:
         response = ""
         try:
             response = self.engine.run(full_text, extra_context=extra)
-            if not self.console._was_streamed:
+            if response and response.strip() and not self.console._was_streamed:
                 self.console.log_response(response)
-            else:
-                self.console._was_streamed = False
+            self.console._was_streamed = False
         except Exception as e:
             self.console.log_error(str(e))
         finally:
