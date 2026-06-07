@@ -56,7 +56,7 @@ from approval import approve_tool_call
 from delegation import TaskDelegator, AgentManager
 from display import TaskConsole, console, _fmt_tok
 
-VERSION = "1.2.4"
+VERSION = "1.2.5"
 
 
 def safe_execute_tool(name: str, args: dict) -> str:
