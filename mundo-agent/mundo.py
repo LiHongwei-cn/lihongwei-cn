@@ -168,11 +168,7 @@ class MundoCLI:
     def show_banner(self):
         model_disp = self._model_display()
         self.console.init_screen(f"{self.provider}/{model_disp}", VERSION)
-        console.print()
-        console.print("  [gold]█▀▄▀█ █▄▄▄ █ ▄▀▄ █▄ ▄█[/]")
-        console.print("  [gold]█ █ █ █ █▄ █▀▄ █  ▄█[/]")
-        console.print(f"  [dim]v{VERSION} · {model_disp}[/]")
-        console.print()
+        console.print(f"\n[gold]  MUNDO[/] [dim]v{VERSION} · {model_disp}[/]")
 
     def show_help(self):
         help_text = """
