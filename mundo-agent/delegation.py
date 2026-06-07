@@ -1,6 +1,6 @@
-"""蒙多任务委托 v1.2.6 — 合并 Agent 检测 + 任务拆分 + 并行执行 + Codex 深度集成
+"""蒙多任务委托 v1.2.7 — 合并 Agent 检测 + 任务拆分 + 并行执行 + Codex 深度集成
 
-v1.2.6 改进：
+v1.2.7 改进：
 - Codex 默认使用 MiMo v2.5 Pro（CC Switch 配置）
 - 智能路由增加模型感知（MiMo/DeepSeek/Claude 自动选择）
 - 三大 Agent + 多模型协同，蒙多的调度帝国全面升级

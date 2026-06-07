@@ -1,6 +1,6 @@
-"""蒙多核心引擎 v1.2.6 — Agentic Loop（融合 Hermes + Claude Code 精华）
+"""蒙多核心引擎 v1.2.7 — Agentic Loop（融合 Hermes + Claude Code 精华）
 
-v1.2.6 改进：
+v1.2.7 改进：
 - 错误分类系统：6 类错误自动识别 + 用户友好提示 + 行动建议
 - 流式降级增强：流式失败 → 非流式，两层重试
 - 连续错误追踪：_consecutive_errors / _same_error_streak 实际生效
