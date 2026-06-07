@@ -1,4 +1,4 @@
-"""蒙多执行控制台 v1.2.7 — 极简艺术家
+"""蒙多执行控制台 v1.2.6 — 极简艺术家
 
 设计原则：
 - 少即是多。每一像素都有存在的理由
@@ -263,6 +263,7 @@ class TaskConsole:
 
         kb = KeyBindings()
         stored = {"text": "", "label": ""}
+        navigating = [False]
 
         @kb.add("enter")
         def _(event):
@@ -276,6 +277,18 @@ class TaskConsole:
         @kb.add("escape", "enter")
         def _(event):
             event.current_buffer.newline()
+
+        @kb.add("up")
+        def _(event):
+            navigating[0] = True
+            event.current_buffer.history_backward()
+            navigating[0] = False
+
+        @kb.add("down")
+        def _(event):
+            navigating[0] = True
+            event.current_buffer.history_forward()
+            navigating[0] = False
 
         session = PromptSession(
             history=FileHistory(hist_path),
@@ -291,10 +304,12 @@ class TaskConsole:
         collapsing = [False]
 
         def _on_change(_buf):
-            if collapsing[0]:
+            if collapsing[0] or navigating[0]:
                 return
             text = _buf.text
             if text.count('\n') < 1 and len(text) <= 200:
+                stored["text"] = ""
+                stored["label"] = ""
                 return
             collapsing[0] = True
             path, label = self._save_paste(text)
