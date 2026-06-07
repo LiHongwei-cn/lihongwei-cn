@@ -1,13 +1,11 @@
-"""蒙多核心引擎 v29 — Agentic Loop（融合 Hermes + Claude Code 精华）
+"""蒙多核心引擎 v1.2.6 — Agentic Loop（融合 Hermes + Claude Code 精华）
 
-v29 改进（vs v28）：
+v1.2.6 改进：
 - 错误分类系统：6 类错误自动识别 + 用户友好提示 + 行动建议
 - 流式降级增强：流式失败 → 非流式，两层重试
 - 连续错误追踪：_consecutive_errors / _same_error_streak 实际生效
 - 卡死检测：同一工具连续失败 3 次 → 强制跳出
 - _accumulate_stream 超时与 llm.py 协调（300s 安全网）
-
-v27 基础：
 - IterationBudget：per-turn + 总量 token 预算控制
 - 智能上下文压缩：优先压缩 tool 输出，保留 user/assistant 对话
 - 自动压缩触发：上下文 >70% 时自动压缩
