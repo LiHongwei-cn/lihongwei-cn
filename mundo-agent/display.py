@@ -226,6 +226,47 @@ class TaskConsole:
         sys.stdout.flush()
 
     # ═══════════════════════════════════════
+    # 粘贴折叠 — 蒙多洁癖版
+    # ═══════════════════════════════════════
+
+    _paste_counter = 0
+
+    def _collapse_paste(self, text: str) -> str:
+        """粘贴内容过长时，存文件 + 返回简洁占位符"""
+        lines = text.count('\n')
+        if lines < 3 and len(text) < 1000:
+            return text
+
+        TaskConsole._paste_counter += 1
+        paste_dir = Path.home() / ".hermes" / "mundo-agent" / "pastes"
+        paste_dir.mkdir(parents=True, exist_ok=True)
+        paste_file = paste_dir / f"paste_{TaskConsole._paste_counter}_{_time.strftime('%H%M%S')}.txt"
+        paste_file.write_text(text, encoding="utf-8")
+
+        # 精简显示：行数 + 大小 + 首行摘要
+        size_kb = len(text) / 1024
+        first_line = text.strip().split('\n')[0][:50]
+        console.print(f"  [dim]📋 {lines+1}L {size_kb:.1f}KB → {first_line}...[/]")
+        return f"[Pasted text #{TaskConsole._paste_counter}: {lines + 1} lines → {paste_file}]"
+
+    @staticmethod
+    def expand_paste_refs(text: str) -> str:
+        """提交前展开占位符为原始内容"""
+        import re
+        ref_re = re.compile(r'\[Pasted text #\d+: \d+ lines → (.+?)\]')
+        if "[Pasted text #" not in text:
+            return text
+
+        def _load(match):
+            path = Path(match.group(1))
+            try:
+                return path.read_text(encoding="utf-8")
+            except Exception:
+                return match.group(0)
+
+        return ref_re.sub(_load, text)
+
+    # ═══════════════════════════════════════
     # 输入 — 一个提示符
     # ═══════════════════════════════════════
 
@@ -238,27 +279,20 @@ class TaskConsole:
         hist_path = str(Path.home() / ".hermes" / "mundo-agent" / ".mundo_history")
         style = Style.from_dict({
             "prompt": "#d4a017 bold",
-            "mundo-prompt": "#d4a017 bold",
         })
 
         kb = KeyBindings()
 
+        # Enter = 提交，Option+Enter = 换行
         @kb.add("enter")
-        def _(event):
-            buf = event.current_buffer
-            text = buf.text
-            cursor = buf.cursor_position
-            if cursor >= len(text.rstrip()):
-                buf.text = text.rstrip()
-                buf.validate_and_handle()
-            else:
-                buf.newline()
-
-        @kb.add("escape", "enter")
         def _(event):
             buf = event.current_buffer
             buf.text = buf.text.rstrip()
             buf.validate_and_handle()
+
+        @kb.add("escape", "enter")
+        def _(event):
+            event.current_buffer.newline()
 
         completer = SlashCompleter()
 
@@ -269,12 +303,13 @@ class TaskConsole:
             multiline=True,
             completer=completer,
             complete_while_typing=True,
+            prompt_continuation="   ",
         )
 
         try:
-            # 金色 ❯ 提示符 — 用 prompt_toolkit HTML 格式化
             from prompt_toolkit.formatted_text import HTML
-            return session.prompt(HTML("<ansiyellow><b> ❯ </b></ansiyellow>")).strip()
+            raw = session.prompt(HTML("<ansiyellow><b> ❯ </b></ansiyellow>"))
+            return self._collapse_paste(raw.strip())
         except (EOFError, KeyboardInterrupt):
             return ""
 

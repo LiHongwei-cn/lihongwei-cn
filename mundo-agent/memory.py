@@ -126,31 +126,56 @@ class MundoMemory:
                 );
             """)
 
-            # FTS5 虚拟表（需要单独创建，不能在 executescript 中）
-            try:
-                conn.execute("""
-                    CREATE VIRTUAL TABLE IF NOT EXISTS conversations_fts USING fts5(
-                        title, summary, content='conversations', content_rowid='rowid'
-                    )
-                """)
-            except sqlite3.OperationalError:
-                pass  # 已存在
+            # FTS5 — 先销毁损坏的，再重建
+            self._rebuild_fts(conn)
 
-            # 触发器
-            for trigger_sql in [
-                """CREATE TRIGGER IF NOT EXISTS conversations_ai AFTER INSERT ON conversations BEGIN
-                    INSERT INTO conversations_fts(rowid, title, summary)
-                    VALUES (new.rowid, new.title, new.summary);
-                END""",
-                """CREATE TRIGGER IF NOT EXISTS conversations_ad AFTER DELETE ON conversations BEGIN
-                    INSERT INTO conversations_fts(conversations_fts, rowid, title, summary)
-                    VALUES ('delete', old.rowid, old.title, old.summary);
-                END""",
-            ]:
-                try:
-                    conn.execute(trigger_sql)
-                except sqlite3.OperationalError:
-                    pass
+    def _rebuild_fts(self, conn):
+        """销毁并重建 FTS5 虚拟表，自动修复损坏"""
+        # 1. 删触发器
+        for trig in ("conversations_ai", "conversations_ad"):
+            try:
+                conn.execute(f"DROP TRIGGER IF EXISTS {trig}")
+            except Exception:
+                pass
+
+        # 2. 删 FTS5 虚拟表及其内部表
+        for tbl in ("conversations_fts", "conversations_fts_data",
+                     "conversations_fts_idx", "conversations_fts_docsize",
+                     "conversations_fts_config"):
+            try:
+                conn.execute(f"DROP TABLE IF EXISTS {tbl}")
+            except Exception:
+                pass
+
+        # 3. 重建
+        conn.execute("""
+            CREATE VIRTUAL TABLE conversations_fts USING fts5(
+                title, summary, content='conversations', content_rowid='rowid'
+            )
+        """)
+
+        # 4. 重建触发器
+        conn.execute("""
+            CREATE TRIGGER conversations_ai AFTER INSERT ON conversations BEGIN
+                INSERT INTO conversations_fts(rowid, title, summary)
+                VALUES (new.rowid, new.title, new.summary);
+            END
+        """)
+        conn.execute("""
+            CREATE TRIGGER conversations_ad AFTER DELETE ON conversations BEGIN
+                INSERT INTO conversations_fts(conversations_fts, rowid, title, summary)
+                VALUES ('delete', old.rowid, old.title, old.summary);
+            END
+        """)
+
+        # 5. 回填已有数据
+        try:
+            conn.execute("""
+                INSERT INTO conversations_fts(rowid, title, summary)
+                SELECT rowid, title, summary FROM conversations
+            """)
+        except Exception:
+            pass  # 空表无数据
 
     # ═══════════════════════════════════════════════
     # 1. 自动 Memory — 从对话中提取关键信息

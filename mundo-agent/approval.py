@@ -2,6 +2,7 @@
 
 import sys
 import re
+from pathlib import Path
 from typing import Tuple
 
 from rich.console import Console
@@ -62,7 +63,7 @@ def classify_file_op(path: str, op: str) -> Tuple[str, str]:
     for pattern, reason in SENSITIVE_PATHS:
         if re.search(pattern, path):
             return "caution", f"{op} {reason}: {path}"
-    home = str(__import__("pathlib").Path.home())
+    home = str(Path.home())
     if not path.startswith(home) and path.startswith("/"):
         if path.startswith(("/tmp", "/var/tmp")):
             return "safe", ""
