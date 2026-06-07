@@ -76,12 +76,9 @@
 ## 启动标识
 
 ```
-             M  U  N  D  O
-             THE EMPEROR
-             v1.2.6
+  MUNDO v1.2.6 · mimo-v2.5-pro
 
-  MUNDO · mimo-v2.5-pro · 0 tokens · —
-  ❯
+ ❯ 
 ```
 
 ## 快速开始
