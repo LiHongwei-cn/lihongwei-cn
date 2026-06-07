@@ -1,0 +1,19 @@
+#!/bin/bash
+SRC="$HOME/Desktop/lihongwei-cn/mundo-agent"
+DST="$HOME/.hermes/mundo-agent"
+
+if [ -f "$SRC/version.txt" ] && [ -f "$DST/version.txt" ]; then
+    SRC_VER=$(cat "$SRC/version.txt" | tr -d '[:space:]')
+    DST_VER=$(cat "$DST/version.txt" | tr -d '[:space:]')
+    if [ "$SRC_VER" != "$DST_VER" ]; then
+        for f in mundo.py core.py llm.py setup.py tools.py approval.py display.py memory.py memory_import.py models.py agents.py delegation.py cloud_sync.py; do
+            [ -f "$SRC/$f" ] && cp "$SRC/$f" "$DST/$f"
+        done
+        cp "$SRC/version.txt" "$DST/version.txt"
+        [ -f "$SRC/requirements.txt" ] && cp "$SRC/requirements.txt" "$DST/requirements.txt"
+    fi
+fi
+
+osascript -e 'tell application "Terminal" to activate' \
+          -e "tell application \"Terminal\" to do script \"cd ~/.hermes/mundo-agent && source venv/bin/activate && python3 mundo.py\"" \
+          -e 'tell application "Terminal" to set custom title of front window to "MUNDO"'
