@@ -27,7 +27,7 @@ import glob as glob_mod
 import time
 import random
 from pathlib import Path
-from typing import Dict, Any, Callable, List, Optional
+from typing import Dict, Callable, List
 import requests
 from bs4 import BeautifulSoup
 

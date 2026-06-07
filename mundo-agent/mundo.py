@@ -2,7 +2,7 @@
 import warnings
 warnings.filterwarnings("ignore", message="urllib3 v2 only")
 """
-MUNDO Agent v1.2.0 — THE EMPEROR
+MUNDO Agent v1.2.5 — THE EMPEROR
 独立 AI Agent：LLM 直连 + 工具调用 + Agentic Loop + 权限审批
 融合 Hermes Agent + Claude Code 精华架构
 Rich 渲染所有输出，prompt_toolkit 只管输入
@@ -44,17 +44,17 @@ ensure_venv()
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-from core import MundoEngine, TaskStats
+from core import MundoEngine
 from llm import get_available_providers
 from setup import PROVIDERS
 from tools import registry as tool_registry, execute_tool as raw_execute_tool
 from setup import (
     is_setup_done, run_setup, load_local_env,
-    get_saved_provider, get_saved_model, add_provider_interactive, MUNDO_ENV,
+    get_saved_provider, get_saved_model, add_provider_interactive,
 )
 from approval import approve_tool_call
 from delegation import TaskDelegator, AgentManager
-from display import TaskConsole, console, _fmt_tok
+from display import TaskConsole, console
 
 VERSION = "1.2.5"
 

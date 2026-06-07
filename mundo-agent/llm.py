@@ -13,7 +13,7 @@ import time
 import urllib.request
 import urllib.error
 from pathlib import Path
-from typing import List, Dict, Iterator, Optional
+from typing import List, Dict, Iterator
 
 ENV_PATH = Path.home() / ".hermes" / ".env"
 MUNDO_ENV = Path.home() / ".hermes" / "mundo-agent" / ".env"

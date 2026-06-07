@@ -9,7 +9,6 @@
 6. 自我整理 — 定期合并重复、淘汰过时、压缩低价值记忆
 """
 
-import os
 import re
 import json
 import sqlite3
@@ -598,13 +597,13 @@ class MundoMemory:
                     continue
                 try:
                     conn.execute(f"DELETE FROM {table_name}")
-                except:
+                except Exception:
                     pass
             
             # 清空FTS索引
             try:
                 conn.execute("DELETE FROM conversations_fts")
-            except:
+            except Exception:
                 pass
 
     def generate_session_summary(self, session_id: str, messages: List[Dict]):
