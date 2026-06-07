@@ -234,7 +234,7 @@ class TaskConsole:
     def _collapse_paste(self, text: str) -> str:
         """粘贴内容过长时，存文件 + 返回简洁占位符"""
         lines = text.count('\n')
-        if lines < 3 and len(text) < 1000:
+        if lines < 1 and len(text) < 200:
             return text
 
         TaskConsole._paste_counter += 1
@@ -243,10 +243,11 @@ class TaskConsole:
         paste_file = paste_dir / f"paste_{TaskConsole._paste_counter}_{_time.strftime('%H%M%S')}.txt"
         paste_file.write_text(text, encoding="utf-8")
 
-        # 精简显示：行数 + 大小 + 首行摘要
         size_kb = len(text) / 1024
-        first_line = text.strip().split('\n')[0][:50]
-        console.print(f"  [dim]📋 {lines+1}L {size_kb:.1f}KB → {first_line}...[/]")
+        first_line = text.strip().split('\n')[0][:60]
+        if len(first_line) < len(text.strip().split('\n')[0]):
+            first_line += "..."
+        console.print(f"  [dim]📎 {lines+1}行 {size_kb:.1f}KB │ {first_line}[/]")
         return f"[Pasted text #{TaskConsole._paste_counter}: {lines + 1} lines → {paste_file}]"
 
     @staticmethod
@@ -283,7 +284,6 @@ class TaskConsole:
 
         kb = KeyBindings()
 
-        # Enter = 提交，Option+Enter = 换行
         @kb.add("enter")
         def _(event):
             buf = event.current_buffer
@@ -294,16 +294,14 @@ class TaskConsole:
         def _(event):
             event.current_buffer.newline()
 
-        completer = SlashCompleter()
-
         session = PromptSession(
             history=FileHistory(hist_path),
             style=style,
             key_bindings=kb,
             multiline=True,
-            completer=completer,
+            completer=SlashCompleter(),
             complete_while_typing=True,
-            prompt_continuation="   ",
+            prompt_continuation=[("class:prompt", " █ ")],
         )
 
         try:
