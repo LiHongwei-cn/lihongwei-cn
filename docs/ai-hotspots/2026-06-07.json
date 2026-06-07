@@ -1,0 +1,133 @@
+{
+  "date": "2026-06-07",
+  "source": "https://aihot.virxact.com/",
+  "count": 25,
+  "hotspots": [
+    {
+      "title": "Hacker News 热门（buzzing.cc 中文翻译）",
+      "link": "https://symbolica.io/posts/symbolica_2_0_release",
+      "source": "article"
+    },
+    {
+      "title": "Hugging Face：Blog（RSS）",
+      "link": "https://huggingface.co/blog/build-small-hackathon/her-blog",
+      "source": "article"
+    },
+    {
+      "title": "NVIDIA AI Blog",
+      "link": "https://blogs.nvidia.com/blog/krafton-nc-t1-korea-gaming-pc-bang-rtx-spark",
+      "source": "article"
+    },
+    {
+      "title": "MarkTechPost（RSS）",
+      "link": "https://www.marktechpost.com/2026/06/06/meet-harness-1-a-20b-retrieval-subagent-trained-with-reinforcement-learning-inside-a-stateful-search-harness-on-gpt-oss-20b",
+      "source": "article"
+    },
+    {
+      "title": "OpenRouter",
+      "link": "https://x.com/OpenRouter/status/2063504950429147376",
+      "source": "article"
+    },
+    {
+      "title": "MiniMax (official)",
+      "link": "https://x.com/MiniMax_AI/status/2063397618034844135",
+      "source": "article"
+    },
+    {
+      "title": "公众号：阶跃星辰（Step）",
+      "link": "https://mp.weixin.qq.com/s/ZVgqdH_fE42jO4kcI-lF3g",
+      "source": "article"
+    },
+    {
+      "title": "Gary Marcus：The Road to AI We Can Trust（RSS）",
+      "link": "https://garymarcus.substack.com/p/ais-black-friday",
+      "source": "article"
+    },
+    {
+      "title": "Rohan Paul",
+      "link": "https://x.com/rohanpaul_ai/status/2063246343842501091",
+      "source": "article"
+    },
+    {
+      "title": "IT之家（RSS）",
+      "link": "https://www.ithome.com/0/960/969.htm",
+      "source": "article"
+    },
+    {
+      "title": "NVIDIA AI",
+      "link": "https://x.com/NVIDIAAI/status/2063034422698389625",
+      "source": "article"
+    },
+    {
+      "title": "Bloomberg：Technology（RSS）",
+      "link": "https://www.bloomberg.com/news/articles/2026-06-05/apollo-wraps-up-35-billion-debt-to-buy-ai-chips-for-anthropic",
+      "source": "article"
+    },
+    {
+      "title": "Google Research：Blog（网页）",
+      "link": "https://research.google/blog/unlocking-dependable-responses-with-gemini-enterprise-agent-platforms-agentic-rag",
+      "source": "article"
+    },
+    {
+      "title": "Microsoft Research",
+      "link": "https://x.com/MSFTResearch/status/2062983588606320714",
+      "source": "article"
+    },
+    {
+      "title": "Anthropic：Research（发表成果 · 网页）",
+      "link": "https://www.anthropic.com/research/making-claude-a-chemist",
+      "source": "article"
+    },
+    {
+      "title": "Michael Truell",
+      "link": "https://x.com/mntruell/status/2062955210897801520",
+      "source": "article"
+    },
+    {
+      "title": "Google AI",
+      "link": "https://x.com/GoogleAI/status/2062942864288387430",
+      "source": "article"
+    },
+    {
+      "title": "Google Developers Blog（RSS）",
+      "link": "https://developers.googleblog.com/introducing-the-google-colab-cli",
+      "source": "article"
+    },
+    {
+      "title": "ChatGPT",
+      "link": "https://x.com/ChatGPTapp/status/2062944254591430917",
+      "source": "article"
+    },
+    {
+      "title": "Epoch AI",
+      "link": "https://x.com/EpochAIResearch/status/2062933470373146828",
+      "source": "article"
+    },
+    {
+      "title": "Google Gemini",
+      "link": "https://x.com/GeminiApp/status/2062936486509785385",
+      "source": "article"
+    },
+    {
+      "title": "Tomer Tunguz 博客（VC 分析）",
+      "link": "https://www.tomtunguz.com/using-local-ai-to-work-faster",
+      "source": "article"
+    },
+    {
+      "title": "AI at Meta",
+      "link": "https://x.com/AIatMeta/status/2062920724944507095",
+      "source": "article"
+    },
+    {
+      "title": "Chubby♨️",
+      "link": "https://x.com/kimmonismus/status/2062915287700090948",
+      "source": "article"
+    },
+    {
+      "title": "Suno：Blog（网页）",
+      "link": "https://suno.com/blog/6-tips-for-voices",
+      "source": "article"
+    }
+  ],
+  "crawled_at": "2026-06-07T22:03:27.275841"
+}
