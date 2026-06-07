@@ -620,6 +620,7 @@ class MundoCLI:
 
 
 def main():
+    os.system("clear")
     import argparse
     parser = argparse.ArgumentParser(description="MUNDO Agent — THE EMPEROR")
     parser.add_argument("-q", "--query", help="单次查询模式")
