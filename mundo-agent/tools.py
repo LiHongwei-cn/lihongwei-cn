@@ -20,13 +20,13 @@ v29 新增工具：
 import warnings
 warnings.filterwarnings("ignore", message="urllib3 v2 only")
 import os
+import sys
 import json
 import re
 import subprocess
 import glob as glob_mod
 import time
 import random
-from pathlib import Path
 from typing import Dict, Callable, List
 import requests
 from bs4 import BeautifulSoup
@@ -84,7 +84,7 @@ class ToolRegistry:
                     result += f"\n正确用法: {name}({', '.join(req)})"
             return result
         except Exception as e:
-            return f"[工具执行错误: {name}: {e}]"
+            return f"工具 {name} 执行失败: {e}"
 
 
 # 全局注册表实例
@@ -307,7 +307,7 @@ def _web_search(args: Dict) -> str:
             if results:
                 return f"🔍 DuckDuckGo 搜索结果:\n\n" + "\n".join(results)
     except Exception as e:
-        pass
+        print(f"[web_search] DuckDuckGo API 失败: {e}", file=sys.stderr)
 
     # 如果所有方法都失败，返回错误信息
     return f"搜索未返回结果（所有搜索引擎均失败）。查询: {query}"
