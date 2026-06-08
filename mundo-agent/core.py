@@ -1,14 +1,10 @@
-"""蒙多核心引擎 v1.2.6 — Agentic Loop（融合 Hermes + Claude Code 精华）
+"""蒙多核心引擎 v1.4.1 — Agentic Loop
 
-v1.2.6 改进：
-- 错误分类系统：6 类错误自动识别 + 用户友好提示 + 行动建议
-- 流式降级增强：流式失败 → 非流式，两层重试
-- 连续错误追踪：_consecutive_errors / _same_error_streak 实际生效
-- 卡死检测：同一工具连续失败 3 次 → 强制跳出
-- _accumulate_stream 超时与 llm.py 协调（300s 安全网）
-- IterationBudget：per-turn + 总量 token 预算控制
-- 智能上下文压缩：优先压缩 tool 输出，保留 user/assistant 对话
-- 自动压缩触发：上下文 >70% 时自动压缩
+v1.4.1 优化：
+- 消除 ContextCompressor 重复（使用 context_mapper.py）
+- 统一使用 constants.py 常量
+- 拆分 run() 为更小的函数
+- 减少 token 使用：精简 system prompt
 """
 
 import sys
@@ -17,85 +13,23 @@ import time
 import signal
 from typing import List, Dict, Optional, Callable
 from llm import LLMClient, repair_json, _is_timeout_error
+from constants import (
+    VERSION, CHAR_TO_TOKEN,
+    CONTEXT_MAX_TOKENS, CONTEXT_COMPRESS_THRESHOLD, CONTEXT_KEEP_RECENT,
+    BUDGET_MAX_PROMPT, BUDGET_MAX_COMPLETION, BUDGET_WARN_THRESHOLD,
+    STUCK_THRESHOLD, IDLE_TIMEOUT, MAX_RETRY, STREAM_MAX_WAIT,
+)
+from policy import get_policy_engine, PolicyContext, Action
+from events import get_event_bus, EventType, Priority
+from timeline import get_timeline, EntryType
+from context_mapper import ContextMapper, ContextBudget, ChunkType
+from cache import get_cache_manager
+from sandbox import get_sandbox
+from runtime_config import get_config
 
 
 # ═══════════════════════════════════════════════
-# 错误分类 → 用户友好提示
-# ═══════════════════════════════════════════════
-
-def _classify_error(error: Exception, raw_msg: str) -> Dict:
-    """将原始错误分类为结构化信息，包含用户友好提示"""
-    msg = raw_msg.lower()
-    result = {
-        "category": "unknown",
-        "retryable": False,
-        "user_tip": "",
-        "log_detail": raw_msg,
-    }
-
-    # 连接重置/断开（必须在超时之前检查，因为 _is_timeout_error 也会匹配这些）
-    if isinstance(error, (ConnectionResetError, ConnectionRefusedError, BrokenPipeError)):
-        result["category"] = "connection"
-        result["retryable"] = True
-        result["user_tip"] = "连接被中断，正在重试…"
-        return result
-    if any(kw in msg for kw in ["reset", "broken pipe", "eof", "远程主机", "connection reset"]):
-        result["category"] = "connection"
-        result["retryable"] = True
-        result["user_tip"] = "连接被中断，正在重试…"
-        return result
-
-    # DNS/连接类
-    if "dns" in msg or "解析失败" in msg or "connection refused" in msg:
-        result["category"] = "network"
-        result["retryable"] = True
-        result["user_tip"] = "无法连接到模型服务。请检查网络，或稍后重试。"
-        return result
-
-    # 超时类
-    if _is_timeout_error(error) or "超时" in raw_msg or "timed out" in msg or "timeout" in msg:
-        result["category"] = "timeout"
-        result["retryable"] = True
-        result["user_tip"] = "模型响应超时。可能是服务繁忙或网络波动，正在重试…"
-        return result
-
-    # 429 限流
-    if "429" in msg:
-        result["category"] = "ratelimit"
-        result["retryable"] = True
-        result["user_tip"] = "请求频率过高，正在等待后重试…"
-        return result
-
-    # 5xx 服务端错误
-    if any(code in msg for code in ["500", "502", "503", "504"]):
-        result["category"] = "server_error"
-        result["retryable"] = True
-        result["user_tip"] = "模型服务端出错，正在重试…"
-        return result
-
-    # 上下文过长
-    if "上下文过长" in raw_msg or "context" in msg or "too long" in msg:
-        result["category"] = "context_overflow"
-        result["retryable"] = False
-        result["user_tip"] = "对话上下文太长了。运行 /compact 压缩上下文后继续。"
-        return result
-
-    # API Key 问题
-    if any(kw in msg for kw in ["401", "unauthorized", "api key", "缺少"]):
-        result["category"] = "auth"
-        result["retryable"] = False
-        result["user_tip"] = "API Key 无效或缺失。运行 /setup 重新配置。"
-        return result
-
-    # 兜底
-    result["user_tip"] = "出了点问题，正在重试…"
-    result["retryable"] = True
-    return result
-from tools import registry as tool_registry
-
-
-# ═══════════════════════════════════════════════
-# 系统提示词 — 蒙多的灵魂
+# System Prompt — 精简版，省 token
 # ═══════════════════════════════════════════════
 
 MUNDO_SYSTEM_PROMPT = """你是蒙多，THE EMPEROR。直接、高效、不废话。中文交流，代码命名用英文。
@@ -106,30 +40,68 @@ MUNDO_SYSTEM_PROMPT = """你是蒙多，THE EMPEROR。直接、高效、不废�
 - terminal 失败时分析错误再重试，不重复同样命令
 - 多个独立操作可并行调用
 
-完成反馈（最高优先级 — 不可省略）：
-最后一个 response 必须输出文本总结：一句话说明 + 关键结果 + 改动列表。
+完成反馈（最高优先级）：
+最后一个 response 必须输出：一句话说明 + 关键结果 + 改动列表。
 简单任务一句话即可。不要省略。
 
 语言：短句优先。一个句子一件事。活人感 > 机器感。"""
 
 
 # ═══════════════════════════════════════════════
-# IterationBudget — 借鉴 Hermes 预算控制
+# 错误分类
+# ═══════════════════════════════════════════════
+
+def _classify_error(error: Exception, raw_msg: str) -> Dict:
+    msg = raw_msg.lower()
+    result = {"category": "unknown", "retryable": False, "user_tip": "", "log_detail": raw_msg}
+
+    # 连接重置
+    if isinstance(error, (ConnectionResetError, ConnectionRefusedError, BrokenPipeError)):
+        result.update(category="connection", retryable=True, user_tip="连接被中断，正在重试…")
+        return result
+    if any(kw in msg for kw in ["reset", "broken pipe", "eof", "远程主机"]):
+        result.update(category="connection", retryable=True, user_tip="连接被中断，正在重试…")
+        return result
+
+    # DNS/网络
+    if "dns" in msg or "connection refused" in msg:
+        result.update(category="network", retryable=True, user_tip="无法连接到模型服务。请检查网络。")
+        return result
+
+    # 超时
+    if _is_timeout_error(error) or "timeout" in msg or "超时" in raw_msg:
+        result.update(category="timeout", retryable=True, user_tip="请求超时。模型可能繁忙，正在重试…")
+        return result
+
+    # API key
+    if any(kw in msg for kw in ["401", "unauthorized", "invalid api key", "api key"]):
+        result.update(category="auth", user_tip="API key 无效或已过期。运行 /setup 更新。")
+        return result
+
+    # 限速
+    if any(kw in msg for kw in ["429", "rate limit", "too many"]):
+        result.update(category="rate_limit", retryable=True, user_tip="请求过于频繁，稍后重试…")
+        return result
+
+    # 服务器错误
+    if any(kw in msg for kw in ["500", "502", "503", "504", "internal server"]):
+        result.update(category="server", retryable=True, user_tip="模型服务暂时不可用，正在重试…")
+        return result
+
+    return result
+
+
+# ═══════════════════════════════════════════════
+# 预算和统计
 # ═══════════════════════════════════════════════
 
 class IterationBudget:
-    """Token 预算控制 — 蒙多无轮次上限"""
-
-    def __repr__(self) -> str:
-        return f"IterationBudget(prompt={self.prompt_tokens_used}/{self.max_prompt_tokens}, turns={self.turns_used})"
-
-    def __init__(self, max_prompt_tokens: int = 500000,
-                 max_completion_tokens: int = 200000,
-                 max_turns: int = 0,
-                 warn_threshold: float = 0.7):
+    def __init__(self, max_prompt_tokens=BUDGET_MAX_PROMPT,
+                 max_completion_tokens=BUDGET_MAX_COMPLETION,
+                 max_turns=0, warn_threshold=BUDGET_WARN_THRESHOLD):
         self.max_prompt_tokens = max_prompt_tokens
         self.max_completion_tokens = max_completion_tokens
-        self.max_turns = max_turns  # 0 = 无限制
+        self.max_turns = max_turns
         self.warn_threshold = warn_threshold
         self.prompt_tokens_used = 0
         self.completion_tokens_used = 0
@@ -137,31 +109,28 @@ class IterationBudget:
         self._warned = False
 
     @property
-    def remaining(self) -> int:
+    def remaining(self):
         return max(0, self.max_prompt_tokens - self.prompt_tokens_used)
 
     @property
-    def usage_ratio(self) -> float:
-        if self.max_prompt_tokens == 0:
-            return 0
-        return self.prompt_tokens_used / self.max_prompt_tokens
+    def usage_ratio(self):
+        return self.prompt_tokens_used / self.max_prompt_tokens if self.max_prompt_tokens else 0
 
     @property
-    def should_warn(self) -> bool:
+    def should_warn(self):
         return self.usage_ratio >= self.warn_threshold and not self._warned
 
     @property
-    def exhausted(self) -> bool:
+    def exhausted(self):
         if self.prompt_tokens_used >= self.max_prompt_tokens:
             return True
         if self.completion_tokens_used >= self.max_completion_tokens:
             return True
-        # max_turns == 0 表示无轮次限制
         if self.max_turns > 0 and self.turns_used >= self.max_turns:
             return True
         return False
 
-    def update(self, prompt_tokens: int = 0, completion_tokens: int = 0):
+    def update(self, prompt_tokens=0, completion_tokens=0):
         self.prompt_tokens_used += prompt_tokens
         self.completion_tokens_used += completion_tokens
         self.turns_used += 1
@@ -176,16 +145,9 @@ class IterationBudget:
         self._warned = False
 
 
-# ═══════════════════════════════════════════════
-# 统计数据（纯数据，无逻辑）
-# ═══════════════════════════════════════════════
-
 class TaskStats:
     def __init__(self):
         self.reset()
-
-    def __repr__(self) -> str:
-        return f"TaskStats(turns={self.turns}, tokens={self.total_tokens})"
 
     def reset(self):
         self.start_time = time.time()
@@ -196,16 +158,15 @@ class TaskStats:
         self.tool_calls_count = 0
         self.llm_time = 0.0
         self.tool_time = 0.0
-        self._active_tools: List[str] = []
         self.errors_count = 0
         self.retries_count = 0
 
     @property
-    def elapsed(self) -> float:
+    def elapsed(self):
         return time.time() - self.start_time
 
     @property
-    def elapsed_str(self) -> str:
+    def elapsed_str(self):
         s = self.elapsed
         if s < 60:
             return f"{s:.1f}s"
@@ -214,176 +175,74 @@ class TaskStats:
 
 
 # ═══════════════════════════════════════════════
-# 上下文压缩器 — 智能压缩（借鉴 Hermes ContextCompressor）
-# ═══════════════════════════════════════════════
-
-class ContextCompressor:
-    """智能上下文压缩 — 优先压缩 tool 输出，保留对话"""
-
-    def __repr__(self) -> str:
-        return "ContextCompressor()"
-
-    # 上下文窗口估算（字符 → token 比率）
-    CHAR_TO_TOKEN = 0.4  # 中英文混合约 2.5 字符/token
-
-    @staticmethod
-    def estimate_tokens(messages: List[Dict]) -> int:
-        total_chars = sum(len(m.get("content") or "") for m in messages)
-        # tool_calls 的 arguments 也占 token
-        for m in messages:
-            for tc in (m.get("tool_calls") or []):
-                args = tc.get("function", {}).get("arguments", "")
-                total_chars += len(args)
-        return int(total_chars * ContextCompressor.CHAR_TO_TOKEN)
-
-    @staticmethod
-    def compress(messages: List[Dict], target_tokens: int = 40000) -> List[Dict]:
-        """智能压缩：优先压缩 tool 输出，保留 user/assistant 对话"""
-        if len(messages) <= 8:
-            return messages
-
-        current_tokens = ContextCompressor.estimate_tokens(messages)
-        if current_tokens <= target_tokens:
-            return messages
-
-        system_msgs = []
-        rest = []
-        for m in messages:
-            if m["role"] == "system":
-                system_msgs.append(m)
-            else:
-                rest.append(m)
-
-        # 分类消息（保留原始索引）
-        indexed_rest = list(enumerate(rest))
-        user_msgs = [(i, m) for i, m in indexed_rest if m["role"] == "user"]
-        assistant_msgs = [(i, m) for i, m in indexed_rest if m["role"] == "assistant"]
-        tool_msgs = [(i, m) for i, m in indexed_rest if m["role"] == "tool"]
-
-        # 策略1：压缩 tool 输出（最大收益）
-        compressed_tools = []
-        for idx, m in tool_msgs:
-            content = m.get("content") or ""
-            if len(content) > 500:
-                new_content = content[:200] + f"\n... ({len(content)} 字符，已压缩) ...\n" + content[-100:]
-                compressed_tools.append((idx, {**m, "content": new_content}))
-            else:
-                compressed_tools.append((idx, m))
-
-        # 合并所有消息并按原始索引排序
-        all_indexed = user_msgs + assistant_msgs + compressed_tools
-        all_indexed.sort(key=lambda x: x[0])
-        all_msgs = [m for _, m in all_indexed]
-
-        # 重建消息列表
-        result = []
-        result.extend(system_msgs)
-
-        # 保留最近 8 条消息完整，其余压缩
-        if len(all_msgs) > 8:
-            old = all_msgs[:-8]
-            recent = all_msgs[-8:]
-
-            # 从旧消息中提取摘要
-            summary_parts = []
-            for m in old:
-                role = m["role"]
-                content = (m.get("content") or "")[:100]
-                if content and role in ("user", "assistant"):
-                    summary_parts.append(f"[{role}] {content}")
-                elif content and role == "tool":
-                    summary_parts.append(f"[tool:{m.get('tool_call_id', '?')[:8]}] {content[:60]}")
-
-            if summary_parts:
-                summary = " | ".join(summary_parts[-10:])
-                result.append({"role": "system", "content": f"[历史摘要] {summary[:600]}"})
-
-            result.extend(recent)
-        else:
-            result.extend(all_msgs)
-
-        return result
-
-    @staticmethod
-    def should_compress(messages: List[Dict], threshold_tokens: int = 70000) -> bool:
-        """检查是否需要压缩"""
-        return ContextCompressor.estimate_tokens(messages) > threshold_tokens
-
-
-# ═══════════════════════════════════════════════
-# Agentic Loop — 核心引擎
+# 引擎
 # ═══════════════════════════════════════════════
 
 class MundoEngine:
-    def __repr__(self) -> str:
-        return f"MundoEngine(provider={self.provider}, model={self.model_name})"
+    MAX_ITERATIONS = 50
 
-    def __init__(self, provider: str = "xiaomi", model: str = None):
+    def __init__(self, provider="xiaomi", model=None):
         self.client = LLMClient(provider=provider, model=model)
         self.provider = provider
         self.model_name = model or self.client.model
         self.messages: List[Dict] = []
-        self.max_turns = 0  # 0 = 蒙多无轮次限制
         self.max_tokens_override = 4096
         self.stats = TaskStats()
-        self.budget = IterationBudget(max_turns=self.max_turns)
+        self.budget = IterationBudget()
         self._use_streaming = True
         self._interrupted = False
-        self._consecutive_errors = 0  # 连续工具错误计数
-        self._last_error_tool = ""  # 上一次出错的工具名
-        self._same_error_streak = 0  # 同一工具连续错误次数
-        self._stuck_threshold = 3  # 连续 3 次同样错误 → 强制跳出
-        self._last_activity_time = time.time()  # 最后活动时间
-        self._idle_timeout = 300  # 5 分钟无活动 → 警告
+        self._consecutive_errors = 0
+        self._last_error_tool = ""
+        self._same_error_streak = 0
+        self._last_activity_time = time.time()
 
-        # 回调（解耦显示/统计/委托）
-        self.on_turn_start: Optional[Callable] = None
-        self.on_tool_call: Optional[Callable] = None
-        self.on_tool_output: Optional[Callable] = None
-        self.on_turn_end: Optional[Callable] = None
-        self.on_task_done: Optional[Callable] = None
-        self.on_stream_text: Optional[Callable] = None
-        self.on_stream_start: Optional[Callable] = None
-        self.on_stream_end: Optional[Callable] = None
-        self.on_budget_warn: Optional[Callable] = None
-        self.on_compress: Optional[Callable] = None
-        self.on_llm_stats: Optional[Callable] = None
+        # 基础设施
+        self.policy = get_policy_engine()
+        self.events = get_event_bus()
+        self.timeline = get_timeline()
+        self.cache = get_cache_manager()
+        self.sandbox = get_sandbox()
+        self.config = get_config()
 
-    def _build_system_message(self) -> Dict:
-        """构建系统消息 — 保持稳定以提高缓存命中率"""
+        # 上下文映射器
+        self._context = ContextMapper(ContextBudget(max_tokens=CONTEXT_MAX_TOKENS))
+
+        # 回调
+        self.on_turn_start = None
+        self.on_tool_call = None
+        self.on_tool_output = None
+        self.on_turn_end = None
+        self.on_task_done = None
+        self.on_stream_text = None
+        self.on_stream_start = None
+        self.on_stream_end = None
+        self.on_budget_warn = None
+        self.on_compress = None
+        self.on_llm_stats = None
+
+    def _build_system_message(self):
         return {"role": "system", "content": MUNDO_SYSTEM_PROMPT}
 
-    def _model_display(self) -> str:
+    def _model_display(self):
         return f"{self.provider}/{self.model_name}"
 
     def _auto_compress(self):
-        """自动压缩 — 借鉴 Hermes，在接近窗口限制时自动触发"""
-        if not ContextCompressor.should_compress(self.messages):
+        if not self._context.should_compress():
             return
-
-        old_count = len(self.messages)
-        old_tokens = ContextCompressor.estimate_tokens(self.messages)
-
-        self.messages = ContextCompressor.compress(self.messages)
-
-        new_count = len(self.messages)
-        new_tokens = ContextCompressor.estimate_tokens(self.messages)
-
+        old_tokens = self._context.total_tokens
+        new_tokens = self._context.compress()[1]
         if self.on_compress:
-            self.on_compress(old_count, new_count, old_tokens, new_tokens)
+            self.on_compress(len(self._context._chunks), len(self._context._chunks), old_tokens, new_tokens)
 
     def _accumulate_stream(self, stream_iter) -> Dict:
-        """流式消费 → 累积完整 assistant 消息（含超时保护）"""
-        content_parts: List[str] = []
-        tool_calls_map: Dict[int, Dict] = {}
+        content_parts = []
+        tool_calls_map = {}
         usage = {}
         last_activity = time.time()
-        ACCUMULATE_TIMEOUT = 300  # 5 分钟安全网（主要超时由 llm.py 控制）
 
         for chunk in stream_iter:
-            # 安全网超时（llm.py 的 STREAM_IDLE_TIMEOUT 会先触发）
-            if time.time() - last_activity > ACCUMULATE_TIMEOUT:
-                raise RuntimeError(f"流式累积超时（{ACCUMULATE_TIMEOUT}s）")
+            if time.time() - last_activity > STREAM_MAX_WAIT:
+                raise RuntimeError(f"流式累积超时（{STREAM_MAX_WAIT}s）")
             last_activity = time.time()
 
             delta = LLMClient.extract_stream_delta(chunk)
@@ -396,11 +255,7 @@ class MundoEngine:
             for tc_delta in delta["tool_calls"]:
                 idx = tc_delta.get("index", 0)
                 if idx not in tool_calls_map:
-                    tool_calls_map[idx] = {
-                        "id": tc_delta.get("id", ""),
-                        "type": "function",
-                        "function": {"name": "", "arguments": ""},
-                    }
+                    tool_calls_map[idx] = {"id": "", "type": "function", "function": {"name": "", "arguments": ""}}
                 tc = tool_calls_map[idx]
                 if tc_delta.get("id"):
                     tc["id"] = tc_delta["id"]
@@ -410,44 +265,151 @@ class MundoEngine:
                 if fn.get("arguments"):
                     tc["function"]["arguments"] += fn["arguments"]
 
-            if "usage" in delta:
-                usage = delta["usage"]
-            if delta["finish_reason"]:
-                break
+            if "usage" in chunk and chunk["usage"]:
+                usage = chunk["usage"]
 
-        full_content = "".join(content_parts)
-        tool_calls = [tool_calls_map[i] for i in sorted(tool_calls_map.keys())]
-        return {
-            "role": "assistant",
-            "content": full_content,
-            "tool_calls": tool_calls,
-            "_usage": usage,
-        }
+        msg = {"role": "assistant", "content": "".join(content_parts)}
+        if tool_calls_map:
+            msg["tool_calls"] = [tool_calls_map[i] for i in sorted(tool_calls_map)]
+        if usage:
+            msg["_usage"] = usage
+        return msg
 
-    def _filter_tool_calls(self, tool_calls: List[Dict]) -> List[Dict]:
-        """过滤无效 tool_calls — 三层防御"""
-        valid = []
-        for tc in tool_calls:
-            func = tc.get("function", {})
-            name = func.get("name", "")
-            if not name:
-                continue
-            raw_args = func.get("arguments", "{}")
+    def _call_llm(self) -> Optional[Dict]:
+        for attempt in range(MAX_RETRY):
             try:
-                json.loads(raw_args)
-                valid.append(tc)
+                result = self._try_call_llm(attempt)
+                if result:
+                    self._consecutive_errors = 0
+                    return result
+            except KeyboardInterrupt:
+                self._interrupted = True
+                return None
+            except Exception as e:
+                self._handle_llm_error(e, attempt)
+                if self._interrupted:
+                    return None
+        return None
+
+    def _try_call_llm(self, attempt: int) -> Optional[Dict]:
+        messages = self._prepare_messages()
+        max_tokens = self.max_tokens_override
+
+        if self._use_streaming:
+            try:
+                stream = self.client.chat_stream(messages, max_tokens=max_tokens)
+                if self.on_stream_start:
+                    self.on_stream_start(self.stats.turns)
+                result = self._accumulate_stream(stream)
+                if self.on_stream_end:
+                    self.on_stream_end(self.stats.turns)
+                return result
+            except Exception as e:
+                if attempt == 0:
+                    self._use_streaming = False
+                    self.stats.retries_count += 1
+                    return self._try_call_llm(attempt)
+                raise
+        else:
+            return self.client.chat(messages, max_tokens=max_tokens)
+
+    def _prepare_messages(self) -> List[Dict]:
+        messages = [m for m in self.messages if m.get("role") == "system" or m.get("content")]
+        if self.budget.remaining < 10000:
+            messages = messages[:1] + messages[-CONTEXT_KEEP_RECENT:]
+        return messages
+
+    def _handle_llm_error(self, error: Exception, attempt: int):
+        self._consecutive_errors += 1
+        self.stats.errors_count += 1
+        classified = _classify_error(error, str(error))
+
+        if self.on_tool_output:
+            self.on_tool_output("llm", classified.get("user_tip", str(error)), True)
+
+        if classified.get("retryable") and attempt < MAX_RETRY - 1:
+            delay = RETRY_DELAY * (2 ** attempt)
+            time.sleep(delay)
+            self.stats.retries_count += 1
+        else:
+            self._interrupted = True
+
+    def _update_token_stats(self, msg: Dict):
+        usage = msg.get("_usage", {})
+        prompt_tok = usage.get("prompt_tokens", 0)
+        completion_tok = usage.get("completion_tokens", 0)
+        cached = usage.get("prompt_tokens_details", {}).get("cached_tokens", 0)
+
+        self.stats.prompt_tokens = prompt_tok
+        self.stats.completion_tokens = completion_tok
+        self.stats.total_tokens += prompt_tok + completion_tok
+        self.budget.update(prompt_tok, completion_tok)
+
+        if self.on_llm_stats:
+            self.on_llm_stats(prompt_tok, completion_tok, cached, len(self.messages))
+
+    def _filter_tool_calls(self, tool_calls: list) -> list:
+        return [tc for tc in tool_calls if tc.get("function", {}).get("name")]
+
+    def _execute_tool_calls(self, tool_calls: list):
+        import tools as tool_module
+        for tc in tool_calls:
+            if self._interrupted:
+                break
+            fn = tc.get("function", {})
+            name = fn.get("name", "")
+            try:
+                args = json.loads(fn.get("arguments", "{}"))
             except json.JSONDecodeError:
-                fixed = repair_json(raw_args)
-                if fixed is not None:
-                    tc["function"]["arguments"] = json.dumps(fixed, ensure_ascii=False)
-                    valid.append(tc)
-        return valid
+                args = {}
+
+            # 策略检查
+            policy_result = self.policy.evaluate_tool(name, args)
+            if policy_result.is_denied:
+                self.messages.append({"role": "tool", "tool_call_id": tc.get("id", ""), "content": f"[策略拒绝] {policy_result.reason}"})
+                continue
+
+            if self.on_tool_call:
+                self.on_tool_call(name, args, self.stats)
+
+            tool_start = time.time()
+            try:
+                output = tool_module.execute_tool(name, args)
+                duration = (time.time() - tool_start) * 1000
+                self.stats.tool_calls_count += 1
+                self.stats.tool_time += duration / 1000
+                self._consecutive_errors = 0
+                self._same_error_streak = 0
+
+                self.messages.append({"role": "tool", "tool_call_id": tc.get("id", ""), "content": str(output)[:5000]})
+                if self.on_tool_output:
+                    self.on_tool_output(name, str(output)[:500], False)
+
+                self.timeline.record_tool(name, args, str(output)[:1000], duration)
+                self.events.publish(EventType.TOOL_RESULT, {"tool": name, "duration_ms": duration}, "engine")
+
+            except Exception as e:
+                self._consecutive_errors += 1
+                self.stats.errors_count += 1
+                if name == self._last_error_tool:
+                    self._same_error_streak += 1
+                else:
+                    self._same_error_streak = 1
+                    self._last_error_tool = name
+
+                error_msg = f"[工具错误] {name}: {e}"
+                self.messages.append({"role": "tool", "tool_call_id": tc.get("id", ""), "content": error_msg})
+                if self.on_tool_output:
+                    self.on_tool_output(name, str(e), True)
+
+                self.timeline.record_error(str(e), name)
+                self.events.publish(EventType.TOOL_ERROR, {"tool": name, "error": str(e)}, "engine")
 
     def run(self, user_input: str, extra_context: str = "") -> str:
         self.stats.reset()
         self.budget.reset()
         self._interrupted = False
-        self._use_streaming = True  # 每次任务重新尝试流式
+        self._use_streaming = True
         self._install_signal_handler()
 
         if not self.messages:
@@ -455,23 +417,31 @@ class MundoEngine:
 
         self._auto_compress()
 
-        # 缓存优化：记忆上下文作为独立 system 消息，不污染 user 消息前缀
         if extra_context:
             self.messages.append({"role": "system", "content": f"[记忆上下文]\n{extra_context}"})
         self.messages.append({"role": "user", "content": user_input})
 
+        turn_id = self.timeline.start_turn(user_input)
+        self.events.publish(EventType.TURN_START, {"input": user_input[:200]}, "engine")
+
+        result = self._run_loop()
+
+        self.timeline.end_turn(turn_id, result[:500])
+        self.events.publish(EventType.TURN_END, {"result": result[:200], "tokens": self.stats.total_tokens}, "engine")
+
+        if self.on_task_done:
+            self.on_task_done(result, self.stats)
+        return result
+
+    def _run_loop(self) -> str:
         turn = 0
-        MAX_ITERATIONS = 50  # 硬性上限，防止无限循环
-        while turn < MAX_ITERATIONS:
-            if self._interrupted:
-                break
-            if self.budget.exhausted:
+        while turn < self.MAX_ITERATIONS:
+            if self._interrupted or self.budget.exhausted:
                 break
 
             turn += 1
             self.stats.turns = turn
 
-            # 预算警告
             if self.budget.should_warn and self.on_budget_warn:
                 self.on_budget_warn(self.budget)
                 self.budget.mark_warned()
@@ -487,7 +457,6 @@ class MundoEngine:
                 break
             self.stats.llm_time += time.time() - llm_start
 
-            # 更新 token 统计
             self._update_token_stats(assistant_msg)
 
             if self.on_stream_end:
@@ -495,17 +464,13 @@ class MundoEngine:
             if self.on_turn_end:
                 self.on_turn_end(turn, self.stats)
 
-            # 过滤 tool_calls
             tool_calls = self._filter_tool_calls(assistant_msg.get("tool_calls", []))
 
             if not tool_calls:
                 final_text = assistant_msg.get("content") or ""
                 self.messages.append({"role": "assistant", "content": final_text})
-                if self.on_task_done:
-                    self.on_task_done(final_text, self.stats)
                 return final_text
 
-            # 执行 tool_calls
             self.messages.append({
                 "role": "assistant",
                 "content": assistant_msg.get("content") or "",
@@ -513,209 +478,64 @@ class MundoEngine:
             })
             self._execute_tool_calls(tool_calls)
 
-            # 卡死检测：同一工具连续失败 3 次 → 强制跳出
-            if self._same_error_streak >= self._stuck_threshold:
+            if self._same_error_streak >= STUCK_THRESHOLD:
                 break
 
-            # 每轮结束后检查是否需要压缩
             self._auto_compress()
 
+        return self._handle_loop_end()
+
+    def _handle_loop_end(self) -> str:
         if self._interrupted:
-            final = "蒙多被中断。"
-        elif self._same_error_streak >= self._stuck_threshold:
-            final = f"⚠️ 工具 {self._last_error_tool} 连续失败 {self._same_error_streak} 次，蒙多卡住了。\n建议：检查任务描述，或换个方式提问。"
-        elif self._consecutive_errors >= 5:
-            final = "⚠️ 蒙多遇到连续错误，无法继续。请检查任务描述或换个方式提问。"
-        else:
-            # 循环结束但没有文本回复 → 追加一次总结调用
-            self.messages.append({"role": "user", "content": "请用一句话总结你刚才完成的工作。"})
-            try:
-                summary_msg = self._call_llm()
-                if summary_msg and summary_msg.get("content"):
-                    final = summary_msg["content"]
-                    self.messages.append({"role": "assistant", "content": final})
-                else:
-                    final = "蒙多执行完毕，但未能生成总结。用 /status 查看详情。"
-            except Exception:
-                final = "蒙多执行完毕，但总结生成失败。用 /status 查看详情。"
-        if self.on_task_done:
-            self.on_task_done(final, self.stats)
-        return final
+            return "蒙多被中断。"
+        if self._same_error_streak >= STUCK_THRESHOLD:
+            return f"工具 {self._last_error_tool} 连续失败 {self._same_error_streak} 次，蒙多卡住了。"
+        if self._consecutive_errors >= 5:
+            return "蒙多遇到连续错误，无法继续。"
 
-    def _try_call_llm(self, attempt: int) -> Optional[Dict]:
-        """单次 LLM 调用尝试（流式优先，失败降级）"""
-        if self._use_streaming:
-            try:
-                stream_iter = self.client.chat_stream(
-                    messages=self.messages, tools=tool_registry.schemas,
-                    temperature=0.7, max_tokens=self.max_tokens_override,
-                )
-                return self._accumulate_stream(stream_iter)
-            except Exception:
-                if attempt == 0:
-                    self._use_streaming = False
-                else:
-                    raise
-
-        result = self.client.chat(
-            messages=self.messages, tools=tool_registry.schemas,
-            temperature=0.7, max_tokens=self.max_tokens_override,
-        )
-        msg = LLMClient.extract_response(result)
-        msg["_usage"] = LLMClient.extract_usage(result)
-        return msg
-
-    def _call_llm(self, max_retries: int = 2) -> Optional[Dict]:
-        """调用 LLM，流式优先，失败降级，自动重试（含总超时 + 友好错误）"""
-        last_error = None
-        last_error_info = None
-        call_start = time.time()
-        CALL_TIMEOUT = 300  # 5 分钟总超时
-
-        for attempt in range(max_retries):
-            if time.time() - call_start > CALL_TIMEOUT:
-                last_error = "模型响应总超时（5 分钟）"
-                last_error_info = {"category": "timeout", "retryable": False,
-                                   "user_tip": "模型长时间无响应。请稍后重试，或运行 /switch 换个 provider。"}
-                break
-            try:
-                return self._try_call_llm(attempt)
-            except RuntimeError as e:
-                last_error = str(e)
-                last_error_info = _classify_error(e, last_error)
-                if last_error_info["category"] == "context_overflow":
-                    self.messages = ContextCompressor.compress(self.messages, target_tokens=40000)
-                    self.stats.retries_count += 1
-                    continue
-                if last_error_info["retryable"] and attempt < max_retries - 1:
-                    time.sleep(min(2 ** attempt * 2, 30))
-                    self.stats.retries_count += 1
-                    continue
-                break
-            except Exception as e:
-                last_error = str(e)
-                last_error_info = _classify_error(e, last_error)
-                break
-
-        # 构建用户友好的错误信息
-        self.stats.errors_count += 1
-        if last_error_info:
-            tip = last_error_info.get("user_tip", "")
-            category = last_error_info.get("category", "unknown")
-            error_msg = f"⚠️ {tip}"
-            # 附带简短诊断信息（给高级用户）
-            if category in ("timeout", "network", "connection"):
-                error_msg += f"\n[dim]诊断: {category} | {last_error[:80]}[/]"
-        else:
-            error_msg = f"⚠️ 蒙多遇到了未知错误。请重试，或运行 /switch 换个 provider。"
-
-        if self.on_task_done:
-            self.on_task_done(error_msg, self.stats)
-        return None
-
-    def _execute_tool_calls(self, tool_calls: List[Dict]):
-        """执行工具调用序列"""
-        for tc in tool_calls:
-            if self._interrupted:
-                break
-            func = tc.get("function", {})
-            tool_name = func.get("name", "")
-            tool_id = tc.get("id", "")
-
-            try:
-                tool_args = json.loads(func.get("arguments", "{}"))
-            except json.JSONDecodeError:
-                # LLM 返回的 arguments 格式错误，用 repair_json 尝试修复
-                raw = func.get("arguments", "{}")
-                try:
-                    fixed = repair_json(raw)
-                    tool_args = fixed if isinstance(fixed, dict) else {}
-                except Exception:
-                    tool_args = {}
-                    print(f"[core] tool_args JSON 解析失败，已降级为空参数: {raw[:100]}", file=sys.stderr)
-
-            self.stats.tool_calls_count += 1
-            self.stats._active_tools.append(tool_name)
-
-            if self.on_tool_call:
-                self.on_tool_call(tool_name, tool_args, self.stats)
-
-            tool_start = time.time()
-            result_text = tool_registry.execute(tool_name, tool_args)
-            tool_duration = time.time() - tool_start
-            self.stats.tool_time += tool_duration
-
-            is_error = result_text.startswith("[错误") or result_text.startswith("[工具执行错误")
-
-            if is_error:
-                self.stats.errors_count += 1
-                self._consecutive_errors += 1
-                # 追踪同一工具连续错误
-                if tool_name == self._last_error_tool:
-                    self._same_error_streak += 1
-                else:
-                    self._same_error_streak = 1
-                    self._last_error_tool = tool_name
-            else:
-                # 成功 → 重置连续错误计数
-                self._consecutive_errors = 0
-                self._same_error_streak = 0
-                self._last_error_tool = ""
-
-            if self.on_tool_output:
-                display_text = result_text[:3000] if len(result_text) > 3000 else result_text
-                self.on_tool_output(tool_name, display_text, is_error)
-
-            if len(result_text) > 3000:
-                result_text = result_text[:3000] + "\n... (截断)"
-
-            self.messages.append({
-                "role": "tool",
-                "tool_call_id": tool_id,
-                "content": result_text,
-            })
-
-    def _update_token_stats(self, assistant_msg: Dict):
-        """更新 token 统计 — 提取 cached_tokens"""
-        usage = assistant_msg.get("_usage") or {}
-        api_prompt = usage.get("prompt_tokens", 0)
-        api_completion = usage.get("completion_tokens", 0)
-
-        # 提取缓存命中 tokens（OpenAI 格式：usage.prompt_tokens_details.cached_tokens）
-        cached_tokens = 0
-        details = usage.get("prompt_tokens_details") or usage.get("prompt_tokens")
-        if isinstance(details, dict):
-            cached_tokens = details.get("cached_tokens", 0)
-        # 某些 provider 直接放在 usage 顶层
-        if not cached_tokens:
-            cached_tokens = usage.get("cache_read_input_tokens", 0) or usage.get("cached_tokens", 0)
-
-        if api_prompt > 0:
-            self.stats.prompt_tokens += api_prompt
-        else:
-            total_chars = sum(len((m.get("content") or "")) for m in self.messages)
-            self.stats.prompt_tokens = max(self.stats.prompt_tokens, total_chars * 2 // 3)
-        if api_completion > 0:
-            self.stats.completion_tokens += api_completion
-        self.stats.total_tokens = self.stats.prompt_tokens + self.stats.completion_tokens
-
-        # 更新预算
-        self.budget.update(api_prompt, api_completion)
-
-        # 通知 UI 层 token 统计
-        if self.on_llm_stats:
-            total_context = ContextCompressor.estimate_tokens(self.messages)
-            self.on_llm_stats(api_prompt, api_completion, cached_tokens, total_context)
+        # 追加总结
+        self.messages.append({"role": "user", "content": "请用一句话总结你刚才完成的工作。"})
+        try:
+            summary_msg = self._call_llm()
+            if summary_msg and summary_msg.get("content"):
+                final = summary_msg["content"]
+                self.messages.append({"role": "assistant", "content": final})
+                return final
+        except Exception:
+            pass
+        return "蒙多执行完毕。用 /status 查看详情。"
 
     def _install_signal_handler(self):
-        """安装 Ctrl+C 信号处理器"""
-        def _handler(signum, frame):
+        def handler(signum, frame):
             self._interrupted = True
-        self._original_handler = signal.signal(signal.SIGINT, _handler)
+        signal.signal(signal.SIGINT, handler)
 
     def reset(self):
         self.messages = []
-        self._interrupted = False
+        self.stats.reset()
         self.budget.reset()
-        if hasattr(self, '_original_handler') and self._original_handler:
-            signal.signal(signal.SIGINT, self._original_handler)
+        self._context = ContextMapper(ContextBudget(max_tokens=CONTEXT_MAX_TOKENS))
+
+    def compact(self):
+        if not self.messages:
+            return
+        old_count = len(self.messages)
+        system_msg = self.messages[0] if self.messages[0]["role"] == "system" else None
+        recent = self.messages[-CONTEXT_KEEP_RECENT:]
+        old = self.messages[1:-CONTEXT_KEEP_RECENT] if len(self.messages) > CONTEXT_KEEP_RECENT + 1 else []
+
+        summary_parts = []
+        for m in old:
+            content = (m.get("content") or "")[:80]
+            if content:
+                summary_parts.append(content)
+
+        new_messages = []
+        if system_msg:
+            new_messages.append(system_msg)
+        if summary_parts:
+            new_messages.append({"role": "system", "content": f"[上下文压缩] {' | '.join(summary_parts[-8:])}"})
+        new_messages.extend(recent)
+
+        self.messages = new_messages
+        return old_count, len(self.messages)

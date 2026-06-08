@@ -1,13 +1,4 @@
-"""蒙多 LLM 客户端 v1.2.7 — 多 provider + 流式 + 重试 + 消息清洗 + 超时增强
-
-v1.2.7 改进：
-- 流式请求支持重试（流式无重试，卡死就死）★核心修复
-- 空闲超时 120s → 45s，更快检测卡死
-- DNS 预检：连接前 8s 内探测端点可达性，不可达直接报错
-- 渐进超时：首次 90s，重试 180s（模型可能慢）
-- 随机退避抖动防雪崩
-- 更精确的超时错误分类和用户提示
-"""
+"""蒙多 LLM 客户端 v1.4.1 — 多 provider + 流式 + 重试 + 消息清洗 + 超时增强"""
 
 import os
 import json
@@ -18,21 +9,21 @@ import urllib.request
 import urllib.error
 from pathlib import Path
 from typing import List, Dict, Iterator, Optional
+from constants import (
+    DNS_TIMEOUT, READ_TIMEOUT_FIRST, READ_TIMEOUT_RETRY,
+    STREAM_IDLE_TIMEOUT, STREAM_MAX_WAIT, MAX_RETRY, RETRY_DELAY,
+)
 
-
-# ═══════════════════════════════════════════════
-# 超时配置（集中管理，一处改全局生效）
-# ═══════════════════════════════════════════════
 
 class TimeoutConfig:
-    DNS_TIMEOUT = 8               # DNS 解析超时
-    READ_TIMEOUT_FIRST = 90       # 首次请求读取超时
-    READ_TIMEOUT_RETRY = 180      # 重试请求读取超时（模型可能慢）
-    STREAM_CONNECT_TIMEOUT = 30   # 流式连接超时
-    STREAM_IDLE_TIMEOUT = 45      # 流式空闲超时（45s 无数据 → 卡死）
-    STREAM_TOTAL_TIMEOUT = 300    # 流式总超时（5 分钟）
-    MAX_RETRIES = 3               # 最大重试
-    BACKOFF_MAX = 30              # 最大退避秒数
+    DNS_TIMEOUT = DNS_TIMEOUT
+    READ_TIMEOUT_FIRST = READ_TIMEOUT_FIRST
+    READ_TIMEOUT_RETRY = READ_TIMEOUT_RETRY
+    STREAM_CONNECT_TIMEOUT = 30
+    STREAM_IDLE_TIMEOUT = STREAM_IDLE_TIMEOUT
+    STREAM_TOTAL_TIMEOUT = STREAM_MAX_WAIT
+    MAX_RETRIES = MAX_RETRY
+    BACKOFF_MAX = 30
 
 
 RETRYABLE_CODES = {429, 500, 502, 503, 504}
