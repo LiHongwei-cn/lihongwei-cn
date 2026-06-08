@@ -1,0 +1,92 @@
+[
+  {
+    "title": "GPR15-guided CD8<sup>+</sup> T regulatory cells control intestinal inflammation",
+    "link": "https://www.nature.com/",
+    "summary": "",
+    "published": "2026-06-08",
+    "journal": "Nature",
+    "category": "multidisciplinary",
+    "hash": "e396daeffc9c436d",
+    "crawled_at": "2026-06-09T06:57:07.454693"
+  },
+  {
+    "title": "Distributed control circuits across a brain-and-cord connectome",
+    "link": "https://www.nature.com/uploads/product/nature/rss.png",
+    "summary": "",
+    "published": "2026-06-08",
+    "journal": "Nature",
+    "category": "multidisciplinary",
+    "hash": "cc6faf7e60004884",
+    "crawled_at": "2026-06-09T06:57:07.454723"
+  },
+  {
+    "title": "Targeting Cancer-Specific Mutations with RNA-Triggered Chromatin Shredding",
+    "link": "https://www.nature.com/articles/s41586-026-10749-4",
+    "summary": "",
+    "published": "2026-06-08",
+    "journal": "Nature",
+    "category": "multidisciplinary",
+    "hash": "e3de07839d146f88",
+    "crawled_at": "2026-06-09T06:57:07.454733"
+  },
+  {
+    "title": "Lean4Agent: Formal Modeling and Verification for Agent Workflow and Trajectory",
+    "link": "https://arxiv.org/abs/2606.06523",
+    "summary": "arXiv:2606.06523v1 Announce Type: new Abstract: Equipping Large Language Models (LLMs) to execute reliable multi-step workflows has become a central challenge in artificial intelligence. Despite recent advances in LLMs' agentic capabilities, most agent systems still lack formal methods for specifying, verifying, and debugging their workflow and execution trajectories. This challenge mirrors a long-standing problem in mathematics, where the ambiguity of natural languages (NLs) motivates the devel",
+    "published": "Mon, 08 Jun 2026 00:00:00 -0400",
+    "journal": "arXiv AI",
+    "category": "ai",
+    "hash": "8c21ce118f50a9f6",
+    "crawled_at": "2026-06-09T06:57:08.999539"
+  },
+  {
+    "title": "CrowdMath: A Dataset of Crowdsourced Mathematical Research Discussions",
+    "link": "https://arxiv.org/abs/2606.06526",
+    "summary": "arXiv:2606.06526v1 Announce Type: new Abstract: Large language models have made substantial progress on mathematical reasoning, but existing benchmarks typically evaluate well-specified problems with final answers, step-by-step solutions, or complete proofs. They do not capture collaborative open-problem solving: a setting in which participants propose partial arguments, identify gaps or errors in prior steps, repair flawed reasoning, and gradually synthesize incremental contributions into a pro",
+    "published": "Mon, 08 Jun 2026 00:00:00 -0400",
+    "journal": "arXiv AI",
+    "category": "ai",
+    "hash": "6468daeae58679b5",
+    "crawled_at": "2026-06-09T06:57:08.999556"
+  },
+  {
+    "title": "Attack Selection in Agentic AI Control Evaluations Meaningfully Decreases Safety",
+    "link": "https://arxiv.org/abs/2606.06529",
+    "summary": "arXiv:2606.06529v1 Announce Type: new Abstract: An attacker that strategically chooses when to attack is much harder to catch than one that attacks indiscriminately. AI control is a safety framework for deploying capable but untrusted AI agents under the oversight of a weaker, trusted monitor and a limited human audit budget. Control evaluations stress-test these protocols by pitting a red-team attack policy against the blue-team monitor, but current evaluations typically assume attackers that d",
+    "published": "Mon, 08 Jun 2026 00:00:00 -0400",
+    "journal": "arXiv AI",
+    "category": "ai",
+    "hash": "42479c5609a42d20",
+    "crawled_at": "2026-06-09T06:57:08.999560"
+  },
+  {
+    "title": "Searching for success with semiconductor start-ups for artificial intelligence",
+    "link": "https://www.nature.com/",
+    "summary": "",
+    "published": "2026-06-08",
+    "journal": "Nature Electronics",
+    "category": "electronics",
+    "hash": "94cbb30f5b061232",
+    "crawled_at": "2026-06-09T06:57:12.429095"
+  },
+  {
+    "title": "Giant gate response of the charge in an electron–lattice condensate",
+    "link": "https://www.nature.com/uploads/product/natelectron/rss.png",
+    "summary": "",
+    "published": "2026-06-04",
+    "journal": "Nature Electronics",
+    "category": "electronics",
+    "hash": "af9ff9147c04df98",
+    "crawled_at": "2026-06-09T06:57:12.429124"
+  },
+  {
+    "title": "Sensing exceptional potential",
+    "link": "https://www.nature.com/articles/s41928-026-01645-w",
+    "summary": "",
+    "published": "2026-05-29",
+    "journal": "Nature Electronics",
+    "category": "electronics",
+    "hash": "f782fb49f76556ce",
+    "crawled_at": "2026-06-09T06:57:12.429136"
+  }
+]
