@@ -30,6 +30,7 @@
 | `code-tidy` | 代码写完后自动清理死代码、冗余注释、未用导入 |
 | `neat-freak` | 阶段结束/收尾/整理文档/同步记忆时触发 |
 | `homepage-layout` | 新增/修改项目页面后自动检查主页布局 |
+| `resume-builder` | 制作/优化简历（白底专业风格，禁止深色主题，单文件HTML） |
 | `simplify` | 代码审查、查找重复逻辑、质量优化 |
 | `claude-api` | 涉及 Anthropic SDK / Claude API 代码时 |
 | `security-review` | 提交前安全审查 |
@@ -48,6 +49,7 @@
 - **论文翻译/文献精读/对照阅读** → `nature-reader`
 - **查文献/搜索论文/找文章/检索** → `nature-academic-search`
 - **卡住了/搞不定/报错/没思路/换方案** → `蒙多`
+- **简历/简历/CV/求职/找工作/投简历** → `resume-builder`（白底专业风格，禁止深色主题）
 - **整理代码/清理/洁癖/tidy** → `code-tidy`
 - **收尾/同步/整理文档/更新记忆/这个阶段做完了** → `neat-freak`
 - **主页布局/首页排版/check layout** → `homepage-layout`
