@@ -54,7 +54,7 @@ from setup import (
 from approval import approve_tool_call
 from display import TaskConsole, console
 
-VERSION = "1.3.0"
+VERSION = "1.3.1"
 
 
 def safe_execute_tool(name: str, args: dict) -> str:
