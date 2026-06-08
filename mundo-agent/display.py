@@ -103,6 +103,61 @@ def _bar(percent: Optional[int], w: int = 8) -> str:
 # Slash 命令自动补全器
 # ═══════════════════════════════════════════════
 
+from prompt_toolkit.history import History as _HistoryBase
+
+
+class _PersistentHistory(_HistoryBase):
+    """即时写入的命令历史，不依赖 session 生命周期"""
+
+    def __init__(self, path: str):
+        super().__init__()
+        self._path = Path(path)
+        self._path.parent.mkdir(parents=True, exist_ok=True)
+        self._strings: List[str] = []
+        self._load()
+
+    def _load(self):
+        if not self._path.exists():
+            return
+        lines = self._path.read_text(encoding="utf-8").splitlines()
+        seen = set()
+        for line in lines:
+            # 兼容 prompt_toolkit FileHistory 格式（+ 前缀）和纯文本格式
+            if line.startswith("#"):
+                continue
+            if line.startswith("+"):
+                line = line[1:]
+            stripped = line.strip()
+            if stripped and stripped not in seen:
+                seen.add(stripped)
+                self._strings.append(stripped)
+        self._strings = self._strings[-500:]
+
+    def append(self, entry: str):
+        stripped = entry.strip()
+        if not stripped:
+            return
+        # 去重：如果和最后一条相同就不重复写
+        if self._strings and self._strings[-1] == stripped:
+            return
+        self._strings.append(stripped)
+        if len(self._strings) > 500:
+            self._strings = self._strings[-500:]
+        self._flush()
+
+    def _flush(self):
+        try:
+            self._path.write_text("\n".join(self._strings) + "\n", encoding="utf-8")
+        except Exception:
+            pass
+
+    def load_history_strings(self):
+        return list(reversed(self._strings))
+
+    def store_string(self, string: str):
+        self.append(string)
+
+
 class SlashCompleter:
     def __repr__(self) -> str:
         return f"SlashCompleter(commands={len(self.commands)})"
@@ -254,7 +309,6 @@ class TaskConsole:
 
     def read_input(self) -> str:
         from prompt_toolkit import PromptSession
-        from prompt_toolkit.history import FileHistory
         from prompt_toolkit.keys import Keys
         from prompt_toolkit.styles import Style
         from prompt_toolkit.key_binding import KeyBindings
@@ -266,6 +320,7 @@ class TaskConsole:
         stored = {"text": "", "label": ""}
         navigating = [False]
         is_pasting = [False]
+        history = _PersistentHistory(hist_path)
 
         @kb.add("enter")
         def _(event):
@@ -274,6 +329,9 @@ class TaskConsole:
                 result = stored["text"]
             else:
                 result = buf.text.rstrip()
+            # 提交时立即写入历史
+            if result.strip():
+                history.append(result.strip())
             event.app.exit(result=result)
 
         @kb.add("escape", "enter")
@@ -299,7 +357,7 @@ class TaskConsole:
             is_pasting[0] = False
 
         session = PromptSession(
-            history=FileHistory(hist_path),
+            history=history,
             style=style,
             key_bindings=kb,
             multiline=True,
