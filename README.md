@@ -25,7 +25,7 @@
 
 蒙多是**完整的 AI 智能编排系统**：通过 Hermes Agent 平台调度 Claude Code、DeepSeek、ChatGPT、Gemini 等多个 AI 模型协同工作。
 
-**蒙多不再只是 Skill。蒙多是 Agent。蒙多是皇帝。** 迭代 21 个版本。
+**蒙多不再只是 Skill。蒙多是 Agent。蒙多是皇帝。** 迭代 23 个版本。
 
 **蒙多不动你的钱。** 为何？因为蒙多不在乎。哈哈哈哈哈。
 
@@ -135,7 +135,7 @@ irm https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/mundo-agent
 ```
 
 安装时自动完成：
-1. 下载 MUNDO Agent 引擎（13 个 Python 模块）
+1. 下载 MUNDO Agent 引擎（29 个 Python 模块）
 2. 从云仓库拉取所有 Skills（蒙多 + 学术写作 + MATLAB + 代码整理 + ...）
 3. 从云仓库拉取全局规范（代码规范 + 安全规则 + Git 规范 + ...）
 4. 创建全局命令 `mundo`
@@ -347,20 +347,36 @@ open ~/.hermes/mundo-agent/MUNDO.command
 ## 🏗️ 架构
 
 ```
-MUNDO Agent 引擎（13 个模块）
-├── mundo.py        # CLI 入口 + 状态栏 + 启动流程
-├── engine.py       # Agentic Loop + Agent 调度
-├── llm.py          # LLM 多模型客户端（28 个 provider）
-├── tools.py        # 工具引擎（terminal/file/web/search）
-├── agents.py       # Agent 检测 + 调度（Hermes/Claude/Codex）
-├── delegation.py   # 任务拆分 + 并行执行 + 结果汇总
-├── approval.py     # 权限审批系统
-├── cloud_sync.py   # 云仓库同步 + 质量评分
-├── setup.py        # 首次设置向导 + 全量模型目录
-├── display.py      # 极简 UI + 状态栏 + 彩色输出
-├── memory.py       # 三层记忆架构 + 记忆压缩
-├── memory_import.py # 从已有 Agent 导入记忆
-└── models.py       # 28 个模型目录 + 能力矩阵
+MUNDO Agent 引擎（29 个模块，~10000 行）
+├── mundo.py            # CLI 入口 + 启动流程 + 信号处理
+├── core.py             # Agentic Loop + 迭代预算 + 错误分类
+├── engine.py           # Agent 调度引擎
+├── llm.py              # LLM 多模型客户端（28 个 provider）
+├── tools.py            # 工具引擎（15 个工具 + 注册系统）
+├── agents.py           # Agent 检测 + 调度
+├── delegation.py       # 任务拆分 + AgentManager + MundoClone 并行
+├── approval.py         # 权限审批系统
+├── cloud_sync.py       # 云仓库同步 + 质量评分
+├── setup.py            # 首次设置向导 + 全量模型目录
+├── display.py          # 极简 UI + 流式输出 + _PersistentHistory
+├── memory.py           # SQLite + FTS5 记忆系统
+├── memory_import.py    # 从已有 Agent 导入记忆
+├── models.py           # 28 个模型目录 + 能力矩阵
+├── policy.py           # Policy 引擎（规则链 + 优先级裁决）
+├── events.py           # Event Bus（25 种事件 + 发布订阅）
+├── timeline.py         # Timeline（SQLite 持久化执行轨迹）
+├── context_mapper.py   # Context Mapper（语义分块 + 优先级淘汰）
+├── cache.py            # Cache Manager（三层缓存 + 价值评分）
+├── sandbox.py          # Sandbox（进程隔离 + 资源限制）
+├── mcp.py              # MCP 协议（工具服务器发现与能力协商）
+├── skills.py           # Skill 系统（注册/加载/依赖链）
+├── plugins.py          # Plugin 系统（生命周期 + 钩子）
+├── runtime_config.py   # Runtime Config（分层配置 + 热重载）
+├── claude_integration.py  # Claude Code 6 种执行模式
+├── hermes_integration.py  # Hermes Agent 18 种调用模式
+├── codex_integration.py   # Codex 全自动集成
+├── chinese_aesthetics.py  # 中文审美模块
+└── test_mundo.py       # 测试套件
 ```
 
 ---
