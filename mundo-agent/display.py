@@ -334,7 +334,7 @@ class TaskConsole:
         paste_dir = Path.home() / ".hermes" / "mundo-agent" / "pastes"
         paste_dir.mkdir(parents=True, exist_ok=True)
         n = TaskConsole._paste_counter
-        ts = _time.strftime('%H%M%S')
+        ts = _time.strftime('%H:%M:%S')
         paste_file = paste_dir / f"paste_{n}_{ts}.txt"
         paste_file.write_text(text, encoding="utf-8")
         lines = text.count('\n') + 1
