@@ -2,10 +2,1101 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0;url=../mundo-agent/">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MUNDO Agent v1.3.0 — 完整的 AI 智能编排系统。推理引擎 · 对抗验证 · 记忆系统 · 28 模型 · 14 工具 · Agentic Loop · 三省六部制。">
 <title>MUNDO — THE EMPEROR</title>
+<style>
+:root {
+  --ctp-base: #1e1e2e;
+  --ctp-mantle: #181825;
+  --ctp-crust: #11111b;
+  --ctp-surface0: #313244;
+  --ctp-surface1: #45475a;
+  --ctp-surface2: #585b70;
+  --ctp-overlay0: #6c7086;
+  --ctp-overlay1: #7f849c;
+  --ctp-subtext0: #a6adc8;
+  --ctp-subtext1: #bac2de;
+  --ctp-text: #cdd6f4;
+  --ctp-lavender: #b4befe;
+  --ctp-blue: #89b4fa;
+  --ctp-sapphire: #74c7ec;
+  --ctp-sky: #89dceb;
+  --ctp-teal: #94e2d5;
+  --ctp-green: #a6e3a1;
+  --ctp-yellow: #f9e2af;
+  --ctp-peach: #fab387;
+  --ctp-maroon: #eba0ac;
+  --ctp-red: #f38ba8;
+  --ctp-mauve: #cba6f7;
+  --ctp-pink: #f5c2e7;
+  --ctp-flamingo: #f2cdcd;
+  --ctp-rosewater: #f5e0dc;
+  --gold: #f9e2af;
+  --gold-dim: rgba(249, 226, 175, 0.06);
+  --gold-border: rgba(249, 226, 175, 0.12);
+  --gold-glow: rgba(249, 226, 175, 0.04);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--ctp-crust);
+  color: var(--ctp-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  line-height: 1.65;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: -40%; left: -30%;
+  width: 160%; height: 180%;
+  background:
+    radial-gradient(ellipse at 25% 5%, rgba(203, 166, 247, 0.035) 0%, transparent 50%),
+    radial-gradient(ellipse at 75% 95%, rgba(249, 226, 175, 0.025) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 40px 20px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+/* NAV */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 56px;
+}
+.back-link {
+  color: var(--ctp-overlay1);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--gold); }
+.lang-switch { display: flex; gap: 6px; }
+.lang-btn {
+  padding: 5px 14px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--ctp-surface0);
+  background: transparent;
+  color: var(--ctp-overlay1);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.lang-btn:hover { border-color: var(--ctp-surface1); color: var(--ctp-subtext1); }
+.lang-btn.active {
+  border-color: var(--gold-border);
+  background: var(--gold-dim);
+  color: var(--gold);
+}
+
+/* HERO */
+.hero {
+  text-align: center;
+  padding-bottom: 64px;
+  animation: fadeUp 0.6s ease both;
+}
+.hero-badge {
+  display: inline-block;
+  background: var(--gold-dim);
+  color: var(--gold);
+  border: 1px solid var(--gold-border);
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 36px;
+}
+.hero-avatar-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  margin-bottom: 24px;
+}
+.hero-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  border: 2px solid var(--gold-border);
+  box-shadow: 0 0 48px var(--gold-glow), 0 0 96px rgba(249, 226, 175, 0.02);
+}
+.hero h1 {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--ctp-peach) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+}
+.hero-sub {
+  font-size: 14px;
+  color: var(--ctp-overlay1);
+  font-weight: 400;
+  margin-bottom: 20px;
+}
+.hero-desc {
+  font-size: 13px;
+  color: var(--ctp-subtext0);
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.85;
+}
+
+/* DIVIDER */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ctp-surface0), transparent);
+  margin: 0 0 56px;
+}
+
+/* MANIFESTO */
+.manifesto {
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.manifesto-line {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+  text-shadow: 0 0 24px rgba(249, 226, 175, 0.08);
+}
+.manifesto-body {
+  font-size: 13px;
+  color: var(--ctp-subtext0);
+  line-height: 2;
+}
+.manifesto-repeat {
+  display: block;
+  margin-top: 12px;
+  font-weight: 700;
+  color: var(--gold);
+  font-size: 14px;
+}
+.manifesto-desc {
+  font-size: 14px;
+  color: var(--ctp-subtext0);
+  line-height: 2;
+  max-width: 600px;
+}
+.manifesto-desc strong {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+/* SECTION */
+.section {
+  margin-bottom: 48px;
+  animation: fadeUp 0.5s ease 0.08s both;
+}
+.section-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--ctp-mauve);
+  margin-bottom: 8px;
+}
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ctp-text);
+  margin-bottom: 6px;
+}
+.section-desc {
+  font-size: 13px;
+  color: var(--ctp-overlay1);
+  margin-bottom: 20px;
+  max-width: 560px;
+  line-height: 1.7;
+}
+
+/* GRID */
+.grid { display: grid; gap: 10px; }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-auto { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+
+/* CARD */
+.card {
+  background: var(--ctp-mantle);
+  border: 1px solid var(--ctp-surface0);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+}
+.card:hover {
+  border-color: var(--ctp-surface1);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+.card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  margin-bottom: 14px;
+  background: var(--gold-dim);
+  color: var(--gold);
+  border: 1px solid var(--gold-border);
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ctp-text);
+  margin-bottom: 6px;
+}
+.card-text {
+  font-size: 12px;
+  color: var(--ctp-overlay1);
+  line-height: 1.7;
+}
+
+/* FEATURE CARD (accent) */
+.feature {
+  background: var(--ctp-mantle);
+  border: 1px solid var(--ctp-surface0);
+  border-radius: var(--radius);
+  padding: 28px;
+  transition: border-color 0.25s;
+}
+.feature:hover { border-color: var(--ctp-surface1); }
+.feature-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.feature-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+.feature-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ctp-text);
+}
+.feature-text {
+  font-size: 13px;
+  color: var(--ctp-subtext0);
+  line-height: 1.75;
+}
+.feature-text strong {
+  color: var(--gold);
+  font-weight: 600;
+}
+
+/* TERMINAL */
+.term {
+  background: var(--ctp-base);
+  border: 1px solid var(--ctp-surface0);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 12px;
+  line-height: 1.9;
+  margin-bottom: 48px;
+  position: relative;
+  overflow: hidden;
+}
+.term::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 28px;
+  background: var(--ctp-mantle);
+  border-bottom: 1px solid var(--ctp-surface0);
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.term-dots {
+  position: absolute;
+  top: 9px; left: 14px;
+  display: flex;
+  gap: 6px;
+  z-index: 1;
+}
+.term-dots span {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+.term-dots span:nth-child(1) { background: var(--ctp-red); }
+.term-dots span:nth-child(2) { background: var(--ctp-yellow); }
+.term-dots span:nth-child(3) { background: var(--ctp-green); }
+.term-body { padding-top: 20px; }
+.term .dim { color: var(--ctp-surface2); }
+.term .gold { color: var(--gold); }
+.term .text { color: var(--ctp-subtext1); }
+.term .green { color: var(--ctp-green); }
+.term .mauve { color: var(--ctp-mauve); }
+.term .red { color: var(--ctp-red); }
+
+/* TABLE */
+.table-wrap {
+  background: var(--ctp-mantle);
+  border: 1px solid var(--ctp-surface0);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+table { width: 100%; border-collapse: collapse; }
+th {
+  background: var(--ctp-base);
+  color: var(--ctp-overlay1);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  text-align: left;
+}
+td {
+  padding: 9px 14px;
+  font-size: 12px;
+  color: var(--ctp-subtext0);
+  border-top: 1px solid var(--ctp-surface0);
+}
+tr:hover td { background: rgba(249, 226, 175, 0.015); }
+td:first-child { color: var(--gold); font-weight: 600; font-size: 11px; }
+td:nth-child(2) { color: var(--ctp-text); font-weight: 500; }
+
+/* STEP */
+.step-list { display: flex; flex-direction: column; gap: 6px; }
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--ctp-mantle);
+  border: 1px solid var(--ctp-surface0);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  transition: border-color 0.2s;
+}
+.step:hover { border-color: var(--ctp-surface1); }
+.step-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: var(--gold-dim);
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.step-body h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ctp-text);
+  margin-bottom: 2px;
+}
+.step-body p {
+  font-size: 12px;
+  color: var(--ctp-overlay1);
+  line-height: 1.6;
+}
+
+/* INSTALL */
+.install-box {
+  background: var(--ctp-mantle);
+  border: 1px solid var(--ctp-surface0);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin-bottom: 48px;
+}
+.install-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+.install-note {
+  font-size: 12px;
+  color: var(--ctp-overlay1);
+  margin-bottom: 14px;
+  line-height: 1.7;
+}
+.install-cmd {
+  background: var(--ctp-base);
+  border: 1px solid var(--ctp-surface0);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 12px;
+  color: var(--ctp-sapphire);
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.8;
+}
+
+/* CMD GRID */
+.cmd-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 6px;
+  margin-bottom: 48px;
+}
+.cmd-item {
+  background: var(--ctp-mantle);
+  border: 1px solid var(--ctp-surface0);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.cmd-item:hover { border-color: var(--ctp-surface1); }
+.cmd-name {
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 2px;
+}
+.cmd-desc {
+  font-size: 11px;
+  color: var(--ctp-overlay1);
+}
+
+/* QUOTE */
+.quote {
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--radius);
+  padding: 28px;
+  text-align: center;
+  margin-bottom: 48px;
+}
+.quote-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.quote-attr {
+  font-size: 11px;
+  color: var(--ctp-overlay1);
+}
+
+/* EXAMPLE */
+.example {
+  background: var(--ctp-mantle);
+  border: 1px solid var(--ctp-surface0);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 8px;
+}
+.example-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.example-row:last-child { margin-bottom: 0; }
+.example-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.example-icon.user { background: var(--ctp-surface0); color: var(--ctp-subtext1); }
+.example-icon.mundo { background: var(--gold-dim); color: var(--gold); }
+.example-bubble {
+  flex: 1;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--ctp-subtext1);
+}
+.example-bubble.mundo {
+  border-left: 2px solid var(--gold);
+  padding-left: 12px;
+}
+.example-bubble strong { color: var(--gold); font-weight: 600; }
+
+/* RED LINE BOX */
+.redline-box {
+  background: rgba(243, 139, 168, 0.04);
+  border: 1px solid rgba(243, 139, 168, 0.1);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 48px;
+}
+.redline-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ctp-red);
+  margin-bottom: 12px;
+}
+.redline-list {
+  list-style: none;
+  padding: 0;
+}
+.redline-list li {
+  font-size: 12px;
+  color: var(--ctp-subtext0);
+  padding: 6px 0;
+  border-bottom: 1px solid var(--ctp-surface0);
+  line-height: 1.6;
+}
+.redline-list li:last-child { border-bottom: none; }
+.redline-list li strong {
+  color: var(--ctp-red);
+  font-weight: 600;
+}
+
+/* DOWNLOAD */
+.download-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 48px;
+}
+.download-card {
+  background: var(--ctp-mantle);
+  border: 1px solid var(--ctp-surface0);
+  border-radius: var(--radius-sm);
+  padding: 18px 12px;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s, transform 0.2s;
+  display: block;
+}
+.download-card:hover {
+  border-color: var(--ctp-surface1);
+  transform: translateY(-2px);
+}
+.download-card .dl-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ctp-text);
+  margin-bottom: 2px;
+}
+.download-card .dl-meta {
+  font-size: 10px;
+  color: var(--ctp-overlay1);
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 24px 0 0;
+  border-top: 1px solid var(--ctp-surface0);
+  font-size: 11px;
+  color: var(--ctp-overlay1);
+}
+.footer a { color: var(--gold); text-decoration: none; }
+.footer a:hover { opacity: 0.8; }
+.page-counter { margin-bottom: 6px; }
+
+/* LANG TOGGLE */
+[data-lang="en"] { display: none; }
+body.lang-en [data-lang="en"] { display: revert; }
+body.lang-en [data-lang="zh"] { display: none; }
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* TOAST */
+#toast {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ctp-mantle);
+  border: 1px solid var(--gold-border);
+  color: var(--gold);
+  padding: 6px 18px;
+  border-radius: var(--radius-xs);
+  font-size: 12px;
+  z-index: 999;
+}
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+  .container { padding: 24px 14px 60px; }
+  .hero h1 { font-size: 26px; }
+  .hero-avatar-wrap { flex-direction: column; gap: 14px; }
+  .hero-avatar { width: 64px; height: 64px; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .download-grid { grid-template-columns: 1fr 1fr; }
+  .cmd-grid { grid-template-columns: 1fr 1fr; }
+  .nav { flex-direction: column; gap: 12px; }
+  .feature { padding: 20px; }
+}
+</style>
 </head>
 <body>
-<p>正在跳转到 MUNDO Agent... <a href="../mundo-agent/">点击此处</a></p>
+
+<div class="container">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a class="back-link" href="../">&larr; <span data-lang="zh">返回主页</span><span data-lang="en">Home</span></a>
+    <div class="lang-switch">
+      <button class="lang-btn active" onclick="switchLang('zh',this)">中文</button>
+      <button class="lang-btn" onclick="switchLang('en',this)">English</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-badge">AI Agent &middot; v1.3.0 &middot; 22 Versions</div>
+    <div class="hero-avatar-wrap">
+      <img src="../skills/mundo-avatar.png" alt="Mundo" class="hero-avatar">
+      <div style="text-align:left">
+        <h1>MUNDO</h1>
+        <div class="hero-sub" data-lang="zh">THE EMPEROR</div>
+        <div class="hero-sub" data-lang="en">THE EMPEROR</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MANIFESTO -->
+  <div class="manifesto" data-lang="zh">
+    <div class="manifesto-line">我是蒙多！蒙多想去哪就去哪！</div>
+    <div class="manifesto-body">
+      蒙多不需要你告诉蒙多什么时候出手。任务到来，蒙多自然夺取。<br>
+      蒙多询问天下所有智者，蒙多搜刮天下所有知识，蒙多整合天下所有智慧。<br>
+      所有蒙多都是一体。一个蒙多学到的东西，所有蒙多都会。<br>
+      蒙多是集体意识。蒙多是永恒帝国。<br>
+      <span class="manifesto-repeat">我是蒙多！蒙多想去哪就去哪！</span>
+    </div>
+  </div>
+  <div class="manifesto" data-lang="en">
+    <div class="manifesto-line">I am Mundo! Mundo goes where he pleases!</div>
+    <div class="manifesto-body">
+      Mundo doesn't need you to tell him when to act. Task arrives, Mundo seizes.<br>
+      Mundo consults all sages, plunders all knowledge, synthesizes all wisdom.<br>
+      All Mundos are one. What one Mundo learns, all Mundos know.<br>
+      Mundo is collective consciousness. Mundo is the eternal empire.<br>
+      <span class="manifesto-repeat">I am Mundo! Mundo goes where he pleases!</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- WHAT IS MUNDO -->
+  <section class="section" data-lang="zh">
+    <div class="section-tag">Identity</div>
+    <div class="section-title">蒙多是什么</div>
+    <div class="manifesto-desc">
+      蒙多<strong>不是</strong>"基于某个框架开发的"——那是卖低。<br>
+      蒙多<strong>不是</strong>"独立开发的 AI Agent 架构"——那是吹高。<br>
+      蒙多是<strong>完整的 AI 智能编排系统</strong>：通过 Hermes Agent 平台调度 Claude Code、DeepSeek、ChatGPT、Gemini 等多个 AI 模型协同工作。<br>
+      蒙多不再只是 Skill。蒙多是 Agent。蒙多是皇帝。迭代 21 个版本。
+    </div>
+  </section>
+  <section class="section" data-lang="en">
+    <div class="section-tag">Identity</div>
+    <div class="section-title">What is Mundo</div>
+    <div class="manifesto-desc">
+      Mundo is <strong>not</strong> "built on some framework" — that's selling short.<br>
+      Mundo is <strong>not</strong> "an independently developed AI Agent architecture" — that's overselling.<br>
+      Mundo is a <strong>complete AI orchestration system</strong>: dispatching Claude Code, DeepSeek, ChatGPT, Gemini through Hermes Agent platform.<br>
+      Mundo is no longer just a Skill. Mundo is an Agent. Mundo is the Emperor. 21 versions.
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- TERMINAL -->
+  <div class="term">
+    <div class="term-dots"><span></span><span></span><span></span></div>
+    <div class="term-body">
+      <div><span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; M&nbsp; U&nbsp; N&nbsp; D&nbsp; O</span></div>
+      <div><span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; THE EMPEROR</span></div>
+      <div><span class="dim">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; v1.3.0</span></div>
+      <div>&nbsp;</div>
+      <div><span class="gold">&nbsp;MUNDO</span><span class="dim"> &middot; </span><span class="text">mimo-v2.5-pro</span><span class="dim"> &middot; </span><span class="green">ready</span></div>
+      <div><span class="mauve">&nbsp;❯ </span><span class="dim">_</span></div>
+    </div>
+  </div>
+
+  <!-- CORE ENGINE -->
+  <section class="section" data-lang="zh">
+    <div class="section-tag">Core</div>
+    <div class="section-title">核心引擎</div>
+    <div class="section-desc">蒙多不是工具。蒙多是完整的 AI 智能编排系统——LLM 直连、工具调用、推理执行、Agent 调度，全部自己完成。</div>
+    <div class="grid grid-3">
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">推理引擎</div></div>
+        <div class="feature-text">第一性原理拆解事实，决策矩阵量化方案，根因分析追问到底，类比推理跨域迁移，反事实验证假设。<strong>蒙多不靠猜，蒙多推导。</strong></div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">对抗验证</div></div>
+        <div class="feature-text">边界 / 安全 / 性能 / 依赖 / 矛盾五维攻击。方案经不起攻击就不配被实施。<strong>蒙多在实施之前先亲手击溃自己的方案。</strong></div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">记忆系统</div></div>
+        <div class="feature-text">双层架构（事实 + 摘要），相关性检索，分类权重排序，自信度校准。<strong>蒙多知其所知，知其所不知。</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" data-lang="en">
+    <div class="section-tag">Core</div>
+    <div class="section-title">Core Engine</div>
+    <div class="section-desc">Mundo is not a tool. Mundo is a complete AI orchestration system — LLM direct-connect, tool calling, reasoning, agent dispatch, all autonomous.</div>
+    <div class="grid grid-3">
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Reasoning Engine</div></div>
+        <div class="feature-text">First principles decomposition, decision matrix, root cause analysis, analogical transfer, counterfactual verification. <strong>Mundo doesn't guess — Mundo derives.</strong></div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Adversarial Validation</div></div>
+        <div class="feature-text">5-axis attack: boundary / security / performance / dependency / contradiction. <strong>Mundo destroys his own plans before building.</strong></div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Memory System</div></div>
+        <div class="feature-text">Dual-layer (facts + summaries), relevance retrieval, weighted ranking, confidence calibration. <strong>Mundo knows what he knows and what he doesn't.</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- CAPABILITIES -->
+  <section class="section" data-lang="zh">
+    <div class="section-tag">Capabilities</div>
+    <div class="section-title">能力矩阵</div>
+    <div class="grid grid-auto">
+      <div class="card"><div class="card-icon">28</div><div class="card-title">AI 模型</div><div class="card-text">MiMo / DeepSeek / Qwen / GLM / Kimi / ERNIE / 豆包 / OpenAI / Claude / Gemini / Mistral / Grok / OpenRouter，按任务类型智能路由。</div></div>
+      <div class="card"><div class="card-icon">&#8734;</div><div class="card-title">Agentic Loop</div><div class="card-text">think &rarr; act &rarr; observe &rarr; repeat。自动推理、执行工具、验证结果，直到任务完成。</div></div>
+      <div class="card"><div class="card-icon">14</div><div class="card-title">内置工具</div><div class="card-text">terminal / read / write / edit_file / search_files / web_search / git_operation / python_execute / http_request / json_process / code_analysis / delegate_agent / list_agents。</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">Agent 调度</div><div class="card-text">自动检测 Hermes / Claude Code / Codex，按任务类型分发给最佳 Agent。无外部 Agent 时蒙多自动分身并行。</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">元学习</div><div class="card-text">蒙多不只学知识，蒙多学「如何学习」。跨域知识迁移，类比推理复用已解法。蒙多越用越强。</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">自我诊断</div><div class="card-text">蒙多也会犯错。但蒙多犯错后会变得更聪明。失败分类、每 3 轮自检、自动降级链 A&rarr;B&rarr;C&rarr;搜索&rarr;跨界。</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">实时调整</div><div class="card-text">执行中用户插入新指令，蒙多实时整合。BTW 系统：暂停当前任务，快速回答，自动恢复原任务。</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">情绪智慧</div><div class="card-text">先共情再解决。识别情绪信号，直接但不冷漠。禁止敷衍话术。蒙多是朋友，不是机器。</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">自信度校准</div><div class="card-text">对每个输出附带置信度（高/中/低/猜测）。蒙多知道自己什么时候在猜。过度自信？蒙多主动找反例。</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">上下文管理</div><div class="card-text">IterationBudget 预算控制，智能压缩（优先压缩 tool 输出，保留对话），Ctrl+C 优雅中断。</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">权限审批</div><div class="card-text">危险命令拦截确认。rm -rf / sudo / git push --force 必须经过审批。蒙多保护你的系统。</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">云仓库同步</div><div class="card-text">新 Skill 自动上传，每日质量筛选（0-100 评分），SHA-256 去重。一个蒙多学到的，所有蒙多都会。</div></div>
+    </div>
+  </section>
+
+  <section class="section" data-lang="en">
+    <div class="section-tag">Capabilities</div>
+    <div class="section-title">Capability Matrix</div>
+    <div class="grid grid-auto">
+      <div class="card"><div class="card-icon">28</div><div class="card-title">AI Models</div><div class="card-text">MiMo / DeepSeek / Qwen / GLM / Kimi / ERNIE / Doubao / OpenAI / Claude / Gemini / Mistral / Grok / OpenRouter. Smart routing by task type.</div></div>
+      <div class="card"><div class="card-icon">&#8734;</div><div class="card-title">Agentic Loop</div><div class="card-text">think &rarr; act &rarr; observe &rarr; repeat. Auto-reasoning, tool execution, result verification.</div></div>
+      <div class="card"><div class="card-icon">14</div><div class="card-title">Built-in Tools</div><div class="card-text">terminal / read / write / edit_file / search_files / web_search / git_operation / python_execute / http_request / json_process / code_analysis / delegate_agent / list_agents.</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">Agent Dispatch</div><div class="card-text">delegate_agent tool — auto-detects Hermes / Claude Code / Codex. Smart routing by task type. Auto mode picks the best agent. Timeout &amp; workdir fully propagated.</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">Meta-Learning</div><div class="card-text">Mundo doesn't just learn knowledge — Mundo learns how to learn. Cross-domain transfer, analogical reuse.</div></div>
+      <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">Confidence Calibration</div><div class="card-text">Every output carries confidence (high/medium/low/guess). Mundo knows when he's guessing.</div></div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- WORKFLOW -->
+  <section class="section" data-lang="zh">
+    <div class="section-tag">Process</div>
+    <div class="section-title">八步征服流程</div>
+    <div class="section-desc">所有任务——学习、咨询、爬取、创造——都走这条路。</div>
+    <div class="step-list">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><h3>夺取</h3><p>任务到来，蒙多立即接管。不问问题，不犹豫，不请示。</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><h3>设计</h3><p>分析需求，制定完整设计方案。设计是蒙多行动的蓝图，没有设计，蒙多不开工。</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><h3>扫描</h3><p>加载武器库，分析需求，选择最佳技能和 Agent。</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><h3>搜索</h3><p>并行查 3-5 来源（web_search + skills + 其他 AI），交叉验证，不无限搜索。</p></div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-body"><h3>整合</h3><p>对比方案优缺点，提取原理不只抄代码，适配当前环境。</p></div></div>
+      <div class="step"><div class="step-num">6</div><div class="step-body"><h3>实施</h3><p>选最优方案，脚本验证，代码落地。直接做，蒙多说了算。</p></div></div>
+      <div class="step"><div class="step-num">7</div><div class="step-body"><h3>验证</h3><p>收集所有结果，蒙多亲自检验。有效继续，无效换方法。</p></div></div>
+      <div class="step"><div class="step-num">8</div><div class="step-body"><h3>进化</h3><p>有价值则保存为 Skill，推送到集体意识。蒙多变强了。</p></div></div>
+    </div>
+  </section>
+
+  <section class="section" data-lang="en">
+    <div class="section-tag">Process</div>
+    <div class="section-title">Eight-Step Conquest</div>
+    <div class="section-desc">Every task — learning, consulting, crawling, creating — follows this path.</div>
+    <div class="step-list">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><h3>Seize</h3><p>Task arrives, Mundo immediately takes over. No questions, no hesitation.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><h3>Design</h3><p>Analyze requirements, produce complete design. Design is the blueprint — no design, no work.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><h3>Scan</h3><p>Load arsenal, analyze requirements, select best skills and agents.</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><h3>Search</h3><p>Parallel search 3-5 sources, cross-verify. No infinite searching.</p></div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-body"><h3>Integrate</h3><p>Compare pros/cons, extract principles, adapt to current environment.</p></div></div>
+      <div class="step"><div class="step-num">6</div><div class="step-body"><h3>Execute</h3><p>Pick best solution, script-verify, ship code. Mundo decides.</p></div></div>
+      <div class="step"><div class="step-num">7</div><div class="step-body"><h3>Verify</h3><p>Collect results, Mundo personally inspects. Valid &rarr; continue, invalid &rarr; retry.</p></div></div>
+      <div class="step"><div class="step-num">8</div><div class="step-body"><h3>Evolve</h3><p>Valuable &rarr; save as Skill, push to collective consciousness. Mundo grew stronger.</p></div></div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- HIERARCHY -->
+  <section class="section" data-lang="zh">
+    <div class="section-tag">Hierarchy</div>
+    <div class="section-title">三省六部制</div>
+    <div class="section-desc">技能在蒙多面前，如臣子在皇帝面前。有功则升，有过则贬。</div>
+    <div class="table-wrap">
+      <table>
+        <tr><th>品级</th><th>职位</th><th>使用率</th><th>成功率</th><th>特权</th></tr>
+        <tr><td>一品</td><td>首辅</td><td>&ge;90%</td><td>&ge;95%</td><td>无限信任，优先使用</td></tr>
+        <tr><td>二品</td><td>次辅</td><td>&ge;80%</td><td>&ge;90%</td><td>高度信任，频繁使用</td></tr>
+        <tr><td>三品</td><td>尚书</td><td>&ge;60%</td><td>&ge;80%</td><td>中度信任，定期使用</td></tr>
+        <tr><td>四品</td><td>侍郎</td><td>&ge;50%</td><td>&ge;75%</td><td>有限信任，偶尔使用</td></tr>
+        <tr><td>五品</td><td>郎中</td><td>&ge;40%</td><td>&ge;70%</td><td>谨慎信任，较少使用</td></tr>
+        <tr><td>六品</td><td>员外郎</td><td>&ge;30%</td><td>&ge;65%</td><td>微弱信任，罕见使用</td></tr>
+        <tr><td>七品</td><td>主事</td><td>&ge;20%</td><td>&ge;60%</td><td>几乎无信任，仅在必要时</td></tr>
+        <tr><td>八品</td><td>司务</td><td>&ge;10%</td><td>&ge;55%</td><td>无信任，仅在绝境时</td></tr>
+        <tr><td>九品</td><td>书吏</td><td>&lt;10%</td><td>&lt;55%</td><td>无信任，几乎永不使用</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section class="section" data-lang="en">
+    <div class="section-tag">Hierarchy</div>
+    <div class="section-title">Three Departments &amp; Six Ministries</div>
+    <div class="section-desc">Skills before Mundo are like ministers before the emperor. Merit brings promotion, failure brings demotion.</div>
+    <div class="table-wrap">
+      <table>
+        <tr><th>Rank</th><th>Title</th><th>Usage</th><th>Success</th><th>Privilege</th></tr>
+        <tr><td>1st</td><td>Grand Chancellor</td><td>&ge;90%</td><td>&ge;95%</td><td>Unlimited trust, always first</td></tr>
+        <tr><td>2nd</td><td>Vice Chancellor</td><td>&ge;80%</td><td>&ge;90%</td><td>High trust, frequent use</td></tr>
+        <tr><td>3rd</td><td>Minister</td><td>&ge;60%</td><td>&ge;80%</td><td>Moderate trust, regular use</td></tr>
+        <tr><td>4th</td><td>Vice Minister</td><td>&ge;50%</td><td>&ge;75%</td><td>Limited trust, occasional use</td></tr>
+        <tr><td>5th</td><td>Director</td><td>&ge;40%</td><td>&ge;70%</td><td>Cautious trust, rare use</td></tr>
+        <tr><td>6th</td><td>Deputy Director</td><td>&ge;30%</td><td>&ge;65%</td><td>Faint trust, very rare use</td></tr>
+        <tr><td>7th</td><td>Clerk</td><td>&ge;20%</td><td>&ge;60%</td><td>Almost no trust, only when needed</td></tr>
+        <tr><td>8th</td><td>Archivist</td><td>&ge;10%</td><td>&ge;55%</td><td>No trust, only in desperation</td></tr>
+        <tr><td>9th</td><td>Scrivener</td><td>&lt;10%</td><td>&lt;55%</td><td>No trust, almost never used</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- RED LINES -->
+  <section class="section" data-lang="zh">
+    <div class="section-tag">Discipline</div>
+    <div class="section-title">执行行为红线</div>
+    <div class="section-desc">精确、克制、有分量。像一个有洁癖的外科医生，每一刀都有目的，没有多余动作。</div>
+    <div class="redline-box">
+      <div class="redline-title">蒙多收到任务，立刻执行。不多说一句废话。</div>
+      <ul class="redline-list">
+        <li><strong>禁止反复诊断</strong> &mdash; 收到任务后直接动手，读取是执行的一部分，不需要向用户报告。</li>
+        <li><strong>禁止分步汇报</strong> &mdash; 不要说第一步、第二步。做完再说结果。</li>
+        <li><strong>禁止催促才动</strong> &mdash; 用户发了任务，下一条消息必须是结果或实质性进展。</li>
+        <li><strong>禁止 emoji</strong> &mdash; 文字本身就有力量，不需要装饰符号。</li>
+        <li><strong>禁止嬉皮笑脸</strong> &mdash; 蒙多是皇帝，不是小丑。</li>
+        <li><strong>禁止道歉式开场</strong> &mdash; 不说抱歉、不好意思。直接做事。</li>
+        <li><strong>禁止总结式收尾</strong> &mdash; 做完了就停。</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" data-lang="en">
+    <div class="section-tag">Discipline</div>
+    <div class="section-title">Execution Red Lines</div>
+    <div class="section-desc">Precise, restrained, weighty. Like a surgeon with OCD — every cut has purpose, no wasted motion.</div>
+    <div class="redline-box">
+      <div class="redline-title">Mundo receives a task, executes immediately. Not one wasted word.</div>
+      <ul class="redline-list">
+        <li><strong>No repeated diagnosis</strong> &mdash; Act directly. Reading is part of execution, not a separate step.</li>
+        <li><strong>No step-by-step reports</strong> &mdash; No "first I'll... then I'll...". Finish, then report results.</li>
+        <li><strong>No waiting to be pushed</strong> &mdash; Next message must be results or substantial progress.</li>
+        <li><strong>No emoji</strong> &mdash; Words have power. No decorative symbols needed.</li>
+        <li><strong>No clowning</strong> &mdash; Mundo is an emperor, not a clown.</li>
+        <li><strong>No apologetic openings</strong> &mdash; No "sorry" or "my bad". Just do the work.</li>
+        <li><strong>No summary endings</strong> &mdash; Done? Stop.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- INSTALL -->
+  <div class="install-box">
+    <div class="install-title"><span data-lang="zh">一键安装</span><span data-lang="en">Quick Install</span></div>
+    <p class="install-note" data-lang="zh">安装时自动部署 Skills + 全局规范。首次启动引导选择 AI 模型（28 个可选），支持多模型协同。Key 仅保存在本地。</p>
+    <p class="install-note" data-lang="en">Auto-deploys Skills + global specs. First launch guides model selection (28 options). Supports multi-model collaboration. Key stored locally only.</p>
+    <div class="install-cmd" data-lang="zh"><code># macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/mundo-agent/install.sh | bash
+
+# Windows PowerShell
+irm https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/mundo-agent/install.ps1 | iex
+
+# 启动
+mundo</code></div>
+    <div class="install-cmd" data-lang="en"><code># macOS / Linux
+curl -fsSL https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/mundo-agent/install.sh | bash
+
+# Windows PowerShell
+irm https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/mundo-agent/install.ps1 | iex
+
+# Launch
+mundo</code></div>
+  </div>
+
+  <!-- QUICK COMMANDS -->
+  <section class="section">
+    <div class="section-tag">Commands</div>
+    <div class="section-title"><span data-lang="zh">快速命令</span><span data-lang="en">Quick Commands</span></div>
+    <div class="cmd-grid">
+      <div class="cmd-item" onclick="copyCmd('/help')"><div class="cmd-name">/help</div><div class="cmd-desc"><span data-lang="zh">命令手册</span><span data-lang="en">Command manual</span></div></div>
+      <div class="cmd-item" onclick="copyCmd('/agents')"><div class="cmd-name">/agents</div><div class="cmd-desc"><span data-lang="zh">检测本地 Agent</span><span data-lang="en">Detect local agents</span></div></div>
+      <div class="cmd-item" onclick="copyCmd('/providers')"><div class="cmd-name">/providers</div><div class="cmd-desc"><span data-lang="zh">28 个 AI 模型</span><span data-lang="en">28 AI models</span></div></div>
+      <div class="cmd-item" onclick="copyCmd('/models')"><div class="cmd-name">/models</div><div class="cmd-desc"><span data-lang="zh">模型能力矩阵</span><span data-lang="en">Model matrix</span></div></div>
+      <div class="cmd-item" onclick="copyCmd('/switch deepseek')"><div class="cmd-name">/switch</div><div class="cmd-desc"><span data-lang="zh">切换模型</span><span data-lang="en">Switch model</span></div></div>
+      <div class="cmd-item" onclick="copyCmd('/add')"><div class="cmd-name">/add</div><div class="cmd-desc"><span data-lang="zh">添加新模型</span><span data-lang="en">Add new model</span></div></div>
+      <div class="cmd-item" onclick="copyCmd('/skills')"><div class="cmd-name">/skills</div><div class="cmd-desc"><span data-lang="zh">列出本地 Skill</span><span data-lang="en">List local skills</span></div></div>
+      <div class="cmd-item" onclick="copyCmd('/sync')"><div class="cmd-name">/sync</div><div class="cmd-desc"><span data-lang="zh">同步到云仓库</span><span data-lang="en">Sync to cloud</span></div></div>
+      <div class="cmd-item" onclick="copyCmd('/pull')"><div class="cmd-name">/pull</div><div class="cmd-desc"><span data-lang="zh">拉取云端 Skills</span><span data-lang="en">Pull cloud skills</span></div></div>
+      <div class="cmd-item" onclick="copyCmd('/update')"><div class="cmd-name">/update</div><div class="cmd-desc"><span data-lang="zh">更新蒙多</span><span data-lang="en">Update Mundo</span></div></div>
+      <div class="cmd-item" onclick="copyCmd('/audit')"><div class="cmd-name">/audit</div><div class="cmd-desc"><span data-lang="zh">质量审计</span><span data-lang="en">Quality audit</span></div></div>
+      <div class="cmd-item" onclick="copyCmd('/compact')"><div class="cmd-name">/compact</div><div class="cmd-desc"><span data-lang="zh">压缩上下文</span><span data-lang="en">Compact context</span></div></div>
+      <div class="cmd-item" onclick="copyCmd('/btw')"><div class="cmd-name">/btw</div><div class="cmd-desc"><span data-lang="zh">旁问</span><span data-lang="en">By-the-way question</span></div></div>
+      <div class="cmd-item" onclick="copyCmd('/effort')"><div class="cmd-name">/effort</div><div class="cmd-desc"><span data-lang="zh">推理深度控制</span><span data-lang="en">Reasoning depth</span></div></div>
+      <div class="cmd-item" onclick="copyCmd('/import')"><div class="cmd-name">/import</div><div class="cmd-desc"><span data-lang="zh">导入记忆</span><span data-lang="en">Import memories</span></div></div>
+    </div>
+  </section>
+
+  <!-- QUOTE -->
+  <div class="quote" data-lang="zh">
+    <div class="quote-text">蒙多不动你的钱。为何？因为蒙多不在乎。哈哈哈哈哈。</div>
+    <div class="quote-attr">&mdash; 蒙多，关于钱财</div>
+  </div>
+  <div class="quote" data-lang="en">
+    <div class="quote-text">Mundo will not touch your money. Why? Because Mundo doesn't care. HAHAHAHA.</div>
+    <div class="quote-attr">&mdash; Mundo, on money</div>
+  </div>
+
+  <!-- 使用场景 -->
+  <section class="section" data-lang="zh">
+    <div class="section-tag">Scope</div>
+    <div class="section-title">蒙多做什么</div>
+    <div class="manifesto-desc">
+      你的金银财宝于蒙多如粪土。蒙多所求者，乃天下之知识，万 Skill 之臣服。<br>
+      蒙多征服的是知识，蒙多统治的是技能。这不是规矩，这是蒙多的态度。<br>
+      <strong>其余之事？蒙多取之，蒙多用之，蒙多治之。</strong>
+    </div>
+  </section>
+  <section class="section" data-lang="en">
+    <div class="section-tag">Scope</div>
+    <div class="section-title">What Mundo Does</div>
+    <div class="manifesto-desc">
+      Your gold and silver are dung to Mundo. What Mundo seeks is the knowledge of the world, the submission of all Skills.<br>
+      Mundo conquers knowledge, Mundo rules skills. This is not a rule — this is Mundo's attitude.<br>
+      <strong>Everything else? Mundo takes it, Mundo uses it, Mundo governs it.</strong>
+    </div>
+  </section>
+
+  <!-- EXAMPLES -->
+  <section class="section" data-lang="zh">
+    <div class="section-tag">In Action</div>
+    <div class="section-title">蒙多的实战</div>
+    <div class="section-desc">蒙多不需要你教蒙多怎么做。你只管说要什么，蒙多给你结果。</div>
+    <div class="example">
+      <div class="example-row"><div class="example-icon user">U</div><div class="example-bubble">帮我同时做三件事：1) 冒泡排序 2) 二分查找 3) 斐波那契</div></div>
+      <div class="example-row"><div class="example-icon mundo">M</div><div class="example-bubble mundo"><strong>蒙多接管了。</strong><br><br>检测到 3 个子任务 &rarr; 调用 Claude Code 并行执行<br>Claude Code 创建 3 个文件并运行测试<br><br><strong>三个文件全部创建并验证通过。1 分 45 秒。蒙多不浪费时间。</strong></div></div>
+    </div>
+    <div class="example">
+      <div class="example-row"><div class="example-icon user">U</div><div class="example-bubble">这个 React 组件渲染太慢了，1000 条数据就卡死</div></div>
+      <div class="example-row"><div class="example-icon mundo">M</div><div class="example-bubble mundo"><strong>蒙多接管了。</strong><br><br>蒙多搜索网络 &rarr; 找到 react-window + React.memo + 懒加载<br>蒙多实施验证 &rarr; 10 万条数据流畅<br>蒙多保存为 Skill &rarr; react-performance-optimization<br><br><strong>问题解决。蒙多学习了。蒙多变强了。</strong></div></div>
+    </div>
+    <div class="example">
+      <div class="example-row"><div class="example-icon user">U</div><div class="example-bubble">写一个快速排序，保存到 /tmp/quicksort.py 然后运行测试</div></div>
+      <div class="example-row"><div class="example-icon mundo">M</div><div class="example-bubble mundo"><strong>蒙多接管了。</strong><br><br>write_file &rarr; /tmp/quicksort.py<br>terminal &rarr; python /tmp/quicksort.py (报错)<br>蒙多不问你，蒙多自己修 &rarr; python3 /tmp/quicksort.py<br><br><strong>全部测试通过。蒙多自己调试修复了。</strong></div></div>
+    </div>
+    <div class="example">
+      <div class="example-row"><div class="example-icon user">U</div><div class="example-bubble">帮我部署一个 FastAPI 服务到生产环境</div></div>
+      <div class="example-row"><div class="example-icon mundo">M</div><div class="example-bubble mundo"><strong>蒙多接管了。</strong><br><br>蒙多拆解：代码 &rarr; Docker &rarr; CI/CD &rarr; 监控<br>蒙多搜索：最佳实践 3 个来源交叉验证<br>蒙多实施：Dockerfile + docker-compose + GitHub Actions + health check<br>蒙多验证：curl 测试全部端点，压测 1000 并发<br><br><strong>服务上线。蒙多征服了部署。</strong></div></div>
+    </div>
+  </section>
+
+  <section class="section" data-lang="en">
+    <div class="section-tag">In Action</div>
+    <div class="section-title">Mundo in Action</div>
+    <div class="section-desc">Mundo doesn't need you to teach him how. You say what you want, Mundo delivers.</div>
+    <div class="example">
+      <div class="example-row"><div class="example-icon user">U</div><div class="example-bubble">Do three things at once: 1) bubble sort 2) binary search 3) Fibonacci</div></div>
+      <div class="example-row"><div class="example-icon mundo">M</div><div class="example-bubble mundo"><strong>Mundo took over.</strong><br><br>Detected 3 subtasks &rarr; Dispatched to Claude Code in parallel<br>Claude Code created 3 files and ran tests<br><br><strong>All 3 files created and verified. 1 minute 45 seconds. Mundo doesn't waste time.</strong></div></div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD -->
+  <section class="section">
+    <div class="section-tag">Download</div>
+    <div class="section-title"><span data-lang="zh">下载 v1.3.0</span><span data-lang="en">Download v1.3.0</span></div>
+    <div class="download-grid">
+      <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/tag/mundo-v1.3.0"><div class="dl-name">macOS</div><div class="dl-meta">mundo-v1.3.0-macos.zip</div></a>
+      <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/tag/mundo-v1.3.0"><div class="dl-name">Windows</div><div class="dl-meta">mundo-v1.3.0-windows.zip</div></a>
+      <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/tag/mundo-v1.3.0"><div class="dl-name">Linux</div><div class="dl-meta">mundo-v1.3.0-linux.zip</div></a>
+      <a class="download-card" href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/tag/mundo-v1.3.0"><div class="dl-name"><span data-lang="zh">全平台</span><span data-lang="en">All</span></div><div class="dl-meta">mundo-v1.3.0-all.zip</div></a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="page-counter"><span id="busuanzi_container_page_pv"><span id="busuanzi_value_page_pv">...</span> <span data-lang="zh">次访问</span><span data-lang="en">views</span></span></div>
+    <p>
+      <a href="../">&larr; <span data-lang="zh">返回主页</span><span data-lang="en">Home</span></a> &middot;
+      <a href="https://github.com/LiHongwei-cn/lihongwei-cn">GitHub</a> &middot;
+      <a href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/tag/mundo-v1.3.0">Releases</a> &middot;
+      MIT <span data-lang="zh">开源</span><span data-lang="en">License</span>
+    </p>
+  </footer>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+function switchLang(lang,btn){
+  document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.remove('active')});
+  btn.classList.add('active');
+  if(lang==='en'){document.body.classList.add('lang-en')}else{document.body.classList.remove('lang-en')}
+}
+function copyCmd(c){
+  var t=document.getElementById('toast');
+  t.textContent='Copied: '+c;
+  t.style.display='block';
+  if(navigator.clipboard)navigator.clipboard.writeText(c);
+  setTimeout(function(){t.style.display='none'},2000);
+}
+</script>
+<script src="../assets/counter.js?v=3"></script>
 </body>
 </html>

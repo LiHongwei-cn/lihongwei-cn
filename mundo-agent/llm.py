@@ -154,9 +154,41 @@ class LLMClient:
         if stream:
             payload["stream"] = True
         if tools:
-            payload["tools"] = tools
+            # 确定性排序：按 name 排序，保证缓存前缀一致
+            sorted_tools = sorted(tools, key=lambda t: t.get("function", {}).get("name", ""))
+            payload["tools"] = sorted_tools
             payload["tool_choice"] = "auto"
+
+        # Anthropic 兼容端点：添加 cache_control 标记
+        if self.is_anthropic:
+            self._inject_cache_control(payload)
+
         return payload
+
+    @property
+    def is_anthropic(self) -> bool:
+        """判断是否为 Anthropic 兼容端点（支持 cache_control）"""
+        return "anthropic" in self.base_url.lower()
+
+    def _inject_cache_control(self, payload: Dict):
+        """为 Anthropic 兼容端点注入缓存控制标记"""
+        messages = payload.get("messages", [])
+
+        # 标记 system 消息（第一条）为可缓存
+        for msg in messages:
+            if msg.get("role") == "system":
+                content = msg.get("content", "")
+                if isinstance(content, str):
+                    msg["content"] = [
+                        {"type": "text", "text": content,
+                         "cache_control": {"type": "ephemeral"}}
+                    ]
+                break  # 只标记第一个 system 消息
+
+        # 标记 tools schema 为可缓存（对最后一个 tool）
+        tools = payload.get("tools", [])
+        if tools:
+            tools[-1]["function"]["cache_control"] = {"type": "ephemeral"}
 
     def _request_with_retry(self, payload: Dict, max_retries: int = None) -> Dict:
         max_retries = max_retries or TimeoutConfig.MAX_RETRIES
