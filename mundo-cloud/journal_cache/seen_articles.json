@@ -386,5 +386,29 @@
   "941adbd5a8936373": {
     "title": "Human\\xe2\\x80\\x93AI interactions reshape the self and our social networks",
     "crawled_at": "2026-06-07T22:08:01.782609"
+  },
+  "7015e6e2033d0138": {
+    "title": "How AI is reshaping discovery in maths and physics",
+    "crawled_at": "2026-06-08T13:55:31.375457"
+  },
+  "b91ffcf37a2e9993": {
+    "title": "Why are so many young people getting cancer? What researchers do and don't know",
+    "crawled_at": "2026-06-08T13:55:31.375473"
+  },
+  "fba54ba91bf19dbc": {
+    "title": "Bots are scraping open data \u2014 how should researchers respond?",
+    "crawled_at": "2026-06-08T13:55:31.375479"
+  },
+  "07f58a56040a1987": {
+    "title": "Detecting and Mitigating Bias by Treating Fairness as a Symmetry Operation",
+    "crawled_at": "2026-06-08T13:55:31.718819"
+  },
+  "770ca484a23eaf6d": {
+    "title": "DiBS: Diffusion-Informed Branch Selection",
+    "crawled_at": "2026-06-08T13:55:31.718834"
+  },
+  "cc4ceb949953e831": {
+    "title": "SafeGene: Reusable Adapters for Transferable Safety Alignment",
+    "crawled_at": "2026-06-08T13:55:31.718838"
   }
 }
