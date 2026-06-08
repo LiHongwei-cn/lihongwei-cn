@@ -36,40 +36,37 @@ class MundoMemory:
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
 
+    @staticmethod
+    def _ensure_columns(conn, table: str, columns: dict):
+        """数据驱动的列迁移：columns = {col_name: "TYPE DEFAULT val"}"""
+        existing = {r[1] for r in conn.execute(f"PRAGMA table_info({table})").fetchall()}
+        for col, col_def in columns.items():
+            if col not in existing:
+                conn.execute(f"ALTER TABLE {table} ADD COLUMN {col} {col_def}")
+
     def _init_db(self):
         with sqlite3.connect(str(self.db_path)) as conn:
-            # 检查是否需要迁移旧表
             existing_tables = {r[0] for r in conn.execute(
                 "SELECT name FROM sqlite_master WHERE type='table'"
             ).fetchall()}
 
             if 'memories' in existing_tables:
-                # 迁移：添加缺失的列
-                columns = {r[1] for r in conn.execute("PRAGMA table_info(memories)").fetchall()}
-                if 'project' not in columns:
-                    conn.execute("ALTER TABLE memories ADD COLUMN project TEXT DEFAULT ''")
-                if 'content_hash' not in columns:
-                    conn.execute("ALTER TABLE memories ADD COLUMN content_hash TEXT DEFAULT ''")
-                if 'source' not in columns:
-                    conn.execute("ALTER TABLE memories ADD COLUMN source TEXT DEFAULT 'manual'")
-                if 'tags' not in columns:
-                    conn.execute("ALTER TABLE memories ADD COLUMN tags TEXT DEFAULT ''")
-                if 'tokens' not in columns:
-                    conn.execute("ALTER TABLE memories ADD COLUMN tokens INTEGER DEFAULT 0")
+                self._ensure_columns(conn, "memories", {
+                    "project": "TEXT DEFAULT ''",
+                    "content_hash": "TEXT DEFAULT ''",
+                    "source": "TEXT DEFAULT 'manual'",
+                    "tags": "TEXT DEFAULT ''",
+                    "tokens": "INTEGER DEFAULT 0",
+                })
                 if 'conversations' in existing_tables:
-                    conv_columns = {r[1] for r in conn.execute("PRAGMA table_info(conversations)").fetchall()}
-                    if 'project' not in conv_columns:
-                        conn.execute("ALTER TABLE conversations ADD COLUMN project TEXT DEFAULT ''")
-                    if 'title' not in conv_columns:
-                        conn.execute("ALTER TABLE conversations ADD COLUMN title TEXT DEFAULT ''")
-                    if 'updated_at' not in conv_columns:
-                        conn.execute("ALTER TABLE conversations ADD COLUMN updated_at TEXT DEFAULT ''")
-                    if 'total_tokens' not in conv_columns:
-                        conn.execute("ALTER TABLE conversations ADD COLUMN total_tokens INTEGER DEFAULT 0")
-                    if 'summary' not in conv_columns:
-                        conn.execute("ALTER TABLE conversations ADD COLUMN summary TEXT DEFAULT ''")
-                    if 'message_count' not in conv_columns:
-                        conn.execute("ALTER TABLE conversations ADD COLUMN message_count INTEGER DEFAULT 0")
+                    self._ensure_columns(conn, "conversations", {
+                        "project": "TEXT DEFAULT ''",
+                        "title": "TEXT DEFAULT ''",
+                        "updated_at": "TEXT DEFAULT ''",
+                        "total_tokens": "INTEGER DEFAULT 0",
+                        "summary": "TEXT DEFAULT ''",
+                        "message_count": "INTEGER DEFAULT 0",
+                    })
 
             conn.executescript("""
                 CREATE TABLE IF NOT EXISTS memories (
@@ -614,23 +611,16 @@ class MundoMemory:
         """删除所有记忆数据（测试用）"""
         with sqlite3.connect(str(self.db_path)) as conn:
             # 获取所有表
-            tables = conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
-            
-            # 删除数据表
-            for table in tables:
-                table_name = table[0]
+            tables = conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            ).fetchall()
+            for (table_name,) in tables:
                 if table_name.startswith('sqlite_') or table_name.endswith('_fts'):
                     continue
                 try:
-                    conn.execute(f"DELETE FROM {table_name}")
-                except Exception as e:
+                    conn.execute(f"DELETE FROM [{table_name}]")
+                except sqlite3.OperationalError as e:
                     print(f"[memory] 清空表 {table_name} 失败: {e}", file=sys.stderr)
-            
-            # 清空FTS索引
-            try:
-                conn.execute("DELETE FROM conversations_fts")
-            except Exception as e:
-                print(f"[memory] 清空 FTS 索引失败: {e}", file=sys.stderr)
 
     def generate_session_summary(self, session_id: str, messages: List[Dict]):
         user_msgs = [m for m in messages if m.get("role") == "user"]

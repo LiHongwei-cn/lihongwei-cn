@@ -27,3 +27,4 @@ Thumbs.db
 bot/venv/
 tools/venv/
 mundo-cloud/venv/
+*.backup

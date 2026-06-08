@@ -4,7 +4,7 @@ import os
 import sys
 import logging
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 
@@ -62,7 +62,7 @@ class MundoLogger:
 
         # 文件处理器
         if file_logging:
-            log_file = LOG_DIR / f"mundo_{datetime.now().strftime('%Y%m%d')}.log"
+            log_file = LOG_DIR / f"mundo_{datetime.now(timezone.utc).strftime('%Y%m%d')}.log"
             file_handler = logging.FileHandler(log_file, encoding="utf-8")
             file_handler.setLevel(logging.DEBUG)
             file_formatter = logging.Formatter(FILE_FORMAT, DATE_FORMAT)
