@@ -6,7 +6,7 @@ import json
 import hashlib
 import subprocess
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Dict, Optional
 
 MUNDO_HOME = Path.home() / ".hermes" / "mundo-agent"
@@ -90,7 +90,7 @@ def queue_upload(skill_name: str, skill_path: str):
     entry = {
         "name": skill_name,
         "path": skill_path,
-        "queued_at": datetime.now().isoformat(),
+        "queued_at": datetime.now(timezone.utc).isoformat(),
         "hash": _file_hash(Path(skill_path)),
     }
 
@@ -274,7 +274,7 @@ def daily_quality_audit() -> Dict:
     # 保存审计日志
     audit_log = MUNDO_HOME / "audit_log.json"
     audit_data = {
-        "date": datetime.now().isoformat(),
+        "date": datetime.now(timezone.utc).isoformat(),
         "results": results,
     }
     existing = []
