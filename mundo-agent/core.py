@@ -246,11 +246,11 @@ class ContextCompressor:
         if current_tokens <= target_tokens:
             return messages
 
-        system_msg = None
+        system_msgs = []
         rest = []
         for m in messages:
-            if m["role"] == "system" and system_msg is None:
-                system_msg = m
+            if m["role"] == "system":
+                system_msgs.append(m)
             else:
                 rest.append(m)
 
@@ -277,8 +277,7 @@ class ContextCompressor:
 
         # 重建消息列表
         result = []
-        if system_msg:
-            result.append(system_msg)
+        result.extend(system_msgs)
 
         # 保留最近 8 条消息完整，其余压缩
         if len(all_msgs) > 8:
@@ -456,11 +455,10 @@ class MundoEngine:
 
         self._auto_compress()
 
-        # extra_context 放到 user 消息中，保持 system prompt 稳定（缓存优化）
-        user_content = user_input
+        # 缓存优化：记忆上下文作为独立 system 消息，不污染 user 消息前缀
         if extra_context:
-            user_content = f"[记忆上下文]\n{extra_context}\n\n[用户消息]\n{user_input}"
-        self.messages.append({"role": "user", "content": user_content})
+            self.messages.append({"role": "system", "content": f"[记忆上下文]\n{extra_context}"})
+        self.messages.append({"role": "user", "content": user_input})
 
         turn = 0
         MAX_ITERATIONS = 50  # 硬性上限，防止无限循环
