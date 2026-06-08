@@ -8,4 +8,4 @@ if [ ! -d "venv" ]; then
     bash install.sh
 fi
 
-exec python3 mundo.py "$@"
+exec ./venv/bin/python3 mundo.py "$@"
