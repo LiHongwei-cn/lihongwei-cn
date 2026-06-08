@@ -1,9 +1,11 @@
-"""蒙多任务委托 v1.2.7 — 合并 Agent 检测 + 任务拆分 + 并行执行 + Codex 深度集成
+"""蒙多任务委托 v1.3.0 — 结构化结果 + 智能路由 + 全参数透传
 
-v1.2.7 改进：
-- Codex 默认使用 MiMo v2.5 Pro（CC Switch 配置）
-- 智能路由增加模型感知（MiMo/DeepSeek/Claude 自动选择）
-- 三大 Agent + 多模型协同，蒙多的调度帝国全面升级
+v1.3.0 改进：
+- DelegateResult 结构化结果（ok/output/error/duration/agent）
+- timeout/workdir 全链路透传到所有 agent
+- auto 智能路由模式
+- AgentManager 单例缓存
+- hermes 支持 workdir
 """
 
 import os
@@ -11,6 +13,7 @@ import json
 import time
 import shutil
 import subprocess
+from dataclasses import dataclass, field
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict, Optional, Callable
 from llm import LLMClient
@@ -29,6 +32,27 @@ try:
     from hermes_integration import HermesAgent
 except ImportError:
     HermesAgent = None
+
+
+# ═══════════════════════════════════════════════
+# 结构化结果
+# ═══════════════════════════════════════════════
+
+@dataclass
+class DelegateResult:
+    """委派结果 — 结构化，便于上层判断和展示"""
+    ok: bool = False
+    agent: str = ""
+    output: str = ""
+    error: str = ""
+    duration: float = 0.0
+
+    def __str__(self) -> str:
+        tag = "✓" if self.ok else "✗"
+        s = f"[{tag}] {self.agent} ({self.duration:.1f}s)\n{self.output}"
+        if self.error:
+            s += f"\n[stderr] {self.error}"
+        return s
 
 
 # ═══════════════════════════════════════════════
@@ -98,7 +122,8 @@ def _codex_run(prompt: str, **kw) -> str:
         if not agent.is_available():
             return "[Codex 未安装]"
         workdir = kw.get('workdir')
-        return agent.exec_full_auto(prompt, workdir=workdir)
+        timeout = kw.get('timeout', 300)
+        return agent.exec_full_auto(prompt, workdir=workdir, timeout=timeout)
     except Exception as e:
         return f"[Codex 错误: {e}]"
 
@@ -113,8 +138,9 @@ def _claude_run(prompt: str, **kw) -> str:
         if not agent.is_available():
             return "[Claude Code 未安装]"
         workdir = kw.get('workdir')
+        timeout = kw.get('timeout', 300)
         # 使用智能模式，根据任务复杂度自动选择努力级别
-        return agent.exec_smart(prompt, workdir=workdir)
+        return agent.exec_smart(prompt, workdir=workdir, timeout=timeout)
     except Exception as e:
         return f"[Claude Code 错误: {e}]"
 
@@ -127,7 +153,9 @@ def _hermes_run(prompt: str, **kw) -> str:
         agent = HermesAgent()
         if not agent.is_available():
             return "[Hermes Agent 未安装]"
-        return agent.chat_one_shot(prompt)
+        workdir = kw.get('workdir')
+        timeout = kw.get('timeout', 300)
+        return agent.chat_one_shot(prompt, timeout=timeout, workdir=workdir)
     except Exception as e:
         return f"[Hermes 错误: {e}]"
 
@@ -165,17 +193,27 @@ AGENT_REGISTRY = {
 
 class AgentManager:
 
+    _instance = None
+
     def __repr__(self) -> str:
         return f"AgentManager(available={list(self.available.keys())})"
 
-    def __init__(self):
-        self.available: Dict[str, dict] = {}
-        self._detect_all()
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance.available = {}
+            cls._instance._detect_all()
+        return cls._instance
 
     def _detect_all(self):
+        self.available = {}
         for key, agent in AGENT_REGISTRY.items():
             if agent["detect"]():
                 self.available[key] = {**agent, "status": "ready"}
+
+    def refresh(self):
+        """重新检测可用 agent"""
+        self._detect_all()
 
     def list_available(self) -> List[dict]:
         return [
@@ -197,7 +235,6 @@ class AgentManager:
                 scores[key] = score
         return max(scores, key=scores.get) if scores else None
 
-
     def get_best_for_smart(self, task_type: str) -> Optional[str]:
         """智能路由：根据任务类型自动选择最佳 Agent（Claude vs Codex）"""
         if smart_route:
@@ -207,11 +244,47 @@ class AgentManager:
             if route == 'claude' and 'claude' in self.available:
                 return 'claude'
         return self.get_best_for(task_type)
-    def delegate(self, agent_key: str, prompt: str, **kwargs) -> str:
+
+    def delegate(self, agent_key: str, prompt: str, **kwargs) -> DelegateResult:
+        """委派任务给指定 agent，返回结构化结果"""
+        t0 = time.time()
+
+        # auto 模式：智能路由
+        if agent_key == "auto":
+            agent_key = self.get_best_for_smart(prompt) or (
+                next(iter(self.available), None)
+            )
+            if not agent_key:
+                return DelegateResult(
+                    ok=False, agent="auto", error="无可用 agent",
+                    duration=time.time() - t0,
+                )
+
         agent = self.available.get(agent_key)
         if not agent:
-            return f"[Agent {agent_key} 不可用]"
-        return agent["run"](prompt, **kwargs)
+            avail = ", ".join(self.available.keys()) or "无"
+            return DelegateResult(
+                ok=False, agent=agent_key,
+                error=f"Agent {agent_key} 不可用。已检测到: {avail}",
+                duration=time.time() - t0,
+            )
+
+        try:
+            output = agent["run"](prompt, **kwargs)
+            elapsed = time.time() - t0
+            # 判断是否成功：不以 [ 错误/超时/未安装 开头
+            is_err = output.startswith("[") and any(
+                kw in output for kw in ("错误", "超时", "未安装", "异常", "Error")
+            )
+            return DelegateResult(
+                ok=not is_err, agent=agent_key,
+                output=output, duration=elapsed,
+            )
+        except Exception as e:
+            return DelegateResult(
+                ok=False, agent=agent_key,
+                error=str(e), duration=time.time() - t0,
+            )
 
 
 # ═══════════════════════════════════════════════

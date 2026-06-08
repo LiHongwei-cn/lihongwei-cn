@@ -27,7 +27,7 @@ echo ""
 
 # ── 1. 源码 → ~/.hermes ──────────────────────────────
 SYNCED=0
-FILES="mundo.py core.py llm.py setup.py tools.py approval.py display.py memory.py memory_import.py models.py agents.py delegation.py cloud_sync.py"
+FILES="mundo.py core.py llm.py setup.py tools.py approval.py display.py memory.py memory_import.py models.py agents.py delegation.py cloud_sync.py claude_integration.py codex_integration.py hermes_integration.py"
 
 echo "  [1/3] 源码 → 安装版"
 for f in $FILES version.txt requirements.txt MUNDO.command; do

@@ -21,7 +21,7 @@ class CodexAgent:
     def is_available(self) -> bool:
         return self.cmd is not None
 
-    def exec_full_auto(self, prompt: str, workdir: str = None) -> str:
+    def exec_full_auto(self, prompt: str, workdir: str = None, timeout: int = 300) -> str:
         """全自动模式执行 Codex"""
         if not self.is_available():
             return "[Codex 未安装]"
@@ -33,13 +33,13 @@ class CodexAgent:
         try:
             result = subprocess.run(
                 cmd, capture_output=True, text=True,
-                timeout=300, cwd=workdir, env=env,
+                timeout=timeout, cwd=workdir, env=env,
             )
             if result.returncode == 0:
                 return result.stdout.strip()
             return f"[Codex 退出码 {result.returncode}] {result.stderr.strip()[:500]}"
         except subprocess.TimeoutExpired:
-            return "[Codex 超时 (300s)]"
+            return f"[Codex 超时 ({timeout}s)]"
         except Exception as e:
             return f"[Codex 异常: {e}]"
 

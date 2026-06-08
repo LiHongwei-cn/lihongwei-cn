@@ -142,7 +142,8 @@ class ClaudeCodeAgent:
     def exec_full_power(self, prompt: str, workdir: str = None,
                         clean_output: bool = True,
                         effort: str = "medium",
-                        compress: bool = True) -> str:
+                        compress: bool = True,
+                        timeout: int = 600) -> str:
         """全力模式执行 Claude Code（Token 优化版）
 
         Args:
@@ -151,6 +152,7 @@ class ClaudeCodeAgent:
             clean_output: 是否清理输出（移除多余文本）
             effort: 努力级别 (low/medium/high/xhigh/max)
             compress: 是否压缩上下文（减少 token 消耗）
+            timeout: 超时秒数（默认 600）
         """
         if not self.is_available():
             return "[Claude Code 未安装]"
@@ -175,7 +177,7 @@ class ClaudeCodeAgent:
         try:
             result = subprocess.run(
                 cmd, capture_output=True, text=True,
-                timeout=600, cwd=workdir, env=env,
+                timeout=timeout, cwd=workdir, env=env,
             )
 
             if result.returncode == 0:
@@ -188,7 +190,7 @@ class ClaudeCodeAgent:
             return f"[Claude Code 退出码 {result.returncode}] {error}"
 
         except subprocess.TimeoutExpired:
-            return "[Claude Code 超时 (600s)]"
+            return f"[Claude Code 超时 ({timeout}s)]"
         except Exception as e:
             return f"[Claude Code 异常: {e}]"
 
@@ -234,7 +236,7 @@ class ClaudeCodeAgent:
             compress=True
         )
 
-    def exec_smart(self, prompt: str, workdir: str = None) -> str:
+    def exec_smart(self, prompt: str, workdir: str = None, timeout: int = 600) -> str:
         """智能模式 — 根据任务复杂度自动选择努力级别"""
         effort = _smart_effort(prompt)
         
@@ -243,11 +245,12 @@ class ClaudeCodeAgent:
             workdir=workdir,
             clean_output=True,
             effort=effort,
-            compress=True
+            compress=True,
+            timeout=timeout,
         )
 
     def exec_with_retry(self, prompt: str, workdir: str = None,
-                        max_retries: int = 2) -> str:
+                        max_retries: int = 2, timeout: int = 600) -> str:
         """带重试的执行模式"""
         for attempt in range(max_retries + 1):
             try:
@@ -256,7 +259,8 @@ class ClaudeCodeAgent:
                     workdir=workdir,
                     clean_output=True,
                     effort="medium",
-                    compress=True
+                    compress=True,
+                    timeout=timeout,
                 )
                 
                 # 如果结果包含错误信息，重试
