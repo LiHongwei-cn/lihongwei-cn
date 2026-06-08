@@ -793,6 +793,95 @@ body.lang-en [data-lang="zh"] { display: none; }
     </div>
   </section>
 
+  <!-- INFRASTRUCTURE -->
+  <section class="section" data-lang="zh">
+    <div class="section-tag">Infrastructure</div>
+    <div class="section-title">基础设施层 v1.4.0</div>
+    <div class="section-desc">Agent 需要自己的 Node.js 时刻。蒙多不只是 demo，蒙多是 infrastructure。</div>
+    <div class="grid grid-3">
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Policy 引擎</div></div>
+        <div class="feature-text">结构化规则链，15 条内置规则（毁灭级/安全边界/敏感文件/资源保护/审计），优先级裁决，可扩展。<strong>皇帝的律法，每条规则都有理由。</strong></div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Event Bus</div></div>
+        <div class="feature-text">25 种事件类型（生命周期/LLM/工具/策略/上下文/记忆/委托/系统），发布-订阅零耦合，JSONL 持久化。<strong>皇帝的耳目，无死角。</strong></div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Timeline</div></div>
+        <div class="feature-text">执行轨迹 SQLite 持久化，可查询、可回放、可导出 JSONL。每次决策、每次工具调用、每次 LLM 交互都有记录。<strong>皇帝的起居注。</strong></div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Context Mapper</div></div>
+        <div class="feature-text">语义感知的上下文分块，优先级淘汰（用户 > assistant > tool > system），智能压缩。<strong>皇帝的奏折管理。</strong></div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Cache Manager</div></div>
+        <div class="feature-text">三层缓存（prefix + semantic + result），价值评分淘汰，缓存命中 = 省钱 + 省时间。<strong>皇帝的国库管理。</strong></div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Sandbox</div></div>
+        <div class="feature-text">进程隔离执行，资源限制（时间/内存/输出），超时控制，输出截断。错误不能逃逸到主进程。<strong>皇帝的试炼场。</strong></div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">MCP 层</div></div>
+        <div class="feature-text">Model Context Protocol 支持，工具服务器发现、能力协商、生命周期管理。<strong>皇帝的外交使团。</strong></div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Skill 系统</div></div>
+        <div class="feature-text">结构化注册/加载/组合，依赖链解析，冲突检测，元数据管理。<strong>皇帝的武功秘籍。</strong></div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Plugin 系统</div></div>
+        <div class="feature-text">生命周期管理（加载→初始化→运行→卸载），钩子机制，依赖注入。<strong>皇帝的百官。</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" data-lang="en">
+    <div class="section-tag">Infrastructure</div>
+    <div class="section-title">Infrastructure Layer v1.4.0</div>
+    <div class="section-desc">Agents need their Node.js moment. Mundo is not a demo — Mundo is infrastructure.</div>
+    <div class="grid grid-3">
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Policy Engine</div></div>
+        <div class="feature-text">Structured rule chain, 15 built-in rules (destructive/security/sensitive/resource/audit), priority arbitration, extensible.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Event Bus</div></div>
+        <div class="feature-text">25 event types (lifecycle/LLM/tools/policy/context/memory/delegate/system), pub-sub zero-coupling, JSONL persistence.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Timeline</div></div>
+        <div class="feature-text">Execution trace SQLite persistence, queryable, replayable, exportable JSONL. Every decision, tool call, LLM interaction recorded.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Context Mapper</div></div>
+        <div class="feature-text">Semantic-aware context chunking, priority eviction (user > assistant > tool > system), intelligent compression.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Cache Manager</div></div>
+        <div class="feature-text">Triple-layer cache (prefix + semantic + result), value-score eviction. Cache hit = save money + save time.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Sandbox</div></div>
+        <div class="feature-text">Process-isolated execution, resource limits (time/memory/output), timeout control, output truncation.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">MCP Layer</div></div>
+        <div class="feature-text">Model Context Protocol support, tool server discovery, capability negotiation, lifecycle management.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Skill System</div></div>
+        <div class="feature-text">Structured registration/loading/composition, dependency chain resolution, conflict detection, metadata management.</div>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-dot"></div><div class="feature-title">Plugin System</div></div>
+        <div class="feature-text">Lifecycle management (load→init→run→unload), hook mechanism, dependency injection.</div>
+      </div>
+    </div>
+  </section>
+
   <div class="divider"></div>
 
   <!-- CAPABILITIES -->
