@@ -255,6 +255,7 @@ class TaskConsole:
     def read_input(self) -> str:
         from prompt_toolkit import PromptSession
         from prompt_toolkit.history import FileHistory
+        from prompt_toolkit.keys import Keys
         from prompt_toolkit.styles import Style
         from prompt_toolkit.key_binding import KeyBindings
 
@@ -264,6 +265,7 @@ class TaskConsole:
         kb = KeyBindings()
         stored = {"text": "", "label": ""}
         navigating = [False]
+        is_pasting = [False]
 
         @kb.add("enter")
         def _(event):
@@ -290,6 +292,12 @@ class TaskConsole:
             event.current_buffer.history_forward()
             navigating[0] = False
 
+        @kb.add(Keys.BracketedPaste)
+        def _(event):
+            is_pasting[0] = True
+            event.current_buffer.paste_clipboard_data(event.app.clipboard.get_data())
+            is_pasting[0] = False
+
         session = PromptSession(
             history=FileHistory(hist_path),
             style=style,
@@ -307,6 +315,11 @@ class TaskConsole:
             if collapsing[0] or navigating[0]:
                 return
             text = _buf.text
+            # 只有粘贴的内容才折叠，用户手动输入的长文本不压缩
+            if not is_pasting[0]:
+                stored["text"] = ""
+                stored["label"] = ""
+                return
             if text.count('\n') < 1 and len(text) <= 200:
                 stored["text"] = ""
                 stored["label"] = ""
