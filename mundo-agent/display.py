@@ -416,6 +416,11 @@ class TaskConsole:
             parts.append(f"[dim]T{turns}[/]")
         if tools_count > 0:
             parts.append(f"[dim]{tools_count} tools[/]")
+        # 缓存命中率 — 本次任务
+        if self._total_prompt_tokens > 0:
+            cache_rate = round(self._cached_tokens / self._total_prompt_tokens * 100)
+            cache_color = "ok" if cache_rate >= 50 else "warn" if cache_rate >= 20 else "dim"
+            parts.append(f"[{cache_color}]{cache_rate}% cache[/]")
         if stats.errors_count > 0:
             parts.append(f"[err]{stats.errors_count} err[/]")
 
