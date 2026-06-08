@@ -1021,6 +1021,114 @@ registry.register(
     required=["path"],
 )
 
+# ═══════════════════════════════════════════════
+# delegate_agent + list_agents — 子 agent 调度工具
+# ═══════════════════════════════════════════════
+
+def _delegate_agent(args: Dict) -> str:
+    """将任务委派给子 agent（Claude / Codex / Hermes）"""
+    try:
+        from delegation import AgentManager, AGENT_REGISTRY
+    except ImportError as e:
+        return f"[错误] delegation 模块加载失败: {e}"
+
+    agent_name = args.get("agent", "auto")
+    task = args.get("task", "")
+    if not task:
+        return "[错误] delegate_agent 缺少 task 参数"
+
+    valid_agents = list(AGENT_REGISTRY.keys()) + ["auto"]
+    if agent_name not in valid_agents:
+        available = ", ".join(valid_agents)
+        return f"[错误] 未知 agent: {agent_name}。可用: {available}"
+
+    mgr = AgentManager()
+
+    # auto 模式：delegate 内部自动路由
+    if agent_name != "auto" and agent_name not in mgr.available:
+        detected = ", ".join(mgr.available.keys()) or "无"
+        return f"[错误] {agent_name} 未安装或不可用。已检测到: {detected}"
+
+    timeout = min(args.get("timeout", 300), 600)
+    cwd = args.get("cwd")
+
+    try:
+        result = mgr.delegate(agent_name, task, timeout=timeout, workdir=cwd)
+        return str(result)
+    except Exception as e:
+        return f"[错误] 委派失败: {e}"
+
+
+def _list_agents(args: Dict) -> str:
+    """列出所有可用的子 agent 及其能力"""
+    try:
+        from delegation import AgentManager, AGENT_REGISTRY
+    except ImportError as e:
+        return f"[错误] delegation 模块加载失败: {e}"
+
+    mgr = AgentManager()
+    available = mgr.list_available()
+
+    if not available:
+        return "当前无可用 agent。请确认 claude/codex/hermes 已安装。"
+
+    lines = ["可用 Agent 列表:", ""]
+    for a in available:
+        lines.append(f"  [{a['key']}] {a['name']}")
+        lines.append(f"    优势: {', '.join(a['strengths'])}")
+        lines.append(f"    适用: {', '.join(a['best_for'])}")
+        lines.append("")
+
+    lines.append("提示: 使用 agent='auto' 可自动选择最佳 agent。")
+    return "\n".join(lines)
+
+
+registry.register(
+    name="delegate_agent",
+    description=(
+        "将任务委派给子 agent 执行。支持: auto(智能路由), claude(Claude Code), codex(Codex CLI), hermes(Hermes)。"
+        "auto 模式根据任务内容自动选择最佳 agent。"
+        "适用于需要独立环境执行的复杂任务、代码生成、长时间运行的操作。"
+    ),
+    parameters={
+        "type": "object",
+        "properties": {
+            "agent": {
+                "type": "string",
+                "enum": ["auto", "claude", "codex", "hermes"],
+                "description": "目标 agent: auto(智能路由), claude(Claude Code), codex(Codex CLI), hermes(Hermes)",
+            },
+            "task": {
+                "type": "string",
+                "description": "任务描述（自然语言 prompt）",
+            },
+            "timeout": {
+                "type": "integer",
+                "description": "超时秒数（默认 300，最大 600）",
+            },
+            "cwd": {
+                "type": "string",
+                "description": "工作目录（可选）",
+            },
+        },
+        "required": ["agent", "task"],
+    },
+    handler=_delegate_agent,
+    required=["agent", "task"],
+)
+
+
+registry.register(
+    name="list_agents",
+    description="列出所有可用的子 agent 及其能力和适用场景。用于了解当前可委派的目标。",
+    parameters={
+        "type": "object",
+        "properties": {},
+    },
+    handler=_list_agents,
+)
+
+
 # 向后兼容：旧代码引用的常量
 TOOL_SCHEMAS = registry.schemas
 
