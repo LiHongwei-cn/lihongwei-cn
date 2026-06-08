@@ -1,4 +1,4 @@
-# MUNDO Agent v1.2.8 — THE EMPEROR
+# MUNDO Agent v1.3.0 — THE EMPEROR
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -76,7 +76,7 @@
 ## 启动标识
 
 ```
-  MUNDO v1.2.8 · mimo-v2.5-pro
+  MUNDO v1.3.0 · mimo-v2.5-pro
 
  ❯ 
 ```
@@ -162,10 +162,10 @@ cloud_sync.py   云仓库同步
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v1.2.8-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.2.8/mundo-v1.2.8-macos.zip) |
-| Windows | [mundo-v1.2.8-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.2.8/mundo-v1.2.8-windows.zip) |
-| Linux | [mundo-v1.2.8-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.2.8/mundo-v1.2.8-linux.zip) |
-| 全平台 | [mundo-v1.2.8-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.2.8/mundo-v1.2.8-all.zip) |
+| macOS | [mundo-v1.3.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.3.0/mundo-v1.3.0-macos.zip) |
+| Windows | [mundo-v1.3.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.3.0/mundo-v1.3.0-windows.zip) |
+| Linux | [mundo-v1.3.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.3.0/mundo-v1.3.0-linux.zip) |
+| 全平台 | [mundo-v1.3.0-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.3.0/mundo-v1.3.0-all.zip) |
 
 ## 许可证
 

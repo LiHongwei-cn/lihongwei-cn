@@ -21,8 +21,15 @@ from ..utils.logging import get_llm_logger
 logger = get_llm_logger()
 
 
+_env_loaded = False
+
 def _load_env():
-    """加载环境变量"""
+    """加载环境变量（仅首次调用时执行）"""
+    global _env_loaded
+    if _env_loaded:
+        return
+    _env_loaded = True
+
     env_paths = [
         Path.home() / ".hermes" / "mundo-agent" / ".env",
         Path.home() / ".hermes" / ".env",
@@ -41,8 +48,7 @@ def _load_env():
             logger.warning(f"加载环境变量失败 {path}: {e}")
 
 
-# 加载环境变量
-_load_env()
+# 不在模块导入时加载，延迟到 LLMClient.__init__ 时
 
 
 # ═══════════════════════════════════════════════
@@ -103,19 +109,56 @@ def sanitize_messages(messages: List[Dict]) -> List[Dict]:
         if not isinstance(msg, dict):
             continue
 
-        m = dict(msg)
+        role = msg.get("role", "")
+        content = msg.get("content")
+        tool_calls = msg.get("tool_calls")
+        tool_call_id = msg.get("tool_call_id")
 
-        # content 必须是字符串
+        # 快速检查：是否需要修改
+        needs_copy = False
+
+        # content 检查
+        if content is not None:
+            if not isinstance(content, str) or content != _fix_surrogates(content):
+                needs_copy = True
+
+        # tool_calls 检查
+        if tool_calls:
+            for tc in tool_calls:
+                func = tc.get("function", {})
+                raw_args = func.get("arguments", "{}")
+                if not isinstance(raw_args, str):
+                    needs_copy = True
+                    break
+                try:
+                    json.loads(raw_args)
+                except (json.JSONDecodeError, TypeError):
+                    needs_copy = True
+                    break
+
+        # tool role 无 content
+        if role == "tool" and content is None:
+            needs_copy = True
+
+        # 空消息过滤
+        if (content is None or content == "") and not tool_calls and not tool_call_id and role not in ("system",):
+            continue
+
+        # 无需修改则直接引用（零拷贝）
+        if not needs_copy:
+            cleaned.append(msg)
+            continue
+
+        # 需要修改，创建副本
+        m = dict(msg)
         if "content" in m:
             m["content"] = _coerce_content(m["content"])
 
-        # 清洗 tool_calls 中的 arguments
-        if "tool_calls" in m and m["tool_calls"]:
+        if tool_calls:
             valid_tcs = []
-            for tc in m["tool_calls"]:
+            for tc in tool_calls:
                 func = tc.get("function", {})
                 raw_args = func.get("arguments", "{}")
-
                 if isinstance(raw_args, str):
                     try:
                         json.loads(raw_args)
@@ -128,14 +171,8 @@ def sanitize_messages(messages: List[Dict]) -> List[Dict]:
                     valid_tcs.append(tc)
             m["tool_calls"] = valid_tcs
 
-        # tool role 的 content 必须存在
-        if m.get("role") == "tool" and "content" not in m:
+        if role == "tool" and "content" not in m:
             m["content"] = ""
-
-        # 移除完全空的消息（但保留 tool 消息和 system 消息）
-        if (not m.get("content") and not m.get("tool_calls")
-                and not m.get("tool_call_id") and m.get("role") not in ("system",)):
-            continue
 
         cleaned.append(m)
 
@@ -179,6 +216,7 @@ class LLMClient:
     """LLM 客户端"""
 
     def __init__(self, provider: str = "xiaomi", model: str = None, api_key: str = None):
+        _load_env()  # 延迟加载环境变量
         from setup import PROVIDERS
 
         cfg = PROVIDERS.get(provider)

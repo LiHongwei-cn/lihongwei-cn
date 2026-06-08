@@ -432,12 +432,10 @@ def _git_operation(args: Dict) -> str:
         if not message:
             return "[错误: commit 操作需要 message 参数]"
         try:
-            # 先添加所有更改
-            subprocess.run("git add -A", shell=True, cwd=workdir, check=True)
-            # 提交
+            subprocess.run(["git", "add", "-A"], cwd=workdir, check=True)
             result = subprocess.run(
-                f'git commit -m "{message}"',
-                shell=True, capture_output=True, text=True, cwd=workdir,
+                ["git", "commit", "-m", message],
+                capture_output=True, text=True, cwd=workdir,
             )
             return f"✓ 已提交: {message}\n{result.stdout}"
         except Exception as e:
@@ -449,29 +447,27 @@ def _git_operation(args: Dict) -> str:
             return "[错误: create_branch 操作需要 branch_name 参数]"
         try:
             result = subprocess.run(
-                f"git checkout -b {branch_name}",
-                shell=True, capture_output=True, text=True, cwd=workdir,
+                ["git", "checkout", "-b", branch_name],
+                capture_output=True, text=True, cwd=workdir,
             )
             return f"✓ 已创建并切换到分支: {branch_name}\n{result.stdout}"
         except Exception as e:
             return f"[错误: 创建分支失败: {e}]"
     
     elif operation == "create_worktree":
-        # 借鉴 Codex 的工作树隔离模式
         branch_name = args.get("branch_name", "")
         worktree_path = args.get("worktree_path", "")
         if not branch_name or not worktree_path:
             return "[错误: create_worktree 需要 branch_name 和 worktree_path 参数]"
         try:
-            # 创建新分支
             subprocess.run(
-                f"git branch {branch_name}",
-                shell=True, capture_output=True, text=True, cwd=workdir,
+                ["git", "branch", branch_name],
+                capture_output=True, text=True, cwd=workdir,
             )
             # 创建工作树
             result = subprocess.run(
-                f"git worktree add {worktree_path} {branch_name}",
-                shell=True, capture_output=True, text=True, cwd=workdir,
+                ["git", "worktree", "add", worktree_path, branch_name],
+                capture_output=True, text=True, cwd=workdir,
             )
             return f"✓ 已创建工作树: {worktree_path} (分支: {branch_name})\n{result.stdout}"
         except Exception as e:
@@ -511,50 +507,77 @@ def _edit_file(args: Dict) -> str:
 
 
 def _python_execute(args: Dict) -> str:
-    """Python 代码执行工具 — 借鉴 Claude Code 代码执行能力"""
+    """Python 代码执行工具 — 安全沙箱"""
     code = args.get("code", "")
     if not code:
         return "[错误: python_execute 缺少 code 参数]"
-    
-    timeout = args.get("timeout", 30)
+
+    timeout = min(args.get("timeout", 30), 120)
     workdir = args.get("workdir") or os.getcwd()
-    
-    # 安全检查：禁止危险操作
-    dangerous_patterns = [
-        "os.system", "subprocess", "shutil.rmtree", "os.remove",
-        "open('/etc", "open('/proc", "open('/sys", "import ctypes",
-        "exec(", "eval(", "__import__", "globals()", "locals()",
-    ]
-    for pattern in dangerous_patterns:
-        if pattern in code:
-            return f"[安全警告] 代码包含危险操作: {pattern}。蒙多拒绝执行。"
-    
+
+    # AST 级安全检查
+    import ast as _ast
     try:
-        # 创建临时文件
+        tree = _ast.parse(code)
+    except SyntaxError as e:
+        return f"[错误] 语法错误: {e}"
+
+    FORBIDDEN_MODULES = {
+        "os", "subprocess", "shutil", "ctypes", "signal", "multiprocessing",
+        "socket", "http", "urllib", "requests", "importlib", "compileall",
+        "py_compile", "zipimport", "pkgutil",
+    }
+    FORBIDDEN_BUILTINS = {"exec", "eval", "compile", "__import__", "globals", "locals", "breakpoint"}
+
+    for node in _ast.walk(tree):
+        if isinstance(node, _ast.Import):
+            for alias in node.names:
+                mod = alias.name.split(".")[0]
+                if mod in FORBIDDEN_MODULES:
+                    return f"[安全警告] 禁止 import: {alias.name}。蒙多拒绝执行。"
+        elif isinstance(node, _ast.ImportFrom):
+            if node.module:
+                mod = node.module.split(".")[0]
+                if mod in FORBIDDEN_MODULES:
+                    return f"[安全警告] 禁止 from {node.module} import。蒙多拒绝执行。"
+        elif isinstance(node, _ast.Call):
+            func = node.func
+            name = ""
+            if isinstance(func, _ast.Name):
+                name = func.id
+            elif isinstance(func, _ast.Attribute):
+                name = func.attr
+            if name in FORBIDDEN_BUILTINS:
+                return f"[安全警告] 禁止调用: {name}()。蒙多拒绝执行。"
+
+    _BLOCKED_STRS = ["__subclasses__", "__builtins__", "getattr", "setattr", "delattr"]
+    for kw in _BLOCKED_STRS:
+        if kw in code:
+            return f"[安全警告] 禁止使用: {kw}。蒙多拒绝执行。"
+
+    try:
         import tempfile
         with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False, dir=workdir) as f:
             f.write(code)
             temp_path = f.name
-        
-        # 执行代码
+
         result = subprocess.run(
             ["python3", temp_path],
             capture_output=True, text=True,
             timeout=timeout, cwd=workdir,
         )
-        
-        # 清理临时文件
+
         try:
             os.unlink(temp_path)
         except OSError:
             pass
-        
+
         output = result.stdout
         if result.stderr:
             output += f"\n[stderr]\n{result.stderr[:2000]}"
         if result.returncode != 0:
             output += f"\n[exit code: {result.returncode}]"
-        
+
         return _truncate(output or "(无输出)")
     except subprocess.TimeoutExpired:
         return f"[超时: Python 代码执行超过 {timeout} 秒]"

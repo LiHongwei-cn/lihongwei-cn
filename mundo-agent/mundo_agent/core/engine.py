@@ -378,47 +378,79 @@ class MundoEngine:
         return None
 
     def _execute_tool_calls(self, tool_calls: List[Dict]):
-        """执行工具调用序列"""
+        """执行工具调用 — 独立工具并行，回调在主线程"""
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+
+        # 解析所有 tool call
+        parsed = []
         for tc in tool_calls:
             if self._interrupted:
                 break
-
             func = tc.get("function", {})
             tool_name = func.get("name", "")
             tool_id = tc.get("id", "")
-
             try:
                 tool_args = json.loads(func.get("arguments", "{}"))
             except json.JSONDecodeError:
                 tool_args = {}
+            parsed.append((tc, tool_name, tool_id, tool_args))
 
+        if not parsed:
+            return
+
+        # 通知开始（主线程）
+        for _, tool_name, _, tool_args in parsed:
             self.stats.add_tool_call(tool_name)
-
             if self.on_tool_call:
                 self.on_tool_call(tool_name, tool_args, self.stats)
 
-            tool_start = time.time()
-            result_text = tool_registry.execute(tool_name, tool_args)
-            tool_duration = time.time() - tool_start
-            self.stats.tool_time += tool_duration
+        # 并行执行工具（纯计算，无回调）
+        tool_results = []  # (tool_name, tool_id, result_text, duration)
+        if len(parsed) == 1:
+            _, name, tid, args = parsed[0]
+            t0 = time.time()
+            result = tool_registry.execute(name, args)
+            tool_results.append((name, tid, result, time.time() - t0))
+        else:
+            with ThreadPoolExecutor(max_workers=min(len(parsed), 4)) as pool:
+                future_map = {}
+                for _, name, tid, args in parsed:
+                    future_map[pool.submit(tool_registry.execute, name, args)] = (name, tid)
+                for future in as_completed(future_map):
+                    name, tid = future_map[future]
+                    t0 = time.time()
+                    try:
+                        result = future.result()
+                    except Exception as e:
+                        result = f"[工具执行错误: {name}: {e}]"
+                    tool_results.append((name, tid, result, time.time() - t0))
 
-            is_error = result_text.startswith("[错误") or result_text.startswith("[工具执行错误")
+        # 按原始顺序处理结果（主线程，线程安全）
+        result_by_tid = {tid: (r, d) for name, tid, r, d in tool_results}
+        for _, tool_name, tool_id, _ in parsed:
+            result_text, duration = result_by_tid.get(tool_id, ("[未获取到结果]", 0))
+            self.stats.tool_time += duration
+            self._finalize_tool_result(tool_name, tool_id, result_text)
 
-            if is_error:
-                self.stats.add_error()
+    def _finalize_tool_result(self, tool_name: str, tool_id: str, result_text: str):
+        """处理工具结果：统计、回调、写入消息"""
+        is_error = result_text.startswith("[错误") or result_text.startswith("[工具执行错误")
 
-            if self.on_tool_output:
-                display_text = result_text[:3000] if len(result_text) > 3000 else result_text
-                self.on_tool_output(tool_name, display_text, is_error)
+        if is_error:
+            self.stats.add_error()
 
-            if len(result_text) > 6000:
-                result_text = result_text[:6000] + "\n... (截断)"
+        if self.on_tool_output:
+            display_text = result_text[:3000] if len(result_text) > 3000 else result_text
+            self.on_tool_output(tool_name, display_text, is_error)
 
-            self.messages.append({
-                "role": "tool",
-                "tool_call_id": tool_id,
-                "content": result_text,
-            })
+        if len(result_text) > 6000:
+            result_text = result_text[:6000] + "\n... (截断)"
+
+        self.messages.append({
+            "role": "tool",
+            "tool_call_id": tool_id,
+            "content": result_text,
+        })
 
     def _update_token_stats(self, assistant_msg: Dict):
         """更新 token 统计"""

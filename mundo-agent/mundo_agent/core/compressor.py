@@ -1,9 +1,9 @@
-"""蒙多上下文压缩器 — 重构版
+"""蒙多上下文压缩器 — 高效版
 
 改进：
-- 更智能的压缩策略
-- 性能优化
-- 可配置
+- 单次遍历分类（不重复迭代）
+- token 估算缓存（脏标记）
+- 最小化内存分配
 """
 
 from typing import List, Dict, Optional
@@ -27,100 +27,94 @@ class ContextCompressor:
 
     def __init__(self, config: Optional[CompressionConfig] = None):
         self.config = config or CompressionConfig()
+        self._cached_tokens: int = 0
+        self._cache_dirty: bool = True
+
+    def _count_chars(self, messages: List[Dict]) -> int:
+        """单次遍历计算总字符数"""
+        total = 0
+        for m in messages:
+            total += len(m.get("content") or "")
+            for tc in (m.get("tool_calls") or []):
+                total += len(tc.get("function", {}).get("arguments", ""))
+        return total
 
     def estimate_tokens(self, messages: List[Dict]) -> int:
-        """估算 token 数量"""
-        total_chars = 0
+        """估算 token 数量（脏标记缓存）"""
+        if self._cache_dirty:
+            self._cached_tokens = int(
+                self._count_chars(messages) * self.config.char_to_token_ratio
+            )
+            self._cache_dirty = False
+        return self._cached_tokens
 
-        for m in messages:
-            # content
-            total_chars += len(m.get("content") or "")
-
-            # tool_calls 的 arguments
-            for tc in (m.get("tool_calls") or []):
-                args = tc.get("function", {}).get("arguments", "")
-                total_chars += len(args)
-
-        return int(total_chars * self.config.char_to_token_ratio)
+    def invalidate_cache(self):
+        """手动失效缓存"""
+        self._cache_dirty = True
 
     def should_compress(self, messages: List[Dict]) -> bool:
         """检查是否需要压缩"""
+        self._cache_dirty = True  # 每次检查都刷新
         return self.estimate_tokens(messages) > self.config.warn_threshold_tokens
 
     def compress(self, messages: List[Dict]) -> List[Dict]:
-        """智能压缩：优先压缩 tool 输出，保留对话"""
-        if len(messages) <= self.config.max_messages_before_compress:
+        """智能压缩：单次遍历分类，优先压缩 tool 输出"""
+        cfg = self.config
+        if len(messages) <= cfg.max_messages_before_compress:
             return messages
 
         current_tokens = self.estimate_tokens(messages)
-        if current_tokens <= self.config.target_tokens:
+        if current_tokens <= cfg.target_tokens:
             return messages
 
-        # 分离 system 消息
+        # 单次遍历分类
         system_msg = None
-        rest = []
+        user_msgs = []
+        assistant_msgs = []
+        tool_msgs = []
+        system_seen = False
 
-        for m in messages:
-            if m["role"] == "system" and system_msg is None:
+        for i, m in enumerate(messages):
+            role = m["role"]
+            if role == "system" and not system_seen:
                 system_msg = m
-            else:
-                rest.append(m)
-
-        # 分类消息（保留原始索引）
-        indexed_rest = list(enumerate(rest))
-        user_msgs = [(i, m) for i, m in indexed_rest if m["role"] == "user"]
-        assistant_msgs = [(i, m) for i, m in indexed_rest if m["role"] == "assistant"]
-        tool_msgs = [(i, m) for i, m in indexed_rest if m["role"] == "tool"]
+                system_seen = True
+            elif role == "user":
+                user_msgs.append((i, m))
+            elif role == "assistant":
+                assistant_msgs.append((i, m))
+            elif role == "tool":
+                tool_msgs.append((i, m))
 
         # 策略1：压缩 tool 输出（最大收益）
         compressed_tools = []
         for idx, m in tool_msgs:
             content = m.get("content") or ""
-            if len(content) > self.config.max_tool_content_length:
-                new_content = (
-                    content[:200] +
-                    f"\n... ({len(content)} 字符，已压缩) ...\n" +
-                    content[-100:]
-                )
-                compressed_tools.append((idx, {**m, "content": new_content}))
-            else:
-                compressed_tools.append((idx, m))
+            if len(content) > cfg.max_tool_content_length:
+                m = {**m, "content": content[:200] + f"\n... ({len(content)} 字符，已压缩) ...\n" + content[-200:]}
+            compressed_tools.append((idx, m))
 
-        # 合并所有消息并按原始索引排序
-        all_indexed = user_msgs + assistant_msgs + compressed_tools
-        all_indexed.sort(key=lambda x: x[0])
-        all_msgs = [m for _, m in all_indexed]
-
-        # 重建消息列表
+        # 重新组装
         result = []
-
         if system_msg:
             result.append(system_msg)
 
-        # 保留最近 N 条消息完整，其余压缩
-        if len(all_msgs) > self.config.keep_recent_messages:
-            old = all_msgs[:-self.config.keep_recent_messages]
-            recent = all_msgs[-self.config.keep_recent_messages:]
+        # 收集所有非 system 消息，按原始索引排序
+        all_msgs = user_msgs + assistant_msgs + compressed_tools
+        all_msgs.sort(key=lambda x: x[0])
 
-            # 从旧消息中提取摘要
-            summary_parts = []
-            for m in old:
-                role = m["role"]
-                content = (m.get("content") or "")[:100]
-                if content and role in ("user", "assistant"):
-                    summary_parts.append(f"[{role}] {content}")
-                elif content and role == "tool":
-                    summary_parts.append(f"[tool:{m.get('tool_call_id', '?')[:8]}] {content[:60]}")
+        # 保留最近的消息
+        if len(all_msgs) > cfg.keep_recent_messages:
+            old_msgs = all_msgs[:-cfg.keep_recent_messages]
+            recent_msgs = all_msgs[-cfg.keep_recent_messages:]
 
-            if summary_parts:
-                summary = " | ".join(summary_parts[-10:])
-                result.append({
-                    "role": "system",
-                    "content": f"[历史摘要] {summary[:self.config.max_summary_length]}"
-                })
-
-            result.extend(recent)
+            # 旧消息：只保留 user 和 assistant，tool 跳过
+            for idx, m in old_msgs:
+                if m["role"] in ("user", "assistant"):
+                    result.append(m)
+            result.extend(m for _, m in recent_msgs)
         else:
-            result.extend(all_msgs)
+            result.extend(m for _, m in all_msgs)
 
+        self._cache_dirty = True
         return result

@@ -10,10 +10,21 @@ if [ -f "$SRC/version.txt" ] && [ -f "$DST/version.txt" ]; then
     DST_VER=$(cat "$DST/version.txt" | tr -d '[:space:]')
 
     if [ "$SRC_VER" != "$DST_VER" ]; then
-        for f in mundo.py core.py llm.py setup.py tools.py approval.py display.py memory.py cloud_sync.py; do
+        # 同步单体文件
+        for f in mundo.py core.py llm.py setup.py tools.py approval.py display.py memory.py memory_import.py models.py agents.py delegation.py cloud_sync.py; do
             [ -f "$SRC/$f" ] && cp "$SRC/$f" "$DST/$f"
         done
-        cp "$SRC/version.txt" "$DST/version.txt"
+        # 同步 mundo_agent 包
+        if [ -d "$SRC/mundo_agent" ]; then
+            rsync -a --delete --exclude='__pycache__' "$SRC/mundo_agent/" "$DST/mundo_agent/"
+        fi
+        # 同步测试
+        if [ -d "$SRC/tests" ]; then
+            rsync -a --delete --exclude='__pycache__' "$SRC/tests/" "$DST/tests/"
+        fi
+        # 同步配置
+        [ -f "$SRC/pytest.ini" ] && cp "$SRC/pytest.ini" "$DST/pytest.ini"
+        [ -f "$SRC/version.txt" ] && cp "$SRC/version.txt" "$DST/version.txt"
         [ -f "$SRC/requirements.txt" ] && cp "$SRC/requirements.txt" "$DST/requirements.txt"
     fi
 fi

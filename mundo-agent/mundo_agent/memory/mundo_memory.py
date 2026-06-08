@@ -6,7 +6,7 @@
 import re
 import json
 import hashlib
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Dict, Optional, Tuple
 
 from .manager import get_db_manager
@@ -198,7 +198,7 @@ class MundoMemory:
     def save_conversation(self, conv_id: str, title: str, summary: str,
                           messages: List[Dict], project: str = ""):
         """保存对话记录（可搜索）"""
-        now = datetime.now().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         total_chars = sum(len((m.get("content") or "")) for m in messages)
         try:
             self.db.execute(
@@ -269,7 +269,7 @@ class MundoMemory:
     def remember_project(self, path: str, name: str = "",
                          tech_stack: str = "", notes: str = ""):
         """记住项目上下文"""
-        now = datetime.now().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         try:
             self.db.execute(
                 """INSERT INTO projects (path,name,tech_stack,notes,last_seen)
@@ -358,7 +358,7 @@ class MundoMemory:
     def consolidate(self) -> Dict:
         """自我整理：去重 + 淘汰 + 压缩"""
         stats = {"duplicates_removed": 0, "expired_removed": 0, "merged": 0}
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
 
         try:
             # 1. 去重（相同 content_hash，保留 importance 最高的）
@@ -408,7 +408,7 @@ class MundoMemory:
                  source: str = "manual", importance: int = 5,
                  project: str = "", tags: str = "") -> int:
         """记住信息"""
-        now = datetime.now().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         tokens = len(content)
         c_hash = hashlib.md5(content.encode()).hexdigest()[:12]
 
@@ -440,7 +440,7 @@ class MundoMemory:
     def remember_preference(self, key: str, value: str):
         """记住偏好"""
         self.remember(f"{key}: {value}", category="preference", importance=7, tags=key)
-        now = datetime.now().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         try:
             self.db.execute(
                 "INSERT INTO user_profile (key,value,category,updated_at) VALUES (?,?,?,?) ON CONFLICT(key) DO UPDATE SET value=?,updated_at=?",

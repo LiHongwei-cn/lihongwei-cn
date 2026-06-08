@@ -121,6 +121,7 @@ class ToolRegistry:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._tools: Dict[str, ToolDefinition] = {}
+            cls._instance._schema_cache: Optional[List[Dict]] = None
         return cls._instance
 
     def register(self, name: str, description: str, handler: Callable,
@@ -128,12 +129,15 @@ class ToolRegistry:
         """注册工具"""
         tool = ToolDefinition(name, description, handler, parameters)
         self._tools[name] = tool
+        self._schema_cache = None  # 失效缓存
         logger.debug(f"注册工具: {name}")
 
     @property
     def schemas(self) -> List[Dict]:
-        """获取所有工具的 Schema"""
-        return [tool.to_schema() for tool in self._tools.values()]
+        """获取所有工具的 Schema（缓存）"""
+        if self._schema_cache is None:
+            self._schema_cache = [tool.to_schema() for tool in self._tools.values()]
+        return self._schema_cache
 
     @property
     def names(self) -> List[str]:

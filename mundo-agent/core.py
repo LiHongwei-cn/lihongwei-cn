@@ -544,6 +544,29 @@ class MundoEngine:
             self.on_task_done(final, self.stats)
         return final
 
+    def _try_call_llm(self, attempt: int) -> Optional[Dict]:
+        """单次 LLM 调用尝试（流式优先，失败降级）"""
+        if self._use_streaming:
+            try:
+                stream_iter = self.client.chat_stream(
+                    messages=self.messages, tools=tool_registry.schemas,
+                    temperature=0.7, max_tokens=self.max_tokens_override,
+                )
+                return self._accumulate_stream(stream_iter)
+            except Exception:
+                if attempt == 0:
+                    self._use_streaming = False
+                else:
+                    raise
+
+        result = self.client.chat(
+            messages=self.messages, tools=tool_registry.schemas,
+            temperature=0.7, max_tokens=self.max_tokens_override,
+        )
+        msg = LLMClient.extract_response(result)
+        msg["_usage"] = LLMClient.extract_usage(result)
+        return msg
+
     def _call_llm(self, max_retries: int = 2) -> Optional[Dict]:
         """调用 LLM，流式优先，失败降级，自动重试（含总超时 + 友好错误）"""
         last_error = None
@@ -552,58 +575,25 @@ class MundoEngine:
         CALL_TIMEOUT = 300  # 5 分钟总超时
 
         for attempt in range(max_retries):
-            # 检查总超时
             if time.time() - call_start > CALL_TIMEOUT:
                 last_error = "模型响应总超时（5 分钟）"
                 last_error_info = {"category": "timeout", "retryable": False,
                                    "user_tip": "模型长时间无响应。请稍后重试，或运行 /switch 换个 provider。"}
                 break
             try:
-                if self._use_streaming:
-                    try:
-                        stream_iter = self.client.chat_stream(
-                            messages=self.messages, tools=tool_registry.schemas,
-                            temperature=0.7, max_tokens=self.max_tokens_override,
-                        )
-                        return self._accumulate_stream(stream_iter)
-                    except Exception as e:
-                        if attempt == 0:
-                            self._use_streaming = False
-                            last_error = str(e)
-                            # 静默降级到非流式，不打扰用户
-                            continue
-                        raise
-
-                result = self.client.chat(
-                    messages=self.messages, tools=tool_registry.schemas,
-                    temperature=0.7, max_tokens=self.max_tokens_override,
-                )
-                msg = LLMClient.extract_response(result)
-                msg["_usage"] = LLMClient.extract_usage(result)
-                return msg
-
+                return self._try_call_llm(attempt)
             except RuntimeError as e:
                 last_error = str(e)
                 last_error_info = _classify_error(e, last_error)
-
-                # 上下文溢出 → 自动压缩重试
                 if last_error_info["category"] == "context_overflow":
-                    self.messages = ContextCompressor.compress(
-                        self.messages, target_tokens=40000
-                    )
+                    self.messages = ContextCompressor.compress(self.messages, target_tokens=40000)
                     self.stats.retries_count += 1
                     continue
-
-                # 可重试错误 → 退避重试
                 if last_error_info["retryable"] and attempt < max_retries - 1:
-                    wait = min(2 ** attempt * 2, 30)
-                    time.sleep(wait)
+                    time.sleep(min(2 ** attempt * 2, 30))
                     self.stats.retries_count += 1
                     continue
-
-                # 不可重试 → 直接跳出
                 break
-
             except Exception as e:
                 last_error = str(e)
                 last_error_info = _classify_error(e, last_error)
