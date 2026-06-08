@@ -294,10 +294,14 @@ class MundoEngine:
     def _try_call_llm(self, attempt: int) -> Optional[Dict]:
         messages = self._prepare_messages()
         max_tokens = self.max_tokens_override
+        
+        # 获取工具 schema
+        import tools as tool_module
+        tool_schemas = tool_module.registry.schemas if hasattr(tool_module, 'registry') else []
 
         if self._use_streaming:
             try:
-                stream = self.client.chat_stream(messages, max_tokens=max_tokens)
+                stream = self.client.chat_stream(messages, tools=tool_schemas, max_tokens=max_tokens)
                 if self.on_stream_start:
                     self.on_stream_start(self.stats.turns)
                 result = self._accumulate_stream(stream)
@@ -311,7 +315,7 @@ class MundoEngine:
                     return self._try_call_llm(attempt)
                 raise
         else:
-            return self.client.chat(messages, max_tokens=max_tokens)
+            return self.client.chat(messages, tools=tool_schemas, max_tokens=max_tokens)
 
     def _prepare_messages(self) -> List[Dict]:
         messages = [m for m in self.messages if m.get("role") == "system" or m.get("content")]
