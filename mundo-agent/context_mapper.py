@@ -63,7 +63,7 @@ class ContextBudget:
 
     @property
     def usable_tokens(self) -> int:
-        return self.max_tokens - self.system_reserve - self.response_reserve - self.safety_margin
+        return max(1000, self.max_tokens - self.system_reserve - self.response_reserve - self.safety_margin)
 
 
 class ContextMapper:

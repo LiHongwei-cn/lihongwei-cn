@@ -268,19 +268,19 @@ def _web_search(args: Dict) -> str:
 
     # 尝试多个搜索引擎
     search_engines = [
-        ("DuckDuckGo", f"https://html.duckduckgo.com/html/?q={requests.utils.quote(query)}", _parse_duckduckgo),
-        ("Google", f"https://www.google.com/search?q={requests.utils.quote(query)}&num={limit}", _parse_google),
-        ("Bing", f"https://www.bing.com/search?q={requests.utils.quote(query)}&count={limit}", _parse_bing),
+        ("DuckDuckGo", f"https://html.duckduckgo.com/html/?q={requests.utils.quote(query)}", "duckduckgo"),
+        ("Google", f"https://www.google.com/search?q={requests.utils.quote(query)}&num={limit}", "google"),
+        ("Bing", f"https://www.bing.com/search?q={requests.utils.quote(query)}&count={limit}", "bing"),
     ]
 
-    for engine_name, url, parser in search_engines:
+    for engine_name, url, engine_type in search_engines:
         try:
             # 添加随机延迟
             time.sleep(random.uniform(0.5, 2.0))
             
             resp = requests.get(url, headers=headers, proxies=proxies, timeout=15)
             resp.raise_for_status()
-            results = parser(resp.text, limit)
+            results = _parse_search_results(resp.text, limit, engine_type)
             if results:
                 return f"🔍 {engine_name} 搜索结果:\n\n" + "\n\n".join(results)
         except Exception as e:
@@ -316,15 +316,25 @@ def _web_search(args: Dict) -> str:
     return f"搜索未返回结果（所有搜索引擎均失败）。查询: {query}"
 
 
-def _parse_duckduckgo(html: str, limit: int) -> list:
-    """解析 DuckDuckGo HTML 搜索结果"""
+def _parse_search_results(html: str, limit: int, engine: str) -> list:
+    """通用搜索结果解析"""
     results = []
     soup = BeautifulSoup(html, "html.parser")
-    for result in soup.select(".result__a")[:limit]:
-        title = result.get_text(strip=True)
-        href = result.get("href", "")
-        if title and href:
-            # 处理 DuckDuckGo 重定向 URL
+    
+    selectors = {
+        "duckduckgo": (".result__a", None),
+        "google": ("div.g", "h3"),
+        "bing": ("li.b_algo", "h2 a"),
+    }
+    
+    container_sel, title_sel = selectors.get(engine, (None, None))
+    if not container_sel:
+        return results
+    
+    for item in soup.select(container_sel)[:limit]:
+        if engine == "duckduckgo":
+            title = item.get_text(strip=True)
+            href = item.get("href", "")
             if "uddg=" in href:
                 try:
                     from urllib.parse import unquote, urlparse, parse_qs
@@ -334,38 +344,25 @@ def _parse_duckduckgo(html: str, limit: int) -> list:
                         href = unquote(qs["uddg"][0])
                 except Exception:
                     pass
-            results.append(f"• {title}\n  {href}")
-    return results
-
-
-def _parse_google(html: str, limit: int) -> list:
-    """解析 Google 搜索结果"""
-    results = []
-    soup = BeautifulSoup(html, "html.parser")
-    for g in soup.select("div.g")[:limit]:
-        title_elem = g.select_one("h3")
-        link_elem = g.select_one("a")
-        if title_elem and link_elem:
+        elif engine == "google":
+            title_elem = item.select_one("h3")
+            link_elem = item.select_one("a")
+            if not title_elem or not link_elem:
+                continue
             title = title_elem.get_text(strip=True)
             href = link_elem.get("href", "")
             if href.startswith("/url?q="):
                 href = href.split("/url?q=")[1].split("&")[0]
-            if title and href:
-                results.append(f"• {title}\n  {href}")
-    return results
-
-
-def _parse_bing(html: str, limit: int) -> list:
-    """解析 Bing 搜索结果"""
-    results = []
-    soup = BeautifulSoup(html, "html.parser")
-    for li in soup.select("li.b_algo")[:limit]:
-        title_elem = li.select_one("h2 a")
-        if title_elem:
+        else:  # bing
+            title_elem = item.select_one("h2 a")
+            if not title_elem:
+                continue
             title = title_elem.get_text(strip=True)
             href = title_elem.get("href", "")
-            if title and href:
-                results.append(f"• {title}\n  {href}")
+        
+        if title and href:
+            results.append(f"• {title}\n  {href}")
+    
     return results
 
 
