@@ -1,4 +1,4 @@
-# MUNDO Agent v1.3.0 — THE EMPEROR
+# MUNDO Agent v1.3.1 — THE EMPEROR
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -47,9 +47,9 @@
 
 | 能力 | 说明 |
 |------|------|
-| 28 个 AI 模型 | MiMo / DeepSeek / Qwen / GLM / Kimi / ERNIE / 豆包 / OpenAI / Claude / Gemini / Mistral / Grok / OpenRouter |
+| 17 个 AI 模型 | MiMo / DeepSeek / Qwen / GLM / Kimi / ERNIE / 豆包 / OpenAI / Claude / Gemini / Mistral / Grok / OpenRouter |
 | Agentic Loop | think → act → observe → repeat |
-| 10 大工具 | terminal / read / write / edit_file / search_files / web_search / git_operation / python_execute / http_request / code_analysis |
+| 14 大工具 | terminal / read / write / edit_file / search_files / web_search / git_operation / python_execute / http_request / code_analysis / json_process / delegate_agent / list_agents / list_directory |
 | Agent 调度 | 自动检测 Hermes / Claude Code / Codex，按任务类型分发 |
 | 蒙多分身 | 无外部 Agent 时蒙多自动分身并行 |
 | 元学习 | 蒙多不只学知识，蒙多学「如何学习」。蒙多越用越强 |
@@ -76,7 +76,7 @@
 ## 启动标识
 
 ```
-  MUNDO v1.3.0 · mimo-v2.5-pro
+  MUNDO v1.3.1 · mimo-v2.5-pro
 
  ❯ 
 ```
@@ -148,7 +148,7 @@ mundo.bat
 mundo.py        入口 + CLI + 命令处理
 core.py         Agentic Loop + IterationBudget + ContextCompressor + 错误重试
 llm.py          多模型 LLM 客户端（消息清洗 + reasoning 支持）
-tools.py        工具注册表 + 10 个工具实现
+tools.py        工具注册表 + 14 个工具实现
 display.py      执行控制台（状态栏 + 活动流 + 极简输入）
 memory.py       六套记忆架构（自动/对话搜索/Code/Agent/项目隔离/自我整理）
 delegation.py   Agent 检测 + 任务拆分 + 并行执行 + 分身
@@ -162,10 +162,10 @@ cloud_sync.py   云仓库同步
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v1.3.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.3.0/mundo-v1.3.0-macos.zip) |
-| Windows | [mundo-v1.3.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.3.0/mundo-v1.3.0-windows.zip) |
-| Linux | [mundo-v1.3.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.3.0/mundo-v1.3.0-linux.zip) |
-| 全平台 | [mundo-v1.3.0-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.3.0/mundo-v1.3.0-all.zip) |
+| macOS | [mundo-v1.3.1-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.3.1/mundo-v1.3.1-macos.zip) |
+| Windows | [mundo-v1.3.1-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.3.1/mundo-v1.3.1-windows.zip) |
+| Linux | [mundo-v1.3.1-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.3.1/mundo-v1.3.1-linux.zip) |
+| 全平台 | [mundo-v1.3.1-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.3.1/mundo-v1.3.1-all.zip) |
 
 ## 许可证
 
