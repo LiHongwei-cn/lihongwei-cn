@@ -1,13 +1,4 @@
-"""蒙多记忆系统 v1.2.6 — Claude 六套记忆架构
-
-借鉴 Claude 的六套记忆机制：
-1. 自动 Memory — 从对话中自动提取关键信息（轻量规则，不调 LLM）
-2. 对话搜索 — FTS5 全文搜索历史对话
-3. Code Memory — 代码模式、项目结构、技术偏好
-4. Agents Memory — Agent 任务执行结果、成功/失败模式
-5. Projects 隔离 — 按工作目录隔离记忆上下文
-6. 自我整理 — 定期合并重复、淘汰过时、压缩低价值记忆
-"""
+"""蒙多记忆系统 v1.4.1 — Claude 六套记忆架构"""
 
 import re
 import sys
@@ -17,13 +8,7 @@ import hashlib
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
 from typing import List, Dict, Optional, Tuple
-
-MUNDO_HOME = Path.home() / ".hermes" / "mundo-agent"
-MEMORY_DB = MUNDO_HOME / "memory.db"
-
-MAX_CONTEXT_TOKENS = 2000
-MAX_FACTS_INJECT = 8
-MAX_CONVERSATION_RESULTS = 5
+from constants import MUNDO_HOME, MEMORY_DB, MAX_CONTEXT_INJECT, MAX_FACTS_INJECT, MAX_CONVERSATION_RESULTS
 
 
 class MundoMemory:
@@ -494,7 +479,7 @@ class MundoMemory:
         total_tokens = 0
         ids_to_update = []
         for score, mid, content, cat, tok in scored:
-            if total_tokens + tok > MAX_CONTEXT_TOKENS:
+            if total_tokens + tok > MAX_CONTEXT_INJECT:
                 break
             if len(selected) >= max_items:
                 break
@@ -542,7 +527,7 @@ class MundoMemory:
         result = []
         total = 0
         for line in all_lines:
-            if total + len(line) > MAX_CONTEXT_TOKENS:
+            if total + len(line) > MAX_CONTEXT_INJECT:
                 break
             result.append(line)
             total += len(line)
