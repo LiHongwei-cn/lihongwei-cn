@@ -1,99 +1,62 @@
-# Claude Code 全局规范 — 一键部署包
+# 全局规范部署包
 
-适用于 Claude Code CLI / Hermes Agent 的全局规范、Rules 和 Skills 的部署包。新电脑部署只需运行一条命令。
+一套规范，部署到所有 AI Agent。
 
-## 包含内容
+## 支持的 Agent
 
-| 目录/文件 | 说明 | 目标位置 |
-|-----------|------|----------|
-| `SOUL.md` | Hermes Agent 全局指令（回复洁癖、代码规范、安全红线） | `~/.hermes/SOUL.md` |
-| `CLAUDE.md` | Claude Code 全局指令（Skill 自动调用、代码洁癖、记忆系统） | `~/.claude/CLAUDE.md` |
-| `settings.json` | API 接入配置（含占位 Key，需修改） | `~/.claude/settings.json` |
-| `settings.local.json` | 权限白名单 | `~/.claude/settings.local.json` |
-| `project-CLAUDE.md` | 项目级 CLAUDE.md 通用模板 | 各项目根目录 `CLAUDE.md` |
-| `rules/*.md` | 6 大规范（代码风格、Git、测试、性能、Agent、安全） | `~/.claude/rules/` |
-| `skills/neat-freak/` | 知识库洁癖审查 Skill | `~/.claude/skills/neat-freak/` |
-| `skills/code-tidy/` | 代码洁癖整理 Skill | `~/.claude/skills/code-tidy/` |
-| `skills/蒙多/` | 跨界学习引擎 Skill | `~/.claude/skills/蒙多/` |
-| `skills/nature-*/` | Nature 系列学术写作 Skills | `~/.claude/skills/nature-*/` |
+| Agent | 配置文件 | 部署位置 |
+|-------|---------|---------|
+| Claude Code | `CLAUDE.md` + `rules/*.md` | `~/.claude/` |
+| Hermes Agent | `SOUL.md` | `~/.hermes/` |
+| OpenAI Codex | `AGENTS.md` | `~/.codex/` |
+| Cursor | `.cursorrules` | 项目根目录 |
+| Windsurf | `.windsurfrules` | 项目根目录 |
+| GitHub Copilot | `.github/copilot-instructions.md` | 项目根目录 |
+
+## 结构
+
+```
+global-specs/
+├── core-spec.md              ← 通用规范核心（所有 Agent 共享）
+├── install.sh                ← macOS/Linux 一键部署
+├── install.bat               ← Windows 一键部署
+├── agents/                   ← 各 Agent 适配文件
+│   ├── claude-code/CLAUDE.md
+│   ├── hermes/SOUL.md
+│   ├── codex/AGENTS.md
+│   ├── cursor/.cursorrules
+│   ├── windsurf/.windsurfrules
+│   └── copilot/.github/copilot-instructions.md
+├── rules/                    ← Claude Code rules（可选扩展）
+│   ├── agents.md
+│   ├── coding-style.md
+│   ├── git-workflow.md
+│   ├── performance.md
+│   ├── security.md
+│   └── testing.md
+└── skills/                   ← 可选 Skill 部署
+```
 
 ## 一键部署
 
-### macOS / Linux
-
 ```bash
-./install.sh
+# macOS / Linux
+bash install.sh
+
+# Windows PowerShell
+irm https://raw.githubusercontent.com/LiHongwei-cn/lihongwei-cn/main/global-specs/install.ps1 | iex
+
+# Windows CMD
+install.bat
 ```
 
-### Windows
+脚本自动检测已安装的 Agent，只部署对应的配置文件。
 
-双击 `install.bat`
+## 设计原则
 
-## 手动部署
-
-### 1. 安装 Claude Code
-
-```bash
-# macOS (Homebrew)
-brew install claude-code
-
-# 通用 (npm)
-npm install -g @anthropic-ai/claude-code
-```
-
-### 2. 配置 API
-
-编辑 `~/.claude/settings.json`，将占位 Key 替换为真实 Key。
-
-### 3. 部署文件
-
-```bash
-# 全局指令
-cp SOUL.md ~/.hermes/SOUL.md
-cp CLAUDE.md ~/.claude/CLAUDE.md
-
-# 规范文件
-mkdir -p ~/.claude/rules
-cp rules/*.md ~/.claude/rules/
-
-# Skills
-mkdir -p ~/.claude/skills
-cp -r skills/neat-freak ~/.claude/skills/
-cp -r skills/code-tidy ~/.claude/skills/
-cp -r skills/蒙多 ~/.claude/skills/
-
-# 配置
-cp settings.json ~/.claude/settings.json
-cp settings.local.json ~/.claude/settings.local.json
-```
-
-### 4. 初始化项目
-
-```bash
-cp project-CLAUDE.md 你的项目目录/CLAUDE.md
-# 然后根据实际情况修改 CLAUDE.md
-```
-
-### 5. 验证
-
-```bash
-claude
-/neat    # 测试洁癖 skill
-```
-
-## Skills 说明
-
-| Skill | 触发方式 |
-|-------|----------|
-| `/neat` | 收尾整理、文档同步、记忆审查 |
-| `/code-tidy` | 代码洁癖整理、死代码清理 |
-| `/蒙多` | 遇到瓶颈时跨界学习 |
-
-## 自定义
-
-- **添加新 Skill**：在 `~/.claude/skills/<name>/` 下创建 `SKILL.md`
-- **修改规范**：编辑 `~/.claude/rules/` 下的对应文件
-- **项目级覆盖**：在项目 `CLAUDE.md` 中写项目特定规范
+- **一个核心，多处适配**：`core-spec.md` 是唯一真相源，各 Agent 适配文件从这里生成
+- **修改一处，全部生效**：改 core-spec.md 后重新运行 install.sh，所有 Agent 同步更新
+- **不冲突**：已存在的配置文件不会被覆盖（只覆盖规范内容）
 
 ## 许可证
 
