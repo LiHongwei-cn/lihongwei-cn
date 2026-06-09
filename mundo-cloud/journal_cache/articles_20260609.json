@@ -1,92 +1,122 @@
 [
   {
-    "title": "GPR15-guided CD8<sup>+</sup> T regulatory cells control intestinal inflammation",
+    "title": "Author Correction: A broadly protective antibody targeting gammaherpesvirus gB",
     "link": "https://www.nature.com/",
     "summary": "",
-    "published": "2026-06-08",
+    "published": "2026-06-09",
     "journal": "Nature",
     "category": "multidisciplinary",
-    "hash": "e396daeffc9c436d",
-    "crawled_at": "2026-06-09T06:57:07.454693"
+    "hash": "ad8c4cd1dc96529c",
+    "crawled_at": "2026-06-09T10:45:16.142596"
   },
   {
-    "title": "Distributed control circuits across a brain-and-cord connectome",
+    "title": "AI technology must serve human cognitive development, not the other way around",
     "link": "https://www.nature.com/uploads/product/nature/rss.png",
     "summary": "",
-    "published": "2026-06-08",
+    "published": "2026-06-09",
     "journal": "Nature",
     "category": "multidisciplinary",
-    "hash": "cc6faf7e60004884",
-    "crawled_at": "2026-06-09T06:57:07.454723"
+    "hash": "2cd32d79af573197",
+    "crawled_at": "2026-06-09T10:45:16.142611"
   },
   {
-    "title": "Targeting Cancer-Specific Mutations with RNA-Triggered Chromatin Shredding",
-    "link": "https://www.nature.com/articles/s41586-026-10749-4",
+    "title": "Arson attacks at Ebola hospitals are a cry for regional development",
+    "link": "https://www.nature.com/articles/s41586-026-10745-8",
     "summary": "",
-    "published": "2026-06-08",
+    "published": "2026-06-09",
     "journal": "Nature",
     "category": "multidisciplinary",
-    "hash": "e3de07839d146f88",
-    "crawled_at": "2026-06-09T06:57:07.454733"
+    "hash": "f485129040aa0739",
+    "crawled_at": "2026-06-09T10:45:16.142615"
   },
   {
-    "title": "Lean4Agent: Formal Modeling and Verification for Agent Workflow and Trajectory",
-    "link": "https://arxiv.org/abs/2606.06523",
-    "summary": "arXiv:2606.06523v1 Announce Type: new Abstract: Equipping Large Language Models (LLMs) to execute reliable multi-step workflows has become a central challenge in artificial intelligence. Despite recent advances in LLMs' agentic capabilities, most agent systems still lack formal methods for specifying, verifying, and debugging their workflow and execution trajectories. This challenge mirrors a long-standing problem in mathematics, where the ambiguity of natural languages (NLs) motivates the devel",
-    "published": "Mon, 08 Jun 2026 00:00:00 -0400",
+    "title": "PathoSage: Towards Multi-Source Evidence Adjudication in Pathology via Experience-Aware Agentic Workflow",
+    "link": "https://arxiv.org/abs/2606.07549",
+    "summary": "arXiv:2606.07549v1 Announce Type: new Abstract: Recent advances in Multimodal Large Language Models (MLLMs) and agent workflows have shown strong promise for computational pathology, yet reliable patch-level reasoning remains challenging. End-to-end pathology MLLMs often hallucinate morphological features, while recent agentic systems usually merge tool outputs and retrieved knowledge into a shared context, making decisions vulnerable to conflicting evidence and context contamination. We propose",
+    "published": "Tue, 09 Jun 2026 00:00:00 -0400",
     "journal": "arXiv AI",
     "category": "ai",
-    "hash": "8c21ce118f50a9f6",
-    "crawled_at": "2026-06-09T06:57:08.999539"
+    "hash": "42baa1c1ed2e592f",
+    "crawled_at": "2026-06-09T10:45:16.475171"
   },
   {
-    "title": "CrowdMath: A Dataset of Crowdsourced Mathematical Research Discussions",
-    "link": "https://arxiv.org/abs/2606.06526",
-    "summary": "arXiv:2606.06526v1 Announce Type: new Abstract: Large language models have made substantial progress on mathematical reasoning, but existing benchmarks typically evaluate well-specified problems with final answers, step-by-step solutions, or complete proofs. They do not capture collaborative open-problem solving: a setting in which participants propose partial arguments, identify gaps or errors in prior steps, repair flawed reasoning, and gradually synthesize incremental contributions into a pro",
-    "published": "Mon, 08 Jun 2026 00:00:00 -0400",
+    "title": "OmniMem: Perturbation-aware Memory Compression for Streaming Audio-Visual LLMs",
+    "link": "https://arxiv.org/abs/2606.07577",
+    "summary": "arXiv:2606.07577v1 Announce Type: new Abstract: Audio-visual large language models (LLMs) hold strong promise for long-form video understanding, yet their long-video inference is fundamentally limited by the linear growth of video tokens and key-value (KV) caches. We present OmniMem, a memory-efficient streaming framework designed specifically for audio-visual LLMs. Unlike existing compression methods that treat all tokens uniformly, OmniMem introduces a modality-aware memory allocation strategy",
+    "published": "Tue, 09 Jun 2026 00:00:00 -0400",
     "journal": "arXiv AI",
     "category": "ai",
-    "hash": "6468daeae58679b5",
-    "crawled_at": "2026-06-09T06:57:08.999556"
+    "hash": "94cd6e8e829dee93",
+    "crawled_at": "2026-06-09T10:45:16.475185"
   },
   {
-    "title": "Attack Selection in Agentic AI Control Evaluations Meaningfully Decreases Safety",
-    "link": "https://arxiv.org/abs/2606.06529",
-    "summary": "arXiv:2606.06529v1 Announce Type: new Abstract: An attacker that strategically chooses when to attack is much harder to catch than one that attacks indiscriminately. AI control is a safety framework for deploying capable but untrusted AI agents under the oversight of a weaker, trusted monitor and a limited human audit budget. Control evaluations stress-test these protocols by pitting a red-team attack policy against the blue-team monitor, but current evaluations typically assume attackers that d",
-    "published": "Mon, 08 Jun 2026 00:00:00 -0400",
+    "title": "Syll: Open-Source Personal Automation with Cross-Surface Execution",
+    "link": "https://arxiv.org/abs/2606.07594",
+    "summary": "arXiv:2606.07594v1 Announce Type: new Abstract: Personal AI agents must increasingly operate across APIs, shells, web surfaces, and desktop GUIs, yet many systems remain tuned to a single interface and offer limited support for user teaching and auditability. We present Syll, an open-source, self-hosted multimodal agent harness that unifies MCP/API tools, CLI execution, and visual GUI control in a modular runtime, enabling agents to coordinate computer use across heterogeneous interfaces while s",
+    "published": "Tue, 09 Jun 2026 00:00:00 -0400",
     "journal": "arXiv AI",
     "category": "ai",
-    "hash": "42479c5609a42d20",
-    "crawled_at": "2026-06-09T06:57:08.999560"
+    "hash": "81bb9b4a9e43ce45",
+    "crawled_at": "2026-06-09T10:45:16.475188"
   },
   {
-    "title": "Searching for success with semiconductor start-ups for artificial intelligence",
+    "title": "Two-dimensional β-TeO<sub>2</sub> as an intrinsic insulator despite conflicting transport signatures",
     "link": "https://www.nature.com/",
     "summary": "",
-    "published": "2026-06-08",
+    "published": "2026-06-09",
     "journal": "Nature Electronics",
     "category": "electronics",
-    "hash": "94cbb30f5b061232",
-    "crawled_at": "2026-06-09T06:57:12.429095"
+    "hash": "9df4f62fa58860f6",
+    "crawled_at": "2026-06-09T10:45:18.160645"
   },
   {
-    "title": "Giant gate response of the charge in an electron–lattice condensate",
+    "title": "Precise and efficient computing via signal folding",
     "link": "https://www.nature.com/uploads/product/natelectron/rss.png",
     "summary": "",
-    "published": "2026-06-04",
+    "published": "2026-06-09",
     "journal": "Nature Electronics",
     "category": "electronics",
-    "hash": "af9ff9147c04df98",
-    "crawled_at": "2026-06-09T06:57:12.429124"
+    "hash": "14d5f25eb672c3d2",
+    "crawled_at": "2026-06-09T10:45:18.160659"
   },
   {
-    "title": "Sensing exceptional potential",
-    "link": "https://www.nature.com/articles/s41928-026-01645-w",
+    "title": "Reply to: Two-dimensional β-TeO<sub>2</sub> as an intrinsic insulator despite conflicting transport signatures",
+    "link": "https://www.nature.com/articles/s41928-026-01658-5",
     "summary": "",
-    "published": "2026-05-29",
+    "published": "2026-06-09",
     "journal": "Nature Electronics",
     "category": "electronics",
-    "hash": "f782fb49f76556ce",
-    "crawled_at": "2026-06-09T06:57:12.429136"
+    "hash": "3c17f583a34b3a6a",
+    "crawled_at": "2026-06-09T10:45:18.160663"
+  },
+  {
+    "title": "Navigating molecular OOD-ness",
+    "link": "https://www.nature.com/",
+    "summary": "",
+    "published": "2026-06-09",
+    "journal": "Nature Machine Intelligence",
+    "category": "ai",
+    "hash": "ff6284394d4e0d06",
+    "crawled_at": "2026-06-09T10:45:19.028523"
+  },
+  {
+    "title": "Explicit dynamic cross-strand interactions for DNA sequence language modelling",
+    "link": "https://www.nature.com/uploads/product/natmachintell/rss.gif",
+    "summary": "",
+    "published": "2026-06-04",
+    "journal": "Nature Machine Intelligence",
+    "category": "ai",
+    "hash": "e88d9d5cc5597576",
+    "crawled_at": "2026-06-09T10:45:19.028537"
+  },
+  {
+    "title": "Conditional Monge Gap enables generalizable single-cell perturbation modelling",
+    "link": "https://www.nature.com/articles/s42256-026-01251-7",
+    "summary": "",
+    "published": "2026-06-01",
+    "journal": "Nature Machine Intelligence",
+    "category": "ai",
+    "hash": "57bcb827d9fe6a4e",
+    "crawled_at": "2026-06-09T10:45:19.028541"
   }
 ]
