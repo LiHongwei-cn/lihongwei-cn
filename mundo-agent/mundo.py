@@ -558,29 +558,13 @@ class MundoCLI:
                 self._exit()
 
     def _execute_task(self, line: str):
-        # 检测项目路径
         project = os.getcwd()
-
         extra = self.memory.get_context_budget(line, project=project) if self.memory else ""
-
-        if self.engine.messages and self.memory:
-            try:
-                self.memory.save_conversation(
-                    conv_id=self.session_id,
-                    title=line[:100],
-                    summary="",
-                    messages=self.engine.messages,
-                    project=project
-                )
-            except Exception as e:
-                print(f"[memory] 保存对话失败: {e}", file=sys.stderr)
 
         self.console.log_task_accepted(line)
         self.console.start_task()
 
-        # 展开粘贴占位符为原始内容
         full_text = TaskConsole.expand_paste_refs(line)
-
         response = ""
         try:
             response = self.engine.run(full_text, extra_context=extra)
@@ -591,18 +575,24 @@ class MundoCLI:
             self.console.log_error(str(e))
         finally:
             self.console.stop_task()
-
-            # 在回复内容之后显示完成栏
             self.console.log_done(self.engine.stats)
 
             if self.memory:
                 try:
-                    # 自动提取记忆
+                    # 先保存对话（含完整响应）
+                    self.memory.save_conversation(
+                        conv_id=self.session_id,
+                        title=line[:100],
+                        summary=response[:200] if response else "",
+                        messages=self.engine.messages,
+                        project=project
+                    )
+                    # 再提取记忆
                     self.memory.auto_extract(line, response, project=project)
-                    # 保存对话摘要
+                    # 更新会话摘要
                     self.memory.generate_session_summary(self.session_id, self.engine.messages)
                 except Exception as e:
-                    print(f"[memory] 记忆提取失败: {e}", file=sys.stderr)
+                    print(f"[memory] 记忆操作失败: {e}", file=sys.stderr)
 
 
 def main():

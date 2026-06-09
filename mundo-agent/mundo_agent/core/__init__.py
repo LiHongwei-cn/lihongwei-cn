@@ -4,6 +4,7 @@ from .engine import MundoEngine, MUNDO_SYSTEM_PROMPT
 from .budget import IterationBudget
 from .stats import TaskStats
 from .compressor import ContextCompressor, CompressionConfig
+from .task_decomposer import decompose_task, format_task_plan, TaskPlan
 
 __all__ = [
     'MundoEngine',
@@ -12,4 +13,7 @@ __all__ = [
     'TaskStats',
     'ContextCompressor',
     'CompressionConfig',
+    'decompose_task',
+    'format_task_plan',
+    'TaskPlan',
 ]

@@ -165,18 +165,20 @@ class MundoMemory:
 
     def auto_extract(self, user_msg: str, assistant_msg: str,
                      project: str = "") -> List[int]:
-        """轻量规则提取，不调 LLM"""
+        """从对话双方提取关键信息"""
         extracted = []
-        patterns = [
+
+        # 用户消息中的显式指令
+        user_patterns = [
             (r"记住|remember|记一下", "fact", 7),
             (r"我喜欢|我偏好|我习惯|I prefer", "preference", 8),
-            (r"不要|别用|禁止|don't|never", "constraint", 8),
+            (r"不要|别用|禁止|don't|never|不准", "constraint", 8),
             (r"以后|下次|always|从现在起", "rule", 7),
             (r"错误|报错|bug|问题出在", "lesson", 6),
             (r"用.*框架|用.*库|技术栈|tech stack", "code_pattern", 7),
             (r"目录|文件结构|项目结构|project structure", "code_pattern", 6),
         ]
-        for pattern, category, importance in patterns:
+        for pattern, category, importance in user_patterns:
             if re.search(pattern, user_msg, re.IGNORECASE):
                 content = user_msg.strip()[:200]
                 if len(content) > 10:
@@ -189,6 +191,29 @@ class MundoMemory:
                         extracted.append(mid)
                     except MemoryError as e:
                         logger.warning(f"自动提取记忆失败: {e}")
+
+        # 助手响应中的技术决策和解决方案
+        if assistant_msg and len(assistant_msg) > 50:
+            assistant_patterns = [
+                (r"(?:问题|根因|原因是|是因为)(.{10,80})", "lesson", 6),
+                (r"(?:解决方案|修复方法|解决办法)[:：](.{10,80})", "lesson", 6),
+                (r"(?:已修复|已解决|已修改|已完成)(.{10,80})", "agent_result", 5),
+                (r"(?:版本|升级到|更新到)\s*v?[\d.]+", "agent_result", 5),
+            ]
+            for pattern, category, importance in assistant_patterns:
+                match = re.search(pattern, assistant_msg)
+                if match:
+                    content = match.group(0).strip()[:150]
+                    try:
+                        mid = self.remember(
+                            content=content, category=category,
+                            source="auto_extract", importance=importance,
+                            project=project
+                        )
+                        extracted.append(mid)
+                    except MemoryError as e:
+                        logger.warning(f"响应提取记忆失败: {e}")
+
         return extracted
 
     # ═══════════════════════════════════════════════
@@ -455,8 +480,8 @@ class MundoMemory:
 
     def recall(self, query: str, project: str = "",
                max_items: int = MAX_FACTS_INJECT) -> str:
-        """回忆相关记忆"""
-        keywords = set(re.findall(r'[\w一-鿿]+', query.lower()))
+        """回忆相关记忆（使用改进的关键词提取）"""
+        keywords = self._extract_keywords(query)
         if not keywords:
             return self._get_essential_facts(max_items=5)
 
@@ -530,24 +555,146 @@ class MundoMemory:
             return ""
 
     def get_context_budget(self, query: str, project: str = "") -> str:
-        """组装记忆上下文：本质事实 + 相关记忆 + 代码模式 + 项目上下文"""
-        essentials = self._get_essential_facts(max_items=5)
-        relevant = self.recall(query, project=project, max_items=MAX_FACTS_INJECT)
-        code_patterns = self.get_code_patterns(project=project, limit=3)
-        code_section = ""
-        if code_patterns:
-            code_section = "\n".join(f"- [code] {p}" for p in code_patterns)
+        """四层记忆上下文架构（对标 Hermes）
 
-        all_text = "\n".join(filter(None, [essentials, relevant, code_section]))
-        all_lines = list(dict.fromkeys(all_text.strip().split("\n")))
-        result = []
-        total = 0
-        for line in all_lines:
-            if total + len(line) > MAX_CONTEXT_TOKENS:
-                break
-            result.append(line)
-            total += len(line)
-        return "\n".join(result) if result else ""
+        Layer 1: 用户画像 — 持久偏好和身份
+        Layer 2: 核心记忆 — 高重要性事实、规则、教训
+        Layer 3: 相关记忆 — 当前任务相关的记忆
+        Layer 4: 对话历史摘要 — 最近会话的连续性
+        """
+        layers = []
+
+        # Layer 1: 用户画像（每次注入，稳定不变）
+        profile = self._build_profile_layer()
+        if profile:
+            layers.append(f"[用户画像]\n{profile}")
+
+        # Layer 2: 核心记忆（高重要性，每次注入）
+        core = self._build_core_layer()
+        if core:
+            layers.append(f"[核心记忆]\n{core}")
+
+        # Layer 3: 相关记忆（与当前任务相关）
+        relevant = self._build_relevant_layer(query, project)
+        if relevant:
+            layers.append(f"[相关记忆]\n{relevant}")
+
+        # Layer 4: 最近对话摘要（跨会话连续性）
+        recent = self._build_recent_layer()
+        if recent:
+            layers.append(f"[最近对话]\n{recent}")
+
+        full_text = "\n\n".join(layers)
+        if len(full_text) > MAX_CONTEXT_TOKENS:
+            full_text = full_text[:MAX_CONTEXT_TOKENS]
+        return full_text
+
+    def _build_profile_layer(self) -> str:
+        """Layer 1: 用户画像"""
+        try:
+            rows = self.db.fetchall(
+                "SELECT key, value FROM user_profile ORDER BY updated_at DESC LIMIT 10"
+            )
+            if not rows:
+                return ""
+            return "\n".join(f"- {k}: {v}" for k, v in rows)
+        except Exception:
+            return ""
+
+    def _build_core_layer(self) -> str:
+        """Layer 2: 核心记忆（importance >= 7）"""
+        try:
+            rows = self.db.fetchall(
+                """SELECT content, category FROM memories
+                   WHERE importance >= 7
+                   ORDER BY importance DESC, access_count DESC
+                   LIMIT 10"""
+            )
+            if not rows:
+                return ""
+            return "\n".join(f"- [{cat}] {c}" for c, cat in rows)
+        except Exception:
+            return ""
+
+    def _build_relevant_layer(self, query: str, project: str) -> str:
+        """Layer 3: 任务相关记忆"""
+        try:
+            # 项目相关记忆
+            project_memories = []
+            if project:
+                project_memories = self.db.fetchall(
+                    """SELECT content, category, importance FROM memories
+                       WHERE project = ? AND project != ''
+                       ORDER BY importance DESC LIMIT 5""",
+                    (project,)
+                )
+
+            # 关键词匹配记忆（优化中文分词）
+            keywords = self._extract_keywords(query)
+            keyword_memories = []
+            if keywords:
+                rows = self.db.fetchall(
+                    "SELECT id, content, category, importance, tokens FROM memories ORDER BY importance DESC, access_count DESC LIMIT 200"
+                )
+                scored = []
+                for mid, content, cat, imp, tok in rows:
+                    content_lower = content.lower()
+                    hits = sum(1 for kw in keywords if kw in content_lower)
+                    if hits > 0:
+                        score = hits * 2 + (imp or 5) * 0.5
+                        scored.append((score, mid, content, cat, tok))
+                scored.sort(key=lambda x: -x[0])
+                for _, mid, content, cat, tok in scored[:5]:
+                    keyword_memories.append((content, cat))
+                    self.db.execute(
+                        "UPDATE memories SET access_count = access_count + 1 WHERE id = ?",
+                        (mid,)
+                    )
+
+            # 合并去重
+            seen = set()
+            result = []
+            for content, cat, *_ in project_memories + keyword_memories:
+                if content not in seen:
+                    seen.add(content)
+                    result.append(f"- [{cat}] {content}")
+
+            return "\n".join(result[:8])
+        except Exception:
+            return ""
+
+    def _build_recent_layer(self) -> str:
+        """Layer 4: 最近对话摘要"""
+        try:
+            rows = self.db.fetchall(
+                """SELECT title, summary, created_at FROM conversations
+                   WHERE summary != '' OR title != ''
+                   ORDER BY created_at DESC LIMIT 5"""
+            )
+            if not rows:
+                return ""
+            lines = []
+            for title, summary, created_at in rows:
+                date = created_at[:10] if created_at else ""
+                text = summary[:100] if summary else title[:100]
+                lines.append(f"- [{date}] {text}")
+            return "\n".join(lines)
+        except Exception:
+            return ""
+
+    def _extract_keywords(self, query: str) -> list:
+        """提取关键词（优化中文支持）"""
+        import re
+        # 提取中文词组（2-4字）和英文单词
+        chinese_words = re.findall(r'[\u4e00-\u9fff]{2,4}', query)
+        english_words = re.findall(r'[a-zA-Z]{3,}', query.lower())
+        # 过滤停用词
+        stop_words = {'的', '了', '是', '在', '我', '有', '和', '就', '不', '人',
+                      '都', '一', '一个', '上', '也', '很', '到', '说', '要', '去',
+                      '你', '会', '着', '没有', '看', '好', '自己', '这', '他', '她',
+                      'the', 'and', 'for', 'that', 'this', 'with', 'you', 'have'}
+        words = [w for w in chinese_words + english_words if w not in stop_words]
+        return words[:10]
 
     def recall_key(self, key: str) -> Optional[str]:
         """按键回忆"""
@@ -626,19 +773,31 @@ class MundoMemory:
         return "\n".join(f"- [{r[2][:10]}] {r[0] or r[1][:80]}" for r in rows)
 
     def generate_session_summary(self, session_id: str, messages: List[Dict]):
-        """生成会话摘要"""
+        """生成会话摘要 — 提取关键决策和结果"""
         user_msgs = [m for m in messages if m.get("role") == "user"]
+        assistant_msgs = [m for m in messages if m.get("role") == "assistant"
+                          and (m.get("content") or "").strip()]
         if not user_msgs:
             return
-        topics = []
-        for um in user_msgs[:3]:
-            content = (um.get("content") or "")[:100]
+
+        # 标题：用户意图
+        title = (user_msgs[0].get("content") or "")[:100]
+
+        # 摘要：用户请求 + 助手关键结果
+        summary_parts = []
+        for um in user_msgs[:2]:
+            content = (um.get("content") or "")[:80]
             if content:
-                topics.append(content)
-        title = "; ".join(topics)
-        if len(title) > 200:
-            title = title[:200] + "..."
-        summary = " | ".join((um.get("content") or "")[:150] for um in user_msgs[-3:])
+                summary_parts.append(f"请求: {content}")
+        for am in assistant_msgs[-2:]:
+            content = (am.get("content") or "")[:80]
+            if content:
+                summary_parts.append(f"结果: {content}")
+
+        summary = " | ".join(summary_parts)
+        if len(summary) > 300:
+            summary = summary[:300] + "..."
+
         self.save_conversation(
             conv_id=session_id, title=title, summary=summary,
             messages=messages
