@@ -102,9 +102,8 @@ class XiaomiOptimizer:
         return "mimo-v2.5-pro"
     
     @staticmethod
-    def format_system_prompt(base_prompt: str, task_type: str = "") -> str:
+    def format_system_prompt(base_prompt: str, **kwargs) -> str:
         """为 MiMo 格式化 system prompt"""
-        # MiMo 遵循详细指令，保持完整
         return base_prompt
     
     @staticmethod

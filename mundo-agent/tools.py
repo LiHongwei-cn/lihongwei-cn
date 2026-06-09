@@ -28,8 +28,6 @@ import glob as glob_mod
 import time
 import random
 from typing import Dict, Callable, List
-import requests
-from bs4 import BeautifulSoup
 
 # ═══════════════════════════════════════════════
 # Tool Registry — 借鉴 Hermes tools/registry.py
@@ -241,6 +239,11 @@ def _web_search(args: Dict) -> str:
         return "[错误: web_search 缺少 query 参数]"
     limit = args.get("limit", 5)
 
+    try:
+        import requests
+    except ImportError:
+        return "[错误] requests 未安装。运行: pip install requests"
+
     # 代理设置（从环境变量读取）
     proxies = {}
     if os.environ.get("HTTP_PROXY"):
@@ -318,6 +321,10 @@ def _web_search(args: Dict) -> str:
 
 def _parse_search_results(html: str, limit: int, engine: str) -> list:
     """通用搜索结果解析"""
+    try:
+        from bs4 import BeautifulSoup
+    except ImportError:
+        return []
     results = []
     soup = BeautifulSoup(html, "html.parser")
     
@@ -587,6 +594,11 @@ def _http_request(args: Dict) -> str:
     url = args.get("url", "")
     if not url:
         return "[错误: http_request 缺少 url 参数]"
+    
+    try:
+        import requests
+    except ImportError:
+        return "[错误] requests 未安装。运行: pip install requests"
     
     method = args.get("method", "GET").upper()
     headers = args.get("headers", {})
