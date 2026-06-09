@@ -370,16 +370,21 @@ class SmartModelSelector:
     # 任务类型关键词映射
     TASK_KEYWORDS = {
         TaskType.CODING: [
-            "代码", "code", "编程", "写", "实现", "开发", "函数", "class",
+            "代码", "code", "编程", "实现", "开发", "函数", "class",
             "debug", "调试", "重构", "refactor", "python", "javascript",
+            "web", "应用", "app", "网站", "程序", "软件", "接口", "api",
+            "数据库", "sql", "html", "css", "前端", "后端", "服务器",
+            "爬虫", "算法实现", "编写程序",
         ],
         TaskType.REASONING: [
             "推理", "分析", "逻辑", "数学", "证明", "为什么", "原因",
-            "复杂", "算法", "reasoning", "analyze", "math",
+            "复杂", "算法分析", "reasoning", "analyze", "math", "计算",
+            "架构设计", "方案设计", "策略制定", "系统设计",
         ],
         TaskType.CREATIVE: [
             "写文章", "创作", "故事", "诗歌", "文案", "创意",
-            "creative", "write", "story", "poem",
+            "creative", "write", "story", "poem", "文章", "内容",
+            "撰写", "写作", "文学", "小说", "剧本",
         ],
         TaskType.MULTIMODAL: [
             "图片", "图像", "视频", "音频", "视觉", "看",
