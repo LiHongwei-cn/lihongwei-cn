@@ -182,29 +182,32 @@ mundo.bat
 
 ```
 mundo.py              入口 + CLI + 命令处理
-mundo_agent/
-  core/
-    engine.py         Agentic Loop + 流式消费 + 错误重试
-    budget.py         IterationBudget（token 预算管理）
-    stats.py          TaskStats（执行统计）
-    compressor.py     ContextCompressor（上下文压缩）
-    task_decomposer.py 任务分解器（8 种模式自动识别）
-  llm/
-    client.py         多模型 LLM 客户端（28 个 provider）
-  tools/
-    registry.py       工具注册表 + 10 个工具实现
-    terminal.py       Shell 命令执行
-    file_ops.py       文件读写编辑
-    web.py            网络搜索
-    git_ops.py        Git 操作
-    code.py           代码分析
-  memory/
-    mundo_memory.py   四层记忆架构 + FTS5 对话搜索
-    manager.py        数据库连接池
-  display.py          Rich 渲染 + prompt_toolkit 输入
-  approval.py         权限审批（danger/caution/safe）
-  setup.py            首次设置向导 + 28 个 Provider
-  constants.py        统一常量管理
+core.py               Agentic Loop + 流式消费 + 帝皇决心循环
+llm.py                多模型 LLM 客户端（28 个 provider）
+tools.py              工具注册表 + 14 个工具实现
+delegation.py         Agent 调度（Hermes/Claude Code/Codex）
+task_planner.py       任务规划 + 多模型协调 + 模型评级
+model_adapter.py      模型适配器（画像 + 自动优化）
+model_profiles.py     全模型数据库 + 智能模型选择器
+quark_optimizer.py    夸克级优化器（MiMo/DeepSeek 专用）
+memory.py             四层记忆架构 + FTS5 对话搜索
+display.py            Rich 渲染 + prompt_toolkit 输入
+approval.py           权限审批（danger/caution/safe）
+setup.py              首次设置向导 + 28 个 Provider
+constants.py          统一常量管理
+context_mapper.py     上下文压缩
+policy.py             策略引擎
+events.py             事件总线
+timeline.py           时间线记录
+cache.py              缓存管理
+sandbox.py            沙箱隔离
+runtime_config.py     运行时配置
+claude_integration.py Claude Code 集成
+codex_integration.py  Codex CLI 集成
+hermes_integration.py Hermes Agent 集成
+cloud_sync.py         云仓库同步
+mcp.py                MCP 协议支持
+engine.py             兼容层（re-export）
 ```
 
 ## 下载
