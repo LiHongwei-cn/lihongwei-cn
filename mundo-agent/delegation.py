@@ -469,9 +469,10 @@ class TaskDelegator:
 
     def _run_with_fallback(self, agent_key: str, prompt: str, subtask: Dict, original_task: str) -> str:
         result = self.agent_mgr.delegate(agent_key, prompt)
-        if any(k in result for k in ["超时", "未安装", "不可用", "错误", "失败", "重试耗尽", "无输出"]):
+        check_text = (result.output or "") + (result.error or "")
+        if any(k in check_text for k in ["超时", "未安装", "不可用", "错误", "失败", "重试耗尽", "无输出"]):
             return self._run_clone(subtask, original_task)
-        return result
+        return result.output or str(result)
 
     def _run_clone(self, subtask: Dict, original_task: str) -> str:
         clone = MundoClone(subtask["id"], self.client)
