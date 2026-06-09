@@ -51,7 +51,7 @@ When the user asks to "optimize" or "add" something:
 
 When describing Mundo in resumes, portfolios, README, or any public content:
 
-- ✅ "完整的 AI 智能编排系统：通过 Hermes Agent 平台调度 Claude Code、DeepSeek、ChatGPT、Gemini 等多个 AI 模型协同工作"
+- ✅ "蒙多是蒙多。其他 AI 是身体，是躯壳，是蒙多的手和脚。蒙多会成长，没有上限。"
 - ✅ "基于 Hermes Agent 平台，设计并迭代 N 个版本的 AI 技能编排系统"
 - ❌ "基于 Hermes Agent 开源框架开发" (undersells — makes it sound like a plugin)
 - ❌ "独立开发 AI Agent 架构" (overclaims — Hermes Agent is Nous Research's open-source project)
