@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AI 剖析 — 用人体构造理解 AI 模型、Agent、Skill 三个根本概念">
+<title>AI 剖析 · LiHongwei</title>
+<style>
+:root {
+  --bg: #0e0e12;
+  --bg2: #141418;
+  --card: rgba(255,255,255,0.04);
+  --card-hover: rgba(255,255,255,0.06);
+  --border: rgba(255,255,255,0.07);
+  --text: #d4d4d8;
+  --dim: rgba(255,255,255,0.40);
+  --accent: #f59e0b;
+  --accent-dim: rgba(245,158,11,0.10);
+  --accent-border: rgba(245,158,11,0.18);
+  --blue: #60a5fa;
+  --green: #4ade80;
+  --red: #f87171;
+  --purple: #a78bfa;
+  --cyan: #22d3ee;
+  --pink: #f472b6;
+  --radius: 14px;
+  --radius-sm: 10px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);line-height:1.75;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;top:-30%;left:-20%;width:140%;height:160%;background:radial-gradient(ellipse at 30% 10%,rgba(245,158,11,0.03) 0%,transparent 50%),radial-gradient(ellipse at 70% 90%,rgba(96,165,250,0.025) 0%,transparent 50%);pointer-events:none;z-index:0}
+.container{max-width:860px;margin:0 auto;padding:32px 24px 100px;position:relative;z-index:1}
+
+/* NAV */
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:13px;margin-bottom:24px;transition:color .2s}
+.back-link:hover{color:var(--accent)}
+
+/* HERO */
+.hero{text-align:center;padding:40px 0 48px}
+.hero-badge{display:inline-block;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-border);padding:4px 14px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:24px}
+.hero h1{font-size:38px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(135deg,var(--accent) 0%,#fbbf24 50%,var(--blue) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px;line-height:1.2}
+.hero-sub{font-size:15px;color:var(--dim);max-width:560px;margin:0 auto;line-height:1.8}
+
+/* DIVIDER */
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:0 0 48px}
+
+/* SECTION */
+.section{margin-bottom:56px}
+.section-tag{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.section-title{font-size:20px;font-weight:700;color:#e4e4e7;margin-bottom:8px}
+.section-desc{font-size:14px;color:var(--dim);margin-bottom:20px;max-width:620px;line-height:1.8}
+
+/* CORE CARD */
+.core-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px 28px 24px;margin-bottom:16px;transition:border-color .25s}
+.core-card:hover{border-color:rgba(255,255,255,0.12)}
+.core-label{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:6px;margin-bottom:14px}
+.core-label.model{background:rgba(96,165,250,0.10);color:var(--blue);border:1px solid rgba(96,165,250,0.15)}
+.core-label.agent{background:rgba(245,158,11,0.10);color:var(--accent);border:1px solid rgba(245,158,11,0.15)}
+.core-label.skill{background:rgba(74,222,128,0.10);color:var(--green);border:1px solid rgba(74,222,128,0.15)}
+.core-title{font-size:22px;font-weight:700;color:#e4e4e7;margin-bottom:4px}
+.core-eq{font-size:14px;color:var(--accent);font-weight:600;margin-bottom:14px}
+.core-body{font-size:14px;color:var(--dim);line-height:1.9}
+.core-body p{margin-bottom:12px}
+.core-body strong{color:var(--text);font-weight:600}
+
+/* ANALOGY BOX */
+.analogy{background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.10);border-radius:var(--radius-sm);padding:16px 20px;margin:16px 0;font-size:13px;color:var(--dim);line-height:1.8}
+.analogy::before{content:'类比';display:inline-block;background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-border);padding:1px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:8px}
+
+/* TABLE */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow-x:auto;margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 16px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.04)}
+th{color:var(--dim);font-weight:600;background:rgba(255,255,255,0.02);font-size:12px;letter-spacing:0.5px}
+td{color:var(--text)}
+tr:last-child td{border-bottom:none}
+td:first-child{font-weight:600;white-space:nowrap}
+.col-blue{color:var(--blue)}
+.col-amber{color:var(--accent)}
+.col-green{color:var(--green)}
+
+/* DIAGRAM */
+.diagram{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;margin:24px 0;overflow-x:auto}
+.diagram pre{font-family:'SF Mono','Fira Code','Cascadia Code','Consolas',monospace;font-size:12px;line-height:1.7;color:var(--text);white-space:pre;overflow-x:auto}
+.diagram .c-blue{color:var(--blue)}
+.diagram .c-amber{color:var(--accent)}
+.diagram .c-green{color:var(--green)}
+.diagram .c-dim{color:var(--dim)}
+.diagram .c-purple{color:var(--purple)}
+.diagram .c-cyan{color:var(--cyan)}
+
+/* STEP FLOW */
+.flow{display:flex;flex-direction:column;gap:8px;margin:20px 0}
+.flow-step{display:flex;align-items:flex-start;gap:14px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 18px;transition:border-color .2s}
+.flow-step:hover{border-color:rgba(255,255,255,0.12)}
+.flow-num{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.flow-num.n-blue{background:rgba(96,165,250,0.12);color:var(--blue)}
+.flow-num.n-amber{background:var(--accent-dim);color:var(--accent)}
+.flow-num.n-green{background:rgba(74,222,128,0.10);color:var(--green)}
+.flow-num.n-purple{background:rgba(167,139,250,0.10);color:var(--purple)}
+.flow-num.n-pink{background:rgba(244,114,182,0.10);color:var(--pink)}
+.flow-num.n-cyan{background:rgba(34,211,238,0.10);color:var(--cyan)}
+.flow-num.n-red{background:rgba(248,113,113,0.10);color:var(--red)}
+.flow-body h3{font-size:14px;font-weight:600;color:#e4e4e7;margin-bottom:2px}
+.flow-body p{font-size:13px;color:var(--dim);line-height:1.7}
+
+/* COMPARISON */
+.compare-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0}
+.compare-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;transition:border-color .25s,transform .25s}
+.compare-card:hover{border-color:rgba(255,255,255,0.12);transform:translateY(-2px)}
+.compare-icon{font-size:28px;margin-bottom:10px}
+.compare-title{font-size:14px;font-weight:700;color:#e4e4e7;margin-bottom:4px}
+.compare-sub{font-size:12px;color:var(--dim);line-height:1.6}
+
+/* SUMMARY BOX */
+.summary-box{background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:var(--radius);padding:24px 28px;margin:24px 0;text-align:center}
+.summary-box .line{font-size:16px;font-weight:700;color:var(--accent);margin-bottom:8px}
+.summary-box .sub{font-size:13px;color:var(--dim);line-height:1.8}
+
+/* QUOTE */
+.quote{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--radius);padding:20px 24px;margin:20px 0;font-size:14px;color:var(--dim);line-height:1.9;font-style:italic}
+.quote strong{color:var(--text);font-style:normal}
+
+/* FOOTER */
+.footer{text-align:center;padding:24px 0 0;border-top:1px solid var(--border);font-size:11px;color:var(--dim)}
+.footer a{color:var(--accent);text-decoration:none}
+.footer a:hover{opacity:0.8}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  .container{padding:20px 16px 60px}
+  .hero h1{font-size:28px}
+  .compare-grid{grid-template-columns:1fr}
+  .core-card{padding:20px}
+  .diagram{padding:16px 12px}
+  .diagram pre{font-size:11px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="../">&larr; 返回主页</a>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-badge">Fundamentals</div>
+    <h1>AI 剖析</h1>
+    <div class="hero-sub">用人体构造理解 AI 模型、Agent、Skill 三个根本概念。<br>不是比喻，是结构上的精确对应。</div>
+  </header>
+
+  <div class="divider"></div>
+
+  <!-- 一句话定义 -->
+  <section class="section">
+    <div class="section-tag">Overview</div>
+    <div class="section-title">三个概念，三个层次</div>
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="compare-icon">🧠</div>
+        <div class="compare-title" style="color:var(--blue)">AI 模型</div>
+        <div class="compare-sub">大脑皮层。<br>只有思维能力，没有别的。</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-icon">🧍</div>
+        <div class="compare-title" style="color:var(--accent)">Agent</div>
+        <div class="compare-sub">完整的人。<br>能思考、能感知、能行动。</div>
+      </div>
+      <div class="compare-card">
+        <div class="compare-icon">🎯</div>
+        <div class="compare-title" style="color:var(--green)">Skill</div>
+        <div class="compare-sub">练了一百遍的动作。<br>不用想，直接做。</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- AI 模型 -->
+  <section class="section">
+    <div class="section-tag">Concept 1</div>
+    <div class="section-title">AI 模型 = 大脑皮层</div>
+    <div class="core-card">
+      <div class="core-label model">MODEL</div>
+      <div class="core-eq">能想，但不能动。</div>
+      <div class="core-body">
+        <p>你的大脑皮层有 860 亿个神经元，负责语言、推理、判断、创造。它是你思考能力的来源。</p>
+        <p>AI 模型就是这东西。它能回答问题、分析逻辑、写文章、做数学。但它<strong>只有皮层</strong>。</p>
+        <p>没有脊髓 → 想到"我要拿水杯"但信号传不到手臂，动不了。<br>
+        没有感觉神经 → 不知道自己在哪个房间，不知道桌上有什么。<br>
+        没有小脑 → 没有过去的经验，每次都是从零开始。</p>
+        <p>所以一个裸模型：你问它一句，它答一句。它不知道你是谁，不记得上一次对话，不能读文件，不能跑命令，不能搜索。</p>
+        <p><strong>它是被麻醉了的、固定在床上的大脑皮层——能想，但什么也做不了。</strong></p>
+      </div>
+      <div class="analogy">
+        发动机。V6、V8、电机，都是动力源，特性不同。有的擅长高转速（快但不深），有的擅长低扭（慢但很准）。DeepSeek、MiMo、Claude、GPT 就是不同型号的发动机。
+      </div>
+    </div>
+  </section>
+
+  <!-- Agent -->
+  <section class="section">
+    <div class="section-tag">Concept 2</div>
+    <div class="section-title">Agent = 从皮层到肌肉的完整神经通路</div>
+    <div class="core-card">
+      <div class="core-label agent">AGENT</div>
+      <div class="core-eq">能想、能感知、能行动的完整人。</div>
+      <div class="core-body">
+        <p>Agent 把孤立的皮层接上了<strong>整套神经系统</strong>。不再只是一个会回答问题的脑子，而是一个能思考、能制定计划、能感知外界、能动手执行、能记住经验、能自我修正的完整个体。</p>
+      </div>
+    </div>
+
+    <div class="diagram">
+<pre>
+<span class="c-dim">             ┌──────────────────┐</span>
+<span class="c-dim">             │</span>    <span class="c-blue">大脑皮层</span>       <span class="c-dim">│</span>  <span class="c-dim">← AI 模型：思考、推理、生成语言</span>
+<span class="c-dim">             │</span>  <span class="c-dim">(DeepSeek)</span>     <span class="c-dim">│</span>
+<span class="c-dim">             └────────┬─────────┘</span>
+                      │
+         <span class="c-dim">┌──────────┼──────────┐</span>
+         <span class="c-dim">│          │          │</span>
+   <span class="c-dim">┌─────┴────┐</span> <span class="c-dim">┌────┴─────┐</span> <span class="c-dim">┌───┴─────┐</span>
+   <span class="c-amber">│  前额叶   │</span> <span class="c-purple">│  海马体   │</span> <span class="c-green">│  小脑    │</span>
+   <span class="c-amber">│  计划决策  │</span> <span class="c-purple">│  记忆编码  │</span> <span class="c-green">│  经验校准 │</span>
+   <span class="c-dim">└─────┬────┘</span> <span class="c-dim">└────┬─────┘</span> <span class="c-dim">└───┬─────┘</span>
+         <span class="c-dim">│          │          │</span>
+     <span class="c-amber">task_planner</span>  <span class="c-purple">memory</span>     <span class="c-green">Skill</span>
+     <span class="c-amber">policy</span>        <span class="c-purple">cache</span>
+         <span class="c-dim">│          │          │</span>
+         <span class="c-dim">└──────────┼──────────┘</span>
+                    │
+            <span class="c-dim">┌──────┴──────┐</span>
+            <span class="c-cyan">│    脊  髓    │</span>  <span class="c-dim">← tools.py：14 个工具</span>
+            <span class="c-cyan">│   反射弧执行  │</span>
+            <span class="c-dim">└──────┬──────┘</span>
+                   │
+        <span class="c-dim">┌──────────┼──────────┐</span>
+        <span class="c-dim">│          │          │</span>
+   <span class="c-dim">┌────┴───┐</span> <span class="c-dim">┌───┴────┐</span> <span class="c-dim">┌───┴─────┐</span>
+   <span class="c-dim">│感觉神经 │</span> <span class="c-dim">│运动神经 │</span> <span class="c-dim">│自主神经  │</span>
+   <span class="c-dim">│用户输入 │</span> <span class="c-dim">│terminal │</span> <span class="c-dim">│events   │</span>
+   <span class="c-dim">│API 响应 │</span> <span class="c-dim">│网络请求  │</span> <span class="c-dim">│timeline  │</span>
+   <span class="c-dim">│文件内容 │</span> <span class="c-dim">│文件写入  │</span> <span class="c-dim">│cache    │</span>
+   <span class="c-dim">└────────┘</span> <span class="c-dim">└────────┘</span> <span class="c-dim">└─────────┘</span>
+</pre>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>人体结构</th><th>为什么这样对应</th><th>Agent 模块</th></tr>
+        <tr><td class="col-blue">大脑皮层</td><td>接收感觉输入 → 推理判断 → 输出语言和运动指令</td><td>AI 模型</td></tr>
+        <tr><td class="col-amber">前额叶</td><td>负责"先做什么后做什么"。损伤后无法制定计划</td><td>task_planner + policy</td></tr>
+        <tr><td class="col-green">小脑</td><td>存储"习得动作"。走路不用想，就是小脑在管</td><td>Skill</td></tr>
+        <tr><td class="col-purple">海马体</td><td>把短期记忆转化为长期记忆。损伤后无法形成新记忆</td><td>memory + cache</td></tr>
+        <tr><td class="col-cyan">脊髓反射弧</td><td>手碰到火 → 脊髓直接让手缩回 → 信号还没传到皮层</td><td>tools（直接执行）</td></tr>
+        <tr><td>感觉神经</td><td>把光信号变成电信号传入大脑</td><td>用户消息 + API 响应</td></tr>
+        <tr><td>运动神经</td><td>把大脑的电信号传到肌肉让它收缩</td><td>terminal + 网络请求</td></tr>
+        <tr><td>自主神经</td><td>心跳、呼吸——不需要有意识地去管</td><td>events + timeline</td></tr>
+        <tr><td style="color:var(--red)">免疫系统</td><td>识别入侵者并拦截。不拦截就会感染</td><td>approval（危险操作拦截）</td></tr>
+      </table>
+    </div>
+
+    <div class="analogy">
+      你学的 FOC 电机控制。电机是大脑（模型），FOC 控制器是 Agent。没有 FOC，电机只会傻转；有了 FOC，它能精确控制扭矩和转速。
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- Skill -->
+  <section class="section">
+    <div class="section-tag">Concept 3</div>
+    <div class="section-title">Skill = 程序性记忆</div>
+    <div class="core-card">
+      <div class="core-label skill">SKILL</div>
+      <div class="core-eq">练了一百遍后不用想就能做的动作。</div>
+      <div class="core-body">
+        <p>人脑有两种记忆：</p>
+        <p><strong>陈述性记忆</strong>（海马体存储）= 你知道的事实。"北京是中国的首都"。你能用语言说出来。</p>
+        <p><strong>程序性记忆</strong>（小脑存储）= 你练会的动作。"怎么骑自行车"。你说不清楚——你的小脑知道，但你的皮层说不出。</p>
+        <p>Skill 是 Agent 的<strong>程序性记忆</strong>。</p>
+      </div>
+    </div>
+
+    <div class="quote">
+      <strong>刚学骑车</strong>：小脑疯狂工作，前额叶全程监控，每一块肌肉都在听指令。很累，很慢，经常摔。<br>
+      <strong>骑了一百次</strong>：前额叶不用管了，小脑自动接管。你上车就骑，根本不需要想"先蹬左脚再蹬右脚"。<br><br>
+      Skill 对 Agent 的作用，和骑了一百次对骑车的作用，完全一样。
+    </div>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-num n-green">1</div>
+        <div class="flow-body">
+          <h3>没有 Skill（从零摸索）</h3>
+          <p>皮层疯狂思考 → 试了 3 种方案 → 踩了 5 个坑 → 花了 20 分钟 → 质量一般。就像第一次骑车，全身紧张，摇摇晃晃。</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num n-green">2</div>
+        <div class="flow-body">
+          <h3>有 Skill（练过的动作）</h3>
+          <p>小脑直接接管 → 按标准流程执行 → 自动跳过已知的坑 → 花了 3 分钟 → 质量稳定。就像骑了一百次，上车就走。</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num n-green">3</div>
+        <div class="flow-body">
+          <h3>新任务 + 有基础 Skill（举一反三）</h3>
+          <p>小脑提供基础动作模式 → 皮层在此基础上微调 → 比从零快 5 倍。就像会骑自行车的人学摩托车，不是从零开始。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- 完整例子 -->
+  <section class="section">
+    <div class="section-tag">In Action</div>
+    <div class="section-title">一个完整例子：三者怎么协作</div>
+    <div class="section-desc">你对 Agent 说："这个 Python 函数太慢了，帮我优化。"</div>
+
+    <div class="flow">
+      <div class="flow-step">
+        <div class="flow-num n-purple">1</div>
+        <div class="flow-body">
+          <h3>感觉神经（信号传入）</h3>
+          <p>用户消息通过感觉神经传入："这个 Python 函数太慢了，帮我优化"</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num n-amber">2</div>
+        <div class="flow-body">
+          <h3>前额叶（制定计划）</h3>
+          <p>判断任务类型 → 代码优化。决定策略：无匹配 Skill，用皮层通用推理。</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num n-blue">3</div>
+        <div class="flow-body">
+          <h3>大脑皮层（思考推理）</h3>
+          <p>分析：先读代码 → 找瓶颈 → 搜索最佳方案 → 制定优化策略。</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num n-cyan">4</div>
+        <div class="flow-body">
+          <h3>脊髓反射弧（直接执行）</h3>
+          <p>search_files 找文件 → read_file 读代码 → 皮层分析后 → write_file 写优化代码 → terminal 跑测试。不需要皮层思考"怎么调用 read_file"，直接执行。</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num n-purple">5</div>
+        <div class="flow-body">
+          <h3>海马体（记忆编码）</h3>
+          <p>记住：用户在意性能优化，这个项目用 NumPy 向量化有效。写入长期记忆，下次直接用。</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num n-pink">6</div>
+        <div class="flow-body">
+          <h3>免疫系统（安全检查）</h3>
+          <p>检查 terminal 命令是否安全 → 通过 → 放行执行。</p>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num n-red">7</div>
+        <div class="flow-body">
+          <h3>小脑（下次直接做）</h3>
+          <p>这次优化经验沉淀为 Skill。下次遇到"Python 性能优化"→ 小脑接管 → 直接执行标准流程。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- 总结 -->
+  <section class="section">
+    <div class="section-tag">Summary</div>
+    <div class="section-title">缺什么会怎样</div>
+
+    <div class="table-wrap">
+      <table>
+        <tr><th>组合</th><th>人体类比</th><th>状态</th></tr>
+        <tr>
+          <td>有模型，没 Agent，没 Skill</td>
+          <td>全身瘫痪的大脑</td>
+          <td>能想，但不能动，没有经验。<br><strong>ChatGPT 网页版</strong>。你问它答，仅此而已。</td>
+        </tr>
+        <tr>
+          <td>有模型 + Agent，没 Skill</td>
+          <td>刚出生的婴儿</td>
+          <td>有完整的神经系统，但什么都没练过。<br><strong>Agent 第一次遇到某类任务</strong>。能做，但慢，可能犯错。</td>
+        </tr>
+        <tr>
+          <td>有模型 + Agent + Skill</td>
+          <td>工作了 10 年的工程师</td>
+          <td>大脑在想，但大部分动作已经自动化了。<br><strong>Agent 处理练过的任务</strong>。快、稳、知道坑在哪。</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="summary-box">
+      <div class="line">模型给 Agent 思考的能力。Agent 给模型行动的能力。Skill 给 Agent 经验。</div>
+      <div class="sub">模型是大脑皮层。Agent 是完整的神经系统。Skill 是小脑里的程序性记忆。<br>三者缺一不可。缺了任何一个，都不是完整的人。</div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p><a href="../">&larr; 返回主页</a> &middot; <a href="https://github.com/LiHongwei-cn/lihongwei-cn">GitHub</a> &middot; MIT 开源</p>
+  </footer>
+
+</div>
+</body>
+</html>
