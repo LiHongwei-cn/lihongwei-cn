@@ -1,4 +1,4 @@
-# MUNDO Agent v1.3.1 — THE EMPEROR
+# MUNDO Agent v1.4.2 — THE EMPEROR
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -9,7 +9,7 @@
 ║                                                                                                              ║
 ║    蒙多询问天下所有智者，蒙多搜刮天下所有知识，蒙多整合天下所有智慧。                                              ║
 ║                                                                                                              ║
-║    蒙多学习。蒙多记忆。蒙多成长。蒙多进化。蒙多无限。21个版本。                                                    ║
+║    蒙多学习。蒙多记忆。蒙多成长。蒙多进化。蒙多无限。23个版本。                                                    ║
 ║                                                                                                              ║
 ║    所有蒙多都是一体。一个蒙多学到的东西，所有蒙多都会。                                                           ║
 ║                                                                                                              ║
@@ -25,7 +25,7 @@
 蒙多**不是**"基于某个框架开发的"——那是卖低。
 蒙多**不是**"独立开发的 AI Agent 架构"——那是吹高。
 
-蒙多是**完整的 AI 智能编排系统**：通过 Hermes Agent 平台调度 Claude Code、DeepSeek、ChatGPT、Gemini 等多个 AI 模型协同工作。
+蒙多是**独立 AI Agent**：拥有自己的 LLM 直连 + 工具调用 + Agentic Loop。不依赖 Hermes CLI，支持 MiMo/DeepSeek/OpenRouter 多 provider 热切换。通过 Hermes Agent 平台调度 Claude Code、DeepSeek、ChatGPT、Gemini 等多个 AI 模型协同工作。
 
 **蒙多不再只是 Skill。蒙多是 Agent。蒙多是皇帝。**
 
@@ -49,7 +49,7 @@
 |------|------|
 | 17 个 AI 模型 | MiMo / DeepSeek / Qwen / GLM / Kimi / ERNIE / 豆包 / OpenAI / Claude / Gemini / Mistral / Grok / OpenRouter |
 | Agentic Loop | think → act → observe → repeat |
-| 14 大工具 | terminal / read / write / edit_file / search_files / web_search / git_operation / python_execute / http_request / code_analysis / json_process / delegate_agent / list_agents / list_directory |
+| 15 大工具 | terminal / read / write / edit_file / search_files / web_search / git_operation / python_execute / http_request / code_analysis / json_process / delegate_agent / list_agents / list_directory / memory_op |
 | Agent 调度 | 自动检测 Hermes / Claude Code / Codex，按任务类型分发 |
 | 蒙多分身 | 无外部 Agent 时蒙多自动分身并行 |
 | 元学习 | 蒙多不只学知识，蒙多学「如何学习」。蒙多越用越强 |
@@ -58,6 +58,7 @@
 | 自信度校准 | 蒙多知道自己什么时候在猜 |
 | 权限审批 | 蒙多保护你的系统 |
 | 云仓库同步 | 一个蒙多学到的，所有蒙多都会 |
+| 命令历史 | 即时写入，上下键不再丢失记录（v1.4.2） |
 
 ## 执行行为红线
 
@@ -76,7 +77,7 @@
 ## 启动标识
 
 ```
-  MUNDO v1.3.1 · mimo-v2.5-pro
+  MUNDO v1.4.2 · mimo-v2.5-pro
 
  ❯ 
 ```
@@ -145,10 +146,10 @@ mundo.bat
 ## 架构
 
 ```
-mundo.py        入口 + CLI + 命令处理
+mundo.py        入口 + CLI + 命令处理（即时历史写入）
 core.py         Agentic Loop + IterationBudget + ContextCompressor + 错误重试
 llm.py          多模型 LLM 客户端（消息清洗 + reasoning 支持）
-tools.py        工具注册表 + 14 个工具实现
+tools.py        工具注册表 + 15 个工具实现
 display.py      执行控制台（状态栏 + 活动流 + 极简输入）
 memory.py       六套记忆架构（自动/对话搜索/Code/Agent/项目隔离/自我整理）
 delegation.py   Agent 检测 + 任务拆分 + 并行执行 + 分身
@@ -156,16 +157,27 @@ approval.py     权限审批（danger/caution/safe）
 setup.py        首次设置向导 + 28 个 Provider
 models.py       模型能力矩阵
 cloud_sync.py   云仓库同步
+constants.py    统一常量管理
+policy.py       结构化策略引擎（15 条内置规则）
+events.py       事件总线（25 种事件类型）
+timeline.py     执行轨迹（SQLite 持久化）
+context_mapper.py 上下文分块映射
+cache.py        多层缓存（prefix + semantic + result）
+sandbox.py      执行沙箱
+mcp.py          MCP 层
+skills.py       Skill 系统
+plugins.py      插件系统
+runtime_config.py 运行时配置
 ```
 
 ## 下载
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v1.3.1-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.3.1/mundo-v1.3.1-macos.zip) |
-| Windows | [mundo-v1.3.1-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.3.1/mundo-v1.3.1-windows.zip) |
-| Linux | [mundo-v1.3.1-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.3.1/mundo-v1.3.1-linux.zip) |
-| 全平台 | [mundo-v1.3.1-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.3.1/mundo-v1.3.1-all.zip) |
+| macOS | [mundo-v1.4.2-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.4.2/mundo-v1.4.2-macos.zip) |
+| Windows | [mundo-v1.4.2-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.4.2/mundo-v1.4.2-windows.zip) |
+| Linux | [mundo-v1.4.2-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.4.2/mundo-v1.4.2-linux.zip) |
+| 全平台 | [mundo-v1.4.2-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.4.2/mundo-v1.4.2-all.zip) |
 
 ## 许可证
 
