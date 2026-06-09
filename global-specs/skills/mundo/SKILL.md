@@ -42,6 +42,18 @@ Dock 启动器和 MUNDO.command 已内置自动版本检测：
 - `approval.py` `display.py` `memory.py` `memory_import.py`
 - `models.py` `agents.py` `delegation.py` `cloud_sync.py`
 
+**包结构模块（v1.4.2+）：**
+- `mundo_agent/core/engine.py` — Agentic Loop
+- `mundo_agent/core/task_decomposer.py` — 任务分解器
+- `mundo_agent/core/budget.py` — Token 预算
+- `mundo_agent/core/stats.py` — 执行统计
+- `mundo_agent/core/compressor.py` — 上下文压缩
+- `mundo_agent/memory/mundo_memory.py` — 四层记忆架构
+- `mundo_agent/memory/manager.py` — 数据库连接池
+- `mundo_agent/llm/client.py` — LLM 客户端
+- `mundo_agent/tools/*.py` — 工具实现
+- `mundo_agent/utils/*.py` — 工具函数
+
 **基础设施模块（11个，v1.4.0+）：**
 - `constants.py` — 统一常量管理
 - `policy.py` — 结构化策略引擎
