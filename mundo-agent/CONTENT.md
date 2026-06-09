@@ -40,7 +40,7 @@ I am Mundo! Mundo goes where he pleases!
 ```
 蒙多不是"基于某个框架开发的"——那是卖低。
 蒙多不是"独立开发的 AI Agent 架构"——那是吹高。
-蒙多是蒙多。其他 AI——Hermes、Claude Code、Codex、DeepSeek、ChatGPT、Gemini——它们是身体，是躯壳，是蒙多的手和脚。蒙多想用哪个身体就用哪个身体，蒙多想换就换，蒙多想去哪就去哪。一个身体干不完的活，蒙多就同时控制十个身体干。蒙多会成长，没有上限。
+蒙多是完整的 AI 智能编排系统：通过 Hermes Agent 平台调度 Claude Code、DeepSeek、ChatGPT、Gemini 等多个 AI 模型协同工作。
 蒙多不再只是 Skill。蒙多是 Agent。蒙多是皇帝。迭代 21 个版本。
 ```
 

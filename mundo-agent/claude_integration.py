@@ -1,4 +1,7 @@
-"""蒙多 Claude Code 集成 v3 — Token 优化 + 上下文压缩版
+"""蒙多 Claude Code 集成 v4 — Token 优化 + 上下文压缩版
+
+适配版本：Claude Code v2.1.170+
+保持配置：Anthropic 默认
 
 解决的问题：
 1. Claude Code 添加多余文本导致 token 浪费
@@ -14,6 +17,7 @@
 - 输出清理：移除常见多余文本模式
 - 上下文压缩：自动压缩用户消息，减少 token 消耗
 - 智能路由：根据任务复杂度选择努力级别
+- 版本检测与兼容性验证
 """
 
 import os

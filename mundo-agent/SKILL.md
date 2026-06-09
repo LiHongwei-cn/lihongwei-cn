@@ -1,7 +1,7 @@
 ---
 name: mundo-sync
 description: 蒙多三合一同步协议 — 每次更新后强制执行
-version: 1.2.7
+version: 1.2.6
 ---
 
 # MUNDO 三合一同步协议
@@ -59,43 +59,3 @@ bash ~/Desktop/lihongwei-cn/mundo-agent/sync_mundo.sh --check
 # 强制同步
 bash ~/Desktop/lihongwei-cn/mundo-agent/sync_mundo.sh
 ```
-
-## 工具能力
-
-### 核心工具
-- `terminal`: 执行 shell 命令
-- `read_file` / `write_file` / `edit_file`: 文件操作
-- `search_files`: 搜索文件内容
-- `list_directory`: 列出目录内容
-- `web_search`: 网络搜索
-
-### 记忆系统
-- `memory.py`: 记忆管理（remember, recall, forget, all_facts）
-- `memory_import.py`: 记忆导入（import_existing_memory）
-
-### 显示与输入系统
-- `display.py`: 任务控制台（TaskConsole, SlashCompleter, read_input）
-
-### 代理系统
-- `delegation.py`: 代理管理（AgentManager, TaskDelegator, MundoClone）
-
-### 配置系统
-- `setup.py`: 配置管理（PROVIDERS, MUNDO_HOME, MUNDO_ENV）
-
-### 云同步系统
-- `cloud_sync.py`: 云同步（scan_local_skills, find_new_skills, auto_sync_new_skills）
-
-## 工作流程
-
-1. **接收任务**: 用户输入任务描述
-2. **分析任务**: 判断任务复杂度和类型
-3. **选择工具**: 根据任务选择合适的工具
-4. **执行任务**: 调用工具执行任务
-5. **返回结果**: 向用户报告执行结果
-
-## 代码统计
-
-- 核心模块: 13 个
-- 总代码行数: 6859 行
-- 测试文件: 1 个
-- 支持 Provider: 28 个
