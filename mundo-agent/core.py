@@ -29,6 +29,7 @@ from sandbox import get_sandbox
 from runtime_config import get_config
 from model_adapter import get_model_adapter, DeepSeekOptimizer
 from quark_optimizer import ModelOptimizerFactory
+from model_profiles import SmartModelSelector, AutoAdapter, TaskType, PROVIDER_DATABASE
 
 
 # ═══════════════════════════════════════════════
@@ -192,12 +193,19 @@ class MundoEngine:
     # 从 constants.py 读取，不再硬编码
 
     def __init__(self, provider="deepseek", model=None):
+        # 智能模型选择：根据provider自动选择最优模型
+        if model is None:
+            model = SmartModelSelector.select_model(provider, TaskType.GENERAL)
+        
         self.client = LLMClient(provider=provider, model=model)
         self.provider = provider
         self.model_name = model or self.client.model
         
         # 模型适配器 — 根据模型特性自动优化
         self.adapter = get_model_adapter(self.model_name)
+        
+        # 自动适配器
+        self.auto_adapter = AutoAdapter()
         
         self.messages: List[Dict] = []
         self.max_tokens_override = self.adapter.profile.max_tokens_default
@@ -250,6 +258,18 @@ class MundoEngine:
 
     def _model_display(self):
         return f"{self.provider}/{self.model_name}"
+    
+    def switch_model_for_task(self, task_description: str):
+        """根据任务描述智能切换模型"""
+        task_type = SmartModelSelector.detect_task_type(task_description)
+        optimal_model = SmartModelSelector.select_model(self.provider, task_type)
+        
+        if optimal_model and optimal_model != self.model_name:
+            self.model_name = optimal_model
+            self.adapter = get_model_adapter(optimal_model)
+            self.max_tokens_override = self.adapter.profile.max_tokens_default
+            return True
+        return False
 
     def _auto_compress(self):
         if not self._context.should_compress():
@@ -441,8 +461,11 @@ class MundoEngine:
         self.stats.reset()
         self.budget.reset()
         self._interrupted = False
-        self._use_streaming = True
+        self._use_streaming = self.adapter.profile.supports_streaming
         self._install_signal_handler()
+
+        # 智能模型切换：根据任务类型自动选择最优模型
+        self.switch_model_for_task(user_input)
 
         if not self.messages:
             self.messages = [self._build_system_message()]
