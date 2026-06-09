@@ -30,6 +30,7 @@ from runtime_config import get_config
 from model_adapter import get_model_adapter, DeepSeekOptimizer
 from quark_optimizer import ModelOptimizerFactory
 from model_profiles import SmartModelSelector, AutoAdapter, TaskType, PROVIDER_DATABASE
+from task_planner import TaskPlanner, MultiModelCoordinator, LATEST_MODELS, MODEL_RATINGS
 
 
 # ═══════════════════════════════════════════════
@@ -270,6 +271,18 @@ class MundoEngine:
             self.max_tokens_override = self.adapter.profile.max_tokens_default
             return True
         return False
+    
+    def generate_task_plan(self, task_description: str) -> str:
+        """生成任务执行计划文档"""
+        plan = TaskPlanner.generate_plan(task_description, self.provider)
+        return TaskPlanner.format_plan_document(plan)
+    
+    def get_optimal_model_for_step(self, step_info: Dict) -> Tuple[str, str]:
+        """为执行步骤获取最优模型"""
+        return MultiModelCoordinator.select_best_model(
+            step_info.get("task_type", "general"),
+            [self.provider],
+        )
 
     def _auto_compress(self):
         if not self._context.should_compress():
