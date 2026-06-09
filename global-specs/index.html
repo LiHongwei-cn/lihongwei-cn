@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Claude Code 全局规范一键部署包 · 代码洁癖 · 安装洁癖 · 蒙多学习引擎 · Skills">
+<meta name="description" content="全局规范部署包 — 一套规范，部署到所有 AI Agent。支持 Claude Code / Hermes / Codex / Cursor / Windsurf / Copilot">
 <title>全局规范部署包</title>
 <style>
 :root {
@@ -142,20 +142,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
   <div class="hero">
     <div class="hero-badge">macOS / Windows / Linux</div>
     <h1>全局规范部署包</h1>
-    <p>Claude Code 全套配置一键部署 — 全局指令、6 大规范、14 个 Skill、API 配置。<br>新电脑只需一条命令。</p>
+    <p>一套规范，部署到所有 AI Agent。<br>Claude Code / Hermes / Codex / Cursor / Windsurf / Copilot — 一条命令全搞定。</p>
   </div>
 
   <!-- ===== 这是什么 ===== -->
   <div class="what-is" id="what">
     <h3>💡 这是什么？</h3>
     <p>
-      全局规范部署包是一套预配置的 <strong>Claude Code 全局环境</strong>，安装后 Claude Code 会自动遵循你的代码风格、Git 规范、安全红线等约束，无需在每个项目中重复配置。
+      全局规范部署包是一套<strong>跨 Agent 的通用行为规范</strong>。安装后，你所有正在使用的 AI Agent 都会自动遵循同一套代码风格、安全红线、辩证思维规范。
     </p>
     <p>
-      它包含 <strong>14 个智能 Skill</strong>（代码洁癖、论文写作、跨界学习等），根据你的意图<strong>自动触发</strong>——你说"整理代码"，它就自动清理死代码；你遇到报错卡住，蒙多就会自动帮你去 GitHub/Stack Overflow 找方案。
+      它支持 <strong>6 个 Agent</strong>：Claude Code、Hermes Agent、OpenAI Codex、Cursor、Windsurf、GitHub Copilot。安装脚本自动检测你装了哪些 Agent，只部署对应的配置。
     </p>
     <p>
-      <strong>一句话</strong>：装了这个，Claude Code 从「通用助手」变成「你的专属工程师」。
+      <strong>一句话</strong>：一套规范管所有 AI。改一次，全部生效。
     </p>
   </div>
 
@@ -183,8 +183,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
     <h2 class="section-title"><span class="num">1</span> 包含内容</h2>
     <div class="pkg-grid">
       <div class="pkg-card">
-        <h4>📋 全局 CLAUDE.md</h4>
-        <p>代码洁癖 · 安装洁癖 · 蒙多学习引擎 — 三大红线规范 + 记忆系统架构</p>
+        <h4>🌐 通用规范核心</h4>
+        <p>core-spec.md — 代码风格 · 安全红线 · 辩证思维 · Git 规范 · 跨平台要求。所有 Agent 共享同一份。</p>
+      </div>
+      <div class="pkg-card">
+        <h4>🧩 6 个 Agent 适配</h4>
+        <p>Claude Code · Hermes · Codex · Cursor · Windsurf · Copilot — 自动检测，按需部署</p>
       </div>
       <div class="pkg-card">
         <h4>📐 6 大规范</h4>
@@ -195,16 +199,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
         <p>代码洁癖 · 知识审查 · 蒙多跨界 · 论文全流程 · 首页布局 · 安全审查</p>
       </div>
       <div class="pkg-card">
-        <h4>⚙️ API 配置模板</h4>
-        <p>DeepSeek API 接入 · 权限白名单 · 开箱即用</p>
-      </div>
-      <div class="pkg-card">
-        <h4>📦 安装脚本</h4>
-        <p>install.sh（macOS/Linux）· install.bat（Windows）</p>
+        <h4>📦 一键部署脚本</h4>
+        <p>install.sh（macOS/Linux）· install.bat（Windows）— 检测已安装 Agent，只部署对应的</p>
       </div>
       <div class="pkg-card">
         <h4>📄 项目模板</h4>
-        <p>通用 CLAUDE.md 模板，复制到新项目即可</p>
+        <p>通用规范模板，复制到新项目即可让任何 Agent 遵循你的规范</p>
       </div>
     </div>
   </div>
@@ -235,9 +235,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Micr
       <div class="step-item">
         <span class="step-num">2</span>
         <h4>运行安装脚本</h4>
-        <p class="desc">脚本会自动检查 Claude Code 是否已安装，然后依次部署全局指令、规范文件、Skills 和配置文件到 <code>~/.claude/</code>。</p>
+        <p class="desc">脚本自动检测已安装的 Agent（Claude Code / Hermes / Codex 等），只部署对应的配置文件到各 Agent 的配置目录。</p>
         <div class="cmd">./install.sh</div>
-        <div class="gotcha">⚠ 常见问题：如果提示 <code>claude: command not found</code>，需要先安装 Claude Code：<code>brew install claude-code</code> 或 <code>npm install -g @anthropic-ai/claude-code</code>。</div>
+        <div class="gotcha">⚠ 脚本会检测 ~/.claude/、~/.hermes/、~/.codex/ 等目录。未安装的 Agent 自动跳过。</div>
       </div>
 
       <div class="step-item">

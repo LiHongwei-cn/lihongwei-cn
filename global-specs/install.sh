@@ -2,70 +2,123 @@
 set -e
 
 echo ""
-echo "  Claude Code 全局规范 · 一键部署"
-echo "  ================================="
+echo "  ╔══════════════════════════════════════════╗"
+echo "  ║  全局规范 · 通用多 Agent 一键部署         ║"
+echo "  ╚══════════════════════════════════════════╝"
 echo ""
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+DEPLOYED=0
+SKIPPED=0
 
-# ── 1. 检查 Claude Code ──
-if ! command -v claude &>/dev/null; then
-    echo "  [!] claude 未安装"
-    echo "  安装命令: brew install claude-code"
-    echo "  或: npm install -g @anthropic-ai/claude-code"
-    echo ""
-fi
+deploy() {
+    local name="$1"
+    local src="$2"
+    local dst="$3"
+    if [ -f "$src" ]; then
+        mkdir -p "$(dirname "$dst")"
+        if [ -f "$dst" ] && diff -q "$src" "$dst" >/dev/null 2>&1; then
+            echo "  ○ $name (无变化，跳过)"
+            SKIPPED=$((SKIPPED + 1))
+        else
+            cp "$src" "$dst"
+            echo "  ✓ $name"
+            DEPLOYED=$((DEPLOYED + 1))
+        fi
+    fi
+}
 
-# ── 2. 创建目录 ──
-mkdir -p ~/.claude/rules
-mkdir -p ~/.claude/skills
-
-# ── 3. 部署全局指令 ──
-echo "  [1/5] 全局 CLAUDE.md"
-cp "$SCRIPT_DIR/CLAUDE.md" ~/.claude/CLAUDE.md
-echo "    ✓ ~/.claude/CLAUDE.md"
-
-# ── 4. 部署规范 ──
-echo "  [2/5] 规范文件"
-for f in "$SCRIPT_DIR/rules/"*.md; do
-    cp "$f" ~/.claude/rules/
-    echo "    ✓ ~/.claude/rules/$(basename "$f")"
-done
-
-# ── 5. 部署 Skills ──
-echo "  [3/5] Skills"
-for skill_dir in "$SCRIPT_DIR/skills/"*/; do
-    skill_name=$(basename "$skill_dir")
-    mkdir -p ~/.claude/skills/"$skill_name"
-    cp -r "$skill_dir"* ~/.claude/skills/"$skill_name"/
-    echo "    ✓ ~/.claude/skills/$skill_name/"
-done
-
-# ── 6. 部署配置文件 ──
-echo "  [4/5] 配置文件"
-if [ ! -f ~/.claude/settings.json ]; then
-    cp "$SCRIPT_DIR/settings.json" ~/.claude/settings.json
-    echo "    ✓ ~/.claude/settings.json (新建，请编辑填入 API Key)"
+# ═══════════════════════════════════════════
+# 1. Claude Code
+# ═══════════════════════════════════════════
+echo "  ━━ Claude Code ━━"
+if command -v claude &>/dev/null || [ -d ~/.claude ]; then
+    mkdir -p ~/.claude/rules ~/.claude/skills
+    deploy "全局 CLAUDE.md" "$SCRIPT_DIR/agents/claude-code/CLAUDE.md" ~/.claude/CLAUDE.md
+    for f in "$SCRIPT_DIR/rules/"*.md; do
+        [ -f "$f" ] && deploy "rules/$(basename "$f")" "$f" ~/.claude/rules/"$(basename "$f")"
+    done
+    for skill_dir in "$SCRIPT_DIR/skills/"*/; do
+        [ -d "$skill_dir" ] || continue
+        skill_name=$(basename "$skill_dir")
+        mkdir -p ~/.claude/skills/"$skill_name"
+        cp -r "$skill_dir"* ~/.claude/skills/"$skill_name"/ 2>/dev/null
+        echo "  ✓ skills/$skill_name/"
+    done
+    [ -f ~/.claude/settings.json ] || { [ -f "$SCRIPT_DIR/settings.json" ] && cp "$SCRIPT_DIR/settings.json" ~/.claude/settings.json && echo "  ✓ settings.json (新建)"; }
 else
-    echo "    ! ~/.claude/settings.json 已存在，跳过（如需覆盖请手动操作）"
+    echo "  ⊘ Claude Code 未安装，跳过"
 fi
+echo ""
 
-if [ ! -f ~/.claude/settings.local.json ]; then
-    cp "$SCRIPT_DIR/settings.local.json" ~/.claude/settings.local.json
-    echo "    ✓ ~/.claude/settings.local.json (新建)"
+# ═══════════════════════════════════════════
+# 2. Hermes Agent
+# ═══════════════════════════════════════════
+echo "  ━━ Hermes Agent ━━"
+if command -v hermes &>/dev/null || [ -d ~/.hermes ]; then
+    mkdir -p ~/.hermes/skills
+    deploy "全局 SOUL.md" "$SCRIPT_DIR/agents/hermes/SOUL.md" ~/.hermes/SOUL.md
+    for skill_dir in "$SCRIPT_DIR/skills/"*/; do
+        [ -d "$skill_dir" ] || continue
+        skill_name=$(basename "$skill_dir")
+        mkdir -p ~/.hermes/skills/"$skill_name"
+        cp -r "$skill_dir"* ~/.hermes/skills/"$skill_name"/ 2>/dev/null
+        echo "  ✓ skills/$skill_name/"
+    done
 else
-    echo "    ! ~/.claude/settings.local.json 已存在，跳过"
+    echo "  ⊘ Hermes Agent 未安装，跳过"
 fi
+echo ""
 
-# ── 7. 完成 ──
-echo "  [5/5] 完成"
+# ═══════════════════════════════════════════
+# 3. OpenAI Codex
+# ═══════════════════════════════════════════
+echo "  ━━ OpenAI Codex ━━"
+if command -v codex &>/dev/null || [ -d ~/.codex ]; then
+    deploy "AGENTS.md" "$SCRIPT_DIR/agents/codex/AGENTS.md" ~/.codex/AGENTS.md
+else
+    echo "  ⊘ Codex 未安装，跳过"
+fi
 echo ""
-echo "  ═══════════════════════════════════"
-echo "  部署完成！"
-echo "  ═══════════════════════════════════"
+
+# ═══════════════════════════════════════════
+# 4. Cursor
+# ═══════════════════════════════════════════
+echo "  ━━ Cursor ━━"
+if [ -d "$HOME/Library/Application Support/Cursor" ] || [ -d "$HOME/.cursor" ]; then
+    echo "  提示: Cursor 使用项目级 .cursorrules"
+    echo "  请将 agents/cursor/.cursorrules 复制到你的项目根目录"
+    echo "  或运行: cp $SCRIPT_DIR/agents/cursor/.cursorrules <你的项目>/"
+else
+    echo "  ⊘ Cursor 未安装，跳过"
+fi
 echo ""
-echo "  后续步骤:"
-echo "  1. 编辑 ~/.claude/settings.json 填入你的 API Key"
-echo "  2. 运行 claude 进入对话"
-echo "  3. 输入 /neat 测试 skill 是否正常加载"
+
+# ═══════════════════════════════════════════
+# 5. Windsurf
+# ═══════════════════════════════════════════
+echo "  ━━ Windsurf ━━"
+if [ -d "$HOME/Library/Application Support/Windsurf" ] || [ -d "$HOME/.windsurf" ]; then
+    echo "  提示: Windsurf 使用项目级 .windsurfrules"
+    echo "  请将 agents/windsurf/.windsurfrules 复制到你的项目根目录"
+    echo "  或运行: cp $SCRIPT_DIR/agents/windsurf/.windsurfrules <你的项目>/"
+else
+    echo "  ⊘ Windsurf 未安装，跳过"
+fi
+echo ""
+
+# ═══════════════════════════════════════════
+# 6. GitHub Copilot
+# ═══════════════════════════════════════════
+echo "  ━━ GitHub Copilot ━━"
+echo "  提示: Copilot 使用项目级 .github/copilot-instructions.md"
+echo "  请将 agents/copilot/.github/ 复制到你的项目根目录"
+echo ""
+
+# ═══════════════════════════════════════════
+# 完成
+# ═══════════════════════════════════════════
+echo "  ═══════════════════════════════════════"
+echo "  部署完成！已部署 $DEPLOYED 项，跳过 $SKIPPED 项"
+echo "  ═══════════════════════════════════════"
 echo ""
