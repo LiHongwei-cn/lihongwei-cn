@@ -11,7 +11,7 @@ import sys
 import json
 import time
 import signal
-from typing import List, Dict, Optional, Callable
+from typing import List, Dict, Optional, Callable, Tuple
 from llm import LLMClient, repair_json, _is_timeout_error
 from constants import (
     VERSION, CHAR_TO_TOKEN,
