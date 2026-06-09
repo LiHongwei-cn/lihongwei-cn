@@ -147,30 +147,47 @@ td:first-child{font-weight:600;white-space:nowrap}
   <header class="hero">
     <div class="hero-badge">Fundamentals</div>
     <h1>AI 剖析</h1>
-    <div class="hero-sub">用人体构造理解 AI 模型、Agent、Skill 三个根本概念。<br>不是比喻，是结构上的精确对应。</div>
+    <div class="hero-sub">你不需要懂 AI。你只需要懂你自己。<br>用你身体里已经有的东西，理解 AI 世界里三个最基本的词。</div>
   </header>
 
   <div class="divider"></div>
 
-  <!-- 一句话定义 -->
+  <!-- 起点 -->
+  <section class="section">
+    <div class="section-tag">Start here</div>
+    <div class="section-title">先忘掉所有你听过的 AI 术语</div>
+    <div class="core-card">
+      <div class="core-body">
+        <p>你一定听过这些词：大模型、AI Agent、ChatGPT、DeepSeek、Skill……</p>
+        <p>如果你觉得"听起来好像很厉害但我不知道它们到底是什么"，那很正常。因为大多数解释都是用一个你不懂的词去解释另一个你不懂的词。</p>
+        <p>这篇文章不一样。我们只用<strong>你身体里已经有的东西</strong>来解释。</p>
+        <p>你有一个大脑。你有脊髓。你有神经。你有肌肉。你有免疫系统。你学过骑自行车。<br>
+        这就够了。下面所有内容，都从这里开始。</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- 三个概念 -->
   <section class="section">
     <div class="section-tag">Overview</div>
-    <div class="section-title">三个概念，三个层次</div>
+    <div class="section-title">三个概念，一张图说清楚</div>
     <div class="compare-grid">
       <div class="compare-card">
         <div class="compare-icon">🧠</div>
         <div class="compare-title" style="color:var(--blue)">AI 模型</div>
-        <div class="compare-sub">大脑皮层。<br>只有思维能力，没有别的。</div>
+        <div class="compare-sub">你的大脑皮层。<br>能想事情，但躺在床上动不了。</div>
       </div>
       <div class="compare-card">
         <div class="compare-icon">🧍</div>
         <div class="compare-title" style="color:var(--accent)">Agent</div>
-        <div class="compare-sub">完整的人。<br>能思考、能感知、能行动。</div>
+        <div class="compare-sub">一个完整的人。<br>大脑接到脊髓、神经、肌肉——能想能动。</div>
       </div>
       <div class="compare-card">
         <div class="compare-icon">🎯</div>
         <div class="compare-title" style="color:var(--green)">Skill</div>
-        <div class="compare-sub">练了一百遍的动作。<br>不用想，直接做。</div>
+        <div class="compare-sub">你练了一百遍的事。<br>不用想，手自己就动了。</div>
       </div>
     </div>
   </section>
@@ -180,21 +197,23 @@ td:first-child{font-weight:600;white-space:nowrap}
   <!-- AI 模型 -->
   <section class="section">
     <div class="section-tag">Concept 1</div>
-    <div class="section-title">AI 模型 = 大脑皮层</div>
+    <div class="section-title">AI 模型 = 你的大脑皮层</div>
     <div class="core-card">
       <div class="core-label model">MODEL</div>
       <div class="core-eq">能想，但不能动。</div>
       <div class="core-body">
-        <p>你的大脑皮层有 860 亿个神经元，负责语言、推理、判断、创造。它是你思考能力的来源。</p>
-        <p>AI 模型就是这东西。它能回答问题、分析逻辑、写文章、做数学。但它<strong>只有皮层</strong>。</p>
-        <p>没有脊髓 → 想到"我要拿水杯"但信号传不到手臂，动不了。<br>
-        没有感觉神经 → 不知道自己在哪个房间，不知道桌上有什么。<br>
-        没有小脑 → 没有过去的经验，每次都是从零开始。</p>
-        <p>所以一个裸模型：你问它一句，它答一句。它不知道你是谁，不记得上一次对话，不能读文件，不能跑命令，不能搜索。</p>
-        <p><strong>它是被麻醉了的、固定在床上的大脑皮层——能想，但什么也做不了。</strong></p>
+        <p>你闭上眼睛，想象一下：把你从身体里取出来，放进一个装满营养液的水缸里。你的大脑皮层还在运转——你还能思考、还能说话、还能做数学题。但是你没有手、没有脚、没有眼睛、没有耳朵。</p>
+        <p>这就是 AI 模型。</p>
+        <p>你的大脑皮层有大约 860 亿个神经元。每个神经元通过突触（synapse）跟其他神经元相连。当你思考的时候，电信号沿着神经元之间的突触传递——一个神经元释放神经递质（比如谷氨酸或 GABA），下一个神经元接收，然后决定要不要继续传下去。</p>
+        <p>AI 模型做的事情本质上是一样的。只不过它的"神经元"是数学函数，它的"突触"是参数权重，它的"神经递质"是数字信号。DeepSeek 有几千亿个这样的"突触"。当你问它一个问题，信号从输入端传进去，经过层层"突触"的加权和传递，最终在输出端产生回答。</p>
+        <p>但问题是——它<strong>只有皮层</strong>。</p>
+        <p>没有脊髓：它想到了"我应该帮你读一下这个文件"，但信号传不出去，因为它没有连接到"手"（读文件的工具）。<br>
+        没有感觉神经：它不知道你在哪个房间，不知道你的屏幕上显示什么，不知道今天几号。<br>
+        没有海马体（hippocampus）：它不记得你上一句说了什么（除非你把整段对话重新发给它）。每次对话，对它来说都是全新的。</p>
+        <p><strong>你可以把它想象成一个被麻醉了、固定在手术台上的人。大脑完全清醒，但全身瘫痪。能想，能说（如果你把耳朵和嘴巴接上），但完全不能动。</strong></p>
       </div>
       <div class="analogy">
-        发动机。V6、V8、电机，都是动力源，特性不同。有的擅长高转速（快但不深），有的擅长低扭（慢但很准）。DeepSeek、MiMo、Claude、GPT 就是不同型号的发动机。
+        你学过的发动机原理。V6、V8、电机——都是动力源，但特性完全不同。有的擅长高转速（快但不深），有的擅长低扭（慢但很准）。DeepSeek、MiMo、Claude、GPT 就是不同型号的发动机。它们都能"产生动力"（思考），但光有发动机，车还开不了。
       </div>
     </div>
   </section>
@@ -202,19 +221,27 @@ td:first-child{font-weight:600;white-space:nowrap}
   <!-- Agent -->
   <section class="section">
     <div class="section-tag">Concept 2</div>
-    <div class="section-title">Agent = 从皮层到肌肉的完整神经通路</div>
+    <div class="section-title">Agent = 一个完整的人</div>
     <div class="core-card">
       <div class="core-label agent">AGENT</div>
-      <div class="core-eq">能想、能感知、能行动的完整人。</div>
+      <div class="core-eq">从大脑皮层到指尖，全部接通。</div>
       <div class="core-body">
-        <p>Agent 把孤立的皮层接上了<strong>整套神经系统</strong>。不再只是一个会回答问题的脑子，而是一个能思考、能制定计划、能感知外界、能动手执行、能记住经验、能自我修正的完整个体。</p>
+        <p>现在把那个躺在手术台上的大脑，重新接回身体。</p>
+        <p>接上脊髓（spinal cord）——大脑的指令能传到手和脚了。<br>
+        接上感觉神经（sensory neuron）——它能看到、能听到、能摸到了。<br>
+        接上海马体——它能记住刚才发生的事了。<br>
+        接上小脑（cerebellum）——它能做练过的动作了。<br>
+        接上自主神经系统（autonomic nervous system）——心跳、呼吸、消化不用管，自己运转。<br>
+        接上免疫系统——有危险的东西进来，它能识别并挡住。</p>
+        <p>这就是 Agent。</p>
+        <p>Agent 不是"更聪明的 AI"。Agent 是<strong>把一个聪明的大脑接回了完整身体</strong>。大脑还是那个大脑（DeepSeek 或 MiMo），但现在它有了手能干活，有了眼睛能看东西，有了记忆能记住你，有了反射弧能直接执行简单动作。</p>
       </div>
     </div>
 
     <div class="diagram">
 <pre>
 <span class="c-dim">             ┌──────────────────┐</span>
-<span class="c-dim">             │</span>    <span class="c-blue">大脑皮层</span>       <span class="c-dim">│</span>  <span class="c-dim">← AI 模型：思考、推理、生成语言</span>
+<span class="c-dim">             │</span>    <span class="c-blue">大脑皮层</span>       <span class="c-dim">│</span>  <span class="c-dim">← 860 亿神经元，负责思考和推理</span>
 <span class="c-dim">             │</span>  <span class="c-dim">(DeepSeek)</span>     <span class="c-dim">│</span>
 <span class="c-dim">             └────────┬─────────┘</span>
                       │
@@ -231,7 +258,7 @@ td:first-child{font-weight:600;white-space:nowrap}
          <span class="c-dim">└──────────┼──────────┘</span>
                     │
             <span class="c-dim">┌──────┴──────┐</span>
-            <span class="c-cyan">│    脊  髓    │</span>  <span class="c-dim">← tools.py：14 个工具</span>
+            <span class="c-cyan">│    脊  髓    │</span>  <span class="c-dim">← 感觉信号进来，运动信号出去</span>
             <span class="c-cyan">│   反射弧执行  │</span>
             <span class="c-dim">└──────┬──────┘</span>
                    │
@@ -239,30 +266,28 @@ td:first-child{font-weight:600;white-space:nowrap}
         <span class="c-dim">│          │          │</span>
    <span class="c-dim">┌────┴───┐</span> <span class="c-dim">┌───┴────┐</span> <span class="c-dim">┌───┴─────┐</span>
    <span class="c-dim">│感觉神经 │</span> <span class="c-dim">│运动神经 │</span> <span class="c-dim">│自主神经  │</span>
-   <span class="c-dim">│用户输入 │</span> <span class="c-dim">│terminal │</span> <span class="c-dim">│events   │</span>
-   <span class="c-dim">│API 响应 │</span> <span class="c-dim">│网络请求  │</span> <span class="c-dim">│timeline  │</span>
-   <span class="c-dim">│文件内容 │</span> <span class="c-dim">│文件写入  │</span> <span class="c-dim">│cache    │</span>
+   <span class="c-dim">│眼睛耳朵 │</span> <span class="c-dim">│手臂腿脚 │</span> <span class="c-dim">│心跳呼吸  │</span>
    <span class="c-dim">└────────┘</span> <span class="c-dim">└────────┘</span> <span class="c-dim">└─────────┘</span>
 </pre>
     </div>
 
     <div class="table-wrap">
       <table>
-        <tr><th>人体结构</th><th>为什么这样对应</th><th>Agent 模块</th></tr>
-        <tr><td class="col-blue">大脑皮层</td><td>接收感觉输入 → 推理判断 → 输出语言和运动指令</td><td>AI 模型</td></tr>
-        <tr><td class="col-amber">前额叶</td><td>负责"先做什么后做什么"。损伤后无法制定计划</td><td>task_planner + policy</td></tr>
-        <tr><td class="col-green">小脑</td><td>存储"习得动作"。走路不用想，就是小脑在管</td><td>Skill</td></tr>
-        <tr><td class="col-purple">海马体</td><td>把短期记忆转化为长期记忆。损伤后无法形成新记忆</td><td>memory + cache</td></tr>
-        <tr><td class="col-cyan">脊髓反射弧</td><td>手碰到火 → 脊髓直接让手缩回 → 信号还没传到皮层</td><td>tools（直接执行）</td></tr>
-        <tr><td>感觉神经</td><td>把光信号变成电信号传入大脑</td><td>用户消息 + API 响应</td></tr>
-        <tr><td>运动神经</td><td>把大脑的电信号传到肌肉让它收缩</td><td>terminal + 网络请求</td></tr>
-        <tr><td>自主神经</td><td>心跳、呼吸——不需要有意识地去管</td><td>events + timeline</td></tr>
-        <tr><td style="color:var(--red)">免疫系统</td><td>识别入侵者并拦截。不拦截就会感染</td><td>approval（危险操作拦截）</td></tr>
+        <tr><th>人体结构</th><th>生物学功能</th><th>Agent 里对应什么</th></tr>
+        <tr><td class="col-blue">大脑皮层</td><td>接收所有感觉输入，经过层层突触传递后产生判断和指令。你做决定的时候，就是前额叶皮层（prefrontal cortex）的神经元在放电</td><td>AI 模型（DeepSeek、MiMo 等）</td></tr>
+        <tr><td class="col-amber">前额叶</td><td>你大脑里负责"先做什么后做什么"的区域。前额叶受损的人能说话、能走路，但完全无法制定计划——他们会在超市里站半天不知道先拿什么</td><td>任务规划器 + 策略引擎</td></tr>
+        <tr><td class="col-green">小脑</td><td>你后脑勺那个皱巴巴的东西，占大脑体积 10% 但包含全脑 50% 以上的神经元。它专门存储"练过的动作"——走路、骑车、弹琴，都是小脑在管</td><td>Skill（程序性记忆）</td></tr>
+        <tr><td class="col-purple">海马体</td><td>形状像海马，藏在颞叶深处。它负责把"刚才发生的事"从短期记忆转化为长期记忆。著名的病人 H.M. 切除了双侧海马体后，再也无法形成新的记忆——每天都是第一天</td><td>记忆系统 + 缓存</td></tr>
+        <tr><td class="col-cyan">脊髓反射弧</td><td>你手碰到滚烫的锅 → 热感受器激活 → 信号沿感觉神经传入脊髓 → 脊髓直接发出运动指令让手缩回 → 信号还没传到大脑皮层你就已经缩手了。这就是反射弧——不经过思考的快速执行</td><td>工具直接执行（不需要模型"思考"怎么调用）</td></tr>
+        <tr><td>感觉神经</td><td>视网膜上的视杆细胞把光信号转化为电信号，耳蜗里的毛细胞把声波转化为电信号。所有外界信息，都是通过感觉神经变成电信号传入大脑的</td><td>用户消息、搜索结果、文件内容</td></tr>
+        <tr><td>运动神经</td><td>大脑皮层发出运动指令 → 信号沿运动神经下行 → 到达肌肉 → 肌肉收缩。你想"我要拿起杯子"，然后手就动了——中间经过的就是运动神经</td><td>执行命令、写文件、发网络请求</td></tr>
+        <tr><td>自主神经</td><td>你睡觉的时候心跳不会停，吃饭的时候胃会自动分泌胃酸。这些都不需要你有意识地去控制——自主神经系统在后台默默运转</td><td>事件记录、时间线、缓存管理</td></tr>
+        <tr><td style="color:var(--red)">免疫系统</td><td>T 细胞在你的血液里巡逻，发现不属于你的东西（细菌、病毒）就发起攻击。如果没有免疫系统，一个普通的感冒就能要你的命</td><td>危险操作拦截（rm -rf、sudo 等）</td></tr>
       </table>
     </div>
 
     <div class="analogy">
-      你学的 FOC 电机控制。电机是大脑（模型），FOC 控制器是 Agent。没有 FOC，电机只会傻转；有了 FOC，它能精确控制扭矩和转速。
+      你学的 FOC 电机控制。电机是模型——它有产生扭矩的能力。但光有电机，它只会傻转。FOC 控制器是 Agent——它感知转子位置、计算电流、调节 PWM，让电机精确地按你想要的方式转。没有 FOC 的电机，和没有 Agent 的模型，困境完全一样：有能力，但用不出来。
     </div>
   </section>
 
@@ -271,44 +296,44 @@ td:first-child{font-weight:600;white-space:nowrap}
   <!-- Skill -->
   <section class="section">
     <div class="section-tag">Concept 3</div>
-    <div class="section-title">Skill = 程序性记忆</div>
+    <div class="section-title">Skill = 你练了一百遍的事</div>
     <div class="core-card">
       <div class="core-label skill">SKILL</div>
-      <div class="core-eq">练了一百遍后不用想就能做的动作。</div>
+      <div class="core-eq">不用想，手自己就动了。</div>
       <div class="core-body">
-        <p>人脑有两种记忆：</p>
-        <p><strong>陈述性记忆</strong>（海马体存储）= 你知道的事实。"北京是中国的首都"。你能用语言说出来。</p>
-        <p><strong>程序性记忆</strong>（小脑存储）= 你练会的动作。"怎么骑自行车"。你说不清楚——你的小脑知道，但你的皮层说不出。</p>
-        <p>Skill 是 Agent 的<strong>程序性记忆</strong>。</p>
+        <p>你的大脑里有两种完全不同的记忆系统。</p>
+        <p>第一种叫<strong>陈述性记忆</strong>（declarative memory），存在海马体里。"北京是中国的首都"、"水的沸点是 100°C"、"我妈的电话号码是……"——这些都是你能用语言说出来的知识。你之所以能说出来，是因为海马体把它们编码成了语言，存储在大脑皮层里。</p>
+        <p>第二种叫<strong>程序性记忆</strong>（procedural memory），存在小脑和基底神经节（basal ganglia）里。"怎么骑自行车"、"怎么打字"、"怎么开车"——你做这些事的时候，根本不需要想。但如果你要你用语言描述"骑自行车的时候，左脚蹬到什么角度换右脚"，你说不出来。因为这些记忆<strong>不是用语言编码的</strong>，它们是用神经回路编码的——小脑里的浦肯野细胞（Purkinje cell）形成了一套固定的放电模式，直接驱动肌肉。</p>
+        <p>Skill 就是 Agent 的程序性记忆。</p>
       </div>
     </div>
 
     <div class="quote">
-      <strong>刚学骑车</strong>：小脑疯狂工作，前额叶全程监控，每一块肌肉都在听指令。很累，很慢，经常摔。<br>
-      <strong>骑了一百次</strong>：前额叶不用管了，小脑自动接管。你上车就骑，根本不需要想"先蹬左脚再蹬右脚"。<br><br>
-      Skill 对 Agent 的作用，和骑了一百次对骑车的作用，完全一样。
+      <strong>想想你第一次骑自行车。</strong>你的小脑在疯狂工作——它不知道该怎么保持平衡。你的前额叶全程监控——"身体往左偏了，快往右调"。你的每一块肌肉都在听指令。很累，很慢，摔了不知道多少次。<br><br>
+      <strong>骑了一百次之后。</strong>前额叶不用管了。你甚至可以一边骑车一边想别的事情。小脑已经形成了一套自动化的神经回路——平衡、踩踏、转向，全部自动完成。你上车就走，根本不会去想"先蹬左脚还是右脚"。<br><br>
+      Skill 对 Agent 的作用，和骑了一百次对你的作用，完全一样。
     </div>
 
     <div class="flow">
       <div class="flow-step">
         <div class="flow-num n-green">1</div>
         <div class="flow-body">
-          <h3>没有 Skill（从零摸索）</h3>
-          <p>皮层疯狂思考 → 试了 3 种方案 → 踩了 5 个坑 → 花了 20 分钟 → 质量一般。就像第一次骑车，全身紧张，摇摇晃晃。</p>
+          <h3>没有 Skill（第一次骑车）</h3>
+          <p>全身紧张，前额叶全程参与，每一步都要想。试了 3 种方案，摔了 5 次，花了 20 分钟骑完 100 米。质量一般，但好歹骑完了。</p>
         </div>
       </div>
       <div class="flow-step">
         <div class="flow-num n-green">2</div>
         <div class="flow-body">
-          <h3>有 Skill（练过的动作）</h3>
-          <p>小脑直接接管 → 按标准流程执行 → 自动跳过已知的坑 → 花了 3 分钟 → 质量稳定。就像骑了一百次，上车就走。</p>
+          <h3>有 Skill（骑了一百次）</h3>
+          <p>小脑接管，前额叶休息。按练过的动作直接做，自动跳过以前摔过的坑。3 分钟骑完 100 米，质量稳定，甚至可以单手骑。</p>
         </div>
       </div>
       <div class="flow-step">
         <div class="flow-num n-green">3</div>
         <div class="flow-body">
-          <h3>新任务 + 有基础 Skill（举一反三）</h3>
-          <p>小脑提供基础动作模式 → 皮层在此基础上微调 → 比从零快 5 倍。就像会骑自行车的人学摩托车，不是从零开始。</p>
+          <h3>有基础 Skill + 新挑战（会骑车的人学摩托车）</h3>
+          <p>平衡感已经有了，小脑提供了"两个轮子怎么保持稳定"的基础模式。前额叶只需要微调——"摩托车更重，转弯半径要更大"。比从零学快 5 倍。</p>
         </div>
       </div>
     </div>
@@ -319,57 +344,50 @@ td:first-child{font-weight:600;white-space:nowrap}
   <!-- 完整例子 -->
   <section class="section">
     <div class="section-tag">In Action</div>
-    <div class="section-title">一个完整例子：三者怎么协作</div>
-    <div class="section-desc">你对 Agent 说："这个 Python 函数太慢了，帮我优化。"</div>
+    <div class="section-title">一个完整例子：你感冒了，身体怎么工作</div>
+    <div class="section-desc">用你最熟悉的事——感冒——来展示一个完整的 Agent 是怎么运转的。</div>
 
     <div class="flow">
       <div class="flow-step">
         <div class="flow-num n-purple">1</div>
         <div class="flow-body">
-          <h3>感觉神经（信号传入）</h3>
-          <p>用户消息通过感觉神经传入："这个 Python 函数太慢了，帮我优化"</p>
+          <h3>感觉神经（发现异常）</h3>
+          <p>鼻腔黏膜上的感觉神经末梢检测到病毒颗粒 → 释放信号分子 → 传入大脑："有入侵者"。就像 Agent 收到用户消息："帮我看看这个代码为什么报错"。</p>
         </div>
       </div>
       <div class="flow-step">
         <div class="flow-num n-amber">2</div>
         <div class="flow-body">
-          <h3>前额叶（制定计划）</h3>
-          <p>判断任务类型 → 代码优化。决定策略：无匹配 Skill，用皮层通用推理。</p>
+          <h3>前额叶（制定对策）</h3>
+          <p>大脑判断：这是感冒病毒，需要用免疫系统处理。同时决定：今天少出门，多喝水。就像 Agent 分析任务类型，决定用什么策略。</p>
         </div>
       </div>
       <div class="flow-step">
         <div class="flow-num n-blue">3</div>
         <div class="flow-body">
-          <h3>大脑皮层（思考推理）</h3>
-          <p>分析：先读代码 → 找瓶颈 → 搜索最佳方案 → 制定优化策略。</p>
+          <h3>大脑皮层（深层推理）</h3>
+          <p>如果症状严重，皮层会做更复杂的判断："要不要去医院？上次感冒吃了什么药好的？"——这就是模型的推理能力。</p>
         </div>
       </div>
       <div class="flow-step">
-        <div class="flow-num n-cyan">4</div>
+        <div class="flow-num n-pink">4</div>
         <div class="flow-body">
-          <h3>脊髓反射弧（直接执行）</h3>
-          <p>search_files 找文件 → read_file 读代码 → 皮层分析后 → write_file 写优化代码 → terminal 跑测试。不需要皮层思考"怎么调用 read_file"，直接执行。</p>
+          <h3>免疫系统（直接执行，不经过大脑）</h3>
+          <p>T 细胞识别病毒表面的抗原（antigen）→ B 细胞开始生产抗体（antibody）→ 巨噬细胞吞噬被感染的细胞。这套流程完全不需要大脑参与——免疫系统自己知道该怎么做。就像 Agent 的工具层：读文件、跑命令，不需要模型"思考"怎么调用。</p>
         </div>
       </div>
       <div class="flow-step">
         <div class="flow-num n-purple">5</div>
         <div class="flow-body">
-          <h3>海马体（记忆编码）</h3>
-          <p>记住：用户在意性能优化，这个项目用 NumPy 向量化有效。写入长期记忆，下次直接用。</p>
+          <h3>海马体（记住这次经历）</h3>
+          <p>海马体把这次感冒的经历编码成长期记忆："上次着凉感冒了，吃了 XX 药，3 天好了。"下次再感冒，直接调取这段记忆。就像 Agent 的记忆系统。</p>
         </div>
       </div>
       <div class="flow-step">
-        <div class="flow-num n-pink">6</div>
+        <div class="flow-num n-green">6</div>
         <div class="flow-body">
-          <h3>免疫系统（安全检查）</h3>
-          <p>检查 terminal 命令是否安全 → 通过 → 放行执行。</p>
-        </div>
-      </div>
-      <div class="flow-step">
-        <div class="flow-num n-red">7</div>
-        <div class="flow-body">
-          <h3>小脑（下次直接做）</h3>
-          <p>这次优化经验沉淀为 Skill。下次遇到"Python 性能优化"→ 小脑接管 → 直接执行标准流程。</p>
+          <h3>小脑（下次直接防御）</h3>
+          <p>免疫系统有一种叫"免疫记忆"的东西——B 细胞记住这次病毒的特征，下次同一种病毒入侵，直接生产抗体，不用重新识别。这就是 Skill。你打过疫苗之后，身体就"学会"了怎么对付这种病毒。</p>
         </div>
       </div>
     </div>
@@ -380,32 +398,32 @@ td:first-child{font-weight:600;white-space:nowrap}
   <!-- 总结 -->
   <section class="section">
     <div class="section-tag">Summary</div>
-    <div class="section-title">缺什么会怎样</div>
+    <div class="section-title">缺了哪块，会怎样</div>
 
     <div class="table-wrap">
       <table>
-        <tr><th>组合</th><th>人体类比</th><th>状态</th></tr>
+        <tr><th>组合</th><th>人体类比</th><th>现实中的样子</th></tr>
         <tr>
           <td>有模型，没 Agent，没 Skill</td>
-          <td>全身瘫痪的大脑</td>
-          <td>能想，但不能动，没有经验。<br><strong>ChatGPT 网页版</strong>。你问它答，仅此而已。</td>
+          <td>大脑被取出来放在培养皿里</td>
+          <td>能思考，但完全不能动。<br><strong>你在 ChatGPT 网页上聊天</strong>——它能回答你的问题，但它不能帮你读文件、不能帮你跑代码、不能记住你是谁。</td>
         </tr>
         <tr>
           <td>有模型 + Agent，没 Skill</td>
-          <td>刚出生的婴儿</td>
-          <td>有完整的神经系统，但什么都没练过。<br><strong>Agent 第一次遇到某类任务</strong>。能做，但慢，可能犯错。</td>
+          <td>一个刚出生的婴儿</td>
+          <td>有完整的手脚和神经系统，但什么都没练过。<br><strong>Agent 第一次遇到某类任务</strong>——能做，但慢，可能会犯错。就像婴儿学走路，摔跤是正常的。</td>
         </tr>
         <tr>
           <td>有模型 + Agent + Skill</td>
-          <td>工作了 10 年的工程师</td>
-          <td>大脑在想，但大部分动作已经自动化了。<br><strong>Agent 处理练过的任务</strong>。快、稳、知道坑在哪。</td>
+          <td>一个工作了 10 年的工程师</td>
+          <td>大脑在思考，但大部分动作已经变成了肌肉记忆。<br><strong>Agent 处理练过的任务</strong>——快、稳、知道坑在哪。就像老司机开车，不用想就知道怎么踩刹车。</td>
         </tr>
       </table>
     </div>
 
     <div class="summary-box">
-      <div class="line">模型给 Agent 思考的能力。Agent 给模型行动的能力。Skill 给 Agent 经验。</div>
-      <div class="sub">模型是大脑皮层。Agent 是完整的神经系统。Skill 是小脑里的程序性记忆。<br>三者缺一不可。缺了任何一个，都不是完整的人。</div>
+      <div class="line">模型给 Agent 思考的能力。Agent 给模型行动的身体。Skill 给 Agent 不用想的经验。</div>
+      <div class="sub">三者的关系，就是你的大脑、你的身体、和你练了一百遍的骑车技术之间的关系。<br>缺了任何一个，你都不是一个完整的、能干活的人。</div>
     </div>
   </section>
 
