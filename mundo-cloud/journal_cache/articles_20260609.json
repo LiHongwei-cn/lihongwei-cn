@@ -1,122 +1,112 @@
 [
   {
-    "title": "Author Correction: A broadly protective antibody targeting gammaherpesvirus gB",
+    "title": "Author Correction: De novo design of quasisymmetric two-component protein cages",
     "link": "https://www.nature.com/",
     "summary": "",
     "published": "2026-06-09",
     "journal": "Nature",
     "category": "multidisciplinary",
-    "hash": "ad8c4cd1dc96529c",
-    "crawled_at": "2026-06-09T10:45:16.142596"
+    "hash": "c516c1c15d849a49",
+    "crawled_at": "2026-06-09T23:17:02.873170"
   },
   {
-    "title": "AI technology must serve human cognitive development, not the other way around",
+    "title": "Author Correction: PTC-bearing mRNA elicits a genetic compensation response via Upf3a and COMPASS components",
     "link": "https://www.nature.com/uploads/product/nature/rss.png",
     "summary": "",
     "published": "2026-06-09",
     "journal": "Nature",
     "category": "multidisciplinary",
-    "hash": "2cd32d79af573197",
-    "crawled_at": "2026-06-09T10:45:16.142611"
+    "hash": "af577dd977848b16",
+    "crawled_at": "2026-06-09T23:17:02.873185"
   },
   {
-    "title": "Arson attacks at Ebola hospitals are a cry for regional development",
-    "link": "https://www.nature.com/articles/s41586-026-10745-8",
+    "title": "Author Correction: A broadly protective antibody targeting gammaherpesvirus gB",
+    "link": "https://www.nature.com/articles/s41586-026-10763-6",
     "summary": "",
     "published": "2026-06-09",
     "journal": "Nature",
     "category": "multidisciplinary",
-    "hash": "f485129040aa0739",
-    "crawled_at": "2026-06-09T10:45:16.142615"
+    "hash": "089a7f64346c3e01",
+    "crawled_at": "2026-06-09T23:17:02.873190"
   },
   {
-    "title": "PathoSage: Towards Multi-Source Evidence Adjudication in Pathology via Experience-Aware Agentic Workflow",
-    "link": "https://arxiv.org/abs/2606.07549",
-    "summary": "arXiv:2606.07549v1 Announce Type: new Abstract: Recent advances in Multimodal Large Language Models (MLLMs) and agent workflows have shown strong promise for computational pathology, yet reliable patch-level reasoning remains challenging. End-to-end pathology MLLMs often hallucinate morphological features, while recent agentic systems usually merge tool outputs and retrieved knowledge into a shared context, making decisions vulnerable to conflicting evidence and context contamination. We propose",
+    "title": "A case study of evaluating AI agents on a neuroscience data-to-discovery pipeline",
+    "link": "https://arxiv.org/abs/2606.07718",
+    "summary": "arXiv:2606.07718v1 Announce Type: new Abstract: Agentic AI tools offer a promising path to automating software development bottlenecks in scientific research pipelines, particularly for stages that take domain experts days to months to build, where scientists care about correctness and robustness, not implementation details. We present an empirical study of general-purpose coding agents on a fly optogenetics data-to-discovery pipeline. We assess agents on tasks substantially larger than existing",
     "published": "Tue, 09 Jun 2026 00:00:00 -0400",
     "journal": "arXiv AI",
     "category": "ai",
-    "hash": "42baa1c1ed2e592f",
-    "crawled_at": "2026-06-09T10:45:16.475171"
+    "hash": "e89010370b2349b2",
+    "crawled_at": "2026-06-09T23:17:03.227832"
   },
   {
-    "title": "OmniMem: Perturbation-aware Memory Compression for Streaming Audio-Visual LLMs",
-    "link": "https://arxiv.org/abs/2606.07577",
-    "summary": "arXiv:2606.07577v1 Announce Type: new Abstract: Audio-visual large language models (LLMs) hold strong promise for long-form video understanding, yet their long-video inference is fundamentally limited by the linear growth of video tokens and key-value (KV) caches. We present OmniMem, a memory-efficient streaming framework designed specifically for audio-visual LLMs. Unlike existing compression methods that treat all tokens uniformly, OmniMem introduces a modality-aware memory allocation strategy",
+    "title": "Why Limit the Residual Stream to Layers and Not Tokens? Persistent Memory for Continuous Latent Reasoning",
+    "link": "https://arxiv.org/abs/2606.07720",
+    "summary": "arXiv:2606.07720v1 Announce Type: new Abstract: Large language models (LLMs) have demonstrated remarkable reasoning abilities on mathematical and multi-hop planning tasks. The CoCoNuT (Chain of Continuous Thought) paradigm~\\cite{hao2024coconut} extends this by enabling models to reason in latent space, exploring multiple reasoning paths simultaneously rather than committing to a single chain early on. However, we identify a limitation we term the \\textbf{concept bottleneck}. At each reasoning pa",
     "published": "Tue, 09 Jun 2026 00:00:00 -0400",
     "journal": "arXiv AI",
     "category": "ai",
-    "hash": "94cd6e8e829dee93",
-    "crawled_at": "2026-06-09T10:45:16.475185"
+    "hash": "27adf83e634a5598",
+    "crawled_at": "2026-06-09T23:17:03.227846"
   },
   {
-    "title": "Syll: Open-Source Personal Automation with Cross-Surface Execution",
-    "link": "https://arxiv.org/abs/2606.07594",
-    "summary": "arXiv:2606.07594v1 Announce Type: new Abstract: Personal AI agents must increasingly operate across APIs, shells, web surfaces, and desktop GUIs, yet many systems remain tuned to a single interface and offer limited support for user teaching and auditability. We present Syll, an open-source, self-hosted multimodal agent harness that unifies MCP/API tools, CLI execution, and visual GUI control in a modular runtime, enabling agents to coordinate computer use across heterogeneous interfaces while s",
+    "title": "Automatic Extraction of Structured Information from Brain MRI Reports Using an Open-Weight Large Language Model",
+    "link": "https://arxiv.org/abs/2606.07721",
+    "summary": "arXiv:2606.07721v1 Announce Type: new Abstract: Objectives: Automatic data extraction from free-text radiology reports enables large-scale research, but few studies assessed the performance of large language models (LLMs) on Dutch neuroradiology reports. Methods: We analyzed 947 brain MRI reports from a tertiary memory clinic (2016-2021), authored by consultant neuroradiologists. Trained medical students annotated thirty variables; 100 reports were double-annotated to assess inter-rater reliabil",
     "published": "Tue, 09 Jun 2026 00:00:00 -0400",
     "journal": "arXiv AI",
     "category": "ai",
-    "hash": "81bb9b4a9e43ce45",
-    "crawled_at": "2026-06-09T10:45:16.475188"
+    "hash": "fdfa2f165ac57de8",
+    "crawled_at": "2026-06-09T23:17:03.227850"
   },
   {
-    "title": "Two-dimensional β-TeO<sub>2</sub> as an intrinsic insulator despite conflicting transport signatures",
+    "title": "Author Correction: Stable tin–lead perovskite inks for efficient all-perovskite tandems",
     "link": "https://www.nature.com/",
     "summary": "",
     "published": "2026-06-09",
+    "journal": "Nature Energy",
+    "category": "energy",
+    "hash": "52d7c2f235c96e3b",
+    "crawled_at": "2026-06-09T23:17:03.653689"
+  },
+  {
+    "title": "Understanding interconnected ion and water transport in anion exchange membrane zero-gap CO<sub>2</sub> electrolysers",
+    "link": "https://www.nature.com/uploads/product/nenergy/rss.png",
+    "summary": "",
+    "published": "2026-06-05",
+    "journal": "Nature Energy",
+    "category": "energy",
+    "hash": "2d7572d145c9837d",
+    "crawled_at": "2026-06-09T23:17:03.653702"
+  },
+  {
+    "title": "Aligning global shipping climate policies with life cycle perspective",
+    "link": "https://www.nature.com/articles/s41560-026-02097-4",
+    "summary": "",
+    "published": "2026-05-29",
+    "journal": "Nature Energy",
+    "category": "energy",
+    "hash": "c692d99015f7e203",
+    "crawled_at": "2026-06-09T23:17:03.653707"
+  },
+  {
+    "title": "Searching for success with semiconductor start-ups for artificial intelligence",
+    "link": "https://www.nature.com/articles/s41928-026-01646-9",
+    "summary": "",
+    "published": "2026-06-08",
     "journal": "Nature Electronics",
     "category": "electronics",
-    "hash": "9df4f62fa58860f6",
-    "crawled_at": "2026-06-09T10:45:18.160645"
+    "hash": "80a91baca33135f4",
+    "crawled_at": "2026-06-09T23:17:03.727916"
   },
   {
-    "title": "Precise and efficient computing via signal folding",
-    "link": "https://www.nature.com/uploads/product/natelectron/rss.png",
-    "summary": "",
-    "published": "2026-06-09",
-    "journal": "Nature Electronics",
-    "category": "electronics",
-    "hash": "14d5f25eb672c3d2",
-    "crawled_at": "2026-06-09T10:45:18.160659"
-  },
-  {
-    "title": "Reply to: Two-dimensional β-TeO<sub>2</sub> as an intrinsic insulator despite conflicting transport signatures",
-    "link": "https://www.nature.com/articles/s41928-026-01658-5",
-    "summary": "",
-    "published": "2026-06-09",
-    "journal": "Nature Electronics",
-    "category": "electronics",
-    "hash": "3c17f583a34b3a6a",
-    "crawled_at": "2026-06-09T10:45:18.160663"
-  },
-  {
-    "title": "Navigating molecular OOD-ness",
-    "link": "https://www.nature.com/",
-    "summary": "",
-    "published": "2026-06-09",
-    "journal": "Nature Machine Intelligence",
-    "category": "ai",
-    "hash": "ff6284394d4e0d06",
-    "crawled_at": "2026-06-09T10:45:19.028523"
-  },
-  {
-    "title": "Explicit dynamic cross-strand interactions for DNA sequence language modelling",
-    "link": "https://www.nature.com/uploads/product/natmachintell/rss.gif",
+    "title": "Giant gate response of the charge in an electron–lattice condensate",
+    "link": "https://www.nature.com/articles/s41928-026-01659-4",
     "summary": "",
     "published": "2026-06-04",
-    "journal": "Nature Machine Intelligence",
-    "category": "ai",
-    "hash": "e88d9d5cc5597576",
-    "crawled_at": "2026-06-09T10:45:19.028537"
-  },
-  {
-    "title": "Conditional Monge Gap enables generalizable single-cell perturbation modelling",
-    "link": "https://www.nature.com/articles/s42256-026-01251-7",
-    "summary": "",
-    "published": "2026-06-01",
-    "journal": "Nature Machine Intelligence",
-    "category": "ai",
-    "hash": "57bcb827d9fe6a4e",
-    "crawled_at": "2026-06-09T10:45:19.028541"
+    "journal": "Nature Electronics",
+    "category": "electronics",
+    "hash": "0e6fa45c1e800431",
+    "crawled_at": "2026-06-09T23:17:03.727927"
   }
 ]
