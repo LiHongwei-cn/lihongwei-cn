@@ -27,6 +27,7 @@ from context_mapper import ContextMapper, ContextBudget, ChunkType
 from cache import get_cache_manager
 from sandbox import get_sandbox
 from runtime_config import get_config
+from model_adapter import get_model_adapter, DeepSeekOptimizer
 
 
 # ═══════════════════════════════════════════════
@@ -189,15 +190,19 @@ class TaskStats:
 class MundoEngine:
     # 从 constants.py 读取，不再硬编码
 
-    def __init__(self, provider="xiaomi", model=None):
+    def __init__(self, provider="deepseek", model=None):
         self.client = LLMClient(provider=provider, model=model)
         self.provider = provider
         self.model_name = model or self.client.model
+        
+        # 模型适配器 — 根据模型特性自动优化
+        self.adapter = get_model_adapter(self.model_name)
+        
         self.messages: List[Dict] = []
-        self.max_tokens_override = 4096
+        self.max_tokens_override = self.adapter.profile.max_tokens_default
         self.stats = TaskStats()
         self.budget = IterationBudget()
-        self._use_streaming = True
+        self._use_streaming = self.adapter.profile.supports_streaming
         self._interrupted = False
         self._consecutive_errors = 0
         self._last_error_tool = ""
@@ -229,7 +234,10 @@ class MundoEngine:
         self.on_llm_stats = None
 
     def _build_system_message(self):
-        return {"role": "system", "content": MUNDO_SYSTEM_PROMPT}
+        """构建 system message — 根据模型特性自动优化"""
+        base_prompt = MUNDO_SYSTEM_PROMPT
+        optimized = self.adapter.optimize_system_prompt(base_prompt)
+        return {"role": "system", "content": optimized}
 
     def _model_display(self):
         return f"{self.provider}/{self.model_name}"
@@ -309,7 +317,9 @@ class MundoEngine:
 
         if self._use_streaming:
             try:
-                stream = self.client.chat_stream(messages, tools=tool_schemas, max_tokens=max_tokens)
+                # 根据模型特性优化工具 schema
+                optimized_schemas = self.adapter.optimize_tool_schemas(tool_schemas)
+                stream = self.client.chat_stream(messages, tools=optimized_schemas, max_tokens=max_tokens)
                 if self.on_stream_start:
                     self.on_stream_start(self.stats.turns)
                 result = self._accumulate_stream(stream)

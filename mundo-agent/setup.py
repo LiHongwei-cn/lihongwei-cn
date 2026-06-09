@@ -312,8 +312,8 @@ PROVIDERS = {
 
 # 用于列表展示的顺序
 DISPLAY_ORDER = [
-    # 中国模型
-    "xiaomi", "deepseek", "qwen", "zhipu", "moonshot", "minimax",
+    # 中国模型 — DeepSeek 优先
+    "deepseek", "xiaomi", "qwen", "zhipu", "moonshot", "minimax",
     "baidu", "bytedance", "baichuan", "yi", "stepfun", "tencent",
     "iflytek", "siliconflow",
     # 国际模型
@@ -414,7 +414,7 @@ def run_setup() -> Tuple[str, str]:
         choice = input(f"  {G}选择模型：{R}").strip()
         if not choice:
             print(f"  {D}跳过设置，使用默认配置{R}")
-            return "xiaomi", "mimo-v2.5-pro"
+            return "deepseek", "deepseek-chat"
 
         # 数字选择
         if choice in index_map:
