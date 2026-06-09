@@ -28,6 +28,7 @@ from cache import get_cache_manager
 from sandbox import get_sandbox
 from runtime_config import get_config
 from model_adapter import get_model_adapter, DeepSeekOptimizer
+from quark_optimizer import ModelOptimizerFactory
 
 
 # ═══════════════════════════════════════════════
@@ -234,10 +235,18 @@ class MundoEngine:
         self.on_llm_stats = None
 
     def _build_system_message(self):
-        """构建 system message — 根据模型特性自动优化"""
+        """构建 system message — 夸克级优化"""
         base_prompt = MUNDO_SYSTEM_PROMPT
+        
+        # 使用模型适配器优化
         optimized = self.adapter.optimize_system_prompt(base_prompt)
-        return {"role": "system", "content": optimized}
+        
+        # 使用夸克级优化器进一步优化
+        quark_optimized = ModelOptimizerFactory.format_system_prompt(
+            self.provider, optimized, model=self.model_name
+        )
+        
+        return {"role": "system", "content": quark_optimized}
 
     def _model_display(self):
         return f"{self.provider}/{self.model_name}"
@@ -317,8 +326,9 @@ class MundoEngine:
 
         if self._use_streaming:
             try:
-                # 根据模型特性优化工具 schema
-                optimized_schemas = self.adapter.optimize_tool_schemas(tool_schemas)
+                # 夸克级工具 schema 优化
+                quark_schemas = ModelOptimizerFactory.optimize_tools(self.provider, tool_schemas)
+                optimized_schemas = self.adapter.optimize_tool_schemas(quark_schemas)
                 stream = self.client.chat_stream(messages, tools=optimized_schemas, max_tokens=max_tokens)
                 if self.on_stream_start:
                     self.on_stream_start(self.stats.turns)
