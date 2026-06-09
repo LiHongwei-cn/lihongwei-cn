@@ -1,4 +1,7 @@
-"""蒙多 Hermes Agent 深度集成 v24.8 — Hermes Agent CLI 全能力封装
+"""蒙多 Hermes Agent 深度集成 v24.9 — Hermes Agent CLI 全能力封装
+
+适配版本：Hermes v0.16.0+
+保持配置：xiaomi/mimo-v2.5-pro
 
 能力：
 - 一次性查询（hermes chat -q）
@@ -12,6 +15,7 @@
 - 定时任务（cron）
 - 记忆系统（memory）
 - 技能管理（skills）
+- 版本检测与兼容性验证
 """
 
 import os

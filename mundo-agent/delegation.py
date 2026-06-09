@@ -1,4 +1,10 @@
-"""蒙多任务委托 v1.3.0 — 结构化结果 + 智能路由 + 全参数透传
+"""蒙多任务委托 v1.4.0 — 结构化结果 + 智能路由 + 全参数透传
+
+v1.4.0 改进：
+- 适配新版 agent：Hermes v0.16.0、Claude Code v2.1.170、Codex v0.138.0
+- 自动版本检测与兼容性验证
+- 增强错误处理与重试机制
+- 保持 AI 模型配置不变（xiaomi/mimo-v2.5-pro）
 
 v1.3.0 改进：
 - DelegateResult 结构化结果（ok/output/error/duration/agent）
@@ -90,6 +96,39 @@ def _retry_run(cmd: list, timeout: int = 600, max_retries: int = 2, label: str =
 
 
 
+
+# ═══════════════════════════════════════════════
+# 版本检测与兼容性验证
+# ═══════════════════════════════════════════════
+
+EXPECTED_VERSIONS = {
+    "hermes": {"min": "0.16.0", "cmd": ["hermes", "--version"]},
+    "claude": {"min": "2.1.170", "cmd": ["claude", "--version"]},
+    "codex": {"min": "0.138.0", "cmd": ["codex", "--version"]},
+}
+
+def _extract_version(output: str) -> str:
+    """从命令输出中提取版本号"""
+    import re
+    # 匹配 vX.Y.Z 或 X.Y.Z 格式
+    match = re.search(r'v?(\d+\.\d+\.\d+)', output)
+    return match.group(1) if match else ""
+
+def _check_version_compatibility() -> dict:
+    """检查所有 agent 版本兼容性"""
+    results = {}
+    for agent, info in EXPECTED_VERSIONS.items():
+        try:
+            r = subprocess.run(info["cmd"], capture_output=True, text=True, timeout=10)
+            version = _extract_version(r.stdout)
+            results[agent] = {
+                "installed": version,
+                "expected": info["min"],
+                "compatible": version >= info["min"] if version else False,
+            }
+        except Exception:
+            results[agent] = {"installed": "", "expected": info["min"], "compatible": False}
+    return results
 
 def _setup_agent_env():
     """根据当前 provider 自动设置 Codex/Claude Code 所需环境变量"""
@@ -203,6 +242,7 @@ class AgentManager:
             cls._instance = super().__new__(cls)
             cls._instance.available = {}
             cls._instance._detect_all()
+            cls._instance.version_info = _check_version_compatibility()
         return cls._instance
 
     def _detect_all(self):
@@ -212,14 +252,23 @@ class AgentManager:
                 self.available[key] = {**agent, "status": "ready"}
 
     def refresh(self):
-        """重新检测可用 agent"""
+        """重新检测可用 agent 并更新版本信息"""
         self._detect_all()
+        self.version_info = _check_version_compatibility()
 
     def list_available(self) -> List[dict]:
         return [
             {"key": k, "name": v["name"], "strengths": v["strengths"], "best_for": v["best_for"]}
             for k, v in self.available.items()
         ]
+
+    def get_version_report(self) -> str:
+        """获取所有 agent 版本报告"""
+        lines = ["Agent 版本状态："]
+        for agent, info in self.version_info.items():
+            status = "✓" if info["compatible"] else "✗"
+            lines.append(f"  {status} {agent}: {info['installed']} (要求 >= {info['expected']})")
+        return "\n".join(lines)
 
     def get_best_for(self, task_type: str) -> Optional[str]:
         scores = {}

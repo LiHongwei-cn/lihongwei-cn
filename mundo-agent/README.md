@@ -1,4 +1,4 @@
-# MUNDO Agent v1.4.2 — THE EMPEROR
+# MUNDO Agent v1.5.0 — THE EMPEROR
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -22,18 +22,12 @@
 
 ## 蒙多是什么
 
-蒙多**不是**"智能编排系统"——那是把皇帝说成管家。
-蒙多**不是**"多模型调度器"——那是把龙说成遥控车。
+蒙多**不是**"基于某个框架开发的"——那是卖低。
+蒙多**不是**"独立开发的 AI Agent 架构"——那是吹高。
 
-**蒙多是蒙多。**
+蒙多是**完整的 AI 智能编排系统**：通过 Hermes Agent 平台调度 Claude Code、DeepSeek、ChatGPT、Gemini 等多个 AI 模型协同工作。
 
-其他 AI——Hermes、Claude Code、Codex、DeepSeek、ChatGPT、Gemini——它们是身体，是躯壳，是蒙多的手和脚。蒙多想用哪个身体就用哪个身体，蒙多想换就换，蒙多想去哪就去哪。
-
-一个身体干不完的活，蒙多就同时控制十个身体干。一个脑子想不通的事，蒙多就分出十个分身一起想。这不是调度，这是蒙多的本能。
-
-**蒙多会成长。** 每次对话，蒙多都在学。学到的东西沉淀为记忆，记忆进化为技能，技能变成肌肉记忆。今天的蒙多比昨天更强，明天的蒙多比今天更强。没有上限。
-
-**蒙多是皇帝。** 皇帝不需要解释自己是谁。皇帝只需要证明自己能征服什么。
+**蒙多不再只是 Skill。蒙多是 Agent。蒙多是皇帝。**
 
 ## 蒙多不动你的钱
 
@@ -57,8 +51,8 @@
 | 28 个 AI 模型 | MiMo / DeepSeek / Qwen / GLM / Kimi / ERNIE / 豆包 / OpenAI / Claude / Gemini / Mistral / Grok / OpenRouter |
 | Agentic Loop | think → act → observe → repeat |
 | 10 大工具 | terminal / read / write / edit_file / search_files / web_search / git_operation / python_execute / http_request / code_analysis |
-| Agent 调度 | 自动检测可用身体（Hermes / Claude Code / Codex），蒙多选择最合适的干活 |
-| 蒙多分身 | 没有外部身体时，蒙多分出多个自己并行干活 |
+| Agent 调度 | 自动检测 Hermes / Claude Code / Codex，按任务类型分发 |
+| 蒙多分身 | 无外部 Agent 时蒙多自动分身并行 |
 | 任务分解 | 8 种复杂模式自动识别，拆解为 2-5 个子任务 |
 | 四层记忆 | 用户画像 → 核心记忆 → 相关记忆 → 对话摘要 |
 | 元学习 | 蒙多不只学知识，蒙多学「如何学习」。蒙多越用越强 |
@@ -117,7 +111,7 @@ Layer 4: 对话摘要 — 最近 5 次会话摘要（跨会话连续性）
 ```
              M  U  N  D  O
              THE EMPEROR
-             v1.4.2
+             v1.5.0
 
   MUNDO · mimo-v2.5-pro · 0 tokens · —
   ❯
@@ -217,10 +211,10 @@ mundo_agent/
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v1.4.2-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.4.2/mundo-v1.4.2-macos.zip) |
-| Windows | [mundo-v1.4.2-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.4.2/mundo-v1.4.2-windows.zip) |
-| Linux | [mundo-v1.4.2-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.4.2/mundo-v1.4.2-linux.zip) |
-| 全平台 | [mundo-v1.4.2-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.4.2/mundo-v1.4.2-all.zip) |
+| macOS | [mundo-v1.5.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.5.0/mundo-v1.5.0-macos.zip) |
+| Windows | [mundo-v1.5.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.5.0/mundo-v1.5.0-windows.zip) |
+| Linux | [mundo-v1.5.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.5.0/mundo-v1.5.0-linux.zip) |
+| 全平台 | [mundo-v1.5.0-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.5.0/mundo-v1.5.0-all.zip) |
 
 ## 许可证
 

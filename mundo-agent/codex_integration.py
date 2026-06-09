@@ -1,4 +1,7 @@
-"""蒙多 Codex 集成 — 自动路由到 OpenAI 兼容端点
+"""蒙多 Codex 集成 v1.1 — 自动路由到 OpenAI 兼容端点
+
+适配版本：Codex v0.138.0+
+保持配置：xiaomi/mimo-v2.5-pro
 
 Codex CLI 使用 OPENAI_API_KEY + OPENAI_BASE_URL。
 蒙多根据当前 provider 自动设置，无需手动配置。
