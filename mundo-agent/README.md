@@ -1,4 +1,4 @@
-# MUNDO Agent v1.4.2 — THE EMPEROR
+# MUNDO Agent v2.0.0 — THE EMPEROR
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -111,7 +111,7 @@ Layer 4: 对话摘要 — 最近 5 次会话摘要（跨会话连续性）
 ```
              M  U  N  D  O
              THE EMPEROR
-             v1.4.2
+             v2.0.0
 
   MUNDO · mimo-v2.5-pro · 0 tokens · —
   ❯
@@ -211,10 +211,10 @@ mundo_agent/
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v1.4.2-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.4.2/mundo-v1.4.2-macos.zip) |
-| Windows | [mundo-v1.4.2-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.4.2/mundo-v1.4.2-windows.zip) |
-| Linux | [mundo-v1.4.2-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.4.2/mundo-v1.4.2-linux.zip) |
-| 全平台 | [mundo-v1.4.2-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.4.2/mundo-v1.4.2-all.zip) |
+| macOS | [mundo-v2.0.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.0/mundo-v2.0.0-macos.zip) |
+| Windows | [mundo-v2.0.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.0/mundo-v2.0.0-windows.zip) |
+| Linux | [mundo-v2.0.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.0/mundo-v2.0.0-linux.zip) |
+| 全平台 | [mundo-v2.0.0-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.0/mundo-v2.0.0-all.zip) |
 
 ## 许可证
 
