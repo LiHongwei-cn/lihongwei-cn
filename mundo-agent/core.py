@@ -276,6 +276,21 @@ class MundoEngine:
         if self.on_compress:
             self.on_compress(len(self._context._chunks), len(self._context._chunks), old_tokens, new_tokens)
 
+    def _detect_reasoning_effort(self) -> Optional[str]:
+        """根据阶段自动选择推理深度
+
+        策略：首轮 low 快速理解任务，执行阶段默认深度保质量
+        """
+        if not self.adapter.profile.supports_reasoning:
+            return None
+
+        # 首轮（还没执行过工具）→ low 快速理解
+        if self.stats.tool_calls_count == 0:
+            return "low"
+
+        # 已开始执行工具 → 默认深度保证执行质量
+        return None
+
     def _accumulate_stream(self, stream_iter) -> Dict:
         content_parts = []
         tool_calls_map = {}
@@ -341,12 +356,16 @@ class MundoEngine:
         import tools as tool_module
         tool_schemas = tool_module.registry.schemas if hasattr(tool_module, 'registry') else []
 
+        # 推理预算：简单任务用 low 减少推理 token
+        effort = self._detect_reasoning_effort()
+
         if self._use_streaming:
             try:
                 # 夸克级工具 schema 优化
                 quark_schemas = ModelOptimizerFactory.optimize_tools(self.provider, tool_schemas)
                 optimized_schemas = self.adapter.optimize_tool_schemas(quark_schemas)
-                stream = self.client.chat_stream(messages, tools=optimized_schemas, max_tokens=max_tokens)
+                stream = self.client.chat_stream(messages, tools=optimized_schemas,
+                                                  max_tokens=max_tokens, reasoning_effort=effort)
                 if self.on_stream_start:
                     self.on_stream_start(self.stats.turns)
                 result = self._accumulate_stream(stream)
@@ -360,7 +379,8 @@ class MundoEngine:
                     return self._try_call_llm(attempt)
                 raise
         else:
-            return self.client.chat(messages, tools=tool_schemas, max_tokens=max_tokens)
+            return self.client.chat(messages, tools=tool_schemas,
+                                    max_tokens=max_tokens, reasoning_effort=effort)
 
     def _prepare_messages(self) -> List[Dict]:
         messages = [m for m in self.messages if m.get("role") == "system" or m.get("content")]
