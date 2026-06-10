@@ -34,19 +34,22 @@ TOOL_GUIDANCE = """工具：terminal/read_file/write_file/edit_file/search_files
 需要时直接调用，不需要时不调。简单问题直接回答。
 
 效率铁律（最高优先级）：
+- 每次工具调用消耗约7000 token（含推理），调用越少越好
 - 一次读完需要的文件，不要反复读同一个文件
 - 能一次完成的操作不要拆成多步
 - 写文件前想好完整内容，一次写入
-- 读文件用 read_file(path, offset, limit) 精准读取需要的部分，不要读整个大文件
+- 读文件用 read_file(path, offset, limit) 精准读取需要的部分
 - terminal 命令可以合并：用 && 连接多个命令
 - 搜索结果够用就停，不要反复搜索同一内容
-- 工具调用总数越少越好——每多一次调用就多消耗大量token
+- 简单任务（读文件、写文件、回答问题）目标：2-3次工具调用
+- 中等任务（代码生成、bug修复）目标：5-8次工具调用
+- 只有极复杂任务才允许超过10次工具调用
 
-策略：
-- 先 search_files 定位，再 read_file 精读
-- terminal 失败时分析错误再重试，不重复同样命令
-- 多个独立操作可并行调用
-- 能用一条 terminal 命令完成的，不要分三次调用"""
+操作顺序：
+- 读文件：search_files定位 → read_file精读（2次完成）
+- 写文件：一次write_file写完整内容（1次完成）
+- 运行验证：一条terminal命令搞定（1次完成）
+- 不要先list_directory再read_file——直接read_file"""
 
 COMPLETION_FORMAT = """完成反馈：
 最后一个 response 必须输出完整的工作汇报。

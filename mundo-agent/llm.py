@@ -126,16 +126,21 @@ class LLMClient:
         return None
 
     def chat(self, messages: List[Dict], tools: List[Dict] = None,
-             temperature: float = 0.7, max_tokens: int = 4096) -> Dict:
-        payload = self._build_payload(messages, tools, temperature, max_tokens, stream=False)
+             temperature: float = 0.7, max_tokens: int = 4096,
+             reasoning_effort: str = None) -> Dict:
+        payload = self._build_payload(messages, tools, temperature, max_tokens, stream=False,
+                                       reasoning_effort=reasoning_effort)
         return self._request_with_retry(payload)
 
     def chat_stream(self, messages: List[Dict], tools: List[Dict] = None,
-                    temperature: float = 0.7, max_tokens: int = 4096) -> Iterator[Dict]:
-        payload = self._build_payload(messages, tools, temperature, max_tokens, stream=True)
+                    temperature: float = 0.7, max_tokens: int = 4096,
+                    reasoning_effort: str = None) -> Iterator[Dict]:
+        payload = self._build_payload(messages, tools, temperature, max_tokens, stream=True,
+                                       reasoning_effort=reasoning_effort)
         yield from self._request_stream_with_retry(payload)
 
-    def _build_payload(self, messages, tools, temperature, max_tokens, stream=False):
+    def _build_payload(self, messages, tools, temperature, max_tokens, stream=False,
+                       reasoning_effort=None):
         payload = {
             "model": self.model,
             "messages": sanitize_messages(messages),
@@ -149,6 +154,10 @@ class LLMClient:
             sorted_tools = sorted(tools, key=lambda t: t.get("function", {}).get("name", ""))
             payload["tools"] = sorted_tools
             payload["tool_choice"] = "auto"
+
+        # 推理预算控制：简单任务用 low 减少推理 token
+        if reasoning_effort:
+            payload["reasoning_effort"] = reasoning_effort
 
         # Anthropic 兼容端点：添加 cache_control 标记
         if self.is_anthropic:

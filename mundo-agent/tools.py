@@ -822,13 +822,24 @@ def _code_analysis(args: Dict) -> str:
 
 registry.register(
     name="terminal",
-    description="执行 shell 命令。用于运行代码、安装包、git 操作、系统管理。返回 stdout/stderr。",
+    description=(
+        "执行 shell 命令。文件系统在调用间持久化。\n\n"
+        "不要用 cat/head/tail 读文件——用 read_file。\n"
+        "不要用 grep/rg/find 搜索——用 search_files。\n"
+        "不要用 ls 列目录——用 list_directory 或 search_files(target='files')。\n"
+        "不要用 sed/awk 编辑——用 edit_file。\n"
+        "不要用 echo/cat heredoc 创建文件——用 write_file。\n"
+        "terminal 只用于：构建、安装、git、脚本、网络、包管理等需要 shell 的操作。\n\n"
+        "多个短命令可以用 && 连接成一条，减少工具调用次数。\n"
+        "命令返回即时结果（即使timeout设得很高）。长任务设 timeout=300。\n"
+        "不要重复执行同样的失败命令——分析错误后再重试。"
+    ),
     parameters={
         "type": "object",
         "properties": {
             "command": {"type": "string", "description": "要执行的 shell 命令"},
-            "workdir": {"type": "string", "description": "工作目录（可选，默认当前目录）"},
-            "timeout": {"type": "integer", "description": "超时秒数（默认 120）"},
+            "workdir": {"type": "string", "description": "工作目录（绝对路径，默认当前目录）"},
+            "timeout": {"type": "integer", "description": "超时秒数（默认120，长任务设300）"},
         },
         "required": ["command"],
     },
@@ -838,7 +849,12 @@ registry.register(
 
 registry.register(
     name="read_file",
-    description="读取文本文件内容。返回带行号的内容。",
+    description=(
+        "读取文本文件内容，返回带行号的内容。\n\n"
+        "大文件用 offset+limit 精准读取需要的部分，不要读整个文件。\n"
+        "先用 search_files 定位行号，再用 read_file(offset=N, limit=M) 读取。\n"
+        "不要用 terminal 的 cat/head/tail 代替此工具。"
+    ),
     parameters={
         "type": "object",
         "properties": {
@@ -854,7 +870,12 @@ registry.register(
 
 registry.register(
     name="write_file",
-    description="写入文件（覆盖整个文件）。自动创建父目录。",
+    description=(
+        "写入文件（覆盖整个文件）。自动创建父目录。\n\n"
+        "写入前想好完整内容，一次写入。不要分多次 write_file 写同一个文件。\n"
+        "需要修改已有文件的局部内容时，用 edit_file 而不是 write_file 重写整个文件。\n"
+        "不要用 terminal 的 echo/cat/heredoc 代替此工具。"
+    ),
     parameters={
         "type": "object",
         "properties": {
@@ -869,7 +890,11 @@ registry.register(
 
 registry.register(
     name="edit_file",
-    description="精确编辑文件中的指定文本。找到 old_string 并替换为 new_string。",
+    description=(
+        "精确编辑文件中的指定文本。找到 old_string 并替换为 new_string。\n\n"
+        "修改已有文件的局部内容时优先用此工具，不要用 write_file 重写整个文件。\n"
+        "old_string 必须是文件中唯一匹配的文本（包含足够上下文）。"
+    ),
     parameters={
         "type": "object",
         "properties": {
@@ -885,7 +910,12 @@ registry.register(
 
 registry.register(
     name="search_files",
-    description="搜索文件内容或按文件名查找。返回匹配的行和文件路径。",
+    description=(
+        "搜索文件内容（正则）或按文件名查找（glob）。\n\n"
+        "读文件前先用此工具定位：search_files 找到行号 → read_file(offset,limit) 精读。\n"
+        "不要用 terminal 的 grep/find/rg 代替此工具。\n"
+        "target='content' 搜索文件内容，target='files' 按文件名查找。"
+    ),
     parameters={
         "type": "object",
         "properties": {
