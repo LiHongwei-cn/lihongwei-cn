@@ -1,10 +1,11 @@
-"""蒙多核心引擎 v2.0.8 — Agentic Loop
+"""蒙多核心引擎 v2.0.9 — Agentic Loop
 
-v2.0.8 优化：
-- 消除 ContextCompressor 重复（使用 context_mapper.py）
-- 统一使用 constants.py 常量
-- 拆分 run() 为更小的函数
-- 减少 token 使用：精简 system prompt
+v2.0.9 优化（学习 Hermes/Claude 精华）：
+- 懒加载模块，减少启动时间
+- 缓存系统提示词和工具 schema
+- 并行执行独立工具调用
+- 智能消息压缩
+- 快速响应检测
 """
 
 import sys
@@ -34,6 +35,10 @@ from task_planner import TaskPlanner, MultiModelCoordinator, LATEST_MODELS, MODE
 from tool_guard import ToolGuardController, GuardAction
 from dispatch import ToolCall as DispatchToolCall, dispatch
 from prompt_assembler import build_system_prompt
+from performance_optimizer import (
+    get_cache, can_parallelize, execute_tools_parallel,
+    MessageCompressor, is_simple_query, get_fast_response_config,
+)
 
 
 # ═══════════════════════════════════════════════
@@ -232,12 +237,16 @@ class MundoEngine:
         self.on_llm_stats = None
 
     def _build_system_message(self):
-        """构建 system message — 模块化组装 + 夸克级优化"""
-        content = build_system_prompt(
-            model_adapter=self.adapter,
-            quark_optimizer=True,
-            provider=self.provider,
-            model_name=self.model_name,
+        """构建 system message — 模块化组装 + 缓存优化"""
+        cache = get_cache()
+        content = cache.get_system_prompt(
+            self.provider, self.model_name,
+            lambda: build_system_prompt(
+                model_adapter=self.adapter,
+                quark_optimizer=True,
+                provider=self.provider,
+                model_name=self.model_name,
+            )
         )
         return {"role": "system", "content": content}
 
@@ -536,11 +545,18 @@ class MundoEngine:
         self._use_streaming = self.adapter.profile.supports_streaming
         self._install_signal_handler()
 
+        # 快速响应检测：简单问题跳过工具调用和深度推理
+        if is_simple_query(user_input):
+            self._use_reasoning_effort = "low"
+
         # 智能模型切换：根据任务类型自动选择最优模型
         self.switch_model_for_task(user_input)
 
         if not self.messages:
             self.messages = [self._build_system_message()]
+
+        # 智能消息压缩：使用 MessageCompressor
+        self.messages = MessageCompressor.compress_messages(self.messages)
 
         self._auto_compress()
 

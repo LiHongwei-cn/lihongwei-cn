@@ -202,12 +202,13 @@ def _search_files(args: Dict) -> str:
         return "[错误: search_files 缺少 pattern 参数]"
     path = os.path.expanduser(args.get("path") or ".")
     target = args.get("target", "content")
+    max_results = min(args.get("limit", 50), 100)  # 限制最大结果数
 
     if target == "files":
         matches = glob_mod.glob(os.path.join(path, "**", f"*{pattern}*"), recursive=True)
         if not matches:
             return f"未找到匹配 '{pattern}' 的文件"
-        return _truncate("\n".join(sorted(matches)[:50]))
+        return _truncate("\n".join(sorted(matches)[:max_results]))
 
     results = []
     try:
@@ -219,9 +220,34 @@ def _search_files(args: Dict) -> str:
                        ".json", ".yaml", ".yml", ".sh", ".bat", ".m", ".swift",
                        ".c", ".cpp", ".h", ".hpp", ".java", ".go", ".rs")
 
+    # 限制搜索深度和文件数
+    max_depth = 5
+    max_files = 500
+    file_count = 0
+    start_time = time.time()
+    max_time = 10  # 最多10秒
+
     for root, dirs, files in os.walk(path):
+        # 检查深度
+        depth = root[len(path):].count(os.sep)
+        if depth >= max_depth:
+            dirs.clear()
+            continue
+
         dirs[:] = [d for d in dirs if not d.startswith(".") and d not in ("__pycache__", "node_modules", ".git", "venv")]
+
         for fname in files:
+            # 检查超时
+            if time.time() - start_time > max_time:
+                results.append(f"... [搜索超时，已找到 {len(results)} 条结果]")
+                return _truncate("\n".join(results[:max_results]))
+
+            # 检查文件数限制
+            file_count += 1
+            if file_count > max_files:
+                results.append(f"... [已扫描 {max_files} 个文件，停止搜索]")
+                return _truncate("\n".join(results[:max_results]))
+
             if not fname.endswith(searchable_exts):
                 continue
             fpath = os.path.join(root, fname)
@@ -231,16 +257,14 @@ def _search_files(args: Dict) -> str:
                         if regex.search(line):
                             rel = os.path.relpath(fpath, path)
                             results.append(f"{rel}:{i}: {line.rstrip()}")
+                            if len(results) >= max_results:
+                                return _truncate("\n".join(results[:max_results]))
             except (PermissionError, OSError):
                 continue
-            if len(results) >= 80:
-                break
-        if len(results) >= 80:
-            break
 
     if not results:
         return f"未找到匹配 '{pattern}' 的内容"
-    return _truncate("\n".join(results[:80]))
+    return _truncate("\n".join(results[:max_results]))
 
 
 def _web_search(args: Dict) -> str:
@@ -835,11 +859,11 @@ registry.register(
     description=(
         "执行 shell 命令。文件系统在调用间持久化。\n\n"
         "不要用 cat/head/tail 读文件——用 read_file。\n"
-        "不要用 grep/rg/find 搜索——用 search_files。\n"
-        "不要用 ls 列目录——用 list_directory 或 search_files(target='files')。\n"
+        "不要用 grep 搜索文件内容——用 search_files。\n"
         "不要用 sed/awk 编辑——用 edit_file。\n"
         "不要用 echo/cat heredoc 创建文件——用 write_file。\n"
-        "terminal 只用于：构建、安装、git、脚本、网络、包管理等需要 shell 的操作。\n\n"
+        "terminal 用于：构建、安装、git、脚本、网络、包管理、文件计数、系统信息等。\n"
+        "统计文件数量用 terminal 运行 find/wc，不要用 search_files。\n\n"
         "多个短命令可以用 && 连接成一条，减少工具调用次数。\n"
         "命令返回即时结果（即使timeout设得很高）。长任务设 timeout=300。\n"
         "不要重复执行同样的失败命令——分析错误后再重试。"
