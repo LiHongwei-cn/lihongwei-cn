@@ -156,12 +156,22 @@ def _read_file(args: Dict) -> str:
     if os.path.isdir(path):
         return f"[错误: 是目录不是文件: {path}]"
     try:
+        # 优化：使用惰性读取，避免将整个文件加载到内存
+        from itertools import islice
         with open(path, "r", encoding="utf-8", errors="replace") as f:
-            lines = f.readlines()
-        total = len(lines)
+            # 跳过 offset-1 行
+            if offset > 1:
+                list(islice(f, offset - 1))
+            # 只读取 limit 行
+            selected = list(islice(f, limit))
+        
+        # 计算总行数（用于显示）
+        total = 0
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            total = sum(1 for _ in f)
+        
         start = max(0, offset - 1)
-        end = min(total, start + limit)
-        selected = lines[start:end]
+        end = min(total, start + len(selected))
         result = [f"{i:4d}|{line.rstrip()}" for i, line in enumerate(selected, start=start + 1)]
         header = f"文件: {path} (共 {total} 行，显示 {start+1}-{end})"
         return _truncate(header + "\n" + "\n".join(result))

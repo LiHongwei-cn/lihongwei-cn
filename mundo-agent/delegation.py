@@ -194,7 +194,8 @@ def _hermes_run(prompt: str, **kw) -> str:
             return "[Hermes Agent 未安装]"
         workdir = kw.get('workdir')
         timeout = kw.get('timeout', 300)
-        return agent.chat_one_shot(prompt, timeout=timeout, workdir=workdir)
+        # 默认使用轻量模式，减少不必要的系统加载
+        return agent.chat_one_shot(prompt, timeout=timeout, workdir=workdir, lite=True)
     except Exception as e:
         return f"[Hermes 错误: {e}]"
 
@@ -285,14 +286,61 @@ class AgentManager:
         return max(scores, key=scores.get) if scores else None
 
     def get_best_for_smart(self, task_type: str) -> Optional[str]:
-        """智能路由：根据任务类型自动选择最佳 Agent（Claude vs Codex）"""
-        if smart_route:
-            route = smart_route(task_type)
-            if route == 'codex' and 'codex' in self.available:
-                return 'codex'
-            if route == 'claude' and 'claude' in self.available:
-                return 'claude'
-        return self.get_best_for(task_type)
+        """智能路由：根据任务类型自动选择最佳 Agent"""
+        task_lower = task_type.lower()
+        
+        # 编码任务关键词 — 优先委托 Claude Code
+        coding_keywords = [
+            "代码", "code", "编写", "write", "实现", "implement",
+            "重构", "refactor", "调试", "debug", "测试", "test",
+            "函数", "function", "类", "class", "模块", "module",
+            "文件", "file", "脚本", "script", "程序", "program",
+        ]
+        
+        # 系统管理任务关键词 — 委托 Hermes
+        system_keywords = [
+            "系统", "system", "管理", "manage", "配置", "config",
+            "部署", "deploy", "监控", "monitor", "日志", "log",
+            "网关", "gateway", "定时", "cron", "记忆", "memory",
+        ]
+        
+        # 快速原型任务关键词 — 委托 Codex（如果可用）
+        quick_keywords = [
+            "快速", "quick", "原型", "prototype", "一次性", "one-shot",
+            "批量", "batch", "生成", "generate", "初始化", "init",
+        ]
+        
+        # 计算各 Agent 的匹配分数
+        scores = {}
+        
+        # Claude Code 分数
+        if "claude" in self.available:
+            claude_score = sum(1 for kw in coding_keywords if kw in task_lower)
+            if claude_score > 0:
+                scores["claude"] = claude_score
+        
+        # Hermes 分数
+        if "hermes" in self.available:
+            hermes_score = sum(1 for kw in system_keywords if kw in task_lower)
+            if hermes_score > 0:
+                scores["hermes"] = hermes_score
+        
+        # Codex 分数
+        if "codex" in self.available:
+            codex_score = sum(1 for kw in quick_keywords if kw in task_lower)
+            if codex_score > 0:
+                scores["codex"] = codex_score
+        
+        # 如果有明确匹配，返回最高分的 Agent
+        if scores:
+            return max(scores, key=lambda k: scores[k])
+        
+        # 默认：如果 Claude Code 可用，优先使用（根据基准测试，编码任务快 41%）
+        if "claude" in self.available:
+            return "claude"
+        
+        # 否则使用第一个可用的 Agent
+        return next(iter(self.available), None)
 
     def delegate(self, agent_key: str, prompt: str, **kwargs) -> DelegateResult:
         """委派任务给指定 agent，返回结构化结果"""
