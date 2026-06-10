@@ -52,8 +52,8 @@ class GuardConfig:
     same_tool_warn: int = 3
     same_tool_halt: int = 8
     # 无进展（幂等工具连续调用，结果不变）
-    no_progress_warn: int = 2
-    no_progress_block: int = 5
+    no_progress_warn: int = 1
+    no_progress_block: int = 4
     # 硬停开关
     hard_stop_enabled: bool = False
 
@@ -149,13 +149,13 @@ class ToolGuardController:
                     return GuardDecision(
                         action=GuardAction.HALT,
                         code="no_progress_halt",
-                        message=f"[御史弹劾] {tool_name} 连续 {count} 次无新结果，原地踏步，强制中止",
+                        message=f"[御史弹劾] {tool_name} 连续 {count + 1} 次无新结果，原地踏步，强制中止",
                     )
                 if count >= cfg.no_progress_warn:
                     return GuardDecision(
                         action=GuardAction.WARN if count < cfg.no_progress_block else GuardAction.BLOCK,
                         code="no_progress_warn",
-                        message=f"[朝臣谏言] {tool_name} 连续 {count} 次返回相同结果，可能在原地踏步",
+                        message=f"[朝臣谏言] {tool_name} 连续 {count + 1} 次返回相同结果，可能在原地踏步",
                     )
             else:
                 self._no_progress.pop(tool_name, None)
