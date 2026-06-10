@@ -1,24 +1,29 @@
-const auth = require('./utils/auth.js');
-
 App({
   globalData: {
     userInfo: null,
-    loginPromise: null
+    isDevtools: false
   },
 
   onLaunch() {
-    wx.cloud.init({ env: 'cloud1-d1gh87tb74f34ecb9', traceUser: true });
-    this.preLogin();
+    // 替换为你的云环境 ID（微信云开发控制台 → 设置 → 环境ID）
+    wx.cloud.init({ env: 'cloud1-0gixoepv2654fa53', traceUser: true });
+
+    const sys = wx.getSystemInfoSync();
+    this.globalData.isDevtools = sys.platform === 'devtools';
+
+    this.checkLogin();
   },
 
-  preLogin() {
-    this.globalData.loginPromise = auth.login().catch(function (err) {
-      console.warn('[app] pre-login failed:', err.message);
+  checkLogin() {
+    const api = require('./utils/api.js');
+    api.post('/auth/login', { code: '' }).then(data => {
+      this.globalData.userInfo = data.user;
+    }).catch(() => {
+      this.globalData.userInfo = null;
     });
   },
 
   clearLogin() {
     this.globalData.userInfo = null;
-    this.globalData.loginPromise = null;
   }
 });
