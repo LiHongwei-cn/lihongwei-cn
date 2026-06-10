@@ -1,7 +1,7 @@
 ---
 name: mundo-sync
 description: 蒙多三合一同步协议 — 每次更新后强制执行
-version: 1.4.2
+version: 2.0.9
 ---
 
 # MUNDO 三合一同步协议
@@ -17,6 +17,12 @@ version: 1.4.2
 | 源码 | `~/Desktop/lihongwei-cn/mundo-agent/` | 开发编辑 |
 | 安装版 | `~/.hermes/mundo-agent/` | 运行时 |
 | Dock .app | `/Users/huangpeng/Applications/MUNDO.app/` | 程序坞启动器 |
+
+## 全局规范部署包（通用多 Agent）
+
+从 v2.0.0 起，global-specs/ 支持 6 个 Agent 适配：
+Claude Code / Hermes / Codex / Cursor / Windsurf / Copilot。
+核心规范在 core-spec.md，各 Agent 适配文件从这里生成。
 
 ## 同步方法
 
@@ -120,6 +126,15 @@ bash ~/Desktop/lihongwei-cn/mundo-agent/sync_mundo.sh
 ### 云同步系统
 - `cloud_sync.py`: 云同步（scan_local_skills, find_new_skills, auto_sync_new_skills）
 
+### Skill 云仓库（skill-store/）
+
+蒙多新建的 Skill 必须同步到两个位置：
+1. `global-specs/skills/` — GitHub 仓库，供其他用户安装
+2. `skill-store/index.html` — 云仓库页面，每个 Skill 有查看链接+安装命令
+
+云仓库页面生成方式：扫描 `~/.hermes/skills/` 所有含 SKILL.md 的目录，去重后按分类生成 HTML。
+新建 Skill 后必须更新云仓库页面（skill-store/index.html）。
+
 ## 工作流程
 
 1. **接收任务**: 用户输入任务描述
@@ -128,10 +143,20 @@ bash ~/Desktop/lihongwei-cn/mundo-agent/sync_mundo.sh
 4. **执行任务**: 调用工具执行任务
 5. **返回结果**: 向用户报告执行结果
 
-## 代码统计（v1.4.2）
+## v2.0 融合架构（从三大Agent提炼）
 
-- 核心模块: 29 个（13 核心 + 11 基础设施 + 5 扩展）
-- 总代码行数: ~10000 行
+| 新模块 | 来源 | 能力 |
+|--------|------|------|
+| `tool_guard.py` | Hermes Agent | 工具循环防护（精确失败/同工具失败/无进展检测） |
+| `dispatch.py` | Hermes Agent | 并行工具分发（智能判断并行/串行） |
+| `prompt_assembler.py` | Hermes Agent | 系统提示词模块化组装（优先级排序） |
+
+详见 `ARCHITECTURE_V2.md`。
+
+## 代码统计（v2.0.0）
+
+- 核心模块: 32 个（13 核心 + 11 基础设施 + 5 扩展 + 3 融合）
+- 总代码行数: ~11500 行
 - 支持 Provider: 28 个
 
 ### 基础设施（v1.4.0+）

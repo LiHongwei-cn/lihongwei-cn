@@ -1,0 +1,152 @@
+[
+  {
+    "title": "Giant crustacean of the deep sea steals a trick from bacteria",
+    "link": "https://www.nature.com/",
+    "summary": "",
+    "published": "2026-06-10",
+    "journal": "Nature",
+    "category": "multidisciplinary",
+    "hash": "c89893db87e99b64",
+    "crawled_at": "2026-06-11T06:01:10.058121"
+  },
+  {
+    "title": "Newly discovered whale graveyard dates back millions of years",
+    "link": "https://www.nature.com/uploads/product/nature/rss.png",
+    "summary": "",
+    "published": "2026-06-10",
+    "journal": "Nature",
+    "category": "multidisciplinary",
+    "hash": "c8b0e5e01d5aadd0",
+    "crawled_at": "2026-06-11T06:01:10.058151"
+  },
+  {
+    "title": "Structural basis for chaperone-guided assembly of RNA-induced silencing complex",
+    "link": "https://www.nature.com/articles/d41586-026-01832-x",
+    "summary": "",
+    "published": "2026-06-10",
+    "journal": "Nature",
+    "category": "multidisciplinary",
+    "hash": "f432869fe3818876",
+    "crawled_at": "2026-06-11T06:01:10.058162"
+  },
+  {
+    "title": "Business World Model",
+    "link": "https://arxiv.org/abs/2606.10044",
+    "summary": "arXiv:2606.10044v1 Announce Type: new Abstract: Businesses are increasingly adopting AI-enabled tools to improve productivity, reduce costs, and enhance products and services. However, the transformative potential of AI extends beyond automating predefined tasks: it lies in enabling intelligent systems to plan, optimize, and execute business initiatives from high-level strategic objectives. This paper introduces the concept and architecture of a business world model (BWM), a world model speciali",
+    "published": "Wed, 10 Jun 2026 00:00:00 -0400",
+    "journal": "arXiv AI",
+    "category": "ai",
+    "hash": "edc5d020509ca227",
+    "crawled_at": "2026-06-11T06:01:11.625843"
+  },
+  {
+    "title": "Deployment-Time Memorization in Foundation-Model Agents",
+    "link": "https://arxiv.org/abs/2606.10062",
+    "summary": "arXiv:2606.10062v1 Announce Type: new Abstract: Foundation-model agents are increasingly long-lived systems that remember users across interactions, making memorization an explicit deployment-time function rather than solely a property of model weights. Existing work addresses parametric memorization or audits fixed memory configurations, but does not characterize how memory-design choices jointly shape personalization utility, extraction risk, and deletion fidelity. We study this surface as dep",
+    "published": "Wed, 10 Jun 2026 00:00:00 -0400",
+    "journal": "arXiv AI",
+    "category": "ai",
+    "hash": "35fa38f4c574d726",
+    "crawled_at": "2026-06-11T06:01:11.625863"
+  },
+  {
+    "title": "Exploratory Responsiveness and Adaptive Rigidity under AI-Assisted Optimization",
+    "link": "https://arxiv.org/abs/2606.10086",
+    "summary": "arXiv:2606.10086v1 Announce Type: new Abstract: This paper develops a theory of exploratory adaptation under AI-assisted optimization. The central argument is that the long-run adaptive effects of AI systems depend critically on how predictive assistance interacts with exploratory responsiveness itself. We formalize this mechanism using a dynamical framework in which cognitive, institutional, and technological systems evolve over rugged epistemic landscapes characterized by multiple locally rein",
+    "published": "Wed, 10 Jun 2026 00:00:00 -0400",
+    "journal": "arXiv AI",
+    "category": "ai",
+    "hash": "9dfd72a350071242",
+    "crawled_at": "2026-06-11T06:01:11.625868"
+  },
+  {
+    "title": "Watching catalysis take a walk",
+    "link": "https://www.nature.com/",
+    "summary": "",
+    "published": "2026-06-10",
+    "journal": "Nature Energy",
+    "category": "energy",
+    "hash": "c8176331c6dafd59",
+    "crawled_at": "2026-06-11T06:01:15.646113"
+  },
+  {
+    "title": "Author Correction: Stable tin–lead perovskite inks for efficient all-perovskite tandems",
+    "link": "https://www.nature.com/uploads/product/nenergy/rss.png",
+    "summary": "",
+    "published": "2026-06-09",
+    "journal": "Nature Energy",
+    "category": "energy",
+    "hash": "91534b22619db36c",
+    "crawled_at": "2026-06-11T06:01:15.646141"
+  },
+  {
+    "title": "Understanding interconnected ion and water transport in anion exchange membrane zero-gap CO<sub>2</sub> electrolysers",
+    "link": "https://www.nature.com/articles/s41560-026-02089-4",
+    "summary": "",
+    "published": "2026-06-05",
+    "journal": "Nature Energy",
+    "category": "energy",
+    "hash": "38c8a71793ac0c1a",
+    "crawled_at": "2026-06-11T06:01:15.646151"
+  },
+  {
+    "title": "Space-time holograms based on programmable metasurfaces",
+    "link": "https://www.nature.com/",
+    "summary": "",
+    "published": "2026-06-10",
+    "journal": "Nature Electronics",
+    "category": "electronics",
+    "hash": "f9711169ce3e90d2",
+    "crawled_at": "2026-06-11T06:01:16.741650"
+  },
+  {
+    "title": "Two-dimensional β-TeO<sub>2</sub> as an intrinsic insulator despite conflicting transport signatures",
+    "link": "https://www.nature.com/uploads/product/natelectron/rss.png",
+    "summary": "",
+    "published": "2026-06-09",
+    "journal": "Nature Electronics",
+    "category": "electronics",
+    "hash": "9956cd8d777f90d6",
+    "crawled_at": "2026-06-11T06:01:16.741677"
+  },
+  {
+    "title": "Precise and efficient computing via signal folding",
+    "link": "https://www.nature.com/articles/s41928-026-01647-8",
+    "summary": "",
+    "published": "2026-06-09",
+    "journal": "Nature Electronics",
+    "category": "electronics",
+    "hash": "e280ff372cbd1daa",
+    "crawled_at": "2026-06-11T06:01:16.741686"
+  },
+  {
+    "title": "Reusability report: Assessment of reproducibility and applicability to external datasets for RXNGraphormer",
+    "link": "https://www.nature.com/",
+    "summary": "",
+    "published": "2026-06-10",
+    "journal": "Nature Machine Intelligence",
+    "category": "ai",
+    "hash": "132e5a18dd75b492",
+    "crawled_at": "2026-06-11T06:01:17.904776"
+  },
+  {
+    "title": "Navigating molecular OOD-ness",
+    "link": "https://www.nature.com/uploads/product/natmachintell/rss.gif",
+    "summary": "",
+    "published": "2026-06-09",
+    "journal": "Nature Machine Intelligence",
+    "category": "ai",
+    "hash": "c8eb71befbfc7c08",
+    "crawled_at": "2026-06-11T06:01:17.904805"
+  },
+  {
+    "title": "Explicit dynamic cross-strand interactions for DNA sequence language modelling",
+    "link": "https://www.nature.com/articles/s42256-026-01257-1",
+    "summary": "",
+    "published": "2026-06-04",
+    "journal": "Nature Machine Intelligence",
+    "category": "ai",
+    "hash": "554381f998d332c9",
+    "crawled_at": "2026-06-11T06:01:17.904816"
+  }
+]
