@@ -1,4 +1,4 @@
-"""蒙多 MCP 层 v1.4.0 — 皇帝的外交使团
+"""蒙多 MCP 层 v2.0.8 — 皇帝的外交使团
 
 Model Context Protocol 支持。让蒙多能连接外部工具服务器。
 不是简单的 HTTP 调用。是结构化的工具发现、能力协商、生命周期管理。
@@ -81,7 +81,7 @@ class MCPClient:
             response = self._send(server, "initialize", {
                 "protocolVersion": "2024-11-05",
                 "capabilities": {"tools": {}},
-                "clientInfo": {"name": "mundo-agent", "version": "1.4.0"},
+                "clientInfo": {"name": "mundo-agent", "version": "2.0.8"},
             })
 
             if response and "capabilities" in response:

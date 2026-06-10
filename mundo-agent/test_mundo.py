@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""蒙多 v1.2.7 全面测试套件 — 测试所有模块的功能和稳定性
+"""蒙多 v2.0.8 全面测试套件 — 测试所有模块的功能和稳定性
 
 运行方式：
     cd mundo-agent
@@ -527,7 +527,7 @@ def test_tools(suite: TestSuite):
 # ═══════════════════════════════════════════════
 
 if __name__ == "__main__":
-    suite = TestSuite("蒙多 Agent v1.2.7 测试")
+    suite = TestSuite("蒙多 Agent v2.0.8 测试")
     test_tools(suite)
     passed, total, summary = suite.summary()
     print(summary)

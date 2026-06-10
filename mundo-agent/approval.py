@@ -1,4 +1,4 @@
-"""蒙多的权限审批系统 v1.2.7 — Rich 渲染"""
+"""蒙多的权限审批系统 v2.0.8 — Rich 渲染"""
 
 import sys
 import re

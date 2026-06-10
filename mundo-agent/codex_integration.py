@@ -1,4 +1,4 @@
-"""蒙多 Codex 集成 v1.1 — 自动路由到 OpenAI 兼容端点
+"""蒙多 Codex 集成 v2.0.8 — 自动路由到 OpenAI 兼容端点
 
 适配版本：Codex v0.138.0+
 保持配置：xiaomi/mimo-v2.5-pro
