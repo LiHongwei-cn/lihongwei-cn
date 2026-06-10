@@ -1,12 +1,12 @@
-"""蒙多任务委托 v1.4.0 — 结构化结果 + 智能路由 + 全参数透传
+"""蒙多任务委托 v2.0.8 — 结构化结果 + 智能路由 + 全参数透传
 
-v1.4.0 改进：
+v2.0.8 改进：
 - 适配新版 agent：Hermes v0.16.0、Claude Code v2.1.170、Codex v0.138.0
 - 自动版本检测与兼容性验证
 - 增强错误处理与重试机制
 - 保持 AI 模型配置不变（xiaomi/mimo-v2.5-pro）
 
-v1.3.0 改进：
+v2.0.8 改进：
 - DelegateResult 结构化结果（ok/output/error/duration/agent）
 - timeout/workdir 全链路透传到所有 agent
 - auto 智能路由模式

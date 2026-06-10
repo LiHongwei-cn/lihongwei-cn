@@ -1,6 +1,6 @@
-"""蒙多核心引擎 v1.4.1 — Agentic Loop
+"""蒙多核心引擎 v2.0.8 — Agentic Loop
 
-v1.4.1 优化：
+v2.0.8 优化：
 - 消除 ContextCompressor 重复（使用 context_mapper.py）
 - 统一使用 constants.py 常量
 - 拆分 run() 为更小的函数
