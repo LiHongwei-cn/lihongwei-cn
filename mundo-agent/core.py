@@ -465,7 +465,7 @@ class MundoEngine:
                 self._execute_single_tool(tc, name, args, tool_module)
 
     def _execute_single_tool(self, tc, name: str, args: dict, tool_module):
-        """执行单个工具调用（带策略检查+循环防护）"""
+        """执行单个工具调用（带策略检查+循环防护+超时保护）"""
         # 策略检查
         policy_result = self.policy.evaluate_tool(name, args)
         if policy_result.is_denied:
@@ -476,8 +476,19 @@ class MundoEngine:
             self.on_tool_call(name, args, self.stats)
 
         tool_start = time.time()
+        TOOL_TIMEOUT = 30  # 单个工具超时：30秒
+
         try:
-            output = tool_module.execute_tool(name, args)
+            # 使用线程池执行工具，添加超时保护
+            from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
+            with ThreadPoolExecutor(max_workers=1) as executor:
+                future = executor.submit(tool_module.execute_tool, name, args)
+                try:
+                    output = future.result(timeout=TOOL_TIMEOUT)
+                except FutureTimeout:
+                    output = f"[工具 {name} 执行超时（{TOOL_TIMEOUT}s）]"
+                    future.cancel()
+
             duration = (time.time() - tool_start) * 1000
 
             # 工具循环防护检查
@@ -583,8 +594,25 @@ class MundoEngine:
         turn = 0
         last_progress_time = time.time()
         last_output_hash = ""
+        task_start_time = time.time()
+        TASK_TIMEOUT = 90  # 任务级超时：90秒
+        MAX_TOOL_CALLS = 10  # 单任务最大工具调用次数
+        total_tool_calls = 0
 
         while turn < MAX_ITERATIONS:
+            # 任务级超时保护
+            elapsed = time.time() - task_start_time
+            if elapsed > TASK_TIMEOUT:
+                if self.on_tool_output:
+                    self.on_tool_output("mundo", f"⚠️ 任务超时（{TASK_TIMEOUT}s），蒙多强制完成。", True)
+                return self._force_complete()
+
+            # 工具调用次数保护
+            if total_tool_calls >= MAX_TOOL_CALLS:
+                if self.on_tool_output:
+                    self.on_tool_output("mundo", f"⚠️ 工具调用达上限（{MAX_TOOL_CALLS}次），蒙多强制完成。", True)
+                return self._force_complete()
+
             if self._interrupted or self.budget.exhausted:
                 break
 
@@ -643,6 +671,7 @@ class MundoEngine:
                 "tool_calls": tool_calls,
             })
             self._execute_tool_calls(tool_calls)
+            total_tool_calls += len(tool_calls)
 
             if self._same_error_streak >= STUCK_THRESHOLD:
                 # 换策略而非放弃
@@ -655,6 +684,18 @@ class MundoEngine:
             self._auto_compress()
 
         return self._handle_loop_end(turn)
+
+    def _force_complete(self) -> str:
+        """强制完成：当任务超时时，基于已有信息生成最终回复"""
+        # 收集所有工具输出作为上下文
+        tool_outputs = []
+        for msg in self.messages[-10:]:
+            if msg.get("role") == "tool":
+                tool_outputs.append(msg.get("content", "")[:500])
+
+        # 生成总结性回复
+        summary = "\n".join(tool_outputs[-5:]) if tool_outputs else "任务执行中..."
+        return f"任务执行结果：\n{summary}"
 
     def _get_recent_output_hash(self) -> str:
         """获取最近输出的哈希，用于进度检测"""

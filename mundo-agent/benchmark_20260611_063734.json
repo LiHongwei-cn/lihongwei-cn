@@ -1,0 +1,187 @@
+{
+  "timestamp": "20260611_063734",
+  "summary": {
+    "mundo": {
+      "total_time": 127.55,
+      "success": 4,
+      "total": 5
+    },
+    "hermes": {
+      "total_time": 64.3,
+      "success": 5,
+      "total": 5
+    },
+    "claude": {
+      "total_time": 40.65,
+      "success": 5,
+      "total": 5
+    },
+    "codex": {
+      "total_time": 0.5,
+      "success": 0,
+      "total": 5
+    }
+  },
+  "results": [
+    {
+      "agent": "mundo",
+      "test": "T1",
+      "time": 4.1,
+      "success": true,
+      "output_len": 687,
+      "output_preview": "\u001b[3J\u001b[H\u001b[2J  \u001b[38;2;85;85;85m. . .\u001b[0m\n\n\n```python\nfrom collections import OrderedDict\n\n\nclass LRUCache:\n    def __init__(self, capacity: int = 100):\n        self.capacity = capacity\n        self.cache = OrderedDict()\n\n    def get(self, key: str) -> any:\n        if key not in self.cache:\n            return None\n        self.cache.move_to_end(key)\n        return self.cache[key]\n\n    def put(self, key: str, value: any) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n"
+    },
+    {
+      "agent": "hermes",
+      "test": "T1",
+      "time": 9.48,
+      "success": true,
+      "output_len": 750,
+      "output_preview": "┊ review diff\na/lru_cache.py → b/lru_cache.py\n@@ -2,17 +2,17 @@\n \n \n class LRUCache:\n-    def __init__(self, capacity=100):\n+    def __init__(self, capacity: int = 100):\n         self.capacity = capacity\n         self.cache = OrderedDict()\n \n-    def get(self, key):\n+    def get(self, key: str):\n         if key not in self.cache:\n             return -1\n         self.cache.move_to_end(key)\n         return self.cache[key]\n \n-    def put(self, key, value):\n+    def put(self, key: str, value) -> Non"
+    },
+    {
+      "agent": "claude",
+      "test": "T1",
+      "time": 4.41,
+      "success": true,
+      "output_len": 579,
+      "output_preview": "```python\nfrom collections import OrderedDict\n\n\nclass LRUCache:\n    def __init__(self, capacity: int = 100):\n        self.capacity = capacity\n        self.cache = OrderedDict()\n\n    def get(self, key: int) -> int:\n        if key not in self.cache:\n            return -1\n        self.cache.move_to_end(key)\n        return self.cache[key]\n\n    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.cache.move_to_end(key)\n        self.cache[key] = value\n        if "
+    },
+    {
+      "agent": "codex",
+      "test": "T1",
+      "time": 0.1,
+      "success": false,
+      "output_len": 192,
+      "output_preview": "error: unexpected argument '-q' found\n\n  tip: to pass '-q' as a value, use '-- -q'\n\nUsage: codex [OPTIONS] [PROMPT]\n       codex [OPTIONS] <COMMAND> [ARGS]\n\nFor more information, try '--help'."
+    },
+    {
+      "agent": "mundo",
+      "test": "T2",
+      "time": 11.94,
+      "success": true,
+      "output_len": 904,
+      "output_preview": "\u001b[3J\u001b[H\u001b[2J  \u001b[38;2;85;85;85m. . .\u001b[0m\n\n\n\n\n  \u001b[38;2;85;85;85m> terminal\u001b[0m \u001b[38;2;85;85;85mdf -h\u001b[0m\n  \u001b[38;2;85;85;85m│\u001b[0m \u001b[38;2;136;136;136mFilesystem        Size    Used   Avail Capacity iused ifree %iused  Mounted \u001b[0m\n\u001b[38;2;136;136;136mon\u001b[0m\n  \u001b[38;2;85;85;85m│\u001b[0m \u001b[38;2;136;136;136m/dev/disk3s1s1   460Gi    12Gi   375Gi     4%    480k  3.9G    0%   /\u001b[0m\n  \u001b[38;2;85;85;85m│\u001b[0m \u001b[38;2;136;136;136mdevfs            198Ki   198Ki     0Bi   100%     686     0  100%   /dev\u001b[0m\n  \u001b[38;2;85"
+    },
+    {
+      "agent": "hermes",
+      "test": "T2",
+      "time": 11.43,
+      "success": true,
+      "output_len": 279,
+      "output_preview": "磁盘使用情况如下：\n\n**使用率最高的磁盘：`/dev/disk3s5`（挂载于 `/System/Volumes/Data`）**\n- 容量：460Gi\n- 已用：59Gi\n- 可用：375Gi\n- **使用率：14%**\n\n这是你的主数据分区，实际存储用户文件的地方。\n\n其他分区都是系统分区，使用率都很低（1-4%）。`devfs` 和 `map auto_home` 是虚拟文件系统，100% 是正常的，不代表实际磁盘压力。\n\n整体来看磁盘空间非常充裕，还有 375Gi 可用。\n\nsession_id: 20260611_063805_5ad0f0"
+    },
+    {
+      "agent": "claude",
+      "test": "T2",
+      "time": 11.22,
+      "success": true,
+      "output_len": 261,
+      "output_preview": "根据 `df -h` 输出，**使用率最高的磁盘是 `/dev/disk3s5`，使用率为 14%**。\n\n该磁盘信息：\n- **挂载点**: `/System/Volumes/Data`\n- **总容量**: 460Gi\n- **已使用**: 59Gi\n- **可用**: 375Gi\n\n这是 macOS 的数据分区，存储用户数据和应用程序文件。整体磁盘使用率很低，还有充足的空间。\n\n注意：`devfs` (100%) 和 `map auto_home` (100%) 是虚拟文件系统，不代表实际存储使用情况，已排除。"
+    },
+    {
+      "agent": "codex",
+      "test": "T2",
+      "time": 0.1,
+      "success": false,
+      "output_len": 192,
+      "output_preview": "error: unexpected argument '-q' found\n\n  tip: to pass '-q' as a value, use '-- -q'\n\nUsage: codex [OPTIONS] [PROMPT]\n       codex [OPTIONS] <COMMAND> [ARGS]\n\nFor more information, try '--help'."
+    },
+    {
+      "agent": "mundo",
+      "test": "T3",
+      "time": 60,
+      "success": false,
+      "output_len": 0,
+      "output_preview": "TIMEOUT"
+    },
+    {
+      "agent": "hermes",
+      "test": "T3",
+      "time": 24.12,
+      "success": true,
+      "output_len": 130,
+      "output_preview": "当前目录 `~/`：\n- 仅当前层：9 个 .py 文件\n- 含所有子目录（排除 Library/venv/node_modules/.hermes/__pycache__）：8052 个\n\nsession_id: 20260611_063928_15422b"
+    },
+    {
+      "agent": "claude",
+      "test": "T3",
+      "time": 8.16,
+      "success": true,
+      "output_len": 25,
+      "output_preview": "当前目录下有 **9** 个 Python 文件。"
+    },
+    {
+      "agent": "codex",
+      "test": "T3",
+      "time": 0.1,
+      "success": false,
+      "output_len": 192,
+      "output_preview": "error: unexpected argument '-q' found\n\n  tip: to pass '-q' as a value, use '-- -q'\n\nUsage: codex [OPTIONS] [PROMPT]\n       codex [OPTIONS] <COMMAND> [ARGS]\n\nFor more information, try '--help'."
+    },
+    {
+      "agent": "mundo",
+      "test": "T4",
+      "time": 3.29,
+      "success": true,
+      "output_len": 113,
+      "output_preview": "\u001b[3J\u001b[H\u001b[2J  \u001b[38;2;85;85;85m. . .\u001b[0m\n\n\nLRU Cache（最近最少使用缓存）是基于\"最近最少使用\"原则淘汰数据的缓存机制，通过哈希表+双向链表实现O(1)时间复杂度的插入和查询操作。"
+    },
+    {
+      "agent": "hermes",
+      "test": "T4",
+      "time": 4.66,
+      "success": true,
+      "output_len": 128,
+      "output_preview": "LRU Cache（Least Recently Used）是一种缓存淘汰策略，当缓存满时优先移除最久未被访问的数据；借助哈希表+双向链表实现，get 和 put 操作均为 O(1)。\n\nsession_id: 20260611_064003_fc198f"
+    },
+    {
+      "agent": "claude",
+      "test": "T4",
+      "time": 3.89,
+      "success": true,
+      "output_len": 109,
+      "output_preview": "LRU Cache（Least Recently Used Cache）是一种缓存淘汰策略，当缓存满时优先移除最近最少使用的数据项，通过哈希表+双向链表实现，**get 和 put 操作的时间复杂度均为 O(1)**。"
+    },
+    {
+      "agent": "codex",
+      "test": "T4",
+      "time": 0.1,
+      "success": false,
+      "output_len": 192,
+      "output_preview": "error: unexpected argument '-q' found\n\n  tip: to pass '-q' as a value, use '-- -q'\n\nUsage: codex [OPTIONS] [PROMPT]\n       codex [OPTIONS] <COMMAND> [ARGS]\n\nFor more information, try '--help'."
+    },
+    {
+      "agent": "mundo",
+      "test": "T5",
+      "time": 48.22,
+      "success": true,
+      "output_len": 1863,
+      "output_preview": "\u001b[3J\u001b[H\u001b[2J  \u001b[38;2;85;85;85m. . .\u001b[0m\n\n\n\n\n  \u001b[38;2;85;85;85mpy python_execute\u001b[0m \n  \u001b[38;2;85;85;85m│\u001b[0m \u001b[38;2;240;198;116m[安全警告] 禁止 import: os。蒙多拒绝执行。\u001b[0m\n  \u001b[38;2;85;85;85m. . .\u001b[0m\n\n\n\n\n  \u001b[38;2;85;85;85m> terminal\u001b[0m \u001b[38;2;85;85;85mmkdir -p ~/Desktop && date '+%Y-%m-%d %...\u001b[0m\n  \u001b[38;2;85;85;85m│\u001b[0m \u001b[38;2;136;136;136m(无输出)\u001b[0m\n  \u001b[38;2;85;85;85m. . .\u001b[0m\n\n\n\n\n  \u001b[38;2;85;85;85m> terminal\u001b[0m \u001b[38;2;85;85;85mdate\u001b[0m\n  \u001b[38;2;85;85;85m│\u001b[0m \u001b[38;2;136;136;136m2026年 6月11日 星期四 06时40分31秒 "
+    },
+    {
+      "agent": "hermes",
+      "test": "T5",
+      "time": 14.61,
+      "success": true,
+      "output_len": 302,
+      "output_preview": "┊ review diff\na/Desktop/test_output.txt → b/Desktop/test_output.txt\n@@ -1 +1,2 @@\n-2026年 6月11日 星期四 06时40分58秒 CST benchmark complete\n+2026-06-11 06:41:06\n+benchmark complete\n文件已创建：\n\n```\n~/Desktop/test_output.txt\n```\n\n内容：\n```\n2026-06-11 06:41:06\nbenchmark complete\n```\n\nsession_id: 20260611_064100_5871eb"
+    },
+    {
+      "agent": "claude",
+      "test": "T5",
+      "time": 12.97,
+      "success": true,
+      "output_len": 118,
+      "output_preview": "需要授予写入权限。文件路径：`/Users/huangpeng/Desktop/test_output.txt`\n\n内容：\n```\n2026-06-11 06:41:17\nbenchmark complete\n```\n\n请确认允许写入。"
+    },
+    {
+      "agent": "codex",
+      "test": "T5",
+      "time": 0.1,
+      "success": false,
+      "output_len": 192,
+      "output_preview": "error: unexpected argument '-q' found\n\n  tip: to pass '-q' as a value, use '-- -q'\n\nUsage: codex [OPTIONS] [PROMPT]\n       codex [OPTIONS] <COMMAND> [ARGS]\n\nFor more information, try '--help'."
+    }
+  ]
+}

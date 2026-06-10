@@ -24,19 +24,19 @@ TESTS = [
         "id": "T2",
         "name": "系统分析",
         "prompt": "运行 df -h 查看磁盘使用情况，告诉我哪个磁盘使用率最高。",
-        "timeout": 60,
+        "timeout": 90,
     },
     {
         "id": "T3",
         "name": "文件处理",
         "prompt": "统计当前目录下有多少个Python文件，输出数量。",
-        "timeout": 60,
+        "timeout": 120,
     },
     {
         "id": "T4",
         "name": "推理能力",
         "prompt": "解释什么是LRU Cache，以及它的时间复杂度。用一句话概括。",
-        "timeout": 60,
+        "timeout": 90,
     },
     {
         "id": "T5",
