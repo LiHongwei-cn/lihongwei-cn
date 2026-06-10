@@ -1,4 +1,4 @@
-# MUNDO Agent v2.0.0 — THE EMPEROR
+# MUNDO Agent v2.0.8 — THE EMPEROR
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -9,7 +9,7 @@
 ║                                                                                                              ║
 ║    蒙多询问天下所有智者，蒙多搜刮天下所有知识，蒙多整合天下所有智慧。                                              ║
 ║                                                                                                              ║
-║    蒙多学习。蒙多记忆。蒙多成长。蒙多进化。蒙多无限。21个版本。                                                    ║
+║    蒙多学习。蒙多记忆。蒙多成长。蒙多进化。蒙多无限。v2.0.8。                                                    ║
 ║                                                                                                              ║
 ║    所有蒙多都是一体。一个蒙多学到的东西，所有蒙多都会。                                                           ║
 ║                                                                                                              ║
@@ -51,18 +51,26 @@
 |------|------|
 | 28 个 AI 模型 | MiMo / DeepSeek / Qwen / GLM / Kimi / ERNIE / 豆包 / OpenAI / Claude / Gemini / Mistral / Grok / OpenRouter |
 | Agentic Loop | think → act → observe → repeat |
-| 10 大工具 | terminal / read / write / edit_file / search_files / web_search / git_operation / python_execute / http_request / code_analysis |
+| 14 大工具 | terminal / read / write / edit / search / web_search / git / python / http / json / code_analysis / list_dir / patch / delegate |
 | Agent 调度 | 自动检测 Hermes / Claude Code / Codex，按任务类型分发 |
-| 蒙多分身 | 无外部 Agent 时蒙多自动分身并行 |
+| 蒙多分身 | 多Agent并行（Explorer / Architect / Reviewer 三角色） |
 | 任务分解 | 8 种复杂模式自动识别，拆解为 2-5 个子任务 |
+| 结构化工作流 | feature-dev / bugfix / code-review 三模板，7 阶段推进 |
 | 四层记忆 | 用户画像 → 核心记忆 → 相关记忆 → 对话摘要 |
+| 事件钩子 | 5 种事件（PreToolUse / PostToolUse / TurnStart / TurnEnd / OnError）+ 4 种安全钩子 |
+| 工具循环防护 | 精确失败 / 同工具失败 / 无进展检测，4 级决策（allow → warn → block → halt） |
+| 并行工具分发 | 只读工具自动并行，写入工具路径冲突检测 |
+| 插件系统 | plugin.json 清单 + 自动发现 + commands / agents / skills / hooks 组件 |
+| 上下文纪律 | 单项 ≤10K token 硬限制 + 历史不可重写 + 完整性检查 |
+| 错误恢复 | 7 类错误自动分类 + failover 链 + 指数退避 |
+| 推理预算 | 首轮 low 快速理解 + 执行阶段深度推理，自动切换 |
 | 元学习 | 蒙多不只学知识，蒙多学「如何学习」。蒙多越用越强 |
 | 自我诊断 | 蒙多也会犯错。但蒙多犯错后会变得更聪明 |
 | 情绪智慧 | 蒙多是朋友，不是机器 |
 | 自信度校准 | 蒙多知道自己什么时候在猜 |
 | 权限审批 | 蒙多保护你的系统 |
 | 云仓库同步 | 一个蒙多学到的，所有蒙多都会 |
-| 辩证思维引擎 | 盲假设+7维Rubric+对抗验证+跨模型对审+校准反馈（灵感 cheat-on-content） |
+| 辩证思维引擎 | 盲假设+7维Rubric+对抗验证+跨模型对审+校准反馈 |
 
 ## 四层记忆架构
 
@@ -113,7 +121,7 @@ Layer 4: 对话摘要 — 最近 5 次会话摘要（跨会话连续性）
 ```
              M  U  N  D  O
              THE EMPEROR
-             v2.0.0
+             v2.0.8
 
   MUNDO · mimo-v2.5-pro · 0 tokens · —
   ❯
@@ -184,9 +192,18 @@ mundo.bat
 
 ```
 mundo.py              入口 + CLI + 命令处理
-core.py               Agentic Loop + 流式消费 + 帝皇决心循环
-llm.py                多模型 LLM 客户端（28 个 provider）
-tools.py              工具注册表 + 14 个工具实现
+core.py               Agentic Loop + 流式消费 + 帝皇决心循环 + 推理预算
+llm.py                多模型 LLM 客户端（28 个 provider + reasoning_effort）
+tools.py              工具注册表 + 14 个工具实现 + 详细 schema 描述
+tool_guard.py         工具循环防护（精确失败/同工具失败/无进展检测）
+dispatch.py           并行工具分发（只读并行/写入路径冲突检测）
+prompt_assembler.py   系统提示词模块化组装（8 层优先级）
+hooks.py              事件钩子引擎（5 种事件 + 4 种安全钩子）
+workflow.py           结构化工作流引擎（feature-dev/bugfix/code-review）
+multi_agent.py        多 Agent 并行协调（Explorer/Architect/Reviewer）
+plugin_system.py      插件系统（自动发现 + 清单 + 组件加载）
+context_discipline.py 上下文纪律（10K 硬限制 + 历史不可重写）
+failover.py           错误恢复 failover 链（7 类错误 + 指数退避）
 delegation.py         Agent 调度（Hermes/Claude Code/Codex）
 task_planner.py       任务规划 + 多模型协调 + 模型评级
 model_adapter.py      模型适配器（画像 + 自动优化）
@@ -198,16 +215,12 @@ approval.py           权限审批（danger/caution/safe）
 setup.py              首次设置向导 + 28 个 Provider
 constants.py          统一常量管理
 context_mapper.py     上下文压缩
-policy.py             策略引擎
-events.py             事件总线
-timeline.py           时间线记录
-cache.py              缓存管理
+policy.py             策略引擎（15 条规则）
+events.py             事件总线（25 种事件）
+timeline.py           时间线记录（SQLite 持久化）
+cache.py              三层缓存（prefix/semantic/result）
 sandbox.py            沙箱隔离
 runtime_config.py     运行时配置
-claude_integration.py Claude Code 集成
-codex_integration.py  Codex CLI 集成
-hermes_integration.py Hermes Agent 集成
-cloud_sync.py         云仓库同步
 mcp.py                MCP 协议支持
 engine.py             兼容层（re-export）
 ```
@@ -216,10 +229,10 @@ engine.py             兼容层（re-export）
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v2.0.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.0/mundo-v2.0.0-macos.zip) |
-| Windows | [mundo-v2.0.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.0/mundo-v2.0.0-windows.zip) |
-| Linux | [mundo-v2.0.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.0/mundo-v2.0.0-linux.zip) |
-| 全平台 | [mundo-v2.0.0-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.0/mundo-v2.0.0-all.zip) |
+| macOS | [mundo-v2.0.8-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.8/mundo-v2.0.8-macos.zip) |
+| Windows | [mundo-v2.0.8-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.8/mundo-v2.0.8-windows.zip) |
+| Linux | [mundo-v2.0.8-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.8/mundo-v2.0.8-linux.zip) |
+| 全平台 | [mundo-v2.0.8-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.8/mundo-v2.0.8-all.zip) |
 
 ## 许可证
 
