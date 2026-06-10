@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MUNDO Agent — The Ultimate Autonomous AI Agent for Vibe Coding. 6-layer memory, multi-agent orchestration, 100% success rate.">
+<meta name="keywords" content="AI Agent, Vibe Coding, Autonomous, Memory, Multi-Agent, Cursor, MCP, Code Generation">
+<title>MUNDO Agent — Vibe Coding 时代最强 AI Agent</title>
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --border: rgba(249, 226, 175, 0.12);
+  --gold: #f9e2af;
+  --gold-dim: rgba(249, 226, 175, 0.06);
+  --gold-glow: rgba(249, 226, 175, 0.15);
+  --text: #cdd6f4;
+  --text-dim: #6c7086;
+  --green: #a6e3a1;
+  --red: #f38ba8;
+  --blue: #89b4fa;
+  --purple: #cba6f7;
+  --radius: 16px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', sans-serif;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  padding: 80px 0 60px;
+  position: relative;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--gold-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-crown {
+  font-size: 72px;
+  margin-bottom: 20px;
+  display: inline-block;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.hero-title {
+  font-size: 48px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--gold), #fab387);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 16px;
+}
+
+.hero-subtitle {
+  font-size: 20px;
+  color: var(--text-dim);
+  max-width: 600px;
+  margin: 0 auto 32px;
+}
+
+.hero-badges {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+
+.badge {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: var(--gold-dim);
+}
+
+.badge-green { color: var(--green); border-color: rgba(166, 227, 161, 0.3); }
+.badge-blue { color: var(--blue); border-color: rgba(137, 180, 250, 0.3); }
+.badge-purple { color: var(--purple); border-color: rgba(203, 166, 247, 0.3); }
+
+.hero-cta {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold), #fab387);
+  color: #000;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--gold-glow);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--gold);
+}
+
+/* Stats Section */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin: 60px 0;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+/* Features Section */
+.section {
+  margin: 60px 0;
+}
+
+.section-title {
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 40px;
+  color: var(--gold);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  transition: all 0.3s;
+}
+
+.feature-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px var(--gold-glow);
+}
+
+.feature-icon {
+  font-size: 40px;
+  margin-bottom: 16px;
+}
+
+.feature-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+.feature-desc {
+  font-size: 15px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+/* Comparison Table */
+.comparison {
+  overflow-x: auto;
+  margin: 40px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+th, td {
+  padding: 16px 20px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  background: rgba(249, 226, 175, 0.05);
+  font-weight: 600;
+  color: var(--gold);
+}
+
+td:first-child {
+  font-weight: 500;
+}
+
+.check { color: var(--green); }
+.cross { color: var(--red); }
+
+/* Benchmark Section */
+.benchmark {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 40px;
+  margin: 40px 0;
+}
+
+.benchmark-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.benchmark-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.benchmark-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.benchmark-label {
+  width: 120px;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.benchmark-bar {
+  flex: 1;
+  height: 32px;
+  background: rgba(249, 226, 175, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.benchmark-fill {
+  height: 100%;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+  transition: width 1s ease;
+}
+
+.benchmark-fill.mundo { background: linear-gradient(90deg, var(--gold), #fab387); }
+.benchmark-fill.hermes { background: var(--blue); }
+.benchmark-fill.claude { background: var(--purple); }
+
+/* Code Section */
+.code-block {
+  background: #1e1e2e;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin: 20px 0;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 14px;
+  overflow-x: auto;
+  position: relative;
+}
+
+.code-block::before {
+  content: 'bash';
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 12px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.code-block code {
+  color: var(--green);
+}
+
+/* Download Section */
+.download {
+  text-align: center;
+  margin: 60px 0;
+}
+
+.download-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-top: 32px;
+}
+
+.download-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  text-decoration: none;
+  color: var(--text);
+  transition: all 0.3s;
+}
+
+.download-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-4px);
+}
+
+.download-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.download-name {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.download-meta {
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 40px 0;
+  border-top: 1px solid var(--border);
+  margin-top: 60px;
+}
+
+.footer-text {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.footer-links a {
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.footer-links a:hover {
+  color: var(--gold);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-title { font-size: 32px; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .features-grid { grid-template-columns: 1fr; }
+  .download-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-crown">👑</div>
+    <h1 class="hero-title">MUNDO Agent</h1>
+    <p class="hero-subtitle">Vibe Coding 时代最强 AI Agent — 自主学习、记忆沉淀、越用越强</p>
+
+    <div class="hero-badges">
+      <span class="badge badge-green">✓ 100% 成功率</span>
+      <span class="badge badge-blue">✓ 3.4s 代码生成</span>
+      <span class="badge badge-purple">✓ 6层记忆架构</span>
+      <span class="badge">✓ 多Agent协作</span>
+    </div>
+
+    <div class="hero-cta">
+      <a href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/tag/mundo-v2.0.9" class="btn btn-primary">下载 v2.0.9</a>
+      <a href="https://github.com/LiHongwei-cn/lihongwei-cn/blob/main/mundo-agent/README.md" class="btn btn-secondary">查看文档</a>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats">
+    <div class="stat-card">
+      <div class="stat-value">3.4s</div>
+      <div class="stat-label">代码生成速度</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">100%</div>
+      <div class="stat-label">任务成功率</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">6层</div>
+      <div class="stat-label">记忆架构</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">28+</div>
+      <div class="stat-label">支持模型</div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="section">
+    <h2 class="section-title">核心特性</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <div class="feature-title">6层记忆架构</div>
+        <div class="feature-desc">用户画像 → 核心记忆 → 相关记忆 → 对话摘要 → 代码模式 → 执行记录。跨会话持久化，记住你的偏好和项目上下文。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-title">多Agent协作</div>
+        <div class="feature-desc">自动调度 Claude、Hermes、Codex 等多个 AI 模型，根据任务类型选择最优方案。编码任务用 Claude，系统任务用 Hermes。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">100% 成功率</div>
+        <div class="feature-desc">任务级超时保护（90s）、工具调用次数限制（10次）、单个工具超时（30s）。不再超时，稳定可靠。</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔌</div>
+        <div class="feature-title">MCP Server 集成</div>
+        <div class="feature-desc">支持 Cursor、Claude Code 等 IDE 集成。通过 MCP 协议直接调用蒙多能力，无缝融入开发流程。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison Section -->
+  <section class="section">
+    <h2 class="section-title">与其他工具对比</h2>
+    <div class="comparison">
+      <table>
+        <thead>
+          <tr>
+            <th>特性</th>
+            <th>MUNDO</th>
+            <th>Cursor</th>
+            <th>Lovable</th>
+            <th>Replit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>记忆系统</td>
+            <td class="check">✓ 6层架构</td>
+            <td class="cross">✗ 无</td>
+            <td class="cross">✗ 无</td>
+            <td class="cross">✗ 无</td>
+          </tr>
+          <tr>
+            <td>自学习</td>
+            <td class="check">✓</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+          </tr>
+          <tr>
+            <td>多Agent协作</td>
+            <td class="check">✓</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+          </tr>
+          <tr>
+            <td>成功率</td>
+            <td class="check">100%</td>
+            <td>变化</td>
+            <td>变化</td>
+            <td>变化</td>
+          </tr>
+          <tr>
+            <td>开源</td>
+            <td class="check">✓ MIT</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+            <td class="cross">✗</td>
+          </tr>
+          <tr>
+            <td>价格</td>
+            <td class="check">免费</td>
+            <td>$20/月</td>
+            <td>$20/月</td>
+            <td>$25/月</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Benchmark Section -->
+  <section class="section">
+    <h2 class="section-title">性能基准测试</h2>
+    <div class="benchmark">
+      <div class="benchmark-title">代码生成任务</div>
+      <div class="benchmark-bars">
+        <div class="benchmark-item">
+          <div class="benchmark-label">MUNDO</div>
+          <div class="benchmark-bar">
+            <div class="benchmark-fill mundo" style="width: 25%">3.4s</div>
+          </div>
+        </div>
+        <div class="benchmark-item">
+          <div class="benchmark-label">Claude</div>
+          <div class="benchmark-bar">
+            <div class="benchmark-fill claude" style="width: 43%">5.7s</div>
+          </div>
+        </div>
+        <div class="benchmark-item">
+          <div class="benchmark-label">Hermes</div>
+          <div class="benchmark-bar">
+            <div class="benchmark-fill hermes" style="width: 100%">13.4s</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Start Section -->
+  <section class="section">
+    <h2 class="section-title">快速开始</h2>
+    <div class="code-block">
+      <code>
+# 克隆仓库<br>
+git clone https://github.com/LiHongwei-cn/lihongwei-cn.git<br>
+cd lihongwei-cn/mundo-agent<br>
+<br>
+# 创建虚拟环境<br>
+python3 -m venv venv<br>
+source venv/bin/activate<br>
+<br>
+# 安装依赖<br>
+pip install -r requirements.txt<br>
+<br>
+# 运行蒙多<br>
+python3 mundo.py
+      </code>
+    </div>
+  </section>
+
+  <!-- Cursor Integration -->
+  <section class="section">
+    <h2 class="section-title">Cursor 集成</h2>
+    <div class="code-block">
+      <code>
+// .cursor/mcp.json<br>
+{<br>
+&nbsp;&nbsp;"mcpServers": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;"mundo-agent": {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"command": "python3",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"args": ["mundo-agent/mcp_server.py"]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;}<br>
+}
+      </code>
+    </div>
+  </section>
+
+  <!-- Download Section -->
+  <section class="download">
+    <h2 class="section-title">下载 v2.0.9</h2>
+    <div class="download-grid">
+      <a href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/tag/mundo-v2.0.9" class="download-card">
+        <div class="download-icon">🍎</div>
+        <div class="download-name">macOS</div>
+        <div class="download-meta">mundo-agent-v2.0.9-macos.zip</div>
+      </a>
+      <a href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/tag/mundo-v2.0.9" class="download-card">
+        <div class="download-icon">🪟</div>
+        <div class="download-name">Windows</div>
+        <div class="download-meta">mundo-agent-v2.0.9-windows.zip</div>
+      </a>
+      <a href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/tag/mundo-v2.0.9" class="download-card">
+        <div class="download-icon">🐧</div>
+        <div class="download-name">Linux</div>
+        <div class="download-meta">mundo-agent-v2.0.9-linux.zip</div>
+      </a>
+      <a href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/tag/mundo-v2.0.9" class="download-card">
+        <div class="download-icon">📦</div>
+        <div class="download-name">全平台</div>
+        <div class="download-meta">mundo-agent-v2.0.9-all.zip</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-text">
+      👑 MUNDO goes where MUNDO pleases! — The Emperor of AI Agents
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/LiHongwei-cn/lihongwei-cn">GitHub</a>
+      <a href="https://github.com/LiHongwei-cn/lihongwei-cn/blob/main/mundo-agent/README.md">文档</a>
+      <a href="https://github.com/LiHongwei-cn/lihongwei-cn/blob/main/mundo-agent/CURSOR_INTEGRATION.md">Cursor 集成</a>
+      <a href="https://github.com/LiHongwei-cn/lihongwei-cn/issues">反馈</a>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>
