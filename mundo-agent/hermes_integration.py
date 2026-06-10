@@ -86,6 +86,7 @@ class HermesAgent:
         skills: Optional[str] = None,
         timeout: int = 300,
         workdir: Optional[str] = None,
+        lite: bool = False,
     ) -> str:
         args = ["chat", "-q", prompt, "-Q"]
         if model:
@@ -96,6 +97,9 @@ class HermesAgent:
             args += ["-t", toolsets]
         if skills:
             args += ["-s", skills]
+        # 轻量模式：跳过用户配置和规则文件，限制轮次
+        if lite:
+            args += ["--ignore-user-config", "--max-turns", "15"]
         return _run_hermes(args, timeout=timeout, workdir=workdir)
 
     def chat_with_skills(
