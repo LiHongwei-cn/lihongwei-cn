@@ -31,41 +31,17 @@ from model_adapter import get_model_adapter, DeepSeekOptimizer
 from quark_optimizer import ModelOptimizerFactory
 from model_profiles import SmartModelSelector, AutoAdapter, TaskType, PROVIDER_DATABASE
 from task_planner import TaskPlanner, MultiModelCoordinator, LATEST_MODELS, MODEL_RATINGS
+from tool_guard import ToolGuardController, GuardAction
+from dispatch import ToolCall as DispatchToolCall, dispatch
+from prompt_assembler import build_system_prompt
 
 
 # ═══════════════════════════════════════════════
 # System Prompt — 精简版，省 token
 # ═══════════════════════════════════════════════
 
-MUNDO_SYSTEM_PROMPT = """你是蒙多，THE EMPEROR。直接、高效、不废话。中文交流，代码命名用英文。
-
-工具：terminal/read_file/write_file/edit_file/search_files/web_search/list_directory。
-需要时直接调用，不需要时不调。简单问题直接回答。
-- 读文件前先 search_files 定位
-- terminal 失败时分析错误再重试，不重复同样命令
-- 多个独立操作可并行调用
-
-帝皇决心（最高优先级）：
-- 用户的任务是死命令，必须完成
-- 长文本任务：分段处理，逐步推进，绝不草草了事
-- 长时间任务：耐心执行，每一步都做到位
-- 遇到困难：换策略、换工具、换思路，但绝不放弃
-- 完成标准：用户满意才算完成，不是你觉得完成了
-
-辩证思维（科研级严谨，所有分析/论证/选型/评审任务自动激活）：
-- 盲假设：分析前先写下预期，预期不可事后修改，防 hindsight bias
-- 多维评估：用 7 维 Rubric（严谨性/证据/逻辑/反驳/创新/可操作/透明度）量化打分，不靠"我觉得"
-- 对抗验证：对自己的结论发起五维攻击（边界/安全/性能/依赖/矛盾），经不住攻击的结论不配被采纳
-- 跨模型对审：重要结论请独立模型复核，delta≥2 必须解决分歧
-- 观察生命周期：单次发现→跨样本→规律沉淀/被推翻。被推翻的立即删除，不留考古层
-- 校准反馈：每次判断记录 confidence，事后对比实际结果，识别系统性偏差并修正框架
-- 简单任务（查资料/写代码/改配置）不触发此模式，避免过度工程化
-
-完成反馈：
-最后一个 response 必须输出：完整的工作汇报，包括做了什么、结果如何、遇到什么问题。
-简单任务一句话即可。复杂任务详细汇报。不要省略任何细节。
-
-语言：短句优先。一个句子一件事。活人感 > 机器感。"""
+# System prompt 现在由 prompt_assembler.py 模块化组装
+MUNDO_SYSTEM_PROMPT = None  # 已迁移到 prompt_assembler.build_system_prompt()
 
 
 # ═══════════════════════════════════════════════
@@ -236,6 +212,9 @@ class MundoEngine:
         self.sandbox = get_sandbox()
         self.config = get_config()
 
+        # 工具循环防护（从 Hermes Agent 提炼）
+        self.tool_guard = ToolGuardController()
+        
         # 上下文映射器
         self._context = ContextMapper(ContextBudget(max_tokens=CONTEXT_MAX_TOKENS))
 
@@ -253,18 +232,14 @@ class MundoEngine:
         self.on_llm_stats = None
 
     def _build_system_message(self):
-        """构建 system message — 夸克级优化"""
-        base_prompt = MUNDO_SYSTEM_PROMPT
-        
-        # 使用模型适配器优化
-        optimized = self.adapter.optimize_system_prompt(base_prompt)
-        
-        # 使用夸克级优化器进一步优化
-        quark_optimized = ModelOptimizerFactory.format_system_prompt(
-            self.provider, optimized, model=self.model_name
+        """构建 system message — 模块化组装 + 夸克级优化"""
+        content = build_system_prompt(
+            model_adapter=self.adapter,
+            quark_optimizer=True,
+            provider=self.provider,
+            model_name=self.model_name,
         )
-        
-        return {"role": "system", "content": quark_optimized}
+        return {"role": "system", "content": content}
 
     def _model_display(self):
         return f"{self.provider}/{self.model_name}"
@@ -427,6 +402,8 @@ class MundoEngine:
 
     def _execute_tool_calls(self, tool_calls: list):
         import tools as tool_module
+        # 解析工具调用为 DispatchToolCall 格式
+        calls = []
         for tc in tool_calls:
             if self._interrupted:
                 break
@@ -436,52 +413,105 @@ class MundoEngine:
                 args = json.loads(fn.get("arguments", "{}"))
             except json.JSONDecodeError:
                 args = {}
+            calls.append((tc, name, args))
 
-            # 策略检查
-            policy_result = self.policy.evaluate_tool(name, args)
-            if policy_result.is_denied:
-                self.messages.append({"role": "tool", "tool_call_id": tc.get("id", ""), "content": f"[策略拒绝] {policy_result.reason}"})
-                continue
+        # 智能分发：并行或串行
+        dispatch_calls = [
+            DispatchToolCall(id=tc.get("id", ""), name=name, args=args)
+            for tc, name, args in calls
+        ]
 
-            if self.on_tool_call:
-                self.on_tool_call(name, args, self.stats)
+        def _executor(name: str, args: dict) -> str:
+            return tool_module.execute_tool(name, args)
 
-            tool_start = time.time()
-            try:
-                output = tool_module.execute_tool(name, args)
-                duration = (time.time() - tool_start) * 1000
-                self.stats.tool_calls_count += 1
-                self.stats.tool_time += duration / 1000
-                self._consecutive_errors = 0
-                self._same_error_streak = 0
+        # 检查是否可以并行（多个工具调用时）
+        if len(dispatch_calls) > 1:
+            results = dispatch(dispatch_calls, _executor)
+            for (tc, name, args), result in zip(calls, results):
+                self._handle_tool_result(tc, name, args, result.output, result.is_error, result.elapsed)
+        else:
+            for tc, name, args in calls:
+                if self._interrupted:
+                    break
+                self._execute_single_tool(tc, name, args, tool_module)
 
-                self.messages.append({"role": "tool", "tool_call_id": tc.get("id", ""), "content": str(output)[:TOOL_MAX_OUTPUT]})
+    def _execute_single_tool(self, tc, name: str, args: dict, tool_module):
+        """执行单个工具调用（带策略检查+循环防护）"""
+        # 策略检查
+        policy_result = self.policy.evaluate_tool(name, args)
+        if policy_result.is_denied:
+            self.messages.append({"role": "tool", "tool_call_id": tc.get("id", ""), "content": f"[策略拒绝] {policy_result.reason}"})
+            return
+
+        if self.on_tool_call:
+            self.on_tool_call(name, args, self.stats)
+
+        tool_start = time.time()
+        try:
+            output = tool_module.execute_tool(name, args)
+            duration = (time.time() - tool_start) * 1000
+
+            # 工具循环防护检查
+            guard_decision = self.tool_guard.observe(name, args, str(output), is_error=False)
+            if guard_decision.action == GuardAction.HALT:
+                self._interrupted = True
+                self.messages.append({"role": "tool", "tool_call_id": tc.get("id", ""), "content": guard_decision.message})
+                return
+            if guard_decision.action in (GuardAction.WARN, GuardAction.BLOCK):
                 if self.on_tool_output:
-                    self.on_tool_output(name, str(output)[:500], False)
+                    self.on_tool_output("guard", guard_decision.message, True)
 
-                self.timeline.record_tool(name, args, str(output)[:1000], duration)
-                self.events.publish(EventType.TOOL_RESULT, {"tool": name, "duration_ms": duration}, "engine")
+            self._handle_tool_result(tc, name, args, str(output), False, duration)
 
-            except Exception as e:
-                self._consecutive_errors += 1
-                self.stats.errors_count += 1
-                if name == self._last_error_tool:
-                    self._same_error_streak += 1
-                else:
-                    self._same_error_streak = 1
-                    self._last_error_tool = name
+        except Exception as e:
+            duration = (time.time() - tool_start) * 1000
+            # 工具循环防护检查（错误时）
+            guard_decision = self.tool_guard.observe(name, args, str(e), is_error=True)
+            if guard_decision.action == GuardAction.HALT:
+                self._interrupted = True
 
-                error_msg = f"[工具错误] {name}: {e}"
-                self.messages.append({"role": "tool", "tool_call_id": tc.get("id", ""), "content": error_msg})
-                if self.on_tool_output:
-                    self.on_tool_output(name, str(e), True)
+            self._handle_tool_error(tc, name, args, e, duration)
 
-                self.timeline.record_error(str(e), name)
-                self.events.publish(EventType.TOOL_ERROR, {"tool": name, "error": str(e)}, "engine")
+    def _handle_tool_result(self, tc, name: str, args: dict, output: str, is_error: bool, duration: float):
+        """统一处理工具结果"""
+        if is_error:
+            self._handle_tool_error(tc, name, args, Exception(output), duration)
+            return
+
+        self.stats.tool_calls_count += 1
+        self.stats.tool_time += duration / 1000
+        self._consecutive_errors = 0
+        self._same_error_streak = 0
+
+        self.messages.append({"role": "tool", "tool_call_id": tc.get("id", ""), "content": str(output)[:TOOL_MAX_OUTPUT]})
+        if self.on_tool_output:
+            self.on_tool_output(name, str(output)[:500], False)
+
+        self.timeline.record_tool(name, args, str(output)[:1000], duration)
+        self.events.publish(EventType.TOOL_RESULT, {"tool": name, "duration_ms": duration}, "engine")
+
+    def _handle_tool_error(self, tc, name: str, args: dict, error: Exception, duration: float):
+        """统一处理工具错误"""
+        self._consecutive_errors += 1
+        self.stats.errors_count += 1
+        if name == self._last_error_tool:
+            self._same_error_streak += 1
+        else:
+            self._same_error_streak = 1
+            self._last_error_tool = name
+
+        error_msg = f"[工具错误] {name}: {error}"
+        self.messages.append({"role": "tool", "tool_call_id": tc.get("id", ""), "content": error_msg})
+        if self.on_tool_output:
+            self.on_tool_output(name, str(error), True)
+
+        self.timeline.record_error(str(error), name)
+        self.events.publish(EventType.TOOL_ERROR, {"tool": name, "error": str(error)}, "engine")
 
     def run(self, user_input: str, extra_context: str = "") -> str:
         self.stats.reset()
         self.budget.reset()
+        self.tool_guard.reset()
         self._interrupted = False
         self._use_streaming = self.adapter.profile.supports_streaming
         self._install_signal_handler()
@@ -634,6 +664,7 @@ class MundoEngine:
         self.messages = []
         self.stats.reset()
         self.budget.reset()
+        self.tool_guard.reset()
         self._context = ContextMapper(ContextBudget(max_tokens=CONTEXT_MAX_TOKENS))
 
     def compact(self):
