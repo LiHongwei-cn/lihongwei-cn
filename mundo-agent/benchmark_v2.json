@@ -1,0 +1,34 @@
+[
+  {
+    "task": "T2",
+    "time": 46,
+    "turns": 10,
+    "tools": 12,
+    "tokens": 36722,
+    "ok": true
+  },
+  {
+    "task": "T3",
+    "time": 58,
+    "turns": 7,
+    "tools": 6,
+    "tokens": 32196,
+    "ok": true
+  },
+  {
+    "task": "T4",
+    "time": 59,
+    "turns": 9,
+    "tools": 8,
+    "tokens": 35387,
+    "ok": true
+  },
+  {
+    "task": "T5",
+    "time": 169,
+    "turns": 26,
+    "tools": 65,
+    "tokens": 141238,
+    "ok": true
+  }
+]

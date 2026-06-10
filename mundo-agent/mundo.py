@@ -161,6 +161,14 @@ class MundoCLI:
         self.console.init_screen(f"{self.provider}/{model_disp}", VERSION)
         console.print(f"\n[gold]  MUNDO[/] [dim]v{VERSION} · {model_disp}[/]")
 
+        # 启动时检查版本更新
+        latest = self._check_latest_version()
+        if latest != VERSION:
+            console.print(f"\n  [yellow]⚠ 发现新版本: v{latest}[/]")
+            console.print(f"  [dim]当前版本: v{VERSION}[/]")
+            console.print(f"  [dim]运行 /update 自动更新，或手动执行:[/]")
+            console.print(f"  [dim]  cp ~/Desktop/lihongwei-cn/mundo-agent/*.py ~/.hermes/mundo-agent/[/]\n")
+
     def show_help(self):
         help_text = """
 [bold gold]蒙多命令手册[/]
@@ -202,6 +210,7 @@ class MundoCLI:
 [gold.dim]工具[/]
   [subtext]/tools[/]           列出所有工具
   [subtext]/setup[/]           重新运行设置向导
+  [subtext]/update[/]          检查并更新到最新版本
 
 [cyan]直接输入任何文本，蒙多开始执行任务。[/]
 """
@@ -403,6 +412,53 @@ class MundoCLI:
                 console.print(f"    技术栈: {p['tech']}")
             console.print(f"    最近: {p['seen']}")
 
+    def cmd_update(self):
+        """自动更新蒙多到最新版本"""
+        import shutil
+        console.print("\n  [gold]检查更新...[/]")
+
+        latest = self._check_latest_version()
+        if latest == VERSION:
+            console.print(f"  [success]✓ 已是最新版本 v{VERSION}[/]\n")
+            return
+
+        console.print(f"  [yellow]发现新版本: v{latest}[/]")
+        console.print(f"  [dim]当前版本: v{VERSION}[/]\n")
+
+        # 检查仓库目录是否存在
+        repo_dir = Path.home() / "Desktop" / "lihongwei-cn" / "mundo-agent"
+        if not repo_dir.exists():
+            console.print(f"  [error]✗ 仓库目录不存在: {repo_dir}[/]")
+            console.print(f"  [dim]请手动克隆仓库后重试[/]\n")
+            return
+
+        console.print(f"  [gold]正在从仓库同步...[/]")
+
+        # 需要同步的文件列表
+        sync_files = [
+            "mundo.py", "constants.py", "core.py", "llm.py",
+            "delegation.py", "hermes_integration.py", "claude_integration.py",
+            "codex_integration.py", "tools.py", "display.py", "setup.py",
+            "approval.py", "memory.py", "hooks.py", "cache.py",
+            "context_discipline.py", "context_mapper.py", "dispatch.py",
+            "events.py", "failover.py", "cloud_sync.py", "engine.py",
+            "agents.py", "version.txt"
+        ]
+
+        synced = 0
+        for fname in sync_files:
+            src = repo_dir / fname
+            dst = MUNDO_HOME / fname
+            if src.exists():
+                try:
+                    shutil.copy2(str(src), str(dst))
+                    synced += 1
+                except Exception as e:
+                    console.print(f"  [error]✗ 同步失败 {fname}: {e}[/]")
+
+        console.print(f"\n  [success]✓ 同步完成: {synced}/{len(sync_files)} 个文件[/]")
+        console.print(f"  [gold]请重启蒙多以使用新版本 v{latest}[/]\n")
+
     # ─────────────────────────────────────────
     # 模型命令
     # ─────────────────────────────────────────
@@ -509,6 +565,7 @@ class MundoCLI:
             "/models": lambda: self.cmd_models(),
             "/search": lambda: self.cmd_search(args),
             "/projects": lambda: self.cmd_projects(),
+            "/update": lambda: self.cmd_update(),
         }
         if cmd in handlers:
             handlers[cmd]()

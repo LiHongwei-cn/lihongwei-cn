@@ -1,0 +1,57 @@
+[
+  {
+    "agent": "MUNDO",
+    "task": "T1-文件分析",
+    "ok": true,
+    "time": 62,
+    "turns": 15,
+    "tools": 14,
+    "tokens": 149981,
+    "result_len": 2191,
+    "preview": "已完整读取文件。以下是 `core.py`（共 692 行）的统计结果：\n\n## 统计概览\n\n| 指标 | 数量 |\n|------|------|\n| **类 (Class)** | **3** |\n| **函数 (Function/Method)** | **40** |\n\n## 类名列表\n\n| 序号 | 类名 | 起始行 | 职责 |\n|------|------|--------|----"
+  },
+  {
+    "agent": "MUNDO",
+    "task": "T2-代码生成",
+    "ok": true,
+    "time": 77,
+    "turns": 12,
+    "tools": 13,
+    "tokens": 56446,
+    "result_len": 1423,
+    "preview": "## 任务完成汇报\n\n**任务执行：** 在 `/tmp/bench_test/` 目录下创建斐波那契函数文件和测试文件，并运行测试验证。\n\n### 完成内容\n\n**1. 创建 `/tmp/bench_test/fibonacci.py` (64行)**\n- 实现了三种斐波那契方法：\n  - `fib_recursive(n: int) -> int`：朴素递归（指数时间复杂度，仅用于教学对比）\n"
+  },
+  {
+    "agent": "MUNDO",
+    "task": "T3-Bug修复",
+    "ok": true,
+    "time": 76,
+    "turns": 7,
+    "tools": 6,
+    "tokens": 29673,
+    "result_len": 38,
+    "preview": "已写入 `/tmp/bench_fixed.py`，三个函数全部测试通过 ✅"
+  },
+  {
+    "agent": "MUNDO",
+    "task": "T4-系统编程",
+    "ok": true,
+    "time": 73,
+    "turns": 8,
+    "tools": 7,
+    "tokens": 39016,
+    "result_len": 444,
+    "preview": "**完成。** 脚本已创建并运行成功。\n\n**文件**: `/tmp/bench_sysinfo.py`\n\n**输出验证结果**:\n```json\n{\n  \"cpu_cores\": 10,\n  \"memory_total_gb\": 16.0,\n  \"disk_usage_percent\": 18.72,\n  \"python_version\": \"3.9.6\",\n  \"username\": \"hua"
+  },
+  {
+    "agent": "MUNDO",
+    "task": "T5-多文件重构",
+    "ok": true,
+    "time": 63,
+    "turns": 13,
+    "tools": 20,
+    "tokens": 73711,
+    "result_len": 508,
+    "preview": "**完成。** 所有文件已创建并验证通过。\n\n## 文件清单\n\n| 文件 | 内容 |\n|------|------|\n| `operations.py` | `add` / `subtract` / `multiply` / `divide`，含除零检测 |\n| `advanced.py` | `power` / `sqrt` / `mod`，含负数开偶次方检测 |\n| `history.py`"
+  }
+]

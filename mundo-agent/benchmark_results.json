@@ -1,0 +1,27 @@
+[
+  {
+    "task": "T1: 文件分析",
+    "success": false,
+    "error": "缺少 XIAOMI_API_KEY。运行 /setup 或 /add 配置。"
+  },
+  {
+    "task": "T2: 代码生成",
+    "success": false,
+    "error": "缺少 XIAOMI_API_KEY。运行 /setup 或 /add 配置。"
+  },
+  {
+    "task": "T3: Bug修复",
+    "success": false,
+    "error": "缺少 XIAOMI_API_KEY。运行 /setup 或 /add 配置。"
+  },
+  {
+    "task": "T4: 系统编程",
+    "success": false,
+    "error": "缺少 XIAOMI_API_KEY。运行 /setup 或 /add 配置。"
+  },
+  {
+    "task": "T5: 多文件重构",
+    "success": false,
+    "error": "缺少 XIAOMI_API_KEY。运行 /setup 或 /add 配置。"
+  }
+]
