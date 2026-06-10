@@ -102,7 +102,7 @@ RETRY_DELAY = 2.0
 # 帝皇决心 — 不完成不罢休
 # ═══════════════════════════════════════════════
 
-MAX_ITERATIONS = 200          # 最大迭代次数（复杂任务需要更多轮）
+MAX_ITERATIONS = 50           # 单任务最大迭代（效率优化后50轮足够）
 LONG_TASK_THRESHOLD = 50      # 长任务阈值（超过此值启用特殊处理）
 TASK_ABANDON_TIMEOUT = 1800   # 任务放弃超时（30分钟无进展）
 PROGRESS_CHECK_INTERVAL = 10  # 进度检查间隔（每10轮检查一次）
