@@ -207,13 +207,253 @@ def test_workflow():
     try: e.start("nonexistent"); assert_true(False, "应报错")
     except ValueError: assert_true(True, "未知模板报错")
 
+
+# ═══════════════════════════════════════════════
+# 9. plugin_system.py 测试
+# ═══════════════════════════════════════════════
+
+def test_plugin_system():
+    section("9. 插件系统 (plugin_system.py)")
+    from plugin_system import PluginManager, PluginManifest
+    import tempfile, json, os
+
+    # 9.1 创建临时插件目录
+    print("  [9.1] 插件发现+加载")
+    with tempfile.TemporaryDirectory() as tmpdir:
+        # 创建测试插件
+        pdir = os.path.join(tmpdir, "test-plugin")
+        os.makedirs(pdir)
+        with open(os.path.join(pdir, "plugin.json"), "w") as f:
+            json.dump({"name": "test-plugin", "version": "1.0.0", "description": "测试插件"}, f)
+        os.makedirs(os.path.join(pdir, "commands"))
+        with open(os.path.join(pdir, "commands", "hello.md"), "w") as f:
+            f.write("# Hello Command\nSay hello")
+        os.makedirs(os.path.join(pdir, "agents"))
+        with open(os.path.join(pdir, "agents", "explorer.md"), "w") as f:
+            f.write("# Explorer Agent\nExplore code")
+        os.makedirs(os.path.join(pdir, "skills", "my-skill"))
+        with open(os.path.join(pdir, "skills", "my-skill", "SKILL.md"), "w") as f:
+            f.write("---\nname: my-skill\n---\n# My Skill")
+
+        pm = PluginManager()
+        pm.add_search_path(tmpdir)
+        found = pm.discover()
+        assert_eq(found, ["test-plugin"], "应发现1个插件")
+
+        # 9.2 插件元数据
+        print("  [9.2] 插件元数据")
+        p = pm.get("test-plugin")
+        assert_true(p is not None, "应能获取插件")
+        assert_eq(p.manifest.name, "test-plugin", "名称正确")
+        assert_eq(p.manifest.version, "1.0.0", "版本正确")
+
+        # 9.3 组件加载
+        print("  [9.3] 组件加载")
+        assert_eq(len(p.commands), 1, "应有1个命令")
+        assert_in("hello", p.commands, "应有hello命令")
+        assert_eq(len(p.agents), 1, "应有1个Agent")
+        assert_in("explorer", p.agents, "应有explorer")
+        assert_eq(len(p.skills), 1, "应有1个技能")
+        assert_in("my-skill", p.skills, "应有my-skill")
+
+        # 9.4 启用/禁用
+        print("  [9.4] 启用/禁用")
+        assert_true(p.enabled, "默认启用")
+        pm.disable("test-plugin")
+        assert_false(p.enabled, "禁用后应False")
+        pm.enable("test-plugin")
+        assert_true(p.enabled, "重新启用")
+
+        # 9.5 聚合查询
+        print("  [9.5] 聚合查询")
+        cmds = pm.get_all_commands()
+        assert_in("test-plugin:hello", cmds, "命令带插件前缀")
+        skills = pm.get_all_skills()
+        assert_in("my-skill", skills, "技能按名注册")
+        agents = pm.get_all_agents()
+        assert_in("test-plugin:explorer", agents, "Agent带前缀")
+
+        # 9.6 统计
+        print("  [9.6] 统计")
+        stats = pm.stats()
+        assert_eq(stats["total_plugins"], 1, "1个插件")
+        assert_eq(stats["total_commands"], 1, "1个命令")
+        assert_eq(stats["total_agents"], 1, "1个Agent")
+        assert_eq(stats["total_skills"], 1, "1个技能")
+
+        # 9.7 list_plugins
+        print("  [9.7] list_plugins")
+        plist = pm.list_plugins()
+        assert_eq(len(plist), 1, "1个插件")
+        assert_eq(plist[0]["name"], "test-plugin", "名称正确")
+
+    # 9.8 无效插件目录
+    print("  [9.8] 无效目录")
+    pm = PluginManager()
+    pm.add_search_path("/nonexistent/path")
+    found = pm.discover()
+    assert_eq(found, [], "无效路径应返回空")
+
+
+# ═══════════════════════════════════════════════
+# 10. context_discipline.py 测试
+# ═══════════════════════════════════════════════
+
+def test_context_discipline():
+    section("10. 上下文纪律 (context_discipline.py)")
+    from context_discipline import ContextDiscipline, ContextItem, ChunkType
+
+    # 10.1 正常项通过
+    print("  [10.1] 正常项通过")
+    cd = ContextDiscipline(max_item_tokens=100, max_items=10)
+    items = [ContextItem("short text", ChunkType.USER, source="msg1")]
+    accepted, report = cd.enforce(items)
+    assert_eq(report.accepted, 1, "1项通过")
+    assert_eq(report.truncated, 0, "无截断")
+    assert_eq(report.dropped, 0, "无丢弃")
+
+    # 10.2 超限截断
+    print("  [10.2] 超限截断")
+    cd = ContextDiscipline(max_item_tokens=100, max_items=50)
+    long_text = "x" * 10000  # ~2857 tokens >> 100
+    items = [ContextItem(long_text, ChunkType.TOOL_RESULT, source="big_output")]
+    accepted, report = cd.enforce(items)
+    assert_eq(report.truncated, 1, "应截断1项")
+    assert_true(accepted[0].truncated, "截断标记")
+    assert_true(len(accepted[0].content) < len(long_text), "内容变短")
+    assert_in("[...截断...]", accepted[0].content, "有截断标记")
+
+    # 10.3 超项数丢弃
+    print("  [10.3] 超项数丢弃")
+    cd = ContextDiscipline(max_item_tokens=10000, max_items=3)
+    items = [ContextItem(f"item{i}", ChunkType.CONTEXT) for i in range(5)]
+    accepted, report = cd.enforce(items)
+    assert_eq(len(accepted), 3, "只保留3项")
+    assert_eq(report.dropped, 2, "丢弃2项")
+
+    # 10.4 历史不可重写验证
+    print("  [10.4] 历史不可重写")
+    cd = ContextDiscipline()
+    old = [{"role": "user", "content": "hello"}, {"role": "assistant", "content": "hi"}]
+    new_ok = old + [{"role": "user", "content": "bye"}]
+    new_bad = [{"role": "user", "content": "CHANGED"}, {"role": "assistant", "content": "hi"}]
+    assert_true(cd.validate_no_rewrite(old, new_ok), "追加式修改应通过")
+    assert_false(cd.validate_no_rewrite(old, new_bad), "重写历史应失败")
+    assert_false(cd.validate_no_rewrite(old, old[:1]), "缩短历史应失败")
+
+    # 10.5 历史完整性
+    print("  [10.5] 历史完整性")
+    cd = ContextDiscipline()
+    assert_true(cd.check_history_integrity([]), "空历史完整")
+    assert_true(cd.check_history_integrity([{"role": "user", "content": "x"}]), "单条完整")
+    assert_false(cd.check_history_integrity([{"role": "", "content": "x"}]), "空角色不完整")
+    assert_false(cd.check_history_integrity([{"role": "user", "content": "a"}, {"role": "system", "content": "b"}]), "system在后不完整")
+
+    # 10.6 token估算
+    print("  [10.6] token估算")
+    cd = ContextDiscipline()
+    t = cd.estimate_tokens("hello world")
+    assert_true(t > 0, f"应>0，实际{t}")
+
+    # 10.7 预算报告
+    print("  [10.7] 预算报告")
+    cd = ContextDiscipline(max_item_tokens=1000, max_items=50)
+    items = [ContextItem("x", ChunkType.USER), ContextItem("y", ChunkType.TOOL_RESULT)]
+    report = cd.budget_report(items)
+    assert_eq(report["total_items"], 2, "2项")
+    assert_in("user", report["by_type"], "有user类型")
+    assert_in("tool_result", report["by_type"], "有tool_result类型")
+
+
+# ═══════════════════════════════════════════════
+# 11. failover.py 测试
+# ═══════════════════════════════════════════════
+
+def test_failover():
+    section("11. 错误恢复 Failover (failover.py)")
+    from failover import FailoverChain, classify_error, FailoverReason, FailoverConfig
+
+    # 11.1 错误分类
+    print("  [11.1] 错误分类")
+    assert_eq(classify_error(ConnectionResetError(), ""), FailoverReason.CONNECTION, "连接重置")
+    assert_eq(classify_error(Exception(), "429 rate limit"), FailoverReason.RATE_LIMIT, "限速")
+    assert_eq(classify_error(Exception(), "401 unauthorized"), FailoverReason.AUTH, "认证")
+    assert_eq(classify_error(Exception(), "503 service unavailable"), FailoverReason.SERVER, "服务端")
+    assert_eq(classify_error(Exception(), "context length exceeded"), FailoverReason.CONTEXT_LENGTH, "上下文超长")
+    assert_eq(classify_error(Exception(), "quota exhausted"), FailoverReason.QUOTA, "配额耗尽")
+    assert_eq(classify_error(Exception(), "something weird"), FailoverReason.UNKNOWN, "未知")
+
+    # 11.2 重试决策
+    print("  [11.2] 重试决策")
+    chain = FailoverChain("primary-model", ["backup-1", "backup-2"])
+    should, delay = chain.should_retry(ConnectionResetError(), "")
+    assert_true(should, "连接错误应重试")
+    assert_true(delay > 0, f"延迟应>0，实际{delay}")
+
+    # 11.3 不可重试→failover
+    print("  [11.3] 不可重试→failover")
+    chain = FailoverChain("primary", ["backup"])
+    should, _ = chain.should_retry(Exception(), "401 unauthorized")
+    assert_false(should, "认证错误不应重试")
+    new = chain.failover(Exception(), "401 unauthorized")
+    assert_eq(new, "backup", "应切换到backup")
+    assert_eq(chain.current_model, "backup", "当前应为backup")
+
+    # 11.4 重试耗尽→failover
+    print("  [11.4] 重试耗尽→failover")
+    chain = FailoverChain("p", ["b"], FailoverConfig(max_retries=2))
+    for i in range(3):
+        chain.should_retry(ConnectionResetError(), "")
+    new = chain.failover(ConnectionResetError(), "")
+    assert_eq(new, "b", "重试耗尽应failover")
+
+    # 11.5 链耗尽
+    print("  [11.5] 链耗尽")
+    chain = FailoverChain("p", ["b1"])
+    chain.failover(Exception("e1"), "500")
+    new = chain.failover(Exception("e2"), "500")
+    assert_true(new is None, "链耗尽应返回None")
+
+    # 11.6 重置
+    print("  [11.6] 重置")
+    chain = FailoverChain("p", ["b"])
+    chain.failover(Exception(), "401")
+    chain.reset()
+    assert_eq(chain.current_model, "p", "重置后应为主模型")
+
+    # 11.7 历史记录
+    print("  [11.7] 历史记录")
+    chain = FailoverChain("p", ["b"])
+    chain.failover(Exception("err"), "429 rate limit")
+    h = chain.history()
+    assert_eq(len(h), 1, "1条历史")
+    assert_eq(h[0]["reason"], "rate_limit", "原因正确")
+
+    # 11.8 统计
+    print("  [11.8] 统计")
+    chain = FailoverChain("p", ["b"])
+    chain.failover(Exception(), "500")
+    s = chain.stats()
+    assert_eq(s["total_failovers"], 1, "1次failover")
+    assert_eq(s["current_model"], "b", "当前b")
+
+    # 11.9 回调
+    print("  [11.9] 回调")
+    cb_args = []
+    def on_fo(old, new, reason): cb_args.append((old, new, reason))
+    chain = FailoverChain("p", ["b"], on_failover=on_fo)
+    chain.failover(Exception(), "401")
+    assert_eq(len(cb_args), 1, "回调触发")
+    assert_eq(cb_args[0][0], "p", "旧模型p")
+    assert_eq(cb_args[0][1], "b", "新模型b")
+
 def test_benchmark():
     section("9. 对标分析")
     caps = {
         "Claude Code": {"多Agent并行": 10, "安全钩子": 9, "插件架构": 10, "结构化工作流": 9, "事件钩子": 10, "工具防护": 7, "上下文管理": 8, "错误恢复": 7, "沙箱": 5, "执行策略": 6},
         "Codex":       {"多Agent并行": 8,  "安全钩子": 10,"插件架构": 8,  "结构化工作流": 7, "事件钩子": 7,  "工具防护": 8, "上下文管理": 10,"错误恢复": 8, "沙箱": 10,"执行策略": 10},
         "Hermes":      {"多Agent并行": 9,  "安全钩子": 8, "插件架构": 9,  "结构化工作流": 8, "事件钩子": 8,  "工具防护": 10,"上下文管理": 10,"错误恢复": 10,"沙箱": 6, "执行策略": 7},
-        "蒙多 v2.0":   {"多Agent并行": 8,  "安全钩子": 8, "插件架构": 6,  "结构化工作流": 7, "事件钩子": 8,  "工具防护": 9, "上下文管理": 8, "错误恢复": 7, "沙箱": 6, "执行策略": 7},
+        "蒙多 v2.0":   {"多Agent并行": 8,  "安全钩子": 8, "插件架构": 9,  "结构化工作流": 7, "事件钩子": 8,  "工具防护": 9, "上下文管理": 9, "错误恢复": 8, "沙箱": 6, "执行策略": 7},
     }
     print(f"\n  {'能力维度':<14} {'Claude':>7} {'Codex':>7} {'Hermes':>7} {'蒙多':>7} {'差距':>7}")
     print(f"  {'-'*50}")
@@ -238,7 +478,7 @@ if __name__ == "__main__":
     print("╚═══════════════════════════════════════╝")
     test_tool_guard(); test_dispatch(); test_prompt_assembler()
     test_core_integration(); test_multi_agent(); test_hooks()
-    test_workflow(); test_benchmark()
+    test_workflow(); test_plugin_system(); test_context_discipline(); test_failover(); test_benchmark()
     section("结果汇总")
     t = _passed + _failed
     print(f"\n  ✅ {_passed} 通过  ❌ {_failed} 失败  通过率: {_passed/t*100:.1f}%")
