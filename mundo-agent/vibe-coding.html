@@ -417,6 +417,18 @@ td:first-child {
   color: var(--gold);
 }
 
+/* Counter */
+.page-counter {
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.page-counter span {
+  color: var(--gold);
+  font-weight: 600;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .hero-title { font-size: 32px; }
@@ -658,6 +670,11 @@ python3 mundo.py
     <div class="footer-text">
       👑 MUNDO goes where MUNDO pleases! — The Emperor of AI Agents
     </div>
+    <div class="page-counter">
+      <span id="busuanzi_container_site_pv">本站总访问量 <span id="busuanzi_value_site_pv">...</span> 次</span>
+      &nbsp;·&nbsp;
+      <span id="busuanzi_container_page_pv">本页访问量 <span id="busuanzi_value_page_pv">...</span> 次</span>
+    </div>
     <div class="footer-links">
       <a href="https://github.com/LiHongwei-cn/lihongwei-cn">GitHub</a>
       <a href="https://github.com/LiHongwei-cn/lihongwei-cn/blob/main/mundo-agent/README.md">文档</a>
@@ -667,6 +684,8 @@ python3 mundo.py
   </footer>
 
 </div>
+
+<script src="../assets/counter.js?v=3"></script>
 
 </body>
 </html>
