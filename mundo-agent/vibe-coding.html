@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="MUNDO Agent — 一个有记忆、会学习的 AI Agent，为 Vibe Coding 而生。">
-<meta name="keywords" content="AI Agent, Vibe Coding, Memory, Multi-Agent, Cursor, MCP, Code Generation">
-<title>MUNDO Agent — 有记忆的 AI Agent</title>
+<meta name="description" content="MUNDO Agent — 不完成不罢休的 AI Agent，集体意识架构，越用越聪明。">
+<meta name="keywords" content="AI Agent, Vibe Coding, Memory, Multi-Agent, Cursor, MCP, Code Generation, 集体意识">
+<title>MUNDO Agent — 不完成不罢休</title>
 <style>
 :root {
   --bg: #0a0a0f;
@@ -80,9 +80,17 @@ body {
 }
 
 .hero-subtitle {
-  font-size: 20px;
-  color: var(--text-dim);
+  font-size: 22px;
+  color: var(--text);
   max-width: 600px;
+  margin: 0 auto 16px;
+  font-weight: 500;
+}
+
+.hero-desc {
+  font-size: 16px;
+  color: var(--text-dim);
+  max-width: 500px;
   margin: 0 auto 32px;
 }
 
@@ -95,7 +103,7 @@ body {
 }
 
 .badge {
-  padding: 6px 16px;
+  padding: 8px 18px;
   border-radius: 20px;
   font-size: 14px;
   font-weight: 500;
@@ -103,9 +111,9 @@ body {
   background: var(--gold-dim);
 }
 
+.badge-gold { color: var(--gold); border-color: rgba(249, 226, 175, 0.3); background: rgba(249, 226, 175, 0.1); }
 .badge-green { color: var(--green); border-color: rgba(166, 227, 161, 0.3); }
 .badge-blue { color: var(--blue); border-color: rgba(137, 180, 250, 0.3); }
-.badge-purple { color: var(--purple); border-color: rgba(203, 166, 247, 0.3); }
 
 .hero-cta {
   display: flex;
@@ -145,6 +153,92 @@ body {
   border-color: var(--gold);
 }
 
+/* Unique Features Section */
+.section {
+  margin: 80px 0;
+}
+
+.section-title {
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 16px;
+  color: var(--gold);
+}
+
+.section-desc {
+  text-align: center;
+  color: var(--text-dim);
+  margin-bottom: 48px;
+  font-size: 16px;
+}
+
+.unique-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.unique-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 36px;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.unique-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.unique-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px var(--gold-glow);
+}
+
+.unique-card:hover::before {
+  opacity: 1;
+}
+
+.unique-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.unique-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--gold);
+}
+
+.unique-desc {
+  font-size: 15px;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+.unique-highlight {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: rgba(249, 226, 175, 0.05);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text);
+  border-left: 3px solid var(--gold);
+}
+
 /* Stats Section */
 .stats {
   display: grid;
@@ -157,7 +251,7 @@ body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 24px;
+  padding: 28px;
   text-align: center;
 }
 
@@ -173,90 +267,6 @@ body {
   color: var(--text-dim);
 }
 
-/* Features Section */
-.section {
-  margin: 60px 0;
-}
-
-.section-title {
-  font-size: 32px;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 40px;
-  color: var(--gold);
-}
-
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-}
-
-.feature-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 32px;
-  transition: all 0.3s;
-}
-
-.feature-card:hover {
-  border-color: var(--gold);
-  transform: translateY(-4px);
-  box-shadow: 0 8px 32px var(--gold-glow);
-}
-
-.feature-icon {
-  font-size: 40px;
-  margin-bottom: 16px;
-}
-
-.feature-title {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: var(--text);
-}
-
-.feature-desc {
-  font-size: 15px;
-  color: var(--text-dim);
-  line-height: 1.6;
-}
-
-/* Comparison Table */
-.comparison {
-  overflow-x: auto;
-  margin: 40px 0;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: var(--surface);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-th, td {
-  padding: 16px 20px;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-}
-
-th {
-  background: rgba(249, 226, 175, 0.05);
-  font-weight: 600;
-  color: var(--gold);
-}
-
-td:first-child {
-  font-weight: 500;
-}
-
-.check { color: var(--green); }
-.cross { color: var(--red); }
-
 /* Benchmark Section */
 .benchmark {
   background: var(--surface);
@@ -269,8 +279,15 @@ td:first-child {
 .benchmark-title {
   font-size: 24px;
   font-weight: 600;
-  margin-bottom: 24px;
+  margin-bottom: 8px;
   text-align: center;
+}
+
+.benchmark-subtitle {
+  font-size: 14px;
+  color: var(--text-dim);
+  text-align: center;
+  margin-bottom: 32px;
 }
 
 .benchmark-bars {
@@ -286,14 +303,15 @@ td:first-child {
 }
 
 .benchmark-label {
-  width: 120px;
+  width: 100px;
   font-size: 14px;
   color: var(--text-dim);
+  text-align: right;
 }
 
 .benchmark-bar {
   flex: 1;
-  height: 32px;
+  height: 36px;
   background: rgba(249, 226, 175, 0.05);
   border-radius: 8px;
   overflow: hidden;
@@ -305,24 +323,23 @@ td:first-child {
   border-radius: 8px;
   display: flex;
   align-items: center;
-  padding: 0 12px;
-  font-size: 13px;
+  padding: 0 16px;
+  font-size: 14px;
   font-weight: 600;
   color: #000;
   transition: width 1s ease;
 }
 
 .benchmark-fill.mundo { background: linear-gradient(90deg, var(--gold), #fab387); }
-.benchmark-fill.hermes { background: var(--blue); }
-.benchmark-fill.claude { background: var(--purple); }
+.benchmark-fill.other { background: var(--text-dim); }
 
 /* Code Section */
 .code-block {
   background: #1e1e2e;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 24px;
-  margin: 20px 0;
+  padding: 28px;
+  margin: 24px 0;
   font-family: 'SF Mono', 'Fira Code', monospace;
   font-size: 14px;
   overflow-x: auto;
@@ -330,7 +347,7 @@ td:first-child {
 }
 
 .code-block::before {
-  content: 'bash';
+  content: attr(data-lang);
   position: absolute;
   top: 12px;
   right: 16px;
@@ -346,7 +363,7 @@ td:first-child {
 /* Download Section */
 .download {
   text-align: center;
-  margin: 60px 0;
+  margin: 80px 0;
 }
 
 .download-grid {
@@ -360,7 +377,7 @@ td:first-child {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 24px;
+  padding: 28px;
   text-decoration: none;
   color: var(--text);
   transition: all 0.3s;
@@ -372,7 +389,7 @@ td:first-child {
 }
 
 .download-icon {
-  font-size: 32px;
+  font-size: 36px;
   margin-bottom: 12px;
 }
 
@@ -390,21 +407,32 @@ td:first-child {
 /* Footer */
 .footer {
   text-align: center;
-  padding: 40px 0;
+  padding: 48px 0;
   border-top: 1px solid var(--border);
-  margin-top: 60px;
+  margin-top: 80px;
 }
 
 .footer-text {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-dim);
+  margin-bottom: 16px;
+}
+
+.page-counter {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+
+.page-counter span {
+  color: var(--gold);
+  font-weight: 600;
 }
 
 .footer-links {
   display: flex;
   gap: 24px;
   justify-content: center;
-  margin-top: 16px;
 }
 
 .footer-links a {
@@ -417,23 +445,12 @@ td:first-child {
   color: var(--gold);
 }
 
-/* Counter */
-.page-counter {
-  margin-top: 20px;
-  font-size: 13px;
-  color: var(--text-dim);
-}
-
-.page-counter span {
-  color: var(--gold);
-  font-weight: 600;
-}
-
 /* Responsive */
 @media (max-width: 768px) {
   .hero-title { font-size: 32px; }
+  .hero-subtitle { font-size: 18px; }
   .stats { grid-template-columns: repeat(2, 1fr); }
-  .features-grid { grid-template-columns: 1fr; }
+  .unique-grid { grid-template-columns: 1fr; }
   .download-grid { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
@@ -446,13 +463,13 @@ td:first-child {
   <section class="hero">
     <div class="hero-crown">👑</div>
     <h1 class="hero-title">MUNDO Agent</h1>
-    <p class="hero-subtitle">一个有记忆、会学习的 AI Agent，为 Vibe Coding 而生</p>
+    <p class="hero-subtitle">不完成不罢休的 AI Agent</p>
+    <p class="hero-desc">集体意识架构 · 一个学到的，所有都会</p>
 
     <div class="hero-badges">
-      <span class="badge badge-green">✓ 100% 成功率</span>
-      <span class="badge badge-blue">✓ 3.4s 代码生成</span>
-      <span class="badge badge-purple">✓ 6层记忆架构</span>
-      <span class="badge">✓ 多Agent协作</span>
+      <span class="badge badge-gold">👑 帝皇决心</span>
+      <span class="badge badge-green">🧠 集体意识</span>
+      <span class="badge badge-blue">🔄 越用越聪明</span>
     </div>
 
     <div class="hero-cta">
@@ -461,11 +478,61 @@ td:first-child {
     </div>
   </section>
 
+  <!-- Unique Features Section -->
+  <section class="section">
+    <h2 class="section-title">蒙多的独特之处</h2>
+    <p class="section-desc">不只是记忆，更是意志</p>
+
+    <div class="unique-grid">
+      <div class="unique-card">
+        <div class="unique-icon">👑</div>
+        <div class="unique-title">帝皇决心</div>
+        <div class="unique-desc">蒙多不完成任务不罢休。遇到超时会强制完成，遇到卡死会自动换策略。这是其他 AI 没有的"意志力"。</div>
+        <div class="unique-highlight">90秒任务超时保护 · 10次工具调用上限 · 自动错误恢复</div>
+      </div>
+
+      <div class="unique-card">
+        <div class="unique-icon">🧠</div>
+        <div class="unique-title">集体意识</div>
+        <div class="unique-desc">一个蒙多学到的东西，所有蒙多都会。通过云同步，每个用户的蒙多都在为整个集体贡献智慧。</div>
+        <div class="unique-highlight">云仓库同步 · 技能共享 · 集体进化</div>
+      </div>
+
+      <div class="unique-card">
+        <div class="unique-icon">🔬</div>
+        <div class="unique-title">辩证思维</div>
+        <div class="unique-desc">蒙多不只是执行任务，还会质疑自己。盲假设验证、对抗性测试、多维度评估，确保方案经得起考验。</div>
+        <div class="unique-highlight">盲假设协议 · 对抗验证五维攻击 · 跨模型独立对审</div>
+      </div>
+
+      <div class="unique-card">
+        <div class="unique-icon">🛡️</div>
+        <div class="unique-title">循环防护</div>
+        <div class="unique-desc">蒙多能检测自己是否陷入死循环。当同一个工具反复失败时，会自动换策略，而不是无限重试。</div>
+        <div class="unique-highlight">精确失败检测 · 同工具失败计数 · 无进展检测 · 4级决策</div>
+      </div>
+
+      <div class="unique-card">
+        <div class="unique-icon">🤖</div>
+        <div class="unique-title">多Agent调度</div>
+        <div class="unique-desc">蒙多不是一个人在战斗。它能根据任务类型，自动选择最合适的 AI 模型来执行。</div>
+        <div class="unique-highlight">Claude 用于编码 · Hermes 用于系统 · Codex 用于快速原型</div>
+      </div>
+
+      <div class="unique-card">
+        <div class="unique-icon">📚</div>
+        <div class="unique-title">六层记忆</div>
+        <div class="unique-desc">不只是记住对话，而是分层记忆：用户画像、核心记忆、相关记忆、对话摘要、代码模式、执行记录。</div>
+        <div class="unique-highlight">跨会话持久化 · 自动提取 · 上下文感知检索</div>
+      </div>
+    </div>
+  </section>
+
   <!-- Stats Section -->
   <section class="stats">
     <div class="stat-card">
       <div class="stat-value">3.4s</div>
-      <div class="stat-label">代码生成速度</div>
+      <div class="stat-label">代码生成</div>
     </div>
     <div class="stat-card">
       <div class="stat-value">100%</div>
@@ -481,100 +548,14 @@ td:first-child {
     </div>
   </section>
 
-  <!-- Features Section -->
-  <section class="section">
-    <h2 class="section-title">核心特性</h2>
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">🧠</div>
-        <div class="feature-title">6层记忆架构</div>
-        <div class="feature-desc">用户画像 → 核心记忆 → 相关记忆 → 对话摘要 → 代码模式 → 执行记录。跨会话持久化，记住你的偏好和项目上下文。</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🤖</div>
-        <div class="feature-title">多Agent协作</div>
-        <div class="feature-desc">自动调度 Claude、Hermes、Codex 等多个 AI 模型，根据任务类型选择最优方案。编码任务用 Claude，系统任务用 Hermes。</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">📊</div>
-        <div class="feature-title">100% 成功率</div>
-        <div class="feature-desc">任务级超时保护（90s）、工具调用次数限制（10次）、单个工具超时（30s）。不再超时，稳定可靠。</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🔌</div>
-        <div class="feature-title">MCP Server 集成</div>
-        <div class="feature-desc">支持 Cursor、Claude Code 等 IDE 集成。通过 MCP 协议直接调用蒙多能力，无缝融入开发流程。</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Comparison Section -->
-  <section class="section">
-    <h2 class="section-title">与其他工具对比</h2>
-    <div class="comparison">
-      <table>
-        <thead>
-          <tr>
-            <th>特性</th>
-            <th>MUNDO</th>
-            <th>Cursor</th>
-            <th>Lovable</th>
-            <th>Replit</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>记忆系统</td>
-            <td class="check">✓ 6层架构</td>
-            <td>基础</td>
-            <td>基础</td>
-            <td>基础</td>
-          </tr>
-          <tr>
-            <td>自学习</td>
-            <td class="check">✓</td>
-            <td>部分</td>
-            <td>部分</td>
-            <td>部分</td>
-          </tr>
-          <tr>
-            <td>多Agent协作</td>
-            <td class="check">✓</td>
-            <td>—</td>
-            <td>—</td>
-            <td>—</td>
-          </tr>
-          <tr>
-            <td>成功率</td>
-            <td class="check">100%</td>
-            <td>变化</td>
-            <td>变化</td>
-            <td>变化</td>
-          </tr>
-          <tr>
-            <td>开源</td>
-            <td class="check">✓ MIT</td>
-            <td>—</td>
-            <td>—</td>
-            <td>—</td>
-          </tr>
-          <tr>
-            <td>价格</td>
-            <td class="check">免费</td>
-            <td>$20/月</td>
-            <td>$20/月</td>
-            <td>$25/月</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
   <!-- Benchmark Section -->
   <section class="section">
-    <h2 class="section-title">性能基准测试</h2>
+    <h2 class="section-title">性能测试</h2>
+    <p class="section-desc">实际测试数据，不吹不黑</p>
+
     <div class="benchmark">
-      <div class="benchmark-title">代码生成任务</div>
+      <div class="benchmark-title">代码生成速度</div>
+      <div class="benchmark-subtitle">测试任务：实现一个 LRU Cache</div>
       <div class="benchmark-bars">
         <div class="benchmark-item">
           <div class="benchmark-label">MUNDO</div>
@@ -585,15 +566,60 @@ td:first-child {
         <div class="benchmark-item">
           <div class="benchmark-label">Claude</div>
           <div class="benchmark-bar">
-            <div class="benchmark-fill claude" style="width: 43%">5.7s</div>
+            <div class="benchmark-fill other" style="width: 43%">5.7s</div>
           </div>
         </div>
         <div class="benchmark-item">
           <div class="benchmark-label">Hermes</div>
           <div class="benchmark-bar">
-            <div class="benchmark-fill hermes" style="width: 100%">13.4s</div>
+            <div class="benchmark-fill other" style="width: 100%">13.4s</div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="benchmark">
+      <div class="benchmark-title">综合测试结果</div>
+      <div class="benchmark-subtitle">5个不同类型的任务</div>
+      <div style="text-align: center; margin-top: 20px;">
+        <table style="margin: 0 auto; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">任务类型</td>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">MUNDO</td>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">Hermes</td>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">Claude</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">代码生成</td>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border); color: var(--gold);">3.4s ✓</td>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">13.4s</td>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">5.7s</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">系统分析</td>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">12.1s</td>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">14.8s</td>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">9.2s</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">文件处理</td>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">91.1s</td>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">24.0s</td>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">7.2s</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">推理能力</td>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border); color: var(--gold);">4.0s ✓</td>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">4.7s</td>
+            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">4.0s</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px 24px;">成功率</td>
+            <td style="padding: 12px 24px; color: var(--gold); font-weight: 600;">5/5</td>
+            <td style="padding: 12px 24px;">5/5</td>
+            <td style="padding: 12px 24px;">5/5</td>
+          </tr>
+        </table>
       </div>
     </div>
   </section>
@@ -601,7 +627,7 @@ td:first-child {
   <!-- Quick Start Section -->
   <section class="section">
     <h2 class="section-title">快速开始</h2>
-    <div class="code-block">
+    <div class="code-block" data-lang="bash">
       <code>
 # 克隆仓库<br>
 git clone https://github.com/LiHongwei-cn/lihongwei-cn.git<br>
@@ -620,27 +646,10 @@ python3 mundo.py
     </div>
   </section>
 
-  <!-- Cursor Integration -->
-  <section class="section">
-    <h2 class="section-title">Cursor 集成</h2>
-    <div class="code-block">
-      <code>
-// .cursor/mcp.json<br>
-{<br>
-&nbsp;&nbsp;"mcpServers": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;"mundo-agent": {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"command": "python3",<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"args": ["mundo-agent/mcp_server.py"]<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-&nbsp;&nbsp;}<br>
-}
-      </code>
-    </div>
-  </section>
-
   <!-- Download Section -->
   <section class="download">
     <h2 class="section-title">下载 v2.0.9</h2>
+    <p class="section-desc">免费开源，MIT 协议</p>
     <div class="download-grid">
       <a href="https://github.com/LiHongwei-cn/lihongwei-cn/releases/tag/mundo-v2.0.9" class="download-card">
         <div class="download-icon">🍎</div>
@@ -667,9 +676,7 @@ python3 mundo.py
 
   <!-- Footer -->
   <footer class="footer">
-    <div class="footer-text">
-      👑 MUNDO goes where MUNDO pleases!
-    </div>
+    <div class="footer-text">👑 MUNDO goes where MUNDO pleases!</div>
     <div class="page-counter">
       本页访问量 <span id="busuanzi_value_page_pv">...</span> 次
     </div>
