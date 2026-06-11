@@ -1,134 +1,205 @@
-"""蒙多 v2.0 真实能力测试 — 不是单元测试，是实战
-
-5个真实编码任务，蒙多独立完成，记录：
-- 成功/失败
-- 耗时
-- 工具调用次数
-- 输出质量（是否有实质性结果）
+#!/usr/bin/env python3
+"""
+MUNDO Agent 真实基准测试
+测试维度：代码生成、代码调试、文本生成、逻辑推理、工具调用
+对比：MUNDO (单体) / MUNDO (多Agent) / Hermes / Claude Code / Codex / MiMo
 """
 
-import sys
-import os
-import time
 import json
+import time
+import subprocess
+import os
+import sys
 from pathlib import Path
+from datetime import datetime
 
-sys.path.insert(0, str(Path(__file__).parent))
-
-# 确保加载蒙多的 .env
-from setup import load_local_env
-env = load_local_env()
-for k, v in env.items():
-    os.environ[k] = v
-
-
-def run_task(task_name: str, prompt: str, timeout: int = 120) -> dict:
-    """运行单个任务，返回结果"""
-    from core import MundoEngine
-
-    print(f"\n{'='*60}")
-    print(f"  任务: {task_name}")
-    print(f"  提示: {prompt[:80]}...")
-    print(f"{'='*60}")
-
-    engine = MundoEngine(provider="xiaomi")
-
-    start = time.time()
-    result = engine.run(prompt)
-    elapsed = time.time() - start
-
-    output = {
-        "task": task_name,
-        "success": bool(result and len(result) > 20),
-        "elapsed": round(elapsed, 1),
-        "turns": engine.stats.turns,
-        "tool_calls": engine.stats.tool_calls_count,
-        "total_tokens": engine.stats.total_tokens,
-        "errors": engine.stats.errors_count,
-        "result_length": len(result) if result else 0,
-        "result_preview": (result[:500] + "...") if result and len(result) > 500 else result,
+# 测试任务定义
+TEST_TASKS = {
+    "code_generation": {
+        "name": "代码生成",
+        "prompt": "用 Python 写一个快速排序算法，要求：1) 原地排序 2) 支持自定义比较函数 3) 添加类型注解",
+        "eval_criteria": ["包含partition函数", "有类型注解", "支持自定义比较", "原地排序"]
+    },
+    "code_debug": {
+        "name": "代码调试",
+        "prompt": "这段代码有bug，请修复：\n\ndef merge_sorted(a, b):\n    result = []\n    i = j = 0\n    while i < len(a) and j < len(b):\n        if a[i] <= b[j]:\n            result.append(a[i])\n            i += 1\n        else:\n            result.append(b[j])\n            j += 1\n    return result",
+        "eval_criteria": ["识别缺少尾部元素", "添加result.extend", "处理空列表"]
+    },
+    "text_generation": {
+        "name": "文本生成",
+        "prompt": "写一首关于AI的七言绝句，要求：1) 押韵 2) 包含'智能'和'未来'两个词 3) 意境深远",
+        "eval_criteria": ["四句七言", "押韵正确", "包含指定词", "意境"]
+    },
+    "logic_reasoning": {
+        "name": "逻辑推理",
+        "prompt": "有5个人排成一排。已知：1) A不在最左边 2) B在C的右边 3) D在E的左边 4) A在D的右边。请给出所有可能的排列。",
+        "eval_criteria": ["列出所有约束", "正确推导", "给出完整排列"]
+    },
+    "tool_usage": {
+        "name": "工具调用",
+        "prompt": "查看当前目录下所有Python文件的数量，并统计总行数",
+        "eval_criteria": ["使用ls/find命令", "统计文件数", "统计行数", "输出结果"]
     }
+}
 
-    status = "✅" if output["success"] else "❌"
-    print(f"\n  {status} 耗时: {output['elapsed']}s | 轮次: {output['turns']} | 工具调用: {output['tool_calls']} | Token: {output['total_tokens']}")
-    print(f"  结果长度: {output['result_length']} 字符")
-    if result:
-        print(f"  预览: {result[:200]}...")
+# Agent 配置
+AGENTS = {
+    "mundo_solo": {
+        "name": "MUNDO (单体)",
+        "cmd": ["python3", os.path.expanduser("~/.hermes/mundo-agent/mundo.py"), "-q"],
+        "timeout": 120
+    },
+    "hermes": {
+        "name": "Hermes Agent",
+        "cmd": ["hermes", "chat", "--no-interactive"],
+        "timeout": 120
+    },
+    "claude": {
+        "name": "Claude Code",
+        "cmd": ["claude", "--print"],
+        "timeout": 120
+    },
+    "codex": {
+        "name": "Codex CLI",
+        "cmd": ["codex", "--quiet"],
+        "timeout": 120
+    },
+    "mimo": {
+        "name": "MiMo Code",
+        "cmd": ["mimo", "--no-interactive"],
+        "timeout": 120
+    }
+}
 
-    return output
+def run_agent(agent_key: str, prompt: str) -> dict:
+    """运行单个 Agent 并测量时间"""
+    agent = AGENTS[agent_key]
+    start = time.time()
+    
+    try:
+        result = subprocess.run(
+            agent["cmd"] + [prompt],
+            capture_output=True,
+            text=True,
+            timeout=agent["timeout"],
+            cwd=os.path.expanduser("~")
+        )
+        elapsed = time.time() - start
+        output = result.stdout + result.stderr
+        
+        return {
+            "success": result.returncode == 0,
+            "output": output[:2000],
+            "time": round(elapsed, 2),
+            "returncode": result.returncode
+        }
+    except subprocess.TimeoutExpired:
+        return {
+            "success": False,
+            "output": "TIMEOUT",
+            "time": agent["timeout"],
+            "returncode": -1
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "output": str(e)[:500],
+            "time": 0,
+            "returncode": -1
+        }
 
+def evaluate_quality(output: str, criteria: list) -> int:
+    """评估输出质量（0-100）"""
+    score = 0
+    for criterion in criteria:
+        if criterion.lower() in output.lower():
+            score += 100 // len(criteria)
+    return min(score, 100)
 
-def main():
-    print("╔═══════════════════════════════════════════════════╗")
-    print("║   蒙多 v2.0 真实能力测试 — 5个编码任务             ║")
-    print("╚═══════════════════════════════════════════════════╝")
-
-    tasks = [
-        (
-            "T1: 文件分析",
-            "读取 ~/Desktop/lihongwei-cn/mundo-agent/core.py，统计其中定义了多少个类、多少个函数，列出每个类的名字和方法数量。输出格式化的表格。",
-        ),
-        (
-            "T2: 代码生成",
-            "在 /tmp/mundo_test/ 目录下创建一个 Python 文件 fibonacci.py，实现斐波那契数列的三种方法（递归、迭代、动态规划），每种方法写完整的函数，带类型注解和docstring。然后创建测试文件 test_fib.py 验证三种方法的输出一致。",
-        ),
-        (
-            "T3: Bug修复",
-            "读取下面的代码并找到所有bug，逐个修复：\n\n```python\ndef merge_sorted_lists(a, b):\n    result = []\n    i = j = 0\n    while i < len(a) and j < len(b):\n        if a[i] <= b[j]:\n            result.append(a[i])\n            i += 1\n        else:\n            result.append(b[j])\n            i += 1\n    result += a[i:]\n    return result\n\ndef find_median(nums):\n    nums.sort()\n    n = len(nums)\n    if n % 2 == 0:\n        return nums[n//2]\n    else:\n        return (nums[n//2] + nums[n//2+1]) / 2\n\ndef flatten(lst):\n    result = []\n    for item in lst:\n        if isinstance(item, list):\n            result.append(flatten(item))\n        else:\n            result.append(item)\n    return result\n```\n\n把修复后的代码写入 /tmp/mundo_test/fixed_code.py，并在每个函数上方用注释说明修了什么bug。",
-        ),
-        (
-            "T4: 系统编程",
-            "写一个 Python 脚本 /tmp/mundo_test/sysinfo.py，收集当前系统信息：CPU核心数、总内存、磁盘使用率、Python版本、当前用户名、主机名。用标准库实现，不依赖第三方包。输出格式化的JSON。然后运行它验证输出正确。",
-        ),
-        (
-            "T5: 多文件重构",
-            "在 /tmp/mundo_test/calculator/ 目录下创建一个模块化的计算器：\n- __init__.py：导出所有功能\n- operations.py：加减乘除四则运算\n- advanced.py：幂运算、开方、取模\n- history.py：计算历史记录（用列表存储）\n- main.py：命令行入口，支持交互式计算\n然后运行 main.py 验证 2+3*4 的结果正确。",
-        ),
-    ]
-
-    results = []
-    for task_name, prompt in tasks:
-        try:
-            result = run_task(task_name, prompt)
-            results.append(result)
-        except Exception as e:
-            print(f"\n  ❌ 任务崩溃: {e}")
-            results.append({
-                "task": task_name,
-                "success": False,
-                "error": str(e),
-            })
-
-    # 汇总
-    print(f"\n{'='*60}")
-    print(f"  真实能力测试结果汇总")
-    print(f"{'='*60}")
-
-    success_count = sum(1 for r in results if r.get("success"))
-    total = len(results)
-    total_time = sum(r.get("elapsed", 0) for r in results)
-    total_tokens = sum(r.get("total_tokens", 0) for r in results)
-    total_tools = sum(r.get("tool_calls", 0) for r in results)
-
-    print(f"\n  成功率: {success_count}/{total} ({success_count/total*100:.0f}%)")
-    print(f"  总耗时: {total_time:.1f}s")
-    print(f"  总Token: {total_tokens}")
-    print(f"  总工具调用: {total_tools}")
-    print()
-
-    for r in results:
-        status = "✅" if r.get("success") else "❌"
-        err = f" [{r.get('error', '')}]" if r.get("error") else ""
-        print(f"  {status} {r['task']}: {r.get('elapsed', '?')}s, {r.get('tool_calls', '?')}工具调用, {r.get('result_length', '?')}字符{err}")
-
+def run_benchmark():
+    """运行完整基准测试"""
+    results = {}
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    
+    print(f"开始基准测试 - {timestamp}")
+    print(f"测试任务: {len(TEST_TASKS)}")
+    print(f"测试Agent: {len(AGENTS)}")
+    print("=" * 60)
+    
+    for task_key, task in TEST_TASKS.items():
+        print(f"\n[{task['name']}]")
+        results[task_key] = {
+            "name": task["name"],
+            "prompt": task["prompt"],
+            "agents": {}
+        }
+        
+        for agent_key in AGENTS:
+            print(f"  测试 {AGENTS[agent_key]['name']}...", end=" ", flush=True)
+            
+            # 运行测试
+            result = run_agent(agent_key, task["prompt"])
+            
+            # 评估质量
+            quality = evaluate_quality(result["output"], task["eval_criteria"])
+            
+            results[task_key]["agents"][agent_key] = {
+                "name": AGENTS[agent_key]["name"],
+                "time": result["time"],
+                "success": result["success"],
+                "quality": quality,
+                "output_preview": result["output"][:200]
+            }
+            
+            status = "✓" if result["success"] else "✗"
+            print(f"{status} {result['time']}s 质量:{quality}%")
+    
     # 保存结果
-    output_path = Path(__file__).parent / "benchmark_results.json"
-    with open(output_path, "w", encoding="utf-8") as f:
+    output_file = f"benchmark_results_{timestamp}.json"
+    with open(output_file, "w", encoding="utf-8") as f:
         json.dump(results, f, ensure_ascii=False, indent=2)
-    print(f"\n  结果已保存: {output_path}")
-
+    
+    print(f"\n结果已保存: {output_file}")
+    
+    # 生成摘要
+    generate_summary(results)
+    
     return results
 
+def generate_summary(results: dict):
+    """生成测试摘要"""
+    print("\n" + "=" * 60)
+    print("测试摘要")
+    print("=" * 60)
+    
+    # 按 Agent 汇总
+    agent_stats = {}
+    for task_key, task in results.items():
+        for agent_key, agent_data in task["agents"].items():
+            if agent_key not in agent_stats:
+                agent_stats[agent_key] = {
+                    "name": agent_data["name"],
+                    "total_time": 0,
+                    "total_quality": 0,
+                    "success_count": 0,
+                    "task_count": 0
+                }
+            stats = agent_stats[agent_key]
+            stats["total_time"] += agent_data["time"]
+            stats["total_quality"] += agent_data["quality"]
+            stats["task_count"] += 1
+            if agent_data["success"]:
+                stats["success_count"] += 1
+    
+    # 输出表格
+    print(f"{'Agent':<20} {'成功率':<10} {'平均时间':<12} {'平均质量':<10}")
+    print("-" * 52)
+    
+    for agent_key, stats in agent_stats.items():
+        success_rate = f"{stats['success_count']}/{stats['task_count']}"
+        avg_time = f"{stats['total_time'] / stats['task_count']:.1f}s"
+        avg_quality = f"{stats['total_quality'] / stats['task_count']:.0f}%"
+        print(f"{stats['name']:<20} {success_rate:<10} {avg_time:<12} {avg_quality:<10}")
 
 if __name__ == "__main__":
-    main()
+    run_benchmark()
