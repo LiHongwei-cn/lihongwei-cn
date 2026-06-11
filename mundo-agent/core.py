@@ -129,7 +129,7 @@ def _classify_error(error: Exception, raw_msg: str) -> Dict:
     if "dns" in msg or "connection refused" in msg:
         result.update(category="network", retryable=True, user_tip="无法连接到模型服务")
         return result
-    if _is_timeout_error(error) or "timeout" in msg:
+    if _is_timeout_error(error) or "timeout" in msg or "timed out" in msg:
         result.update(category="timeout", retryable=True, user_tip="请求超时，正在重试…")
         return result
     if any(kw in msg for kw in ["401", "unauthorized", "api key"]):
@@ -138,7 +138,7 @@ def _classify_error(error: Exception, raw_msg: str) -> Dict:
     if any(kw in msg for kw in ["429", "rate limit"]):
         result.update(category="rate_limit", retryable=True, user_tip="请求过于频繁")
         return result
-    if any(kw in msg for kw in ["500", "502", "503", "504"]):
+    if any(kw in msg for kw in ["500", "502", "503", "504", "internal server"]):
         result.update(category="server", retryable=True, user_tip="模型服务暂时不可用")
         return result
     return result
