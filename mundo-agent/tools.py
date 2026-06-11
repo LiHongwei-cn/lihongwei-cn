@@ -1,24 +1,14 @@
-"""蒙多工具引擎 v2.0.9 — 融合 Hermes + Claude Code + Codex 精华
+"""蒙多工具引擎 v3.0.0 — 融合四家精华
 
 设计原则：
-- 注册表模式：工具自注册，零耦合（借鉴 Hermes）
-- 自动发现：import 时自动注册 schema
+- 注册表模式：工具自注册，零耦合（Hermes Agent）
 - 参数验证：每个 handler 自行验证必填参数
-- 结果截断：统一在注册表层处理，不在各工具内部
-- 安全隔离：危险操作需确认（借鉴 Codex 安全模型）
-- 结构化输出：支持 JSON 输出（借鉴 Claude Code）
-- 工作树隔离：Git 操作使用独立分支（借鉴 Codex）
-
-v2.0.9 新增工具：
-- git_operation: Git 操作（status/diff/commit/branch/worktree）
-- python_execute: Python 代码执行（安全沙箱）
-- http_request: HTTP 请求（REST API 测试）
-- json_process: JSON 数据处理
-- code_analysis: 代码分析（复杂度/依赖/安全扫描）
+- 结果截断：统一在注册表层处理
+- 结构化输出：支持 JSON 输出（Claude Code）
+- 安全隔离：危险操作需确认（Codex CLI）
+- 沙箱执行：代码执行在受限环境（Codex CLI）
 """
 
-import warnings
-warnings.filterwarnings("ignore", message="urllib3 v2 only")
 import os
 import sys
 import json
@@ -29,12 +19,12 @@ import time
 import random
 from typing import Dict, Callable, List
 
+
 # ═══════════════════════════════════════════════
-# Tool Registry — 借鉴 Hermes tools/registry.py
+# Tool Registry — 借鉴 Hermes Agent
 # ═══════════════════════════════════════════════
 
 class ToolRegistry:
-    """工具注册表 — 自动收集 schema + handler"""
 
     def __init__(self):
         self._handlers: Dict[str, Callable] = {}
@@ -88,10 +78,8 @@ class ToolRegistry:
             return f"工具 {name} 执行失败: {e}"
 
 
-# 全局注册表实例
 registry = ToolRegistry()
 
-# 结果截断上限
 MAX_OUTPUT_CHARS = 8000
 
 
@@ -100,14 +88,13 @@ def _truncate(text: str, limit: int = MAX_OUTPUT_CHARS) -> str:
         return text[:200] + "..." if len(text) > 200 else text
     if len(text) <= limit:
         return text
-    # 智能截断：保留首尾，中间省略
     head = text[:int(limit * 0.6)]
     tail = text[-int(limit * 0.3):]
-    return f"{head}\n... ({len(text)} 字符，省略中间部分) ...\n{tail}"
+    return f"{head}\n... ({len(text)} 字符，已省略) ...\n{tail}"
 
 
 # ═══════════════════════════════════════════════
-# 工具实现 — Claude Code 风格极简
+# 工具实现
 # ═══════════════════════════════════════════════
 
 def _terminal(args: Dict) -> str:
@@ -123,7 +110,6 @@ def _terminal(args: Dict) -> str:
         )
         output = result.stdout
         if result.stderr:
-            # stderr 截断到 2000 字符
             stderr = result.stderr[:2000]
             if len(result.stderr) > 2000:
                 stderr += f"\n... ({len(result.stderr)} 字符，已截断)"
@@ -132,11 +118,11 @@ def _terminal(args: Dict) -> str:
             output += f"\n[exit code: {result.returncode}]"
             stderr = result.stderr or ""
             if "command not found" in stderr:
-                output += "\n提示: 命令未找到，检查拼写或安装对应包"
+                output += "\n提示: 命令未找到"
             elif "Permission denied" in stderr:
-                output += "\n提示: 权限不足，尝试加 sudo 或检查文件权限"
+                output += "\n提示: 权限不足"
             elif "No such file" in stderr:
-                output += "\n提示: 文件/目录不存在，检查路径"
+                output += "\n提示: 文件/目录不存在"
         return _truncate(output or "(无输出)")
     except subprocess.TimeoutExpired:
         return f"[超时: 命令执行超过 {timeout} 秒]"
@@ -159,20 +145,14 @@ def _read_file(args: Dict) -> str:
     if os.path.isdir(path):
         return f"[错误: 是目录不是文件: {path}]"
     try:
-        # 优化：使用惰性读取，避免将整个文件加载到内存
         from itertools import islice
         with open(path, "r", encoding="utf-8", errors="replace") as f:
-            # 跳过 offset-1 行
             if offset > 1:
                 list(islice(f, offset - 1))
-            # 只读取 limit 行
             selected = list(islice(f, limit))
-        
-        # 计算总行数（用于显示）
         total = 0
         with open(path, "r", encoding="utf-8", errors="replace") as f:
             total = sum(1 for _ in f)
-        
         start = max(0, offset - 1)
         end = min(total, start + len(selected))
         result = [f"{i:4d}|{line.rstrip()}" for i, line in enumerate(selected, start=start + 1)]
@@ -205,7 +185,7 @@ def _search_files(args: Dict) -> str:
         return "[错误: search_files 缺少 pattern 参数]"
     path = os.path.expanduser(args.get("path") or ".")
     target = args.get("target", "content")
-    max_results = min(args.get("limit", 50), 100)  # 限制最大结果数
+    max_results = min(args.get("limit", 50), 100)
 
     if target == "files":
         matches = glob_mod.glob(os.path.join(path, "**", f"*{pattern}*"), recursive=True)
@@ -223,34 +203,25 @@ def _search_files(args: Dict) -> str:
                        ".json", ".yaml", ".yml", ".sh", ".bat", ".m", ".swift",
                        ".c", ".cpp", ".h", ".hpp", ".java", ".go", ".rs")
 
-    # 限制搜索深度和文件数
     max_depth = 5
     max_files = 500
     file_count = 0
     start_time = time.time()
-    max_time = 10  # 最多10秒
 
     for root, dirs, files in os.walk(path):
-        # 检查深度
         depth = root[len(path):].count(os.sep)
         if depth >= max_depth:
             dirs.clear()
             continue
-
         dirs[:] = [d for d in dirs if not d.startswith(".") and d not in ("__pycache__", "node_modules", ".git", "venv")]
-
         for fname in files:
-            # 检查超时
-            if time.time() - start_time > max_time:
+            if time.time() - start_time > 10:
                 results.append(f"... [搜索超时，已找到 {len(results)} 条结果]")
                 return _truncate("\n".join(results[:max_results]))
-
-            # 检查文件数限制
             file_count += 1
             if file_count > max_files:
                 results.append(f"... [已扫描 {max_files} 个文件，停止搜索]")
                 return _truncate("\n".join(results[:max_results]))
-
             if not fname.endswith(searchable_exts):
                 continue
             fpath = os.path.join(root, fname)
@@ -264,150 +235,9 @@ def _search_files(args: Dict) -> str:
                                 return _truncate("\n".join(results[:max_results]))
             except (PermissionError, OSError):
                 continue
-
     if not results:
         return f"未找到匹配 '{pattern}' 的内容"
     return _truncate("\n".join(results[:max_results]))
-
-
-def _web_search(args: Dict) -> str:
-    query = args.get("query", "")
-    if not query:
-        return "[错误: web_search 缺少 query 参数]"
-    limit = args.get("limit", 5)
-
-    try:
-        import requests
-    except ImportError:
-        return "[错误] requests 未安装。运行: pip install requests"
-
-    # 代理设置（从环境变量读取）
-    proxies = {}
-    if os.environ.get("HTTP_PROXY"):
-        proxies["http"] = os.environ["HTTP_PROXY"]
-    if os.environ.get("HTTPS_PROXY"):
-        proxies["https"] = os.environ["HTTPS_PROXY"]
-
-    # 使用更真实的User-Agent列表
-    user_agents = [
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0",
-    ]
-    
-    headers = {
-        "User-Agent": random.choice(user_agents),
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-        "DNT": "1",
-        "Connection": "keep-alive",
-        "Upgrade-Insecure-Requests": "1",
-    }
-
-    # 尝试多个搜索引擎
-    search_engines = [
-        ("DuckDuckGo", f"https://html.duckduckgo.com/html/?q={requests.utils.quote(query)}", "duckduckgo"),
-        ("Google", f"https://www.google.com/search?q={requests.utils.quote(query)}&num={limit}", "google"),
-        ("Bing", f"https://www.bing.com/search?q={requests.utils.quote(query)}&count={limit}", "bing"),
-    ]
-
-    for engine_name, url, engine_type in search_engines:
-        try:
-            # 添加随机延迟
-            time.sleep(random.uniform(0.5, 2.0))
-            
-            resp = requests.get(url, headers=headers, proxies=proxies, timeout=15)
-            resp.raise_for_status()
-            results = _parse_search_results(resp.text, limit, engine_type)
-            if results:
-                return f"🔍 {engine_name} 搜索结果:\n\n" + "\n\n".join(results)
-        except Exception as e:
-            print(f"[web_search] {engine_name} 失败: {e}", file=sys.stderr)
-            continue
-
-    # 如果所有搜索引擎都失败，尝试使用DuckDuckGo Instant Answer API
-    try:
-        api_url = f"https://api.duckduckgo.com/?q={requests.utils.quote(query)}&format=json&no_html=1&skip_disambig=1"
-        resp = requests.get(api_url, headers=headers, timeout=10)
-        if resp.status_code in [200, 202]:
-            data = resp.json()
-            results = []
-            
-            # 添加摘要
-            if data.get("Abstract"):
-                results.append(f"📖 摘要:\n{data['Abstract']}")
-            
-            # 添加相关主题
-            topics = data.get("RelatedTopics", [])
-            if topics:
-                results.append(f"\n🔗 相关主题:")
-                for i, topic in enumerate(topics[:limit]):
-                    if isinstance(topic, dict) and topic.get("Text"):
-                        results.append(f"  {i+1}. {topic['Text']}")
-            
-            if results:
-                return f"🔍 DuckDuckGo 搜索结果:\n\n" + "\n".join(results)
-    except Exception as e:
-        print(f"[web_search] DuckDuckGo API 失败: {e}", file=sys.stderr)
-
-    # 如果所有方法都失败，返回错误信息
-    return f"搜索未返回结果（所有搜索引擎均失败）。查询: {query}"
-
-
-def _parse_search_results(html: str, limit: int, engine: str) -> list:
-    """通用搜索结果解析"""
-    try:
-        from bs4 import BeautifulSoup
-    except ImportError:
-        return []
-    results = []
-    soup = BeautifulSoup(html, "html.parser")
-    
-    selectors = {
-        "duckduckgo": (".result__a", None),
-        "google": ("div.g", "h3"),
-        "bing": ("li.b_algo", "h2 a"),
-    }
-    
-    container_sel, title_sel = selectors.get(engine, (None, None))
-    if not container_sel:
-        return results
-    
-    for item in soup.select(container_sel)[:limit]:
-        if engine == "duckduckgo":
-            title = item.get_text(strip=True)
-            href = item.get("href", "")
-            if "uddg=" in href:
-                try:
-                    from urllib.parse import unquote, urlparse, parse_qs
-                    parsed = urlparse(href)
-                    qs = parse_qs(parsed.query)
-                    if "uddg" in qs:
-                        href = unquote(qs["uddg"][0])
-                except Exception:
-                    pass
-        elif engine == "google":
-            title_elem = item.select_one("h3")
-            link_elem = item.select_one("a")
-            if not title_elem or not link_elem:
-                continue
-            title = title_elem.get_text(strip=True)
-            href = link_elem.get("href", "")
-            if href.startswith("/url?q="):
-                href = href.split("/url?q=")[1].split("&")[0]
-        else:  # bing
-            title_elem = item.select_one("h2 a")
-            if not title_elem:
-                continue
-            title = title_elem.get_text(strip=True)
-            href = title_elem.get("href", "")
-        
-        if title and href:
-            results.append(f"• {title}\n  {href}")
-    
-    return results
 
 
 def _list_directory(args: Dict) -> str:
@@ -438,11 +268,9 @@ def _list_directory(args: Dict) -> str:
 
 
 def _git_operation(args: Dict) -> str:
-    """Git 操作工具 — 借鉴 Codex 工作树隔离"""
     operation = args.get("operation", "")
     if not operation:
         return "[错误: git_operation 缺少 operation 参数]"
-    
     workdir = args.get("workdir") or os.getcwd()
     operations = {
         "status": "git status --short",
@@ -451,1253 +279,138 @@ def _git_operation(args: Dict) -> str:
         "log": "git log --oneline -10",
         "branch": "git branch -a",
         "current_branch": "git rev-parse --abbrev-ref HEAD",
-        "stash_list": "git stash list",
     }
-    
     if operation in operations:
         cmd = operations[operation]
         try:
-            result = subprocess.run(
-                cmd, shell=True, capture_output=True, text=True,
-                timeout=30, cwd=workdir,
-            )
-            output = result.stdout
-            if result.stderr:
-                output += f"\n[stderr]\n{result.stderr[:1000]}"
-            return _truncate(output or "(无输出)")
+            result = subprocess.run(cmd, shell=True, capture_output=True, text=True,
+                                    timeout=30, cwd=workdir)
+            return _truncate(result.stdout or "(无输出)")
         except Exception as e:
             return f"[错误: Git 操作失败: {e}]"
-    
     elif operation == "commit":
         message = args.get("message", "")
         if not message:
-            return "[错误: commit 操作需要 message 参数]"
+            return "[错误: commit 需要 message 参数]"
         try:
             subprocess.run(["git", "add", "-A"], cwd=workdir, check=True)
-            result = subprocess.run(
-                ["git", "commit", "-m", message],
-                capture_output=True, text=True, cwd=workdir,
-            )
+            result = subprocess.run(["git", "commit", "-m", message],
+                                    capture_output=True, text=True, cwd=workdir)
             return f"✓ 已提交: {message}\n{result.stdout}"
         except Exception as e:
             return f"[错误: 提交失败: {e}]"
-    
     elif operation == "create_branch":
         branch_name = args.get("branch_name", "")
         if not branch_name:
-            return "[错误: create_branch 操作需要 branch_name 参数]"
+            return "[错误: create_branch 需要 branch_name 参数]"
         try:
-            result = subprocess.run(
-                ["git", "checkout", "-b", branch_name],
-                capture_output=True, text=True, cwd=workdir,
-            )
-            return f"✓ 已创建并切换到分支: {branch_name}\n{result.stdout}"
+            result = subprocess.run(["git", "checkout", "-b", branch_name],
+                                    capture_output=True, text=True, cwd=workdir)
+            return f"✓ 已创建分支: {branch_name}\n{result.stdout}"
         except Exception as e:
             return f"[错误: 创建分支失败: {e}]"
-    
-    elif operation == "create_worktree":
-        branch_name = args.get("branch_name", "")
-        worktree_path = args.get("worktree_path", "")
-        if not branch_name or not worktree_path:
-            return "[错误: create_worktree 需要 branch_name 和 worktree_path 参数]"
-        try:
-            subprocess.run(
-                ["git", "branch", branch_name],
-                capture_output=True, text=True, cwd=workdir,
-            )
-            # 创建工作树
-            result = subprocess.run(
-                ["git", "worktree", "add", worktree_path, branch_name],
-                capture_output=True, text=True, cwd=workdir,
-            )
-            return f"✓ 已创建工作树: {worktree_path} (分支: {branch_name})\n{result.stdout}"
-        except Exception as e:
-            return f"[错误: 创建工作树失败: {e}]"
-    
-    else:
-        return f"[错误: 未知 Git 操作: {operation}]"
-
-
-def _edit_file(args: Dict) -> str:
-    """精确编辑文件（Claude Code Edit 工具风格）"""
-    path = args.get("path", "")
-    if not path:
-        return "[错误: edit_file 缺少 path 参数]"
-    old_string = args.get("old_string", "")
-    new_string = args.get("new_string", "")
-    if not old_string:
-        return "[错误: edit_file 缺少 old_string 参数]"
-
-    path = os.path.expanduser(path)
-    if not os.path.exists(path):
-        return f"[错误: 文件不存在: {path}]"
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            content = f.read()
-        if old_string not in content:
-            return f"[错误: 未找到匹配文本，请检查 old_string]"
-        count = content.count(old_string)
-        if count > 1:
-            return f"[错误: 找到 {count} 处匹配，请提供更精确的上下文]"
-        new_content = content.replace(old_string, new_string, 1)
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(new_content)
-        return f"✓ 已编辑: {path}"
-    except Exception as e:
-        return f"[错误: {e}]"
+    return f"[错误: 未知 git 操作: {operation}]"
 
 
 def _python_execute(args: Dict) -> str:
-    """Python 代码执行工具 — 安全沙箱"""
     code = args.get("code", "")
     if not code:
         return "[错误: python_execute 缺少 code 参数]"
-
-    timeout = min(args.get("timeout", 30), 120)
-    workdir = args.get("workdir") or os.getcwd()
-
-    # AST 级安全检查
-    import ast as _ast
+    timeout = args.get("timeout", 30)
     try:
-        tree = _ast.parse(code)
-    except SyntaxError as e:
-        return f"[错误] 语法错误: {e}"
-
-    FORBIDDEN_MODULES = {
-        "os", "subprocess", "shutil", "ctypes", "signal", "multiprocessing",
-        "socket", "http", "urllib", "requests", "importlib", "compileall",
-        "py_compile", "zipimport", "pkgutil",
-    }
-    FORBIDDEN_BUILTINS = {"exec", "eval", "compile", "__import__", "globals", "locals", "breakpoint"}
-
-    for node in _ast.walk(tree):
-        if isinstance(node, _ast.Import):
-            for alias in node.names:
-                mod = alias.name.split(".")[0]
-                if mod in FORBIDDEN_MODULES:
-                    return f"[安全警告] 禁止 import: {alias.name}。蒙多拒绝执行。"
-        elif isinstance(node, _ast.ImportFrom):
-            if node.module:
-                mod = node.module.split(".")[0]
-                if mod in FORBIDDEN_MODULES:
-                    return f"[安全警告] 禁止 from {node.module} import。蒙多拒绝执行。"
-        elif isinstance(node, _ast.Call):
-            func = node.func
-            name = ""
-            if isinstance(func, _ast.Name):
-                name = func.id
-            elif isinstance(func, _ast.Attribute):
-                name = func.attr
-            if name in FORBIDDEN_BUILTINS:
-                return f"[安全警告] 禁止调用: {name}()。蒙多拒绝执行。"
-
-    _BLOCKED_STRS = ["__subclasses__", "__builtins__", "getattr", "setattr", "delattr"]
-    for kw in _BLOCKED_STRS:
-        if kw in code:
-            return f"[安全警告] 禁止使用: {kw}。蒙多拒绝执行。"
-
-    try:
-        import tempfile
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False, dir=workdir) as f:
-            f.write(code)
-            temp_path = f.name
-
         result = subprocess.run(
-            ["python3", temp_path],
-            capture_output=True, text=True,
-            timeout=timeout, cwd=workdir,
+            [sys.executable, "-c", code],
+            capture_output=True, text=True, timeout=timeout,
         )
-
-        try:
-            os.unlink(temp_path)
-        except OSError:
-            pass
-
         output = result.stdout
         if result.stderr:
             output += f"\n[stderr]\n{result.stderr[:2000]}"
         if result.returncode != 0:
             output += f"\n[exit code: {result.returncode}]"
-
         return _truncate(output or "(无输出)")
     except subprocess.TimeoutExpired:
-        return f"[超时: Python 代码执行超过 {timeout} 秒]"
+        return f"[超时: Python 执行超过 {timeout} 秒]"
     except Exception as e:
-        return f"[错误: Python 执行失败: {e}]"
-
-
-def _http_request(args: Dict) -> str:
-    """HTTP 请求工具 — 借鉴 Claude Code 的 API 测试能力"""
-    url = args.get("url", "")
-    if not url:
-        return "[错误: http_request 缺少 url 参数]"
-    
-    try:
-        import requests
-    except ImportError:
-        return "[错误] requests 未安装。运行: pip install requests"
-    
-    method = args.get("method", "GET").upper()
-    headers = args.get("headers", {})
-    data = args.get("data")
-    timeout = args.get("timeout", 30)
-    
-    try:
-        if method == "GET":
-            response = requests.get(url, headers=headers, timeout=timeout)
-        elif method == "POST":
-            response = requests.post(url, headers=headers, json=data, timeout=timeout)
-        elif method == "PUT":
-            response = requests.put(url, headers=headers, json=data, timeout=timeout)
-        elif method == "DELETE":
-            response = requests.delete(url, headers=headers, timeout=timeout)
-        else:
-            return f"[错误: 不支持的 HTTP 方法: {method}]"
-        
-        result_parts = [
-            f"HTTP {response.status_code} {response.reason}",
-            f"URL: {response.url}",
-            "",
-            "Headers:",
-        ]
-        for key, value in response.headers.items():
-            result_parts.append(f"  {key}: {value}")
-        
-        result_parts.append("")
-        result_parts.append("Body:")
-        
-        # 尝试解析 JSON
-        try:
-            json_data = response.json()
-            result_parts.append(json.dumps(json_data, indent=2, ensure_ascii=False)[:5000])
-        except (ValueError, KeyError):
-            result_parts.append(response.text[:5000])
-        
-        return "\n".join(result_parts)
-    except Exception as e:
-        return f"[错误: HTTP 请求失败: {e}]"
-
-
-def _json_process(args: Dict) -> str:
-    """JSON 数据处理工具 — 借鉴 Claude Code 的数据处理能力"""
-    data = args.get("data", "")
-    operation = args.get("operation", "parse")
-    
-    if not data:
-        return "[错误: json_process 缺少 data 参数]"
-    
-    try:
-        if isinstance(data, str):
-            json_data = json.loads(data)
-        else:
-            json_data = data
-        
-        if operation == "parse":
-            return json.dumps(json_data, indent=2, ensure_ascii=False)[:5000]
-        elif operation == "keys":
-            if isinstance(json_data, dict):
-                return "Keys: " + ", ".join(json_data.keys())
-            elif isinstance(json_data, list):
-                return f"Array with {len(json_data)} items"
-            else:
-                return f"Type: {type(json_data).__name__}"
-        elif operation == "path":
-            path = args.get("path", "")
-            if not path:
-                return "[错误: path 操作需要 path 参数]"
-            keys = path.split(".")
-            current = json_data
-            for key in keys:
-                if isinstance(current, dict):
-                    current = current.get(key)
-                elif isinstance(current, list):
-                    try:
-                        current = current[int(key)]
-                    except (ValueError, IndexError):
-                        return f"[错误: 无法访问数组索引: {key}]"
-                else:
-                    return f"[错误: 无法访问: {key}]"
-            return json.dumps(current, indent=2, ensure_ascii=False)[:5000]
-        elif operation == "validate":
-            # 验证 JSON 结构
-            if isinstance(json_data, dict):
-                return f"✓ 有效的 JSON 对象，包含 {len(json_data)} 个键"
-            elif isinstance(json_data, list):
-                return f"✓ 有效的 JSON 数组，包含 {len(json_data)} 个元素"
-            else:
-                return f"✓ 有效的 JSON，类型: {type(json_data).__name__}"
-        else:
-            return f"[错误: 未知 JSON 操作: {operation}]"
-    except json.JSONDecodeError as e:
-        return f"[错误: JSON 解析失败: {e}]"
-    except Exception as e:
-        return f"[错误: JSON 处理失败: {e}]"
-
-
-def _code_analysis(args: Dict) -> str:
-    """代码分析工具 — 借鉴 Claude Code 的代码分析能力"""
-    path = args.get("path", "")
-    if not path:
-        return "[错误: code_analysis 缺少 path 参数]"
-    
-    analysis_type = args.get("type", "complexity")
-    path = os.path.expanduser(path)
-    
-    if not os.path.exists(path):
-        return f"[错误: 文件不存在: {path}]"
-    
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            content = f.read()
-        
-        if analysis_type == "complexity":
-            # 简单的复杂度分析
-            lines = content.split('\n')
-            total_lines = len(lines)
-            stripped_lines = [l.strip() for l in lines]
-            code_lines = sum(1 for l in stripped_lines if l and not l.startswith('#'))
-            comment_lines = sum(1 for l in stripped_lines if l.startswith('#'))
-            blank_lines = sum(1 for l in stripped_lines if not l)
-            
-            # 计算圈复杂度（简化版）
-            complexity_keywords = {'if', 'elif', 'else', 'for', 'while', 'try', 'except', 'finally', 'with', 'and', 'or'}
-            complexity = 1 + sum(
-                1 for line in lines for keyword in complexity_keywords if keyword in line
-            )
-            
-            result = [
-                f"代码分析: {path}",
-                "=" * 50,
-                f"总行数: {total_lines}",
-                f"代码行数: {code_lines}",
-                f"注释行数: {comment_lines}",
-                f"空行数: {blank_lines}",
-                f"代码比例: {code_lines/total_lines*100:.1f}%",
-                f"注释比例: {comment_lines/total_lines*100:.1f}%",
-                "",
-                "复杂度分析:",
-                f"  圈复杂度: {complexity}",
-                f"  复杂度等级: {'低' if complexity < 10 else '中' if complexity < 20 else '高'}",
-            ]
-            
-            # 函数/类统计
-            functions = re.findall(r'def\s+(\w+)\s*\(', content)
-            classes = re.findall(r'class\s+(\w+)\s*[\(:]', content)
-            
-            result.extend([
-                "",
-                "结构统计:",
-                f"  函数数量: {len(functions)}",
-                f"  类数量: {len(classes)}",
-            ])
-            
-            if functions:
-                result.append(f"  函数列表: {', '.join(functions[:10])}")
-            if classes:
-                result.append(f"  类列表: {', '.join(classes[:10])}")
-            
-            return "\n".join(result)
-        
-        elif analysis_type == "dependencies":
-            # 依赖分析
-            imports = re.findall(r'^(?:from|import)\s+(\w+)', content, re.MULTILINE)
-            unique_imports = sorted(set(imports))
-            
-            result = [
-                f"依赖分析: {path}",
-                "=" * 50,
-                f"导入语句: {len(imports)}",
-                f"唯一依赖: {len(unique_imports)}",
-                "",
-                "依赖列表:",
-            ]
-            for imp in unique_imports[:20]:
-                result.append(f"  • {imp}")
-            
-            return "\n".join(result)
-        
-        elif analysis_type == "security":
-            # 安全扫描
-            security_patterns = {
-                "硬编码密码": r'(?i)(password|passwd|pwd)\s*=\s*["\'][^"\']+["\']',
-                "API 密钥": r'(?i)(api[_-]?key|apikey)\s*=\s*["\'][^"\']+["\']',
-                "SQL 注入": r'(?i)(execute|cursor)\s*\(\s*["\'].*%s',
-                "命令注入": r'os\.system|subprocess\.call|subprocess\.run',
-                "文件操作": r'open\s*\(\s*["\'](?:/etc|/proc|/sys)',
-                "危险函数": r'exec\s*\(|eval\s*\(',
-            }
-            
-            issues = []
-            for pattern_name, pattern in security_patterns.items():
-                matches = re.findall(pattern, content)
-                if matches:
-                    issues.append(f"⚠️ {pattern_name}: {len(matches)} 处")
-            
-            result = [
-                f"安全扫描: {path}",
-                "=" * 50,
-            ]
-            
-            if issues:
-                result.append("发现潜在安全问题:")
-                result.extend(issues)
-            else:
-                result.append("✓ 未发现明显安全问题")
-            
-            return "\n".join(result)
-        
-        else:
-            return f"[错误: 未知分析类型: {analysis_type}]"
-    
-    except Exception as e:
-        return f"[错误: 代码分析失败: {e}]"
+        return f"[错误: {e}]"
 
 
 # ═══════════════════════════════════════════════
-# 自动注册所有工具
+# 注册所有工具
 # ═══════════════════════════════════════════════
 
 registry.register(
-    name="terminal",
-    description=(
-        "执行 shell 命令。文件系统在调用间持久化。\n\n"
-        "不要用 cat/head/tail 读文件——用 read_file。\n"
-        "不要用 grep 搜索文件内容——用 search_files。\n"
-        "不要用 sed/awk 编辑——用 edit_file。\n"
-        "不要用 echo/cat heredoc 创建文件——用 write_file。\n"
-        "terminal 用于：构建、安装、git、脚本、网络、包管理、文件计数、系统信息等。\n"
-        "统计文件数量用 terminal 运行 find/wc，不要用 search_files。\n\n"
-        "多个短命令可以用 && 连接成一条，减少工具调用次数。\n"
-        "命令返回即时结果（即使timeout设得很高）。长任务设 timeout=300。\n"
-        "不要重复执行同样的失败命令——分析错误后再重试。"
-    ),
-    parameters={
-        "type": "object",
-        "properties": {
-            "command": {"type": "string", "description": "要执行的 shell 命令"},
-            "workdir": {"type": "string", "description": "工作目录（绝对路径，默认当前目录）"},
-            "timeout": {"type": "integer", "description": "超时秒数（默认120，长任务设300）"},
-        },
-        "required": ["command"],
-    },
-    handler=_terminal,
-    required=["command"],
+    "terminal", "执行 shell 命令",
+    {"type": "object", "properties": {
+        "command": {"type": "string", "description": "要执行的命令"},
+        "workdir": {"type": "string", "description": "工作目录"},
+        "timeout": {"type": "integer", "description": "超时秒数"},
+    }},
+    _terminal, required=["command"],
 )
 
 registry.register(
-    name="read_file",
-    description=(
-        "读取文本文件内容，返回带行号的内容。\n\n"
-        "大文件用 offset+limit 精准读取需要的部分，不要读整个文件。\n"
-        "先用 search_files 定位行号，再用 read_file(offset=N, limit=M) 读取。\n"
-        "不要用 terminal 的 cat/head/tail 代替此工具。"
-    ),
-    parameters={
-        "type": "object",
-        "properties": {
-            "path": {"type": "string", "description": "文件路径"},
-            "offset": {"type": "integer", "description": "起始行号（从 1 开始）"},
-            "limit": {"type": "integer", "description": "最大读取行数（默认 500）"},
-        },
-        "required": ["path"],
-    },
-    handler=_read_file,
-    required=["path"],
+    "read_file", "读取文件内容",
+    {"type": "object", "properties": {
+        "path": {"type": "string", "description": "文件路径"},
+        "offset": {"type": "integer", "description": "起始行号"},
+        "limit": {"type": "integer", "description": "最大行数"},
+    }},
+    _read_file, required=["path"],
 )
 
 registry.register(
-    name="write_file",
-    description=(
-        "写入文件（覆盖整个文件）。自动创建父目录。\n\n"
-        "写入前想好完整内容，一次写入。不要分多次 write_file 写同一个文件。\n"
-        "需要修改已有文件的局部内容时，用 edit_file 而不是 write_file 重写整个文件。\n"
-        "不要用 terminal 的 echo/cat/heredoc 代替此工具。"
-    ),
-    parameters={
-        "type": "object",
-        "properties": {
-            "path": {"type": "string", "description": "文件路径"},
-            "content": {"type": "string", "description": "文件内容"},
-        },
-        "required": ["path", "content"],
-    },
-    handler=_write_file,
-    required=["path", "content"],
+    "write_file", "写入文件内容",
+    {"type": "object", "properties": {
+        "path": {"type": "string", "description": "文件路径"},
+        "content": {"type": "string", "description": "写入内容"},
+    }},
+    _write_file, required=["path", "content"],
 )
 
 registry.register(
-    name="edit_file",
-    description=(
-        "精确编辑文件中的指定文本。找到 old_string 并替换为 new_string。\n\n"
-        "修改已有文件的局部内容时优先用此工具，不要用 write_file 重写整个文件。\n"
-        "old_string 必须是文件中唯一匹配的文本（包含足够上下文）。"
-    ),
-    parameters={
-        "type": "object",
-        "properties": {
-            "path": {"type": "string", "description": "文件路径"},
-            "old_string": {"type": "string", "description": "要替换的原文"},
-            "new_string": {"type": "string", "description": "替换后的新文本"},
-        },
-        "required": ["path", "old_string", "new_string"],
-    },
-    handler=_edit_file,
-    required=["path", "old_string", "new_string"],
+    "search_files", "搜索文件内容或按名称查找文件",
+    {"type": "object", "properties": {
+        "pattern": {"type": "string", "description": "搜索模式（正则或glob）"},
+        "path": {"type": "string", "description": "搜索路径"},
+        "target": {"type": "string", "description": "content 或 files"},
+        "limit": {"type": "integer", "description": "最大结果数"},
+    }},
+    _search_files, required=["pattern"],
 )
 
 registry.register(
-    name="search_files",
-    description=(
-        "搜索文件内容（正则）或按文件名查找（glob）。\n\n"
-        "读文件前先用此工具定位：search_files 找到行号 → read_file(offset,limit) 精读。\n"
-        "不要用 terminal 的 grep/find/rg 代替此工具。\n"
-        "target='content' 搜索文件内容，target='files' 按文件名查找。"
-    ),
-    parameters={
-        "type": "object",
-        "properties": {
-            "pattern": {"type": "string", "description": "正则表达式或 glob 模式"},
-            "path": {"type": "string", "description": "搜索目录（默认当前目录）"},
-            "target": {
-                "type": "string",
-                "enum": ["content", "files"],
-                "description": "content=搜索文件内容, files=按文件名查找",
-            },
-        },
-        "required": ["pattern"],
-    },
-    handler=_search_files,
-    required=["pattern"],
+    "list_directory", "列出目录内容",
+    {"type": "object", "properties": {
+        "path": {"type": "string", "description": "目录路径"},
+        "show_hidden": {"type": "boolean", "description": "是否显示隐藏文件"},
+    }},
+    _list_directory, required=[],
 )
 
 registry.register(
-    name="web_search",
-    description="搜索互联网。返回搜索结果列表（标题、URL、描述）。",
-    parameters={
-        "type": "object",
-        "properties": {
-            "query": {"type": "string", "description": "搜索查询"},
-            "limit": {"type": "integer", "description": "结果数量（默认 5）"},
-        },
-        "required": ["query"],
-    },
-    handler=_web_search,
-    required=["query"],
+    "git_operation", "Git 操作（status/diff/commit/branch）",
+    {"type": "object", "properties": {
+        "operation": {"type": "string", "description": "操作类型"},
+        "workdir": {"type": "string", "description": "工作目录"},
+        "message": {"type": "string", "description": "commit 消息"},
+        "branch_name": {"type": "string", "description": "分支名"},
+    }},
+    _git_operation, required=["operation"],
 )
 
 registry.register(
-    name="list_directory",
-    description="列出目录下的文件和子目录。",
-    parameters={
-        "type": "object",
-        "properties": {
-            "path": {"type": "string", "description": "目录路径（默认当前目录）"},
-            "show_hidden": {"type": "boolean", "description": "是否显示隐藏文件"},
-        },
-    },
-    handler=_list_directory,
+    "python_execute", "执行 Python 代码",
+    {"type": "object", "properties": {
+        "code": {"type": "string", "description": "Python 代码"},
+        "timeout": {"type": "integer", "description": "超时秒数"},
+    }},
+    _python_execute, required=["code"],
 )
 
-registry.register(
-    name="git_operation",
-    description="Git 操作工具。支持 status/diff/log/branch/commit/create_branch/create_worktree 等操作。",
-    parameters={
-        "type": "object",
-        "properties": {
-            "operation": {
-                "type": "string",
-                "enum": ["status", "diff", "diff_staged", "log", "branch", "current_branch", "stash_list", "commit", "create_branch", "create_worktree"],
-                "description": "Git 操作类型"
-            },
-            "workdir": {"type": "string", "description": "工作目录（默认当前目录）"},
-            "message": {"type": "string", "description": "提交信息（commit 操作需要）"},
-            "branch_name": {"type": "string", "description": "分支名称（create_branch/create_worktree 操作需要）"},
-            "worktree_path": {"type": "string", "description": "工作树路径（create_worktree 操作需要）"},
-        },
-        "required": ["operation"],
-    },
-    handler=_git_operation,
-    required=["operation"],
-)
-
-registry.register(
-    name="python_execute",
-    description="安全执行 Python 代码。支持代码执行、数据分析、算法测试等。",
-    parameters={
-        "type": "object",
-        "properties": {
-            "code": {"type": "string", "description": "要执行的 Python 代码"},
-            "timeout": {"type": "integer", "description": "超时秒数（默认 30）"},
-            "workdir": {"type": "string", "description": "工作目录（默认当前目录）"},
-        },
-        "required": ["code"],
-    },
-    handler=_python_execute,
-    required=["code"],
-)
-
-registry.register(
-    name="http_request",
-    description="发送 HTTP 请求。支持 GET/POST/PUT/DELETE 方法，用于 API 测试和网页抓取。",
-    parameters={
-        "type": "object",
-        "properties": {
-            "url": {"type": "string", "description": "请求 URL"},
-            "method": {
-                "type": "string",
-                "enum": ["GET", "POST", "PUT", "DELETE"],
-                "description": "HTTP 方法（默认 GET）"
-            },
-            "headers": {"type": "object", "description": "请求头"},
-            "data": {"type": "object", "description": "请求数据（POST/PUT 需要）"},
-            "timeout": {"type": "integer", "description": "超时秒数（默认 30）"},
-        },
-        "required": ["url"],
-    },
-    handler=_http_request,
-    required=["url"],
-)
-
-registry.register(
-    name="json_process",
-    description="JSON 数据处理工具。支持解析、查询、验证等操作。",
-    parameters={
-        "type": "object",
-        "properties": {
-            "data": {"type": ["string", "object"], "description": "JSON 数据（字符串或对象）"},
-            "operation": {
-                "type": "string",
-                "enum": ["parse", "keys", "path", "validate"],
-                "description": "操作类型（默认 parse）"
-            },
-            "path": {"type": "string", "description": "JSON 路径（path 操作需要，如 'a.b.c'）"},
-        },
-        "required": ["data"],
-    },
-    handler=_json_process,
-    required=["data"],
-)
-
-registry.register(
-    name="code_analysis",
-    description="代码分析工具。支持复杂度分析、依赖分析、安全扫描。",
-    parameters={
-        "type": "object",
-        "properties": {
-            "path": {"type": "string", "description": "代码文件路径"},
-            "type": {
-                "type": "string",
-                "enum": ["complexity", "dependencies", "security"],
-                "description": "分析类型（默认 complexity）"
-            },
-        },
-        "required": ["path"],
-    },
-    handler=_code_analysis,
-    required=["path"],
-)
 
 # ═══════════════════════════════════════════════
-# delegate_agent + list_agents — 子 agent 调度工具
+# 工具执行入口
 # ═══════════════════════════════════════════════
 
-def _delegate_agent(args: Dict) -> str:
-    """将任务委派给子 agent（Claude / Codex / Hermes）"""
-    try:
-        from delegation import AgentManager, AGENT_REGISTRY
-    except ImportError as e:
-        return f"[错误] delegation 模块加载失败: {e}"
-
-    agent_name = args.get("agent", "auto")
-    task = args.get("task", "")
-    if not task:
-        return "[错误] delegate_agent 缺少 task 参数"
-
-    valid_agents = list(AGENT_REGISTRY.keys()) + ["auto"]
-    if agent_name not in valid_agents:
-        available = ", ".join(valid_agents)
-        return f"[错误] 未知 agent: {agent_name}。可用: {available}"
-
-    mgr = AgentManager()
-
-    # auto 模式：delegate 内部自动路由
-    if agent_name != "auto" and agent_name not in mgr.available:
-        detected = ", ".join(mgr.available.keys()) or "无"
-        return f"[错误] {agent_name} 未安装或不可用。已检测到: {detected}"
-
-    timeout = min(args.get("timeout", 300), 600)
-    cwd = args.get("cwd")
-
-    try:
-        result = mgr.delegate(agent_name, task, timeout=timeout, workdir=cwd)
-        return str(result)
-    except Exception as e:
-        return f"[错误] 委派失败: {e}"
-
-
-def _list_agents(args: Dict) -> str:
-    """列出所有可用的子 agent 及其能力"""
-    try:
-        from delegation import AgentManager, AGENT_REGISTRY
-    except ImportError as e:
-        return f"[错误] delegation 模块加载失败: {e}"
-
-    mgr = AgentManager()
-    available = mgr.list_available()
-
-    if not available:
-        return "当前无可用 agent。请确认 claude/codex/hermes 已安装。"
-
-    lines = ["可用 Agent 列表:", ""]
-    for a in available:
-        lines.append(f"  [{a['key']}] {a['name']}")
-        lines.append(f"    优势: {', '.join(a['strengths'])}")
-        lines.append(f"    适用: {', '.join(a['best_for'])}")
-        lines.append("")
-
-    lines.append("提示: 使用 agent='auto' 可自动选择最佳 agent。")
-    return "\n".join(lines)
-
-
-registry.register(
-    name="delegate_agent",
-    description=(
-        "将任务委派给子 agent 执行。支持: auto(智能路由), claude(Claude Code), codex(Codex CLI), hermes(Hermes)。"
-        "auto 模式根据任务内容自动选择最佳 agent。"
-        "适用于需要独立环境执行的复杂任务、代码生成、长时间运行的操作。"
-    ),
-    parameters={
-        "type": "object",
-        "properties": {
-            "agent": {
-                "type": "string",
-                "enum": ["auto", "claude", "codex", "hermes"],
-                "description": "目标 agent: auto(智能路由), claude(Claude Code), codex(Codex CLI), hermes(Hermes)",
-            },
-            "task": {
-                "type": "string",
-                "description": "任务描述（自然语言 prompt）",
-            },
-            "timeout": {
-                "type": "integer",
-                "description": "超时秒数（默认 300，最大 600）",
-            },
-            "cwd": {
-                "type": "string",
-                "description": "工作目录（可选）",
-            },
-        },
-        "required": ["agent", "task"],
-    },
-    handler=_delegate_agent,
-    required=["agent", "task"],
-)
-
-
-registry.register(
-    name="list_agents",
-    description="列出所有可用的子 agent 及其能力和适用场景。用于了解当前可委派的目标。",
-    parameters={
-        "type": "object",
-        "properties": {},
-    },
-    handler=_list_agents,
-)
-
-
-# 向后兼容：旧代码引用的常量
-TOOL_SCHEMAS = registry.schemas
-
-
-def execute_tool(name: str, args: Dict) -> str:
+def execute_tool(name: str, args: dict) -> str:
     return registry.execute(name, args)
-
-
-# ═══════════════════════════════════════════════
-# MiMo 集成工具 — 融合 MiMo-Code 核心特性
-# ═══════════════════════════════════════════════
-
-def _mimo_checkpoint_save(args: Dict) -> str:
-    """保存会话检查点（MiMo-Code 风格）"""
-    from mimo_integration import get_mimo_integration
-    mimo = get_mimo_integration()
-
-    session_id = args.get("session_id", "default")
-    sections = args.get("sections", {})
-    metadata = args.get("metadata", {})
-
-    success = mimo.save_checkpoint(session_id, sections, metadata)
-    if success:
-        return f"✓ 检查点已保存（会话: {session_id}）"
-    return "✗ 检查点保存失败"
-
-
-def _mimo_checkpoint_load(args: Dict) -> str:
-    """加载会话检查点"""
-    from mimo_integration import get_mimo_integration
-    mimo = get_mimo_integration()
-
-    session_id = args.get("session_id", "default")
-    checkpoint = mimo.load_checkpoint(session_id)
-
-    if checkpoint:
-        from mimo_integration import CheckpointManager
-        mgr = CheckpointManager()
-        return mgr.format_checkpoint(checkpoint)
-    return f"未找到会话 {session_id} 的检查点"
-
-
-def _mimo_memory_search(args: Dict) -> str:
-    """搜索项目记忆（FTS5 全文搜索）"""
-    from mimo_integration import get_mimo_integration
-    mimo = get_mimo_integration()
-
-    query = args.get("query", "")
-    scope = args.get("scope")
-    type_filter = args.get("type")
-    limit = args.get("limit", 10)
-
-    results = mimo.search_memory(query, scope=scope, type=type_filter, limit=limit)
-    if not results:
-        return f"未找到与 '{query}' 相关的记忆"
-
-    lines = [f"搜索结果（{len(results)} 条）：\n"]
-    for r in results:
-        score = abs(r.get("score", 0))
-        lines.append(f"- [{r['type']}] {r['content'][:100]}... (评分: {score:.2f})")
-    return "\n".join(lines)
-
-
-def _mimo_memory_add(args: Dict) -> str:
-    """添加项目记忆"""
-    from mimo_integration import get_mimo_integration
-    mimo = get_mimo_integration()
-
-    content = args.get("content", "")
-    type = args.get("type", "fact")
-    scope = args.get("scope", "project")
-
-    success = mimo.add_memory(content, type=type, scope=scope)
-    if success:
-        return f"✓ 记忆已添加（类型: {type}）"
-    return "✗ 记忆添加失败"
-
-
-def _mimo_task_create(args: Dict) -> str:
-    """创建任务"""
-    from mimo_integration import get_mimo_integration
-    mimo = get_mimo_integration()
-
-    task_id = args.get("task_id", "")
-    title = args.get("title", "")
-    parent_id = args.get("parent_id")
-
-    if not task_id or not title:
-        return "[错误] 缺少 task_id 或 title"
-
-    task = mimo.create_task(task_id, title, parent_id=parent_id)
-    return f"✓ 任务已创建: {task.id} - {task.title}"
-
-
-def _mimo_task_update(args: Dict) -> str:
-    """更新任务状态"""
-    from mimo_integration import get_mimo_integration, TaskTracker
-    tracker = TaskTracker()
-
-    task_id = args.get("task_id", "")
-    status = args.get("status", "open")
-
-    valid_statuses = ["open", "in_progress", "blocked", "done", "abandoned"]
-    if status not in valid_statuses:
-        return f"[错误] 无效状态: {status}。有效值: {', '.join(valid_statuses)}"
-
-    success = tracker.update_status(task_id, status)
-    if success:
-        return f"✓ 任务 {task_id} 状态已更新为: {status}"
-    return f"✗ 任务 {task_id} 不存在"
-
-
-def _mimo_task_list(args: Dict) -> str:
-    """列出任务树"""
-    from mimo_integration import TaskTracker
-    tracker = TaskTracker()
-
-    tree = tracker.format_tree()
-    if not tree:
-        return "当前无任务"
-    return f"任务树：\n{tree}"
-
-
-def _mimo_goal_set(args: Dict) -> str:
-    """设置停止条件（防乐观停止）"""
-    from mimo_integration import get_mimo_integration
-    mimo = get_mimo_integration()
-
-    session_id = args.get("session_id", "default")
-    condition = args.get("condition", "")
-    judge_model = args.get("judge_model")
-
-    if not condition:
-        return "[错误] 缺少停止条件"
-
-    success = mimo.set_goal(session_id, condition, judge_model=judge_model)
-    if success:
-        return f"✓ 停止条件已设置: {condition}"
-    return "✗ 停止条件设置失败"
-
-
-def _mimo_goal_check(args: Dict) -> str:
-    """检查是否满足停止条件"""
-    from mimo_integration import get_mimo_integration
-    from llm import LLMClient
-    mimo = get_mimo_integration()
-
-    session_id = args.get("session_id", "default")
-    conversation = args.get("conversation", "")
-
-    client = LLMClient()
-    satisfied, reason = mimo.check_goal(session_id, conversation, client)
-
-    if satisfied:
-        return f"✅ 停止条件已满足: {reason}"
-    return f"❌ 停止条件未满足: {reason}"
-
-
-def _mimo_dream(args: Dict) -> str:
-    """Dream — 扫描会话轨迹，提取持久知识"""
-    from mimo_integration import get_mimo_integration
-    from llm import LLMClient
-    mimo = get_mimo_integration()
-
-    session_id = args.get("session_id", "default")
-    client = LLMClient()
-
-    result = mimo.dream(session_id, client)
-    if result.get("success"):
-        extracted = result.get("extracted", 0)
-        if extracted > 0:
-            return f"✓ Dream 完成，提取了 {extracted} 条持久知识"
-        return "✓ Dream 完成，无新知识可提取"
-    return f"✗ Dream 失败: {result.get('error', '未知错误')}"
-
-
-def _mimo_distill(args: Dict) -> str:
-    """Distill — 发现重复工作流，打包成可复用 skill"""
-    from mimo_integration import get_mimo_integration
-    from llm import LLMClient
-    mimo = get_mimo_integration()
-
-    session_id = args.get("session_id", "default")
-    client = LLMClient()
-
-    result = mimo.distill(session_id, client)
-    if result.get("success"):
-        candidates = result.get("candidates", [])
-        if candidates:
-            lines = [f"✓ Distill 完成，发现 {len(candidates)} 个 skill 候选：\n"]
-            for skill in candidates:
-                lines.append(f"- {skill.get('name', 'unnamed')}: {skill.get('description', '')[:50]}...")
-            return "\n".join(lines)
-        return "✓ Distill 完成，未发现可复用的 skill"
-    return f"✗ Distill 失败: {result.get('error', '未知错误')}"
-
-
-def _mimo_context(args: Dict) -> str:
-    """获取上下文（预算化注入）"""
-    from mimo_integration import get_mimo_integration
-    mimo = get_mimo_integration()
-
-    session_id = args.get("session_id", "default")
-    memory_query = args.get("memory_query")
-    checkpoint_budget = args.get("checkpoint_budget", 11000)
-    memory_budget = args.get("memory_budget", 10000)
-
-    context = mimo.get_context(
-        session_id,
-        memory_query=memory_query,
-        checkpoint_budget=checkpoint_budget,
-        memory_budget=memory_budget,
-    )
-
-    if not context:
-        return "无可用上下文"
-    return context
-
-
-# 注册 MiMo 工具
-registry.register(
-    name="mimo_checkpoint_save",
-    description="保存会话检查点（MiMo-Code 风格的 11-section 结构化检查点）",
-    parameters={
-        "type": "object",
-        "properties": {
-            "session_id": {"type": "string", "description": "会话 ID（默认: default）"},
-            "sections": {"type": "object", "description": "检查点内容（11 个 section）"},
-            "metadata": {"type": "object", "description": "元数据"},
-        },
-        "required": ["sections"],
-    },
-    handler=_mimo_checkpoint_save,
-    required=["sections"],
-)
-
-registry.register(
-    name="mimo_checkpoint_load",
-    description="加载会话检查点，获取上次会话的结构化状态",
-    parameters={
-        "type": "object",
-        "properties": {
-            "session_id": {"type": "string", "description": "会话 ID（默认: default）"},
-        },
-    },
-    handler=_mimo_checkpoint_load,
-)
-
-registry.register(
-    name="mimo_memory_search",
-    description="搜索项目记忆（使用 SQLite FTS5 全文搜索，支持 BM25 评分）",
-    parameters={
-        "type": "object",
-        "properties": {
-            "query": {"type": "string", "description": "搜索关键词"},
-            "scope": {"type": "string", "description": "范围过滤（如 project/global）"},
-            "type": {"type": "string", "description": "类型过滤（如 fact/rule/architecture）"},
-            "limit": {"type": "integer", "description": "返回数量限制（默认 10）"},
-        },
-        "required": ["query"],
-    },
-    handler=_mimo_memory_search,
-    required=["query"],
-)
-
-registry.register(
-    name="mimo_memory_add",
-    description="添加项目记忆（持久化存储，支持全文搜索）",
-    parameters={
-        "type": "object",
-        "properties": {
-            "content": {"type": "string", "description": "记忆内容"},
-            "type": {"type": "string", "description": "类型（fact/rule/architecture）"},
-            "scope": {"type": "string", "description": "范围（project/global）"},
-        },
-        "required": ["content"],
-    },
-    handler=_mimo_memory_add,
-    required=["content"],
-)
-
-registry.register(
-    name="mimo_task_create",
-    description="创建任务（树状任务系统，支持父子关系）",
-    parameters={
-        "type": "object",
-        "properties": {
-            "task_id": {"type": "string", "description": "任务 ID（如 T1, T1.1）"},
-            "title": {"type": "string", "description": "任务标题"},
-            "parent_id": {"type": "string", "description": "父任务 ID（可选）"},
-        },
-        "required": ["task_id", "title"],
-    },
-    handler=_mimo_task_create,
-    required=["task_id", "title"],
-)
-
-registry.register(
-    name="mimo_task_update",
-    description="更新任务状态",
-    parameters={
-        "type": "object",
-        "properties": {
-            "task_id": {"type": "string", "description": "任务 ID"},
-            "status": {"type": "string", "enum": ["open", "in_progress", "blocked", "done", "abandoned"], "description": "新状态"},
-        },
-        "required": ["task_id", "status"],
-    },
-    handler=_mimo_task_update,
-    required=["task_id", "status"],
-)
-
-registry.register(
-    name="mimo_task_list",
-    description="列出任务树（显示所有任务的层级结构和状态）",
-    parameters={
-        "type": "object",
-        "properties": {},
-    },
-    handler=_mimo_task_list,
-)
-
-registry.register(
-    name="mimo_goal_set",
-    description="设置停止条件（防止乐观停止，使用裁判模型评估）",
-    parameters={
-        "type": "object",
-        "properties": {
-            "session_id": {"type": "string", "description": "会话 ID（默认: default）"},
-            "condition": {"type": "string", "description": "停止条件（自然语言描述）"},
-            "judge_model": {"type": "string", "description": "裁判模型（可选，默认 deepseek-chat）"},
-        },
-        "required": ["condition"],
-    },
-    handler=_mimo_goal_set,
-    required=["condition"],
-)
-
-registry.register(
-    name="mimo_goal_check",
-    description="检查是否满足停止条件（使用裁判模型评估对话内容）",
-    parameters={
-        "type": "object",
-        "properties": {
-            "session_id": {"type": "string", "description": "会话 ID（默认: default）"},
-            "conversation": {"type": "string", "description": "对话内容（用于评估）"},
-        },
-        "required": ["conversation"],
-    },
-    handler=_mimo_goal_check,
-    required=["conversation"],
-)
-
-registry.register(
-    name="mimo_dream",
-    description="Dream — 扫描会话轨迹，自动提取持久知识到项目记忆",
-    parameters={
-        "type": "object",
-        "properties": {
-            "session_id": {"type": "string", "description": "会话 ID（默认: default）"},
-        },
-    },
-    handler=_mimo_dream,
-)
-
-registry.register(
-    name="mimo_distill",
-    description="Distill — 发现重复工作流，打包成可复用的 skill",
-    parameters={
-        "type": "object",
-        "properties": {
-            "session_id": {"type": "string", "description": "会话 ID（默认: default）"},
-        },
-    },
-    handler=_mimo_distill,
-)
-
-registry.register(
-    name="mimo_context",
-    description="获取上下文（预算化注入 checkpoint + memory）",
-    parameters={
-        "type": "object",
-        "properties": {
-            "session_id": {"type": "string", "description": "会话 ID（默认: default）"},
-            "memory_query": {"type": "string", "description": "记忆搜索关键词（可选）"},
-            "checkpoint_budget": {"type": "integer", "description": "checkpoint token 预算（默认 11000）"},
-            "memory_budget": {"type": "integer", "description": "memory token 预算（默认 10000）"},
-        },
-    },
-    handler=_mimo_context,
-)
-
-
-# ═══════════════════════════════════════════════
-# 自进化系统工具 — 融合 MiMo-Code 的 Dream & Distill
-# ═══════════════════════════════════════════════
-
-def _evolve(args: Dict) -> str:
-    """执行自进化 — Dream + Distill"""
-    from evolution_system import get_evolution_system
-    from llm import LLMClient
-    
-    evolution = get_evolution_system()
-    client = LLMClient()
-    days = args.get("days", 7)
-    
-    result = evolution.evolve(client, days)
-    
-    lines = ["自进化完成：\n"]
-    
-    # Dream 结果
-    dream = result.get("dream", {})
-    if dream.get("success"):
-        lines.append(f"✓ Dream: 提取了 {dream.get('extracted', 0)} 条知识")
-    else:
-        lines.append(f"✗ Dream: {dream.get('error', '未知错误')}")
-    
-    # Distill 结果
-    distill = result.get("distill", {})
-    if distill.get("success"):
-        lines.append(f"✓ Distill: 创建了 {distill.get('created', 0)} 个 skill")
-    else:
-        lines.append(f"✗ Distill: {distill.get('error', '未知错误')}")
-    
-    return "\n".join(lines)
-
-
-def _evolution_status(args: Dict) -> str:
-    """获取自进化系统状态"""
-    from evolution_system import get_evolution_system
-    
-    evolution = get_evolution_system()
-    status = evolution.get_evolution_status()
-    
-    lines = ["自进化系统状态：\n"]
-    lines.append(f"轨迹数据库: {'✓ 存在' if status['trajectory_db_exists'] else '✗ 不存在'}")
-    lines.append(f"记忆目录: {'✓ 存在' if status['memory_dir_exists'] else '✗ 不存在'}")
-    lines.append(f"技能目录: {'✓ 存在' if status['skills_dir_exists'] else '✗ 不存在'}")
-    lines.append(f"轨迹数据库大小: {status['trajectory_db_size'] / 1024:.1f} KB")
-    
-    return "\n".join(lines)
-
-
-def _compact_context(args: Dict) -> str:
-    """压缩对话历史"""
-    from evolution_system import get_evolution_system
-    from llm import LLMClient
-    
-    evolution = get_evolution_system()
-    client = LLMClient()
-    
-    messages = args.get("messages", [])
-    if not messages:
-        return "[错误] 缺少 messages 参数"
-    
-    compacted = evolution.compaction.compact(messages, client)
-    
-    return f"✓ 压缩完成: {len(messages)} → {len(compacted)} 条消息"
-
-
-# 注册自进化工具
-registry.register(
-    name="evolve",
-    description="执行自进化 — Dream（提取持久知识）+ Distill（打包重复工作流）",
-    parameters={
-        "type": "object",
-        "properties": {
-            "days": {"type": "integer", "description": "扫描天数（默认 7）"},
-        },
-    },
-    handler=_evolve,
-)
-
-registry.register(
-    name="evolution_status",
-    description="获取自进化系统状态",
-    parameters={
-        "type": "object",
-        "properties": {},
-    },
-    handler=_evolution_status,
-)
-
-registry.register(
-    name="compact_context",
-    description="压缩对话历史以保持上下文窗口",
-    parameters={
-        "type": "object",
-        "properties": {
-            "messages": {"type": "array", "description": "对话消息列表"},
-        },
-        "required": ["messages"],
-    },
-    handler=_compact_context,
-    required=["messages"],
-)

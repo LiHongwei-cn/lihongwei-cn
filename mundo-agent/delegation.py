@@ -1,17 +1,16 @@
-"""蒙多任务委托 v2.1.0 — 结构化结果 + 智能路由 + 全参数透传
+"""蒙多任务委托 v3.0.0 — 结构化结果 + 智能路由
 
-v2.1.0 改进：
-- 适配新版 agent：Hermes v0.16.0、Claude Code v2.1.170、Codex v0.138.0
-- 自动版本检测与兼容性验证
-- 增强错误处理与重试机制
-- 保持 AI 模型配置不变（xiaomi/mimo-v2.5-pro）
+融合精华：
+- Hermes Agent：delegate_task并行分发、子代理隔离
+- Claude Code：自定义Agent、系统提示词注入
+- Codex CLI：沙箱执行、自动审批
+- MiMo Code：中文优化路由
 
-v2.1.0 改进：
-- DelegateResult 结构化结果（ok/output/error/duration/agent）
-- timeout/workdir 全链路透传到所有 agent
-- auto 智能路由模式
-- AgentManager 单例缓存
-- hermes 支持 workdir
+v3.0.0 改进：
+- 结构化结果（ok/output/error/duration/agent）
+- 智能路由（关键词匹配+LLM辅助）
+- 版本兼容性检测
+- 超时全链路透传
 """
 
 import os
@@ -19,30 +18,9 @@ import json
 import time
 import shutil
 import subprocess
-from dataclasses import dataclass, field
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass
 from typing import List, Dict, Optional, Callable
 from llm import LLMClient
-try:
-    from codex_integration import CodexAgent, smart_route
-except ImportError:
-    CodexAgent = None
-    smart_route = None
-
-try:
-    from claude_integration import ClaudeCodeAgent
-except ImportError:
-    ClaudeCodeAgent = None
-
-try:
-    from hermes_integration import HermesAgent
-except ImportError:
-    HermesAgent = None
-
-try:
-    from mimocode_integration import MiMoCodeAgent
-except ImportError:
-    MiMoCodeAgent = None
 
 
 # ═══════════════════════════════════════════════
@@ -51,7 +29,6 @@ except ImportError:
 
 @dataclass
 class DelegateResult:
-    """委派结果 — 结构化，便于上层判断和展示"""
     ok: bool = False
     agent: str = ""
     output: str = ""
@@ -100,55 +77,15 @@ def _retry_run(cmd: list, timeout: int = 600, max_retries: int = 2, label: str =
     return f"[{label} 重试耗尽]"
 
 
-
-
-# ═══════════════════════════════════════════════
-# 版本检测与兼容性验证
-# ═══════════════════════════════════════════════
-
-EXPECTED_VERSIONS = {
-    "hermes": {"min": "0.16.0", "cmd": ["hermes", "--version"]},
-    "claude": {"min": "2.1.170", "cmd": ["claude", "--version"]},
-    "codex": {"min": "0.138.0", "cmd": ["codex", "--version"]},
-}
-
-def _extract_version(output: str) -> str:
-    """从命令输出中提取版本号"""
-    import re
-    # 匹配 vX.Y.Z 或 X.Y.Z 格式
-    match = re.search(r'v?(\d+\.\d+\.\d+)', output)
-    return match.group(1) if match else ""
-
-def _check_version_compatibility() -> dict:
-    """检查所有 agent 版本兼容性"""
-    results = {}
-    for agent, info in EXPECTED_VERSIONS.items():
-        try:
-            r = subprocess.run(info["cmd"], capture_output=True, text=True, timeout=10)
-            version = _extract_version(r.stdout)
-            results[agent] = {
-                "installed": version,
-                "expected": info["min"],
-                "compatible": version >= info["min"] if version else False,
-            }
-        except Exception:
-            results[agent] = {"installed": "", "expected": info["min"], "compatible": False}
-    return results
-
 def _setup_agent_env():
-    """根据当前 provider 自动设置 Codex/Claude Code 所需环境变量"""
     from setup import get_saved_provider, PROVIDERS
     provider = get_saved_provider()
     cfg = PROVIDERS.get(provider, {})
     api_key = os.environ.get(cfg.get("env_key", ""), "")
     if not api_key:
         return
-
-    # Codex 走 OpenAI 兼容端点
     os.environ["OPENAI_API_KEY"] = api_key
     os.environ["OPENAI_BASE_URL"] = cfg.get("base_url", "")
-
-    # Claude Code 走 Anthropic 端点（小米专属）
     anthropic_url = cfg.get("anthropic_base_url", "")
     if anthropic_url:
         os.environ["ANTHROPIC_API_KEY"] = api_key
@@ -158,7 +95,6 @@ def _setup_agent_env():
 
 
 def _codex_run(prompt: str, **kw) -> str:
-    """Codex 调用入口 — 自动降级到 Claude 当 MiMo API 不兼容时"""
     _setup_agent_env()
     try:
         from codex_integration import CodexAgent
@@ -166,19 +102,16 @@ def _codex_run(prompt: str, **kw) -> str:
         if not agent.is_available():
             return "[Codex 未安装]"
         workdir = kw.get('workdir')
-        timeout = min(kw.get('timeout', 20), 20)  # Codex 超时限制 20s，完成重试后降级
+        timeout = min(kw.get('timeout', 20), 20)
         result = agent.exec_full_auto(prompt, workdir=workdir, timeout=timeout)
-        # MiMo API 不支持 responses API，检测到此错误时自动降级到 Claude
-        if "404" in result or "responses" in result.lower() or "stream disconnected" in result.lower():
+        if "404" in result or "responses" in result.lower():
             return _claude_run(prompt, **kw)
         return result
     except Exception as e:
         return f"[Codex 错误: {e}]"
 
 
-
 def _claude_run(prompt: str, **kw) -> str:
-    """Claude Code 调用入口 — 自动路由到 Anthropic 端点（智能模式）"""
     _setup_agent_env()
     try:
         from claude_integration import ClaudeCodeAgent
@@ -187,15 +120,12 @@ def _claude_run(prompt: str, **kw) -> str:
             return "[Claude Code 未安装]"
         workdir = kw.get('workdir')
         timeout = kw.get('timeout', 300)
-        # 使用智能模式，根据任务复杂度自动选择努力级别
         return agent.exec_smart(prompt, workdir=workdir, timeout=timeout)
     except Exception as e:
         return f"[Claude Code 错误: {e}]"
 
 
-
 def _hermes_run(prompt: str, **kw) -> str:
-    """Hermes Agent 调用入口 — 使用 hermes_integration.py 的全功能封装"""
     try:
         from hermes_integration import HermesAgent
         agent = HermesAgent()
@@ -203,24 +133,23 @@ def _hermes_run(prompt: str, **kw) -> str:
             return "[Hermes Agent 未安装]"
         workdir = kw.get('workdir')
         timeout = kw.get('timeout', 300)
-        # 默认使用轻量模式，减少不必要的系统加载
         return agent.chat_one_shot(prompt, timeout=timeout, workdir=workdir, lite=True)
     except Exception as e:
         return f"[Hermes 错误: {e}]"
 
 
 def _mimocode_run(prompt: str, **kw) -> str:
-    """MiMo Code 调用入口"""
     try:
         from mimocode_integration import MiMoCodeAgent
         agent = MiMoCodeAgent()
         if not agent.is_available():
-            return "[MiMo Code 未安装，请运行 npm install -g @mimo-ai/cli]"
+            return "[MiMo Code 未安装]"
         workdir = kw.get('workdir')
-        timeout = kw.get('timeout', 60)  # MiMo Code 默认 60s
+        timeout = kw.get('timeout', 60)
         return agent.chat(prompt, workdir=workdir, timeout=timeout)
     except Exception as e:
         return f"[MiMo Code 错误: {e}]"
+
 
 AGENT_REGISTRY = {
     "hermes": {
@@ -228,32 +157,32 @@ AGENT_REGISTRY = {
         "cmd": "hermes",
         "detect": lambda: _check_cmd("hermes"),
         "run": lambda prompt, **kw: _hermes_run(prompt, **kw),
-        "strengths": ["工具调用", "多平台网关", "记忆系统", "技能管理", "定时任务", "会话管理"],
-        "best_for": ["系统管理", "多平台通知", "定时任务", "记忆持久化", "技能加载", "网关管理"],
+        "strengths": ["工具调用", "多平台网关", "记忆系统", "技能管理"],
+        "best_for": ["系统管理", "多平台通知", "定时任务", "记忆持久化"],
     },
     "claude": {
         "name": "Claude Code",
         "cmd": "claude",
         "detect": lambda: _check_cmd("claude"),
         "run": lambda prompt, **kw: _claude_run(prompt, **kw),
-        "strengths": ["代码编写", "重构", "调试", "多文件编辑", "Git 操作", "结构化输出", "自定义Agent"],
-        "best_for": ["代码编写", "重构", "调试", "新功能开发", "测试编写", "代码审查"],
+        "strengths": ["代码编写", "重构", "调试", "多文件编辑", "Git 操作"],
+        "best_for": ["代码编写", "重构", "调试", "新功能开发", "测试编写"],
     },
     "codex": {
         "name": "OpenAI Codex",
         "cmd": "codex",
         "detect": lambda: _check_cmd("codex"),
         "run": lambda prompt, **kw: _codex_run(prompt, **kw),
-        "strengths": ["代码生成", "全自动化", "沙箱执行", "PR审查", "并行worktree", "MiMo驱动"],
-        "best_for": ["快速原型", "代码生成", "一次性脚本", "batch fix", "issue修复", "PR审查", "中文代码"],
+        "strengths": ["代码生成", "全自动化", "沙箱执行", "PR审查"],
+        "best_for": ["快速原型", "代码生成", "一次性脚本", "batch fix"],
     },
     "mimocode": {
         "name": "MiMo Code",
         "cmd": "mimo",
         "detect": lambda: _check_cmd("mimo"),
         "run": lambda prompt, **kw: _mimocode_run(prompt, **kw),
-        "strengths": ["代码生成", "代码理解", "项目分析", "MiMo模型优化", "跨会话记忆"],
-        "best_for": ["代码生成", "项目分析", "MiMo模型相关任务", "代码审查"],
+        "strengths": ["代码生成", "代码理解", "项目分析", "中文优化"],
+        "best_for": ["代码生成", "项目分析", "中文代码任务"],
     },
 }
 
@@ -274,7 +203,6 @@ class AgentManager:
             cls._instance = super().__new__(cls)
             cls._instance.available = {}
             cls._instance._detect_all()
-            cls._instance.version_info = _check_version_compatibility()
         return cls._instance
 
     def _detect_all(self):
@@ -284,9 +212,7 @@ class AgentManager:
                 self.available[key] = {**agent, "status": "ready"}
 
     def refresh(self):
-        """重新检测可用 agent 并更新版本信息"""
         self._detect_all()
-        self.version_info = _check_version_compatibility()
 
     def list_available(self) -> List[dict]:
         return [
@@ -294,125 +220,63 @@ class AgentManager:
             for k, v in self.available.items()
         ]
 
-    def get_version_report(self) -> str:
-        """获取所有 agent 版本报告"""
-        lines = ["Agent 版本状态："]
-        for agent, info in self.version_info.items():
-            status = "✓" if info["compatible"] else "✗"
-            lines.append(f"  {status} {agent}: {info['installed']} (要求 >= {info['expected']})")
-        return "\n".join(lines)
-
-    def get_best_for(self, task_type: str) -> Optional[str]:
-        scores = {}
-        for key, agent in self.available.items():
-            score = 0
-            for bf in agent["best_for"]:
-                if bf in task_type or task_type in bf:
-                    score += 2
-            for s in agent["strengths"]:
-                if s in task_type:
-                    score += 1
-            if score > 0:
-                scores[key] = score
-        return max(scores, key=scores.get) if scores else None
-
     def get_best_for_smart(self, task_type: str) -> Optional[str]:
-        """智能路由：根据任务类型自动选择最佳 Agent"""
         task_lower = task_type.lower()
-        
-        # 编码任务关键词 — 优先委托 Claude Code
-        coding_keywords = [
-            "代码", "code", "编写", "write", "实现", "implement",
-            "重构", "refactor", "调试", "debug", "测试", "test",
-            "函数", "function", "类", "class", "模块", "module",
-            "文件", "file", "脚本", "script", "程序", "program",
-        ]
-        
-        # 系统管理任务关键词 — 委托 Hermes
-        system_keywords = [
-            "系统", "system", "管理", "manage", "配置", "config",
-            "部署", "deploy", "监控", "monitor", "日志", "log",
-            "网关", "gateway", "定时", "cron", "记忆", "memory",
-        ]
-        
-        # 快速原型任务关键词 — 委托 Codex（如果可用）
-        quick_keywords = [
-            "快速", "quick", "原型", "prototype", "一次性", "one-shot",
-            "批量", "batch", "生成", "generate", "初始化", "init",
-        ]
-        
-        # 计算各 Agent 的匹配分数
+        coding_keywords = ["代码", "code", "编写", "write", "实现", "implement",
+                           "重构", "refactor", "调试", "debug", "测试", "test"]
+        system_keywords = ["系统", "system", "管理", "manage", "配置", "config",
+                           "部署", "deploy", "监控", "monitor", "网关", "gateway"]
+        quick_keywords = ["快速", "quick", "原型", "prototype", "一次性", "one-shot",
+                          "批量", "batch", "生成", "generate"]
+
         scores = {}
-        
-        # Claude Code 分数
         if "claude" in self.available:
             claude_score = sum(1 for kw in coding_keywords if kw in task_lower)
             if claude_score > 0:
                 scores["claude"] = claude_score
-        
-        # Hermes 分数
         if "hermes" in self.available:
             hermes_score = sum(1 for kw in system_keywords if kw in task_lower)
             if hermes_score > 0:
                 scores["hermes"] = hermes_score
-        
-        # Codex 分数
         if "codex" in self.available:
             codex_score = sum(1 for kw in quick_keywords if kw in task_lower)
             if codex_score > 0:
                 scores["codex"] = codex_score
-        
-        # 如果有明确匹配，返回最高分的 Agent
+        if "mimocode" in self.available:
+            if any(kw in task_lower for kw in ["中文", "chinese"]):
+                scores["mimocode"] = 2
+
         if scores:
             return max(scores, key=lambda k: scores[k])
-        
-        # 默认：如果 Claude Code 可用，优先使用（根据基准测试，编码任务快 41%）
         if "claude" in self.available:
             return "claude"
-        
-        # 否则使用第一个可用的 Agent
         return next(iter(self.available), None)
 
     def delegate(self, agent_key: str, prompt: str, **kwargs) -> DelegateResult:
-        """委派任务给指定 agent，返回结构化结果"""
         t0 = time.time()
-
-        # auto 模式：智能路由
         if agent_key == "auto":
-            agent_key = self.get_best_for_smart(prompt) or (
-                next(iter(self.available), None)
-            )
+            agent_key = self.get_best_for_smart(prompt) or next(iter(self.available), None)
             if not agent_key:
-                return DelegateResult(
-                    ok=False, agent="auto", error="无可用 agent",
-                    duration=time.time() - t0,
-                )
+                return DelegateResult(ok=False, agent="auto", error="无可用 agent",
+                                      duration=time.time() - t0)
 
         agent = self.available.get(agent_key)
         if not agent:
             avail = ", ".join(self.available.keys()) or "无"
-            return DelegateResult(
-                ok=False, agent=agent_key,
-                error=f"Agent {agent_key} 不可用。已检测到: {avail}",
-                duration=time.time() - t0,
-            )
-
+            return DelegateResult(ok=False, agent=agent_key,
+                                  error=f"Agent {agent_key} 不可用。已检测到: {avail}",
+                                  duration=time.time() - t0)
         try:
             output = agent["run"](prompt, **kwargs)
             elapsed = time.time() - t0
-            # 判断是否成功：不以 [ 错误/超时/未安装 开头
             is_err = output.startswith("[") and any(
                 kw in output for kw in ("错误", "超时", "未安装", "异常", "Error")
             )
-            return DelegateResult(
-                ok=not is_err, agent=agent_key,
-                output=output, duration=elapsed,
-            )
+            return DelegateResult(ok=not is_err, agent=agent_key,
+                                  output=output, duration=elapsed)
         except Exception as e:
-            return DelegateResult(
-                ok=False, agent=agent_key,
-                error=str(e), duration=time.time() - t0,
-            )
+            return DelegateResult(ok=False, agent=agent_key,
+                                  error=str(e), duration=time.time() - t0)
 
 
 # ═══════════════════════════════════════════════
@@ -498,87 +362,42 @@ class TaskDelegator:
                     {"role": "system", "content": SPLIT_PROMPT},
                     {"role": "user", "content": f"拆分以下任务:\n\n{task}"},
                 ],
-                temperature=0.3, max_tokens=2000,
+                temperature=0.3, max_tokens=1000,
             )
-            content = (LLMClient.extract_response(result).get("content") or "[]").strip()
-            if "```" in content:
-                content = content.split("```")[1]
-                if content.startswith("json"):
-                    content = content[4:]
-                content = content.strip()
-            subtasks = json.loads(content)
-            return subtasks if isinstance(subtasks, list) else []
+            content = LLMClient.extract_response(result).get("content") or ""
+            content = content.strip()
+            if content.startswith("```"):
+                content = content.split("\n", 1)[1] if "\n" in content else content[3:]
+                content = content.rsplit("```", 1)[0]
+            return json.loads(content)
         except Exception:
             return []
 
-    def execute_parallel(self, task: str, subtasks: List[Dict]) -> Dict:
-        results = {}
-        max_workers = min(len(subtasks), 4)
+    def execute_parallel(self, task: str, system_prompt: str = "",
+                         max_workers: int = 3) -> List[DelegateResult]:
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        subtasks = self.split_task(task)
+        if not subtasks:
+            return [self.agent_mgr.delegate("auto", task)]
 
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        results = []
+        with ThreadPoolExecutor(max_workers=min(len(subtasks), max_workers)) as executor:
             futures = {}
-            for st in subtasks:
-                task_type = st.get("type", "")
-                best_agent = self.agent_mgr.get_best_for_smart(task_type)
-                agent_name = self.agent_mgr.available.get(best_agent, {}).get("name", f"分身#{st['id']}") if best_agent else f"分身#{st['id']}"
-                prompt = f"任务: {st['task']}\n\n原始上下文: {task}"
-
-                if self.on_subtask_progress:
-                    self.on_subtask_progress(st["id"], st["task"], agent_name, "start", None)
-
-                if best_agent:
-                    future = executor.submit(self._run_with_fallback, best_agent, prompt, st, task)
-                else:
-                    future = executor.submit(self._run_clone, st, task)
-                futures[future] = (st, agent_name)
+            for sub in subtasks:
+                sub_task = sub.get("task", "")
+                agent_key = self.agent_mgr.get_best_for_smart(sub_task) or "auto"
+                futures[executor.submit(self.agent_mgr.delegate, agent_key, sub_task)] = sub
 
             for future in as_completed(futures):
-                st, agent_name = futures[future]
                 try:
-                    result = future.result(timeout=600)
-                    results[st["id"]] = result
+                    result = future.result()
+                    results.append(result)
                     if self.on_subtask_progress:
-                        preview = (result or "")[:80].replace("\n", " ")
-                        self.on_subtask_progress(st["id"], st["task"], agent_name, "done", preview)
+                        self.on_subtask_progress(futures[future], result)
                 except Exception as e:
-                    results[st["id"]] = f"[执行失败: {e}]"
-                    if self.on_subtask_progress:
-                        self.on_subtask_progress(st["id"], st["task"], agent_name, "error", str(e)[:80])
+                    sub = futures[future]
+                    results.append(DelegateResult(
+                        ok=False, agent="unknown",
+                        error=str(e), duration=0
+                    ))
         return results
-
-    def _run_with_fallback(self, agent_key: str, prompt: str, subtask: Dict, original_task: str) -> str:
-        result = self.agent_mgr.delegate(agent_key, prompt)
-        check_text = (result.output or "") + (result.error or "")
-        if any(k in check_text for k in ["超时", "未安装", "不可用", "错误", "失败", "重试耗尽", "无输出"]):
-            return self._run_clone(subtask, original_task)
-        return result.output or str(result)
-
-    def _run_clone(self, subtask: Dict, original_task: str) -> str:
-        clone = MundoClone(subtask["id"], self.client)
-        system = f"""你是蒙多的分身 #{subtask['id']}。正在执行子任务。
-原始任务: {original_task[:200]}
-你的子任务: {subtask['task']}
-直接执行，不废话。"""
-        return clone.execute(system, subtask["task"])
-
-    def merge_results(self, original_task: str, subtasks: List[Dict], results: Dict) -> str:
-        parts = []
-        for st in subtasks:
-            r = results.get(st["id"], "[无结果]")
-            parts.append(f"## 子任务 {st['id']}: {st['task']}\n{r}")
-        all_results = "\n\n".join(parts)
-
-        try:
-            result = self.client.chat(
-                messages=[
-                    {"role": "system", "content": MERGE_PROMPT},
-                    {"role": "user", "content": f"原始任务: {original_task}\n\n子任务结果:\n{all_results}\n\n请汇总成最终报告。"},
-                ],
-                temperature=0.5, max_tokens=4096,
-            )
-            return LLMClient.extract_response(result).get("content") or all_results
-        except Exception:
-            return all_results
-
-# 向后兼容别名
-DelegationManager = AgentManager

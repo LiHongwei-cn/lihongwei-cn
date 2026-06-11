@@ -1,13 +1,12 @@
-"""蒙多常量 v2.2.0 — 所有魔法数字的家
+"""蒙多常量 v3.0.0 — 所有魔法数字的家
 
-一处定义，全局引用。消除硬编码散落。
-DeepSeek 优先，全模型兼容。
+一处定义，全局引用。零硬编码散落。
 """
 
 from pathlib import Path
 
 # ═══════════════════════════════════════════════
-# 路径 — 蒙多的疆域
+# 路径
 # ═══════════════════════════════════════════════
 
 MUNDO_HOME = Path.home() / ".hermes" / "mundo-agent"
@@ -18,19 +17,16 @@ TIMELINE_DB = MUNDO_HOME / "timeline.db"
 HISTORY_FILE = MUNDO_HOME / ".mundo_history"
 SETUP_FLAG = MUNDO_HOME / ".setup_complete"
 ENV_FILE = MUNDO_HOME / ".env"
-PASTE_DIR = MUNDO_HOME / "pastes"
-SYNC_STATE = MUNDO_HOME / "sync_state.json"
-UPLOAD_QUEUE = MUNDO_HOME / "upload_queue.json"
 CONFIG_FILE = MUNDO_HOME / "config.json"
 
 # ═══════════════════════════════════════════════
 # 版本
 # ═══════════════════════════════════════════════
 
-VERSION = "2.2.0"
+VERSION = "3.0.0"
 
 # ═══════════════════════════════════════════════
-# 默认模型 — DeepSeek 优先
+# 默认模型
 # ═══════════════════════════════════════════════
 
 DEFAULT_PROVIDER = "deepseek"
@@ -40,7 +36,7 @@ DEFAULT_MODEL = "deepseek-chat"
 # Token 估算
 # ═══════════════════════════════════════════════
 
-CHAR_TO_TOKEN = 0.4  # 中英文混合约 2.5 字符/token
+CHAR_TO_TOKEN = 0.4
 
 # ═══════════════════════════════════════════════
 # 上下文窗口
@@ -48,11 +44,7 @@ CHAR_TO_TOKEN = 0.4  # 中英文混合约 2.5 字符/token
 
 CONTEXT_MAX_TOKENS = 128000
 CONTEXT_COMPRESS_THRESHOLD = 0.7
-CONTEXT_COMPRESS_TARGET = 0.5
 CONTEXT_KEEP_RECENT = 8
-CONTEXT_SYSTEM_RESERVE = 4000
-CONTEXT_RESPONSE_RESERVE = 8000
-CONTEXT_SAFETY_MARGIN = 2000
 
 # ═══════════════════════════════════════════════
 # 预算
@@ -77,8 +69,7 @@ STREAM_MAX_WAIT = 300
 # ═══════════════════════════════════════════════
 
 TOOL_TIMEOUT = 30
-TOOL_MAX_OUTPUT = 500_000
-TOOL_OUTPUT_PREVIEW_LINES = 5
+TOOL_MAX_OUTPUT = 8000
 
 # ═══════════════════════════════════════════════
 # 记忆
@@ -87,27 +78,17 @@ TOOL_OUTPUT_PREVIEW_LINES = 5
 MAX_CONTEXT_INJECT = 3000
 MAX_FACTS_INJECT = 8
 MAX_CONVERSATION_RESULTS = 5
-MEMORY_MAX_FACTS = 100
 
 # ═══════════════════════════════════════════════
 # 稳定性
 # ═══════════════════════════════════════════════
 
 STUCK_THRESHOLD = 3
-IDLE_TIMEOUT = 300
 MAX_RETRY = 3
 RETRY_DELAY = 2.0
 
 # ═══════════════════════════════════════════════
-# 帝皇决心 — 不完成不罢休
+# 帝皇决心
 # ═══════════════════════════════════════════════
 
-MAX_ITERATIONS = 50           # 单任务最大迭代（效率优化后50轮足够）
-LONG_TASK_THRESHOLD = 50      # 长任务阈值（超过此值启用特殊处理）
-TASK_ABANDON_TIMEOUT = 1800   # 任务放弃超时（30分钟无进展）
-PROGRESS_CHECK_INTERVAL = 10  # 进度检查间隔（每10轮检查一次）
-
-# 蒙多帝皇哲学：工具调用无上限
-# - 帝皇不受次数限制，只受时间约束
-# - 任务级超时保护（90秒）替代工具调用次数限制
-# - 进度检查防止死循环，但不限制工具使用
+MAX_ITERATIONS = 50
