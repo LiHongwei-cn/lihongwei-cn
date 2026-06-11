@@ -1,20 +1,17 @@
 /**
  * Visitor Counter Module
- * - Primary: localStorage (instant, never loses data)
- * - Secondary: busuanzi (cross-device aggregation)
- * - Multiple CDN fallbacks for China accessibility
- * - Graceful degradation: always shows a number
+ * - Site/page: localStorage + busuanzi
+ * - Card visits: localStorage per card ID
  */
 (function() {
   'use strict';
 
   var SITE_KEY = 'lh_visitor_count';
   var PAGE_KEY = 'lh_page_' + location.pathname.replace(/[^a-z0-9]/gi, '_');
+  var CARD_PREFIX = 'lh_card_';
 
-  // 初始偏移量 — 新访客看到的真实基础数据
   var SITE_OFFSET = 2047;
 
-  // 每个页面根据路径生成不同的偏移量，避免所有页面数字一样
   function pageOffset(path) {
     var hash = 0;
     for (var i = 0; i < path.length; i++) {
@@ -25,29 +22,69 @@
   }
   var PAGE_OFFSET = pageOffset(location.pathname);
 
-  // === localStorage counter (always works, never loses data) ===
-  function getLocalCount(key) {
+  // localStorage helpers
+  function getCount(key) {
     try { return parseInt(localStorage.getItem(key) || '0', 10); } catch(e) { return 0; }
   }
-  function setLocalCount(key, val) {
+  function setCount(key, val) {
     try { localStorage.setItem(key, val); } catch(e) {}
   }
 
-  var siteCount = getLocalCount(SITE_KEY) + 1;
-  var pageCount = getLocalCount(PAGE_KEY) + 1;
-  setLocalCount(SITE_KEY, siteCount);
-  setLocalCount(PAGE_KEY, pageCount);
+  // === Card visit counters ===
+  function initCardCounters() {
+    var cards = document.querySelectorAll('.card[data-id]');
+    cards.forEach(function(card) {
+      var id = card.getAttribute('data-id');
+      if (!id) return;
 
-  // 加上偏移量显示
+      var key = CARD_PREFIX + id;
+      var count = getCount(key);
+
+      // 初始偏移：每个卡片不同
+      var offset = 50 + Math.abs(hashStr(id) % 200);
+      var display = count + offset;
+
+      // 显示到 badge
+      var badge = card.querySelector('.card-badge');
+      if (badge) {
+        badge.textContent = display + ' 次';
+        badge.setAttribute('data-views', display);
+      }
+
+      // 点击时递增
+      card.addEventListener('click', function() {
+        var newCount = getCount(key) + 1;
+        setCount(key, newCount);
+        if (badge) {
+          badge.textContent = (newCount + offset) + ' 次';
+        }
+      });
+    });
+  }
+
+  function hashStr(str) {
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
+      hash = hash & hash;
+    }
+    return hash;
+  }
+
+  // === Site/page counters ===
+  var siteCount = getCount(SITE_KEY) + 1;
+  var pageCount = getCount(PAGE_KEY) + 1;
+  setCount(SITE_KEY, siteCount);
+  setCount(PAGE_KEY, pageCount);
+
   var displaySite = siteCount + SITE_OFFSET;
   var displayPage = pageCount + PAGE_OFFSET;
 
-  // Display local counts immediately (with offset)
   set('busuanzi_value_site_pv', displaySite);
   set('busuanzi_value_page_pv', displayPage);
   set('busuanzi_value_site_uv', displaySite);
 
-  // === Busuanzi (cross-device, best-effort) ===
+  // === Busuanzi fallback ===
   var cdns = [
     'https://cdn.jsdelivr.net/npm/busuanzi@2.3.0/bsz.pure.mini.js',
     'https://cdnjs.cloudflare.com/ajax/libs/busuanzi/2.3.0/bsz.pure.mini.js',
@@ -65,38 +102,35 @@
     s.async = true;
     s.onload = function() {
       loaded = true;
-      // busuanzi loads and updates elements by ID
-      // If it succeeds, it will overwrite our localStorage values with server values
       setTimeout(function() {
         var sv = get('busuanzi_value_site_pv');
         if (sv && sv > 0) {
           var adjusted = Math.max(sv, displaySite);
-          setLocalCount(SITE_KEY, adjusted - SITE_OFFSET);
+          setCount(SITE_KEY, adjusted - SITE_OFFSET);
           set('busuanzi_value_site_pv', adjusted);
         }
         var pv = get('busuanzi_value_page_pv');
         if (pv && pv > 0) {
           var adjustedPv = Math.max(pv, displayPage);
-          setLocalCount(PAGE_KEY, adjustedPv - PAGE_OFFSET);
+          setCount(PAGE_KEY, adjustedPv - PAGE_OFFSET);
           set('busuanzi_value_page_pv', adjustedPv);
         }
       }, 2000);
     };
-    s.onerror = function() {
-      idx++;
-      tryLoad();
-    };
+    s.onerror = function() { idx++; tryLoad(); };
     document.head.appendChild(s);
   }
 
-  // Start trying CDNs after page loads
-  if (document.readyState === 'complete') {
-    tryLoad();
+  if (document.readyState === 'complete') { tryLoad(); }
+  else { window.addEventListener('load', tryLoad); }
+
+  // Init card counters on DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCardCounters);
   } else {
-    window.addEventListener('load', tryLoad);
+    initCardCounters();
   }
 
-  // === Helpers ===
   function set(id, val) {
     var el = document.getElementById(id);
     if (el) el.textContent = val;
