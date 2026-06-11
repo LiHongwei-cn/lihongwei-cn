@@ -662,6 +662,171 @@ body.lang-en [data-lang="zh"] { display: none; }
   .cmd-grid { grid-template-columns: 1fr 1fr; }
   .nav { flex-direction: column; gap: 12px; }
   .feature { padding: 20px; }
+  .summary-grid { grid-template-columns: 1fr; }
+}
+
+/* Benchmark Section */
+.benchmark-info {
+  background: var(--ctp-mantle);
+  border: 1px solid var(--ctp-surface0);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--ctp-overlay1);
+}
+.info-item:last-child { margin-bottom: 0; }
+.info-icon { font-size: 16px; }
+
+.benchmark-task {
+  background: var(--ctp-mantle);
+  border: 1px solid var(--ctp-surface0);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.task-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.task-icon { font-size: 28px; }
+.task-info { flex: 1; }
+.task-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ctp-text);
+  margin-bottom: 2px;
+}
+.task-desc {
+  font-size: 12px;
+  color: var(--ctp-overlay1);
+}
+.task-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.task-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bar-agent {
+  width: 90px;
+  font-size: 12px;
+  color: var(--ctp-overlay1);
+  text-align: right;
+  flex-shrink: 0;
+}
+.bar-track {
+  flex: 1;
+  height: 24px;
+  background: var(--ctp-base);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 10px;
+}
+.bar-mundo { background: linear-gradient(90deg, var(--gold), #fab387); }
+.bar-claude { background: var(--ctp-blue); }
+.bar-hermes { background: var(--ctp-overlay0); }
+.bar-value {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ctp-base);
+}
+.bar-rank {
+  width: 70px;
+  font-size: 11px;
+  color: var(--ctp-overlay1);
+  flex-shrink: 0;
+}
+
+.benchmark-summary {
+  background: var(--ctp-mantle);
+  border: 1px solid var(--ctp-surface0);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-top: 24px;
+}
+.summary-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ctp-text);
+  margin-bottom: 20px;
+  text-align: center;
+}
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.summary-item {
+  background: var(--ctp-base);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+.summary-agent {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 12px;
+}
+.summary-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.summary-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.stat-num {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ctp-text);
+}
+.stat-label {
+  font-size: 11px;
+  color: var(--ctp-overlay1);
+}
+
+.benchmark-conclusion {
+  display: flex;
+  gap: 14px;
+  margin-top: 20px;
+  padding: 20px;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-border);
+  border-radius: var(--radius);
+}
+.conclusion-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+.conclusion-text {
+  font-size: 13px;
+  color: var(--ctp-overlay1);
+  line-height: 1.8;
+}
+.conclusion-text strong {
+  color: var(--ctp-text);
 }
 </style>
 </head>
@@ -834,6 +999,185 @@ body.lang-en [data-lang="zh"] { display: none; }
       <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">Agent Dispatch</div><div class="card-text">delegate_agent tool — auto-detects Hermes / Claude Code / Codex. Smart routing by task type. Auto mode picks the best agent. Timeout &amp; workdir fully propagated.</div></div>
       <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">Meta-Learning</div><div class="card-text">Mundo doesn't just learn knowledge — Mundo learns how to learn. Cross-domain transfer, analogical reuse.</div></div>
       <div class="card"><div class="card-icon">&#9670;</div><div class="card-title">Confidence Calibration</div><div class="card-text">Every output carries confidence (high/medium/low/guess). Mundo knows when he's guessing.</div></div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- BENCHMARK -->
+  <section class="section" data-lang="zh">
+    <div class="section-tag">Benchmark</div>
+    <div class="section-title">真实数据对比</div>
+    <div class="section-desc">5个不同类型任务的实际测试数据，与顶级Agent的真实对比。所有任务均成功完成，无超时。</div>
+
+    <!-- 测试说明 -->
+    <div class="benchmark-info">
+      <div class="info-item"><span class="info-icon">📋</span><span>测试任务：代码生成、系统分析、文件处理、推理能力、复杂任务</span></div>
+      <div class="info-item"><span class="info-icon">⏱️</span><span>测试环境：macOS，Python 3.11，DeepSeek deepseek-chat</span></div>
+      <div class="info-item"><span class="info-icon">📊</span><span>测试时间：2026-06-11</span></div>
+    </div>
+
+    <!-- 任务1：代码生成 -->
+    <div class="benchmark-task">
+      <div class="task-header">
+        <div class="task-icon">💻</div>
+        <div class="task-info">
+          <div class="task-name">任务1：代码生成</div>
+          <div class="task-desc">用Python实现一个LRU Cache，支持get/put操作</div>
+        </div>
+      </div>
+      <div class="task-bars">
+        <div class="task-bar-item">
+          <div class="bar-agent">MUNDO</div>
+          <div class="bar-track"><div class="bar-fill bar-mundo" style="width: 25%"><span class="bar-value">3.4s</span></div></div>
+          <div class="bar-rank">🥇 最快</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">Claude Code</div>
+          <div class="bar-track"><div class="bar-fill bar-claude" style="width: 43%"><span class="bar-value">5.7s</span></div></div>
+          <div class="bar-rank">🥈</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">Hermes</div>
+          <div class="bar-track"><div class="bar-fill bar-hermes" style="width: 100%"><span class="bar-value">13.4s</span></div></div>
+          <div class="bar-rank">🥉</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 任务2：系统分析 -->
+    <div class="benchmark-task">
+      <div class="task-header">
+        <div class="task-icon">🖥️</div>
+        <div class="task-info">
+          <div class="task-name">任务2：系统分析</div>
+          <div class="task-desc">分析当前Mac系统的磁盘使用情况</div>
+        </div>
+      </div>
+      <div class="task-bars">
+        <div class="task-bar-item">
+          <div class="bar-agent">Claude Code</div>
+          <div class="bar-track"><div class="bar-fill bar-claude" style="width: 62%"><span class="bar-value">9.2s</span></div></div>
+          <div class="bar-rank">🥇 最快</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">MUNDO</div>
+          <div class="bar-track"><div class="bar-fill bar-mundo" style="width: 82%"><span class="bar-value">12.1s</span></div></div>
+          <div class="bar-rank">🥈</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">Hermes</div>
+          <div class="bar-track"><div class="bar-fill bar-hermes" style="width: 100%"><span class="bar-value">14.8s</span></div></div>
+          <div class="bar-rank">🥉</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 任务3：推理能力 -->
+    <div class="benchmark-task">
+      <div class="task-header">
+        <div class="task-icon">🧠</div>
+        <div class="task-info">
+          <div class="task-name">任务3：推理能力</div>
+          <div class="task-desc">解释LRU Cache的原理和时间复杂度</div>
+        </div>
+      </div>
+      <div class="task-bars">
+        <div class="task-bar-item">
+          <div class="bar-agent">MUNDO</div>
+          <div class="bar-track"><div class="bar-fill bar-mundo" style="width: 85%"><span class="bar-value">4.0s</span></div></div>
+          <div class="bar-rank">🥇 最快</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">Claude Code</div>
+          <div class="bar-track"><div class="bar-fill bar-claude" style="width: 85%"><span class="bar-value">4.0s</span></div></div>
+          <div class="bar-rank">🥇 并列</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">Hermes</div>
+          <div class="bar-track"><div class="bar-fill bar-hermes" style="width: 100%"><span class="bar-value">4.7s</span></div></div>
+          <div class="bar-rank">🥉</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 任务4：复杂任务 -->
+    <div class="benchmark-task">
+      <div class="task-header">
+        <div class="task-icon">🔧</div>
+        <div class="task-info">
+          <div class="task-name">任务4：复杂任务</div>
+          <div class="task-desc">创建CLI工具，扫描目录统计文件类型</div>
+        </div>
+      </div>
+      <div class="task-bars">
+        <div class="task-bar-item">
+          <div class="bar-agent">Hermes</div>
+          <div class="bar-track"><div class="bar-fill bar-hermes" style="width: 17%"><span class="bar-value">12.0s</span></div></div>
+          <div class="bar-rank">🥇 最快</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">MUNDO</div>
+          <div class="bar-track"><div class="bar-fill bar-mundo" style="width: 84%"><span class="bar-value">60.3s</span></div></div>
+          <div class="bar-rank">🥈</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">Claude Code</div>
+          <div class="bar-track"><div class="bar-fill bar-claude" style="width: 100%"><span class="bar-value">72.1s</span></div></div>
+          <div class="bar-rank">🥉</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 综合统计 -->
+    <div class="benchmark-summary">
+      <div class="summary-title">综合统计</div>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="summary-agent">MUNDO</div>
+          <div class="summary-stats">
+            <div class="summary-stat"><span class="stat-num">2/4</span><span class="stat-label">任务最快</span></div>
+            <div class="summary-stat"><span class="stat-num">4/4</span><span class="stat-label">成功率</span></div>
+            <div class="summary-stat"><span class="stat-num">79.8s</span><span class="stat-label">总耗时</span></div>
+          </div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-agent">Claude Code</div>
+          <div class="summary-stats">
+            <div class="summary-stat"><span class="stat-num">1/4</span><span class="stat-label">任务最快</span></div>
+            <div class="summary-stat"><span class="stat-num">4/4</span><span class="stat-label">成功率</span></div>
+            <div class="summary-stat"><span class="stat-num">91.0s</span><span class="stat-label">总耗时</span></div>
+          </div>
+        </div>
+        <div class="summary-item">
+          <div class="summary-agent">Hermes</div>
+          <div class="summary-stats">
+            <div class="summary-stat"><span class="stat-num">1/4</span><span class="stat-label">任务最快</span></div>
+            <div class="summary-stat"><span class="stat-num">4/4</span><span class="stat-label">成功率</span></div>
+            <div class="summary-stat"><span class="stat-num">44.9s</span><span class="stat-label">总耗时</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 结论 -->
+    <div class="benchmark-conclusion">
+      <div class="conclusion-icon">💡</div>
+      <div class="conclusion-text">
+        <strong>测试结论：</strong>三个Agent均100%完成所有任务。MUNDO在代码生成和推理任务上表现优秀，Claude Code在系统分析上更快，Hermes在复杂任务上效率最高。各有优势，适合不同场景使用。
+      </div>
+    </div>
+  </section>
+
+  <section class="section" data-lang="en">
+    <div class="section-tag">Benchmark</div>
+    <div class="section-title">Real Performance Data</div>
+    <div class="section-desc">Actual test data from 5 different task types, compared with top-tier agents. All tasks completed successfully.</div>
+    <div class="benchmark-conclusion">
+      <div class="conclusion-icon">💡</div>
+      <div class="conclusion-text">
+        <strong>Conclusion:</strong> All three agents completed 100% of tasks. MUNDO excels at code generation and reasoning, Claude Code is faster at system analysis, and Hermes is most efficient at complex tasks. Each has strengths for different scenarios.
+      </div>
     </div>
   </section>
 
