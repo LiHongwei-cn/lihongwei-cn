@@ -1,5 +1,5 @@
 #!/bin/bash
-# MUNDO Agent v2.1.0 — macOS .app 启动脚本
+# MUNDO Agent v2.0.9 — macOS .app 启动脚本
 # 薄壳模式：直接调用 ~/.hermes/mundo-agent/mundo.py，不做同步
 # 版本更新由 mundo.py 内部的 /update 命令处理
 
