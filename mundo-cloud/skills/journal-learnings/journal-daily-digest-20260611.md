@@ -2,7 +2,7 @@
 name: journal-daily-digest-20260611
 description: >
   蒙多每日学术期刊摘要：2026年06月11日
-  包含15篇来自Nature/Science/Cell等顶级期刊的最新研究。
+  包含12篇来自Nature/Science/Cell等顶级期刊的最新研究。
 version: 1.0.0
 author: mundo-journal-bot
 priority: MEDIUM
@@ -11,7 +11,7 @@ category: journal-learnings
 ---
 # 蒙多每日学术摘要 — 2026-06-11
 
-今日共学习 **15** 篇学术论文。
+今日共学习 **12** 篇学术论文。
 
 ---
 
@@ -20,72 +20,63 @@ category: journal-learnings
 
 ### Nature
 
-1. **Giant crustacean of the deep sea steals a trick from bacteria**
+1. **Author Correction: Plasticity and language in the anaesthetized human hippocampus**
    [阅读原文](https://www.nature.com/)
 
-2. **Newly discovered whale graveyard dates back millions of years**
+2. **Whale graveyard discovered 7km under the sea**
    [阅读原文](https://www.nature.com/uploads/product/nature/rss.png)
 
-3. **Structural basis for chaperone-guided assembly of RNA-induced silencing complex**
-   [阅读原文](https://www.nature.com/articles/d41586-026-01832-x)
+3. **My diverse academic background is affecting my PhD studies — what do I do?**
+   [阅读原文](https://www.nature.com/articles/s41586-026-10784-1)
 
 
 ### arXiv AI
 
-1. **Business World Model**
-   > arXiv:2606.10044v1 Announce Type: new Abstract: Businesses are increasingly adopting AI-enabled tools to improve productivity, reduce costs, and enhan...
-   [阅读原文](https://arxiv.org/abs/2606.10044)
+1. **From Explicit Elements to Implicit Intent: A Predefined Library for Auditable Behavioral Inference**
+   > arXiv:2606.11207v1 Announce Type: new Abstract: We present SemantiClean, a modular framework for extracting structured semantic signals from e-commerc...
+   [阅读原文](https://arxiv.org/abs/2606.11207)
 
-2. **Deployment-Time Memorization in Foundation-Model Agents**
-   > arXiv:2606.10062v1 Announce Type: new Abstract: Foundation-model agents are increasingly long-lived systems that remember users across interactions, m...
-   [阅读原文](https://arxiv.org/abs/2606.10062)
+2. **Position: Hippocampal Explicit Memory Is the Cornerstone for AGI**
+   > arXiv:2606.11245v1 Announce Type: new Abstract: Large Language Models (LLMs) have demonstrated remarkable capabilities across various tasks, raising e...
+   [阅读原文](https://arxiv.org/abs/2606.11245)
 
-3. **Exploratory Responsiveness and Adaptive Rigidity under AI-Assisted Optimization**
-   > arXiv:2606.10086v1 Announce Type: new Abstract: This paper develops a theory of exploratory adaptation under AI-assisted optimization. The central arg...
-   [阅读原文](https://arxiv.org/abs/2606.10086)
-
-
-### Nature Energy
-
-1. **Watching catalysis take a walk**
-   [阅读原文](https://www.nature.com/)
-
-2. **Author Correction: Stable tin–lead perovskite inks for efficient all-perovskite tandems**
-   [阅读原文](https://www.nature.com/uploads/product/nenergy/rss.png)
-
-3. **Understanding interconnected ion and water transport in anion exchange membrane zero-gap CO<sub>2</sub> electrolysers**
-   [阅读原文](https://www.nature.com/articles/s41560-026-02089-4)
+3. **Can AI Agents Synthesize Scientific Conclusions?**
+   > arXiv:2606.11337v1 Announce Type: new Abstract: Scientific AI agents increasingly retrieve evidence, reason across sources, and synthesize conclusions...
+   [阅读原文](https://arxiv.org/abs/2606.11337)
 
 
-### Nature Electronics
+### Cell
 
-1. **Space-time holograms based on programmable metasurfaces**
-   [阅读原文](https://www.nature.com/)
+1. **Cysteine’s metabolic fork: Sulfur partitioning shapes T cell function**
+   > Cellular senescence comprises diverse cell states emerging across human tissues during aging and disease. Integrating single-cell and spatial multi-om...
+   [阅读原文](https://www.cell.com/cell/fulltext/S0092-8674(26)00587-8?rss=yes)
 
-2. **Two-dimensional β-TeO<sub>2</sub> as an intrinsic insulator despite conflicting transport signatures**
-   [阅读原文](https://www.nature.com/uploads/product/natelectron/rss.png)
+2. **Catching waves of polyploids**
+   > T cells live or die by their metabolism, yet one nutrient can serve very different ends. In this issue of Cell, Kelly et al. show that cysteine’s sulf...
+   [阅读原文](https://www.cell.com/cell/fulltext/S0092-8674(26)00570-2?rss=yes)
 
-3. **Precise and efficient computing via signal folding**
-   [阅读原文](https://www.nature.com/articles/s41928-026-01647-8)
+3. **Connecting transcriptional control to RNA velocity and cell fate**
+   > In this issue of Cell, Chen et al. analyze angiosperm genomes to map whole-genome duplication events, revealing non-random waves of polyploidy linked ...
+   [阅读原文](https://www.cell.com/cell/fulltext/S0092-8674(26)00574-X?rss=yes)
 
 
 ### Nature Machine Intelligence
 
-1. **Reusability report: Assessment of reproducibility and applicability to external datasets for RXNGraphormer**
+1. **From virtual experiments to biomedical insight with synthetic data**
    [阅读原文](https://www.nature.com/)
 
-2. **Navigating molecular OOD-ness**
+2. **Bridging three-dimensional molecular structures and artificial intelligence with a conformation description language**
    [阅读原文](https://www.nature.com/uploads/product/natmachintell/rss.gif)
 
-3. **Explicit dynamic cross-strand interactions for DNA sequence language modelling**
-   [阅读原文](https://www.nature.com/articles/s42256-026-01257-1)
+3. **Reusability report: Assessment of reproducibility and applicability to external datasets for RXNGraphormer**
+   [阅读原文](https://www.nature.com/articles/s42256-026-01244-6)
 
 
 ---
 
 ## 蒙多评注
 
-> 今日蒙多扫荡5家学术期刊，掠夺15篇论文知识。
+> 今日蒙多扫荡4家学术期刊，掠夺12篇论文知识。
 > 所有知识已纳入蒙多学术知识库，随时可供调用。
 
 ---
