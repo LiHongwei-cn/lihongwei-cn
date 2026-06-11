@@ -1,0 +1,207 @@
+{
+  "code_generation": {
+    "name": "代码生成",
+    "prompt": "用 Python 写一个快速排序算法，要求：1) 原地排序 2) 支持自定义比较函数 3) 添加类型注解",
+    "agents": {
+      "mundo_solo": {
+        "name": "MUNDO (单体)",
+        "time": 60.61,
+        "success": true,
+        "quality": 25,
+        "output_preview": "\u001b[3J\u001b[H\u001b[2J  \u001b[38;2;85;85;85m. . .\u001b[0m\n\n\n\n\n  \u001b[38;2;85;85;85mw write_file\u001b[0m \u001b[38;2;85;85;85mquicksort.py\u001b[0m\n  \u001b[38;2;85;85;85m│\u001b[0m \u001b[38;2;126;198;153m✓ 已写入: quicksort.py (2104 字符)\u001b[0m\n  \u001b[38;2;85;"
+      },
+      "hermes": {
+        "name": "Hermes Agent",
+        "time": 0.16,
+        "success": false,
+        "quality": 50,
+        "output_preview": "usage: hermes [-h] [--version] [-z PROMPT] [-m MODEL] [--provider PROVIDER]\n              [-t TOOLSETS] [--resume SESSION] [--continue [SESSION_NAME]]\n              [--worktree] [--accept-hooks] [--sk"
+      },
+      "claude": {
+        "name": "Claude Code",
+        "time": 54.48,
+        "success": true,
+        "quality": 50,
+        "output_preview": "由于安全限制，无法在当前目录创建文件。以下是完整的快速排序实现：\n\n```python\n\"\"\"原地快速排序，支持自定义比较函数。\"\"\"\n\nfrom typing import TypeVar, Callable\n\nT = TypeVar(\"T\")\n\n\ndef quicksort(\n    arr: list[T],\n    *,\n    key: Callable[[T], object] = l"
+      },
+      "codex": {
+        "name": "Codex CLI",
+        "time": 0.11,
+        "success": false,
+        "quality": 0,
+        "output_preview": "error: unexpected argument '--quiet' found\n\n  tip: to pass '--quiet' as a value, use '-- --quiet'\n\nUsage: codex [OPTIONS] [PROMPT]\n       codex [OPTIONS] <COMMAND> [ARGS]\n\nFor more information, try '-"
+      },
+      "mimo": {
+        "name": "MiMo Code",
+        "time": 0.64,
+        "success": false,
+        "quality": 0,
+        "output_preview": "⠀                                       \n█▀▄▀█ █ █▄ ▄█ █▀▀█ █▀▀ █▀▀█ █▀▀▄ █▀▀▀\n█ ▀ █ █ █ ▀ █ █  █ █   █  █ █  █ █▀▀ \n▀   ▀ ▀ ▀   ▀ ▀▀▀▀ ▀▀▀ ▀▀▀▀ ▀▀▀  ▀▀▀▀\n\nCommands:\n  mimo completion          generat"
+      }
+    }
+  },
+  "code_debug": {
+    "name": "代码调试",
+    "prompt": "这段代码有bug，请修复：\n\ndef merge_sorted(a, b):\n    result = []\n    i = j = 0\n    while i < len(a) and j < len(b):\n        if a[i] <= b[j]:\n            result.append(a[i])\n            i += 1\n        else:\n            result.append(b[j])\n            j += 1\n    return result",
+    "agents": {
+      "mundo_solo": {
+        "name": "MUNDO (单体)",
+        "time": 4.9,
+        "success": true,
+        "quality": 0,
+        "output_preview": "\u001b[3J\u001b[H\u001b[2J  \u001b[38;2;85;85;85m. . .\u001b[0m\n\n\n剩余元素没有追加。修复如下：\n\n```python\ndef merge_sorted(a, b):\n    result = []\n    i = j = 0\n    while i < len(a) and j < len(b):\n        if a[i] <= b[j]:\n            resul"
+      },
+      "hermes": {
+        "name": "Hermes Agent",
+        "time": 0.15,
+        "success": false,
+        "quality": 0,
+        "output_preview": "usage: hermes [-h] [--version] [-z PROMPT] [-m MODEL] [--provider PROVIDER]\n              [-t TOOLSETS] [--resume SESSION] [--continue [SESSION_NAME]]\n              [--worktree] [--accept-hooks] [--sk"
+      },
+      "claude": {
+        "name": "Claude Code",
+        "time": 11.3,
+        "success": true,
+        "quality": 0,
+        "output_preview": "文件不存在，直接说明修复方式：\n\n**Bug**：循环结束后，`a[i:]` 或 `b[j:]` 中必有一个非空，但代码没有追加剩余元素。\n\n**修复**——在 `return` 前加上两行：\n\n```python\ndef merge_sorted(a, b):\n    result = []\n    i = j = 0\n    while i < len(a) and j < len(b):\n "
+      },
+      "codex": {
+        "name": "Codex CLI",
+        "time": 0.1,
+        "success": false,
+        "quality": 0,
+        "output_preview": "error: unexpected argument '--quiet' found\n\n  tip: to pass '--quiet' as a value, use '-- --quiet'\n\nUsage: codex [OPTIONS] [PROMPT]\n       codex [OPTIONS] <COMMAND> [ARGS]\n\nFor more information, try '-"
+      },
+      "mimo": {
+        "name": "MiMo Code",
+        "time": 0.55,
+        "success": false,
+        "quality": 0,
+        "output_preview": "⠀                                       \n█▀▄▀█ █ █▄ ▄█ █▀▀█ █▀▀ █▀▀█ █▀▀▄ █▀▀▀\n█ ▀ █ █ █ ▀ █ █  █ █   █  █ █  █ █▀▀ \n▀   ▀ ▀ ▀   ▀ ▀▀▀▀ ▀▀▀ ▀▀▀▀ ▀▀▀  ▀▀▀▀\n\nCommands:\n  mimo completion          generat"
+      }
+    }
+  },
+  "text_generation": {
+    "name": "文本生成",
+    "prompt": "写一首关于AI的七言绝句，要求：1) 押韵 2) 包含'智能'和'未来'两个词 3) 意境深远",
+    "agents": {
+      "mundo_solo": {
+        "name": "MUNDO (单体)",
+        "time": 18.03,
+        "success": true,
+        "quality": 25,
+        "output_preview": "\u001b[3J\u001b[H\u001b[2J  \u001b[38;2;85;85;85m. . .\u001b[0m\n\n\n**AI七言绝句**\n\n智能擎云启未来，  \n数据星河入梦来。  \n纵使深机千万变，  \n人心一念费疑猜。\n\n---\n\n**注解**：\n1. **押韵**：采用平水韵「十灰」部，「来」「猜」押韵（一、二、四句末字「来」「来」「猜」均为平声韵）。\n2. **关键词**：首句嵌入「智能」与「未来」，点明主题。\n3. **"
+      },
+      "hermes": {
+        "name": "Hermes Agent",
+        "time": 0.15,
+        "success": false,
+        "quality": 25,
+        "output_preview": "usage: hermes [-h] [--version] [-z PROMPT] [-m MODEL] [--provider PROVIDER]\n              [-t TOOLSETS] [--resume SESSION] [--continue [SESSION_NAME]]\n              [--worktree] [--accept-hooks] [--sk"
+      },
+      "claude": {
+        "name": "Claude Code",
+        "time": 13.56,
+        "success": true,
+        "quality": 25,
+        "output_preview": "**咏人工智能**\n\n硅基灵智启新篇，\n算法如潮涌九天。\n莫道机心无妙悟，\n未来星火照人间。\n\n---\n\n**注释：**\n\n- **韵脚**：篇（piān）、天（tiān）、间（jiān）——平水韵\"一先\"韵部，一韵到底\n- **\"智能\"**：以\"灵智\"化用，既点题又避免直白\n- **\"未来\"**：末句直出，以\"星火照人间\"收束——AI 如星火，既微且广，终将照亮整个人间\n- **意境**：首句破"
+      },
+      "codex": {
+        "name": "Codex CLI",
+        "time": 0.1,
+        "success": false,
+        "quality": 0,
+        "output_preview": "error: unexpected argument '--quiet' found\n\n  tip: to pass '--quiet' as a value, use '-- --quiet'\n\nUsage: codex [OPTIONS] [PROMPT]\n       codex [OPTIONS] <COMMAND> [ARGS]\n\nFor more information, try '-"
+      },
+      "mimo": {
+        "name": "MiMo Code",
+        "time": 0.57,
+        "success": false,
+        "quality": 0,
+        "output_preview": "⠀                                       \n█▀▄▀█ █ █▄ ▄█ █▀▀█ █▀▀ █▀▀█ █▀▀▄ █▀▀▀\n█ ▀ █ █ █ ▀ █ █  █ █   █  █ █  █ █▀▀ \n▀   ▀ ▀ ▀   ▀ ▀▀▀▀ ▀▀▀ ▀▀▀▀ ▀▀▀  ▀▀▀▀\n\nCommands:\n  mimo completion          generat"
+      }
+    }
+  },
+  "logic_reasoning": {
+    "name": "逻辑推理",
+    "prompt": "有5个人排成一排。已知：1) A不在最左边 2) B在C的右边 3) D在E的左边 4) A在D的右边。请给出所有可能的排列。",
+    "agents": {
+      "mundo_solo": {
+        "name": "MUNDO (单体)",
+        "time": 19.35,
+        "success": true,
+        "quality": 0,
+        "output_preview": "\u001b[3J\u001b[H\u001b[2J  \u001b[38;2;85;85;85m. . .\u001b[0m\n\n\n\n\n  \u001b[38;2;85;85;85mpy python_execute\u001b[0m \n  \u001b[38;2;85;85;85m│\u001b[0m \u001b[38;2;136;136;136mTotal valid permutations: 20\u001b[0m\n  \u001b[38;2;85;85;85m│\u001b[0m \u001b[38;2;136;136;1"
+      },
+      "hermes": {
+        "name": "Hermes Agent",
+        "time": 0.15,
+        "success": false,
+        "quality": 0,
+        "output_preview": "usage: hermes [-h] [--version] [-z PROMPT] [-m MODEL] [--provider PROVIDER]\n              [-t TOOLSETS] [--resume SESSION] [--continue [SESSION_NAME]]\n              [--worktree] [--accept-hooks] [--sk"
+      },
+      "claude": {
+        "name": "Claude Code",
+        "time": 34.69,
+        "success": true,
+        "quality": 0,
+        "output_preview": "# 逻辑排列求解\n\n**位置编号：** 1（最左）2 3 4 5（最右）\n\n## 约束条件\n\n| 编号 | 条件 | 数学表达 |\n|------|------|----------|\n| ① | A 不在最左边 | A ≠ 1 |\n| ② | B 在 C 的右边 | C < B |\n| ③ | D 在 E 的左边 | D < E |\n| ④ | A 在 D 的右边 | D < A |\n\n## 推"
+      },
+      "codex": {
+        "name": "Codex CLI",
+        "time": 0.1,
+        "success": false,
+        "quality": 0,
+        "output_preview": "error: unexpected argument '--quiet' found\n\n  tip: to pass '--quiet' as a value, use '-- --quiet'\n\nUsage: codex [OPTIONS] [PROMPT]\n       codex [OPTIONS] <COMMAND> [ARGS]\n\nFor more information, try '-"
+      },
+      "mimo": {
+        "name": "MiMo Code",
+        "time": 0.65,
+        "success": false,
+        "quality": 0,
+        "output_preview": "⠀                                       \n█▀▄▀█ █ █▄ ▄█ █▀▀█ █▀▀ █▀▀█ █▀▀▄ █▀▀▀\n█ ▀ █ █ █ ▀ █ █  █ █   █  █ █  █ █▀▀ \n▀   ▀ ▀ ▀   ▀ ▀▀▀▀ ▀▀▀ ▀▀▀▀ ▀▀▀  ▀▀▀▀\n\nCommands:\n  mimo completion          generat"
+      }
+    }
+  },
+  "tool_usage": {
+    "name": "工具调用",
+    "prompt": "查看当前目录下所有Python文件的数量，并统计总行数",
+    "agents": {
+      "mundo_solo": {
+        "name": "MUNDO (单体)",
+        "time": 23.74,
+        "success": true,
+        "quality": 0,
+        "output_preview": "\u001b[3J\u001b[H\u001b[2J  \u001b[38;2;85;85;85m. . .\u001b[0m\n\n\n\n\n  \u001b[38;2;85;85;85m> terminal\u001b[0m \u001b[38;2;85;85;85mfind . -name \"*.py\" | wc -l && echo \"--...\u001b[0m\n  \u001b[38;2;85;85;85m│\u001b[0m \u001b[38;2;136;136;136m31694\u001b[0m\n  \u001b[38;2"
+      },
+      "hermes": {
+        "name": "Hermes Agent",
+        "time": 0.15,
+        "success": false,
+        "quality": 0,
+        "output_preview": "usage: hermes [-h] [--version] [-z PROMPT] [-m MODEL] [--provider PROVIDER]\n              [-t TOOLSETS] [--resume SESSION] [--continue [SESSION_NAME]]\n              [--worktree] [--accept-hooks] [--sk"
+      },
+      "claude": {
+        "name": "Claude Code",
+        "time": 22.04,
+        "success": true,
+        "quality": 0,
+        "output_preview": "## 📊 统计结果\n\n| # | 文件 | 行数 |\n|---|------|------|\n| 1 | `ai_model_test.py` | 312 |\n| 2 | `chrome_optimizer.py` | 398 |\n| 3 | `lru_cache.py` | 20 |\n| 4 | `mundo_check.py` | 217 |\n| 5 | `quicksort.py` | 19"
+      },
+      "codex": {
+        "name": "Codex CLI",
+        "time": 0.13,
+        "success": false,
+        "quality": 0,
+        "output_preview": "error: unexpected argument '--quiet' found\n\n  tip: to pass '--quiet' as a value, use '-- --quiet'\n\nUsage: codex [OPTIONS] [PROMPT]\n       codex [OPTIONS] <COMMAND> [ARGS]\n\nFor more information, try '-"
+      },
+      "mimo": {
+        "name": "MiMo Code",
+        "time": 0.7,
+        "success": false,
+        "quality": 0,
+        "output_preview": "⠀                                       \n█▀▄▀█ █ █▄ ▄█ █▀▀█ █▀▀ █▀▀█ █▀▀▄ █▀▀▀\n█ ▀ █ █ █ ▀ █ █  █ █   █  █ █  █ █▀▀ \n▀   ▀ ▀ ▀   ▀ ▀▀▀▀ ▀▀▀ ▀▀▀▀ ▀▀▀  ▀▀▀▀\n\nCommands:\n  mimo completion          generat"
+      }
+    }
+  }
+}
