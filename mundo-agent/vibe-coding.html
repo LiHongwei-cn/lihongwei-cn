@@ -445,6 +445,122 @@ body {
   color: var(--gold);
 }
 
+/* Model Adaptation Section */
+.model-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.model-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  transition: all 0.3s;
+}
+
+.model-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px var(--gold-glow);
+}
+
+.model-deepseek {
+  border-top: 3px solid var(--blue);
+}
+
+.model-mimo {
+  border-top: 3px solid var(--purple);
+}
+
+.model-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.model-icon {
+  font-size: 36px;
+}
+
+.model-name {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.model-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--gold-dim);
+  color: var(--gold);
+  margin-left: auto;
+}
+
+.model-features {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.model-feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  color: var(--text-dim);
+}
+
+.feature-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.model-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  text-align: center;
+}
+
+.model-stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+.model-stat-value {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 8px;
+}
+
+.model-stat-label {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+/* Counter */
+.page-counter {
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.page-counter span {
+  color: var(--gold);
+  font-weight: 600;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .hero-title { font-size: 32px; }
@@ -452,6 +568,8 @@ body {
   .stats { grid-template-columns: repeat(2, 1fr); }
   .unique-grid { grid-template-columns: 1fr; }
   .download-grid { grid-template-columns: repeat(2, 1fr); }
+  .model-grid { grid-template-columns: 1fr; }
+  .model-stats { grid-template-columns: repeat(3, 1fr); }
 }
 </style>
 </head>
@@ -545,6 +663,89 @@ body {
     <div class="stat-card">
       <div class="stat-value">28+</div>
       <div class="stat-label">支持模型</div>
+    </div>
+  </section>
+
+  <!-- Model Adaptation Section -->
+  <section class="section">
+    <h2 class="section-title">国产模型专属适配</h2>
+    <p class="section-desc">为 DeepSeek 和小米 MiMo 做了深度优化</p>
+
+    <div class="model-grid">
+      <div class="model-card model-deepseek">
+        <div class="model-header">
+          <div class="model-icon">🔮</div>
+          <div class="model-name">DeepSeek</div>
+          <div class="model-badge">默认 Provider</div>
+        </div>
+        <div class="model-features">
+          <div class="model-feature">
+            <span class="feature-dot" style="background: var(--blue)"></span>
+            <span>推理预算优化（low/medium/high）</span>
+          </div>
+          <div class="model-feature">
+            <span class="feature-dot" style="background: var(--blue)"></span>
+            <span>工具 Schema 夸克级优化</span>
+          </div>
+          <div class="model-feature">
+            <span class="feature-dot" style="background: var(--blue)"></span>
+            <span>流式输出实时渲染</span>
+          </div>
+          <div class="model-feature">
+            <span class="feature-dot" style="background: var(--blue)"></span>
+            <span>缓存命中率优化</span>
+          </div>
+          <div class="model-feature">
+            <span class="feature-dot" style="background: var(--blue)"></span>
+            <span>自动模型切换（根据任务复杂度）</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="model-card model-mimo">
+        <div class="model-header">
+          <div class="model-icon">📱</div>
+          <div class="model-name">小米 MiMo</div>
+          <div class="model-badge">百亿Token计划</div>
+        </div>
+        <div class="model-features">
+          <div class="model-feature">
+            <span class="feature-dot" style="background: var(--purple)"></span>
+            <span>reasoning_effort 参数支持</span>
+          </div>
+          <div class="model-feature">
+            <span class="feature-dot" style="background: var(--purple)"></span>
+            <span>low 模式减少 71% 推理 token</span>
+          </div>
+          <div class="model-feature">
+            <span class="feature-dot" style="background: var(--purple)"></span>
+            <span>首轮 low 快速理解 + 后续深度推理</span>
+          </div>
+          <div class="model-feature">
+            <span class="feature-dot" style="background: var(--purple)"></span>
+            <span>夸克级优化审查</span>
+          </div>
+          <div class="model-feature">
+            <span class="feature-dot" style="background: var(--purple)"></span>
+            <span>12 模型画像自动适配</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="model-stats">
+      <div class="model-stat">
+        <div class="model-stat-value">-33%</div>
+        <div class="model-stat-label">总耗时</div>
+      </div>
+      <div class="model-stat">
+        <div class="model-stat-value">-51%</div>
+        <div class="model-stat-label">工具调用</div>
+      </div>
+      <div class="model-stat">
+        <div class="model-stat-value">-37%</div>
+        <div class="model-stat-label">Token 消耗</div>
+      </div>
     </div>
   </section>
 
