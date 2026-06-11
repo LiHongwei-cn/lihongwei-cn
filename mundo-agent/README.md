@@ -1,6 +1,4 @@
-# MUNDO Agent — THE EMPEROR
-
-> **稳定版：v2.0.9** · **开发版：v2.1.0**（不稳定）
+# MUNDO Agent v2.0.9 — THE EMPEROR
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -216,23 +214,12 @@ engine.py             兼容层（re-export）
 
 ## 下载
 
-### 稳定版（推荐）
-
 | 平台 | 下载 |
 |------|------|
 | macOS | [mundo-v2.0.9-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.9/mundo-v2.0.9-macos.zip) |
 | Windows | [mundo-v2.0.9-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.9/mundo-v2.0.9-windows.zip) |
 | Linux | [mundo-v2.0.9-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.9/mundo-v2.0.9-linux.zip) |
 | 全平台 | [mundo-v2.0.9-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.9/mundo-v2.0.9-all.zip) |
-
-### 开发版（不稳定）
-
-| 平台 | 下载 |
-|------|------|
-| macOS | [mundo-v2.1.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.1.0/mundo-v2.1.0-macos.zip) |
-| Windows | [mundo-v2.1.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.1.0/mundo-v2.1.0-windows.zip) |
-| Linux | [mundo-v2.1.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.1.0/mundo-v2.1.0-linux.zip) |
-| 全平台 | [mundo-v2.1.0-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.1.0/mundo-v2.1.0-all.zip) |
 
 ### 历代版本
 
