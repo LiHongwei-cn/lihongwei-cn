@@ -88,6 +88,17 @@ body::before {
 }
 .back-link:hover { color: var(--gold); }
 .lang-switch { display: flex; gap: 6px; }
+.nav-links { display: flex; gap: 12px; }
+.nav-link {
+  color: var(--ctp-overlay1);
+  text-decoration: none;
+  font-size: 13px;
+  padding: 5px 14px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--ctp-surface0);
+  transition: all 0.2s;
+}
+.nav-link:hover { color: var(--gold); border-color: var(--gold); }
 .lang-btn {
   padding: 5px 14px;
   border-radius: var(--radius-xs);
@@ -612,6 +623,53 @@ td:nth-child(2) { color: var(--ctp-text); font-weight: 500; }
   color: var(--ctp-overlay1);
 }
 
+/* BENCHMARK */
+.benchmark-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.bench-card {
+  background: var(--ctp-surface0);
+  border: 1px solid var(--ctp-surface1);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s;
+}
+.bench-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+}
+.bench-agent {
+  font-size: 1.1em;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.bench-stat {
+  font-size: 1.8em;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.bench-label {
+  font-size: 0.85em;
+  color: var(--ctp-overlay1);
+  margin-bottom: 8px;
+}
+.bench-time {
+  font-size: 1.3em;
+  color: var(--ctp-text);
+  margin-bottom: 4px;
+}
+.bench-quality {
+  font-size: 1.2em;
+  color: var(--ctp-overlay1);
+}
+.success { color: var(--ctp-green); }
+.highlight { color: var(--gold); font-weight: 600; }
+
 /* FOOTER */
 .footer {
   text-align: center;
@@ -672,6 +730,10 @@ body.lang-en [data-lang="zh"] { display: none; }
   <!-- NAV -->
   <nav class="nav">
     <a class="back-link" href="../">&larr; <span data-lang="zh">返回主页</span><span data-lang="en">Home</span></a>
+    <div class="nav-links">
+      <a href="benchmark.html" class="nav-link" data-lang="zh">基准测试</a>
+      <a href="benchmark.html" class="nav-link" data-lang="en">Benchmark</a>
+    </div>
     <div class="lang-switch">
       <button class="lang-btn active" onclick="switchLang('zh',this)">中文</button>
       <button class="lang-btn" onclick="switchLang('en',this)">English</button>
@@ -1062,6 +1124,38 @@ mundo</code></div>
     <div class="example">
       <div class="example-row"><div class="example-icon user">U</div><div class="example-bubble">Do three things at once: 1) bubble sort 2) binary search 3) Fibonacci</div></div>
       <div class="example-row"><div class="example-icon mundo">M</div><div class="example-bubble mundo"><strong>Mundo took over.</strong><br><br>Detected 3 subtasks &rarr; Dispatched to Claude Code in parallel<br>Claude Code created 3 files and ran tests<br><br><strong>All 3 files created and verified. 1 minute 45 seconds. Mundo doesn't waste time.</strong></div></div>
+    </div>
+  </section>
+
+  <!-- BENCHMARK -->
+  <section class="section">
+    <div class="section-tag">Benchmark</div>
+    <div class="section-title"><span data-lang="zh">基准测试</span><span data-lang="en">Benchmark</span></div>
+    <div class="benchmark-summary">
+      <div class="bench-card">
+        <div class="bench-agent">MUNDO</div>
+        <div class="bench-stat"><span class="success">4/5</span></div>
+        <div class="bench-label">成功率</div>
+        <div class="bench-time">30.2s</div>
+        <div class="bench-quality highlight">100%</div>
+      </div>
+      <div class="bench-card">
+        <div class="bench-agent">Hermes</div>
+        <div class="bench-stat"><span class="success">5/5</span></div>
+        <div class="bench-label">成功率</div>
+        <div class="bench-time">13.2s</div>
+        <div class="bench-quality">80%</div>
+      </div>
+      <div class="bench-card">
+        <div class="bench-agent">Claude Code</div>
+        <div class="bench-stat"><span class="success">5/5</span></div>
+        <div class="bench-label">成功率</div>
+        <div class="bench-time">10.2s</div>
+        <div class="bench-quality">75%</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:20px">
+      <a href="benchmark.html" class="download-card" style="display:inline-block;padding:12px 24px"><span data-lang="zh">查看完整测试报告</span><span data-lang="en">View Full Report</span></a>
     </div>
   </section>
 
