@@ -1,4 +1,4 @@
-"""蒙多工具引擎 v2.0.8 — 融合 Hermes + Claude Code + Codex 精华
+"""蒙多工具引擎 v2.0.9 — 融合 Hermes + Claude Code + Codex 精华
 
 设计原则：
 - 注册表模式：工具自注册，零耦合（借鉴 Hermes）
@@ -9,7 +9,7 @@
 - 结构化输出：支持 JSON 输出（借鉴 Claude Code）
 - 工作树隔离：Git 操作使用独立分支（借鉴 Codex）
 
-v2.0.8 新增工具：
+v2.0.9 新增工具：
 - git_operation: Git 操作（status/diff/commit/branch/worktree）
 - python_execute: Python 代码执行（安全沙箱）
 - http_request: HTTP 请求（REST API 测试）
