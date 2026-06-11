@@ -1,6 +1,6 @@
-"""蒙多核心引擎 v2.0.9 — Agentic Loop
+"""蒙多核心引擎 v2.1.0 — Agentic Loop
 
-v2.0.9 优化（学习 Hermes/Claude 精华）：
+v2.1.0 优化（学习 Hermes/Claude 精华）：
 - 懒加载模块，减少启动时间
 - 缓存系统提示词和工具 schema
 - 并行执行独立工具调用
@@ -590,24 +590,16 @@ class MundoEngine:
         return result
 
     def _run_loop(self) -> str:
-        """帝皇决心循环：不完成不罢休"""
+        """帝皇决心循环：不完成不罢休。无时间限制，直到任务完成或用户中断。"""
         from constants import LONG_TASK_THRESHOLD, TASK_ABANDON_TIMEOUT, PROGRESS_CHECK_INTERVAL
 
         turn = 0
         last_progress_time = time.time()
         last_output_hash = ""
-        task_start_time = time.time()
         total_tool_calls = 0
-        TASK_TIMEOUT = 90  # 任务级超时：90秒
 
         while turn < MAX_ITERATIONS:
-            # 任务级超时保护
-            elapsed = time.time() - task_start_time
-            if elapsed > TASK_TIMEOUT:
-                if self.on_tool_output:
-                    self.on_tool_output("mundo", f"⚠️ 任务超时（{TASK_TIMEOUT}s），蒙多强制完成。", True)
-                return self._force_complete()
-
+            # 用户中断检查（唯一的主动终止条件）
             if self._interrupted or self.budget.exhausted:
                 break
 
@@ -762,3 +754,7 @@ class MundoEngine:
 
         self.messages = new_messages
         return old_count, len(self.messages)
+
+
+# 向后兼容别名
+MundoAgent = MundoEngine

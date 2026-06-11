@@ -1,4 +1,4 @@
-# MUNDO Agent v2.0.9 — THE EMPEROR
+# MUNDO Agent v2.1.0 — THE EMPEROR
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -113,7 +113,7 @@ Layer 4: 对话摘要 — 最近 5 次会话摘要（跨会话连续性）
 ```
              M  U  N  D  O
              THE EMPEROR
-             v2.0.9 (stable)
+             v2.1.0 (stable)
 
   MUNDO · mimo-v2.5-pro · 0 tokens · —
   ❯
@@ -216,10 +216,10 @@ engine.py             兼容层（re-export）
 
 | 平台 | 下载 |
 |------|------|
-| macOS | [mundo-v2.0.9-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.9/mundo-v2.0.9-macos.zip) |
-| Windows | [mundo-v2.0.9-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.9/mundo-v2.0.9-windows.zip) |
-| Linux | [mundo-v2.0.9-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.9/mundo-v2.0.9-linux.zip) |
-| 全平台 | [mundo-v2.0.9-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.9/mundo-v2.0.9-all.zip) |
+| macOS | [mundo-v2.1.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.1.0/mundo-v2.1.0-macos.zip) |
+| Windows | [mundo-v2.1.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.1.0/mundo-v2.1.0-windows.zip) |
+| Linux | [mundo-v2.1.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.1.0/mundo-v2.1.0-linux.zip) |
+| 全平台 | [mundo-v2.1.0-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.1.0/mundo-v2.1.0-all.zip) |
 
 ### 历代版本
 
@@ -229,7 +229,7 @@ engine.py             兼容层（re-export）
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
-| v2.0.9 | 2026-06-10 | **稳定版**：帝皇无上限、工具循环防护 |
+| v2.1.0 | 2026-06-10 | **稳定版**：帝皇无上限、工具循环防护 |
 | v2.0.8 | 2026-06-10 | 三大Agent融合 |
 | v2.0.0 | 2026-06-09 | 任务规划与多模型协调 |
 | v1.8.0 | 2026-06-09 | 全模型智能适配 |
