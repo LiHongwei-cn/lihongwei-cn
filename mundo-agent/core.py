@@ -476,7 +476,9 @@ class MundoEngine:
             self.on_tool_call(name, args, self.stats)
 
         tool_start = time.time()
-        TOOL_TIMEOUT = 30  # 单个工具超时：30秒
+        # delegate_agent 需要调用外部 agent，超时设为 600 秒
+        LONG_TIMEOUT_TOOLS = {"delegate_agent"}
+        TOOL_TIMEOUT = 600 if name in LONG_TIMEOUT_TOOLS else 30
 
         try:
             # 使用线程池执行工具，添加超时保护

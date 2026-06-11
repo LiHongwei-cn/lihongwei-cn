@@ -624,3 +624,6 @@ class MundoMemory:
             conv_id=session_id, title=title, summary=summary,
             messages=messages
         )
+
+# 向后兼容别名
+MemoryManager = MundoMemory
