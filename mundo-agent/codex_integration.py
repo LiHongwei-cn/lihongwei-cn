@@ -1,4 +1,4 @@
-"""蒙多 Codex 集成 v2.0.8 — 自动路由到 OpenAI 兼容端点
+"""蒙多 Codex 集成 v2.0.9 — 自动路由到 OpenAI 兼容端点
 
 适配版本：Codex v0.138.0+
 保持配置：xiaomi/mimo-v2.5-pro
@@ -24,13 +24,13 @@ class CodexAgent:
     def is_available(self) -> bool:
         return self.cmd is not None
 
-    def exec_full_auto(self, prompt: str, workdir: str = None, timeout: int = 300) -> str:
-        """全自动模式执行 Codex"""
+    def exec_full_auto(self, prompt: str, workdir: str = None, timeout: int = 20) -> str:
+        """全自动模式执行 Codex — 超时限制 20s 完成重试后降级"""
         if not self.is_available():
             return "[Codex 未安装]"
 
-        # 使用 exec 子命令，启用完整沙箱权限
-        cmd = [self.cmd, "exec", "-s", "danger-full-access", prompt]
+        # 使用 exec 子命令，启用完整沙箱权限，跳过 git 仓库检查
+        cmd = [self.cmd, "exec", "-s", "danger-full-access", "--skip-git-repo-check", prompt]
         env = os.environ.copy()
 
         try:

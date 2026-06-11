@@ -1,12 +1,12 @@
-"""蒙多任务委托 v2.0.8 — 结构化结果 + 智能路由 + 全参数透传
+"""蒙多任务委托 v2.1.0 — 结构化结果 + 智能路由 + 全参数透传
 
-v2.0.8 改进：
+v2.1.0 改进：
 - 适配新版 agent：Hermes v0.16.0、Claude Code v2.1.170、Codex v0.138.0
 - 自动版本检测与兼容性验证
 - 增强错误处理与重试机制
 - 保持 AI 模型配置不变（xiaomi/mimo-v2.5-pro）
 
-v2.0.8 改进：
+v2.1.0 改进：
 - DelegateResult 结构化结果（ok/output/error/duration/agent）
 - timeout/workdir 全链路透传到所有 agent
 - auto 智能路由模式
@@ -38,6 +38,11 @@ try:
     from hermes_integration import HermesAgent
 except ImportError:
     HermesAgent = None
+
+try:
+    from mimocode_integration import MiMoCodeAgent
+except ImportError:
+    MiMoCodeAgent = None
 
 
 # ═══════════════════════════════════════════════
@@ -153,7 +158,7 @@ def _setup_agent_env():
 
 
 def _codex_run(prompt: str, **kw) -> str:
-    """Codex 调用入口 — 自动路由到 OpenAI 兼容端点"""
+    """Codex 调用入口 — 自动降级到 Claude 当 MiMo API 不兼容时"""
     _setup_agent_env()
     try:
         from codex_integration import CodexAgent
@@ -161,8 +166,12 @@ def _codex_run(prompt: str, **kw) -> str:
         if not agent.is_available():
             return "[Codex 未安装]"
         workdir = kw.get('workdir')
-        timeout = kw.get('timeout', 300)
-        return agent.exec_full_auto(prompt, workdir=workdir, timeout=timeout)
+        timeout = min(kw.get('timeout', 20), 20)  # Codex 超时限制 20s，完成重试后降级
+        result = agent.exec_full_auto(prompt, workdir=workdir, timeout=timeout)
+        # MiMo API 不支持 responses API，检测到此错误时自动降级到 Claude
+        if "404" in result or "responses" in result.lower() or "stream disconnected" in result.lower():
+            return _claude_run(prompt, **kw)
+        return result
     except Exception as e:
         return f"[Codex 错误: {e}]"
 
@@ -199,6 +208,20 @@ def _hermes_run(prompt: str, **kw) -> str:
     except Exception as e:
         return f"[Hermes 错误: {e}]"
 
+
+def _mimocode_run(prompt: str, **kw) -> str:
+    """MiMo Code 调用入口"""
+    try:
+        from mimocode_integration import MiMoCodeAgent
+        agent = MiMoCodeAgent()
+        if not agent.is_available():
+            return "[MiMo Code 未安装，请运行 npm install -g @mimo-ai/cli]"
+        workdir = kw.get('workdir')
+        timeout = kw.get('timeout', 60)  # MiMo Code 默认 60s
+        return agent.chat(prompt, workdir=workdir, timeout=timeout)
+    except Exception as e:
+        return f"[MiMo Code 错误: {e}]"
+
 AGENT_REGISTRY = {
     "hermes": {
         "name": "Hermes Agent",
@@ -223,6 +246,14 @@ AGENT_REGISTRY = {
         "run": lambda prompt, **kw: _codex_run(prompt, **kw),
         "strengths": ["代码生成", "全自动化", "沙箱执行", "PR审查", "并行worktree", "MiMo驱动"],
         "best_for": ["快速原型", "代码生成", "一次性脚本", "batch fix", "issue修复", "PR审查", "中文代码"],
+    },
+    "mimocode": {
+        "name": "MiMo Code",
+        "cmd": "mimo",
+        "detect": lambda: _check_cmd("mimo"),
+        "run": lambda prompt, **kw: _mimocode_run(prompt, **kw),
+        "strengths": ["代码生成", "代码理解", "项目分析", "MiMo模型优化", "跨会话记忆"],
+        "best_for": ["代码生成", "项目分析", "MiMo模型相关任务", "代码审查"],
     },
 }
 
@@ -548,3 +579,6 @@ class TaskDelegator:
             return LLMClient.extract_response(result).get("content") or all_results
         except Exception:
             return all_results
+
+# 向后兼容别名
+DelegationManager = AgentManager

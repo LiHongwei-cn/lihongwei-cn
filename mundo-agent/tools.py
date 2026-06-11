@@ -45,6 +45,9 @@ class ToolRegistry:
     def __repr__(self) -> str:
         return f"ToolRegistry(tools={len(self._names)})"
 
+    def __len__(self) -> int:
+        return len(self._names)
+
     def register(self, name: str, description: str,
                  parameters: Dict, handler: Callable,
                  required: List[str] = None):
@@ -1208,3 +1211,493 @@ TOOL_SCHEMAS = registry.schemas
 
 def execute_tool(name: str, args: Dict) -> str:
     return registry.execute(name, args)
+
+
+# ═══════════════════════════════════════════════
+# MiMo 集成工具 — 融合 MiMo-Code 核心特性
+# ═══════════════════════════════════════════════
+
+def _mimo_checkpoint_save(args: Dict) -> str:
+    """保存会话检查点（MiMo-Code 风格）"""
+    from mimo_integration import get_mimo_integration
+    mimo = get_mimo_integration()
+
+    session_id = args.get("session_id", "default")
+    sections = args.get("sections", {})
+    metadata = args.get("metadata", {})
+
+    success = mimo.save_checkpoint(session_id, sections, metadata)
+    if success:
+        return f"✓ 检查点已保存（会话: {session_id}）"
+    return "✗ 检查点保存失败"
+
+
+def _mimo_checkpoint_load(args: Dict) -> str:
+    """加载会话检查点"""
+    from mimo_integration import get_mimo_integration
+    mimo = get_mimo_integration()
+
+    session_id = args.get("session_id", "default")
+    checkpoint = mimo.load_checkpoint(session_id)
+
+    if checkpoint:
+        from mimo_integration import CheckpointManager
+        mgr = CheckpointManager()
+        return mgr.format_checkpoint(checkpoint)
+    return f"未找到会话 {session_id} 的检查点"
+
+
+def _mimo_memory_search(args: Dict) -> str:
+    """搜索项目记忆（FTS5 全文搜索）"""
+    from mimo_integration import get_mimo_integration
+    mimo = get_mimo_integration()
+
+    query = args.get("query", "")
+    scope = args.get("scope")
+    type_filter = args.get("type")
+    limit = args.get("limit", 10)
+
+    results = mimo.search_memory(query, scope=scope, type=type_filter, limit=limit)
+    if not results:
+        return f"未找到与 '{query}' 相关的记忆"
+
+    lines = [f"搜索结果（{len(results)} 条）：\n"]
+    for r in results:
+        score = abs(r.get("score", 0))
+        lines.append(f"- [{r['type']}] {r['content'][:100]}... (评分: {score:.2f})")
+    return "\n".join(lines)
+
+
+def _mimo_memory_add(args: Dict) -> str:
+    """添加项目记忆"""
+    from mimo_integration import get_mimo_integration
+    mimo = get_mimo_integration()
+
+    content = args.get("content", "")
+    type = args.get("type", "fact")
+    scope = args.get("scope", "project")
+
+    success = mimo.add_memory(content, type=type, scope=scope)
+    if success:
+        return f"✓ 记忆已添加（类型: {type}）"
+    return "✗ 记忆添加失败"
+
+
+def _mimo_task_create(args: Dict) -> str:
+    """创建任务"""
+    from mimo_integration import get_mimo_integration
+    mimo = get_mimo_integration()
+
+    task_id = args.get("task_id", "")
+    title = args.get("title", "")
+    parent_id = args.get("parent_id")
+
+    if not task_id or not title:
+        return "[错误] 缺少 task_id 或 title"
+
+    task = mimo.create_task(task_id, title, parent_id=parent_id)
+    return f"✓ 任务已创建: {task.id} - {task.title}"
+
+
+def _mimo_task_update(args: Dict) -> str:
+    """更新任务状态"""
+    from mimo_integration import get_mimo_integration, TaskTracker
+    tracker = TaskTracker()
+
+    task_id = args.get("task_id", "")
+    status = args.get("status", "open")
+
+    valid_statuses = ["open", "in_progress", "blocked", "done", "abandoned"]
+    if status not in valid_statuses:
+        return f"[错误] 无效状态: {status}。有效值: {', '.join(valid_statuses)}"
+
+    success = tracker.update_status(task_id, status)
+    if success:
+        return f"✓ 任务 {task_id} 状态已更新为: {status}"
+    return f"✗ 任务 {task_id} 不存在"
+
+
+def _mimo_task_list(args: Dict) -> str:
+    """列出任务树"""
+    from mimo_integration import TaskTracker
+    tracker = TaskTracker()
+
+    tree = tracker.format_tree()
+    if not tree:
+        return "当前无任务"
+    return f"任务树：\n{tree}"
+
+
+def _mimo_goal_set(args: Dict) -> str:
+    """设置停止条件（防乐观停止）"""
+    from mimo_integration import get_mimo_integration
+    mimo = get_mimo_integration()
+
+    session_id = args.get("session_id", "default")
+    condition = args.get("condition", "")
+    judge_model = args.get("judge_model")
+
+    if not condition:
+        return "[错误] 缺少停止条件"
+
+    success = mimo.set_goal(session_id, condition, judge_model=judge_model)
+    if success:
+        return f"✓ 停止条件已设置: {condition}"
+    return "✗ 停止条件设置失败"
+
+
+def _mimo_goal_check(args: Dict) -> str:
+    """检查是否满足停止条件"""
+    from mimo_integration import get_mimo_integration
+    from llm import LLMClient
+    mimo = get_mimo_integration()
+
+    session_id = args.get("session_id", "default")
+    conversation = args.get("conversation", "")
+
+    client = LLMClient()
+    satisfied, reason = mimo.check_goal(session_id, conversation, client)
+
+    if satisfied:
+        return f"✅ 停止条件已满足: {reason}"
+    return f"❌ 停止条件未满足: {reason}"
+
+
+def _mimo_dream(args: Dict) -> str:
+    """Dream — 扫描会话轨迹，提取持久知识"""
+    from mimo_integration import get_mimo_integration
+    from llm import LLMClient
+    mimo = get_mimo_integration()
+
+    session_id = args.get("session_id", "default")
+    client = LLMClient()
+
+    result = mimo.dream(session_id, client)
+    if result.get("success"):
+        extracted = result.get("extracted", 0)
+        if extracted > 0:
+            return f"✓ Dream 完成，提取了 {extracted} 条持久知识"
+        return "✓ Dream 完成，无新知识可提取"
+    return f"✗ Dream 失败: {result.get('error', '未知错误')}"
+
+
+def _mimo_distill(args: Dict) -> str:
+    """Distill — 发现重复工作流，打包成可复用 skill"""
+    from mimo_integration import get_mimo_integration
+    from llm import LLMClient
+    mimo = get_mimo_integration()
+
+    session_id = args.get("session_id", "default")
+    client = LLMClient()
+
+    result = mimo.distill(session_id, client)
+    if result.get("success"):
+        candidates = result.get("candidates", [])
+        if candidates:
+            lines = [f"✓ Distill 完成，发现 {len(candidates)} 个 skill 候选：\n"]
+            for skill in candidates:
+                lines.append(f"- {skill.get('name', 'unnamed')}: {skill.get('description', '')[:50]}...")
+            return "\n".join(lines)
+        return "✓ Distill 完成，未发现可复用的 skill"
+    return f"✗ Distill 失败: {result.get('error', '未知错误')}"
+
+
+def _mimo_context(args: Dict) -> str:
+    """获取上下文（预算化注入）"""
+    from mimo_integration import get_mimo_integration
+    mimo = get_mimo_integration()
+
+    session_id = args.get("session_id", "default")
+    memory_query = args.get("memory_query")
+    checkpoint_budget = args.get("checkpoint_budget", 11000)
+    memory_budget = args.get("memory_budget", 10000)
+
+    context = mimo.get_context(
+        session_id,
+        memory_query=memory_query,
+        checkpoint_budget=checkpoint_budget,
+        memory_budget=memory_budget,
+    )
+
+    if not context:
+        return "无可用上下文"
+    return context
+
+
+# 注册 MiMo 工具
+registry.register(
+    name="mimo_checkpoint_save",
+    description="保存会话检查点（MiMo-Code 风格的 11-section 结构化检查点）",
+    parameters={
+        "type": "object",
+        "properties": {
+            "session_id": {"type": "string", "description": "会话 ID（默认: default）"},
+            "sections": {"type": "object", "description": "检查点内容（11 个 section）"},
+            "metadata": {"type": "object", "description": "元数据"},
+        },
+        "required": ["sections"],
+    },
+    handler=_mimo_checkpoint_save,
+    required=["sections"],
+)
+
+registry.register(
+    name="mimo_checkpoint_load",
+    description="加载会话检查点，获取上次会话的结构化状态",
+    parameters={
+        "type": "object",
+        "properties": {
+            "session_id": {"type": "string", "description": "会话 ID（默认: default）"},
+        },
+    },
+    handler=_mimo_checkpoint_load,
+)
+
+registry.register(
+    name="mimo_memory_search",
+    description="搜索项目记忆（使用 SQLite FTS5 全文搜索，支持 BM25 评分）",
+    parameters={
+        "type": "object",
+        "properties": {
+            "query": {"type": "string", "description": "搜索关键词"},
+            "scope": {"type": "string", "description": "范围过滤（如 project/global）"},
+            "type": {"type": "string", "description": "类型过滤（如 fact/rule/architecture）"},
+            "limit": {"type": "integer", "description": "返回数量限制（默认 10）"},
+        },
+        "required": ["query"],
+    },
+    handler=_mimo_memory_search,
+    required=["query"],
+)
+
+registry.register(
+    name="mimo_memory_add",
+    description="添加项目记忆（持久化存储，支持全文搜索）",
+    parameters={
+        "type": "object",
+        "properties": {
+            "content": {"type": "string", "description": "记忆内容"},
+            "type": {"type": "string", "description": "类型（fact/rule/architecture）"},
+            "scope": {"type": "string", "description": "范围（project/global）"},
+        },
+        "required": ["content"],
+    },
+    handler=_mimo_memory_add,
+    required=["content"],
+)
+
+registry.register(
+    name="mimo_task_create",
+    description="创建任务（树状任务系统，支持父子关系）",
+    parameters={
+        "type": "object",
+        "properties": {
+            "task_id": {"type": "string", "description": "任务 ID（如 T1, T1.1）"},
+            "title": {"type": "string", "description": "任务标题"},
+            "parent_id": {"type": "string", "description": "父任务 ID（可选）"},
+        },
+        "required": ["task_id", "title"],
+    },
+    handler=_mimo_task_create,
+    required=["task_id", "title"],
+)
+
+registry.register(
+    name="mimo_task_update",
+    description="更新任务状态",
+    parameters={
+        "type": "object",
+        "properties": {
+            "task_id": {"type": "string", "description": "任务 ID"},
+            "status": {"type": "string", "enum": ["open", "in_progress", "blocked", "done", "abandoned"], "description": "新状态"},
+        },
+        "required": ["task_id", "status"],
+    },
+    handler=_mimo_task_update,
+    required=["task_id", "status"],
+)
+
+registry.register(
+    name="mimo_task_list",
+    description="列出任务树（显示所有任务的层级结构和状态）",
+    parameters={
+        "type": "object",
+        "properties": {},
+    },
+    handler=_mimo_task_list,
+)
+
+registry.register(
+    name="mimo_goal_set",
+    description="设置停止条件（防止乐观停止，使用裁判模型评估）",
+    parameters={
+        "type": "object",
+        "properties": {
+            "session_id": {"type": "string", "description": "会话 ID（默认: default）"},
+            "condition": {"type": "string", "description": "停止条件（自然语言描述）"},
+            "judge_model": {"type": "string", "description": "裁判模型（可选，默认 deepseek-chat）"},
+        },
+        "required": ["condition"],
+    },
+    handler=_mimo_goal_set,
+    required=["condition"],
+)
+
+registry.register(
+    name="mimo_goal_check",
+    description="检查是否满足停止条件（使用裁判模型评估对话内容）",
+    parameters={
+        "type": "object",
+        "properties": {
+            "session_id": {"type": "string", "description": "会话 ID（默认: default）"},
+            "conversation": {"type": "string", "description": "对话内容（用于评估）"},
+        },
+        "required": ["conversation"],
+    },
+    handler=_mimo_goal_check,
+    required=["conversation"],
+)
+
+registry.register(
+    name="mimo_dream",
+    description="Dream — 扫描会话轨迹，自动提取持久知识到项目记忆",
+    parameters={
+        "type": "object",
+        "properties": {
+            "session_id": {"type": "string", "description": "会话 ID（默认: default）"},
+        },
+    },
+    handler=_mimo_dream,
+)
+
+registry.register(
+    name="mimo_distill",
+    description="Distill — 发现重复工作流，打包成可复用的 skill",
+    parameters={
+        "type": "object",
+        "properties": {
+            "session_id": {"type": "string", "description": "会话 ID（默认: default）"},
+        },
+    },
+    handler=_mimo_distill,
+)
+
+registry.register(
+    name="mimo_context",
+    description="获取上下文（预算化注入 checkpoint + memory）",
+    parameters={
+        "type": "object",
+        "properties": {
+            "session_id": {"type": "string", "description": "会话 ID（默认: default）"},
+            "memory_query": {"type": "string", "description": "记忆搜索关键词（可选）"},
+            "checkpoint_budget": {"type": "integer", "description": "checkpoint token 预算（默认 11000）"},
+            "memory_budget": {"type": "integer", "description": "memory token 预算（默认 10000）"},
+        },
+    },
+    handler=_mimo_context,
+)
+
+
+# ═══════════════════════════════════════════════
+# 自进化系统工具 — 融合 MiMo-Code 的 Dream & Distill
+# ═══════════════════════════════════════════════
+
+def _evolve(args: Dict) -> str:
+    """执行自进化 — Dream + Distill"""
+    from evolution_system import get_evolution_system
+    from llm import LLMClient
+    
+    evolution = get_evolution_system()
+    client = LLMClient()
+    days = args.get("days", 7)
+    
+    result = evolution.evolve(client, days)
+    
+    lines = ["自进化完成：\n"]
+    
+    # Dream 结果
+    dream = result.get("dream", {})
+    if dream.get("success"):
+        lines.append(f"✓ Dream: 提取了 {dream.get('extracted', 0)} 条知识")
+    else:
+        lines.append(f"✗ Dream: {dream.get('error', '未知错误')}")
+    
+    # Distill 结果
+    distill = result.get("distill", {})
+    if distill.get("success"):
+        lines.append(f"✓ Distill: 创建了 {distill.get('created', 0)} 个 skill")
+    else:
+        lines.append(f"✗ Distill: {distill.get('error', '未知错误')}")
+    
+    return "\n".join(lines)
+
+
+def _evolution_status(args: Dict) -> str:
+    """获取自进化系统状态"""
+    from evolution_system import get_evolution_system
+    
+    evolution = get_evolution_system()
+    status = evolution.get_evolution_status()
+    
+    lines = ["自进化系统状态：\n"]
+    lines.append(f"轨迹数据库: {'✓ 存在' if status['trajectory_db_exists'] else '✗ 不存在'}")
+    lines.append(f"记忆目录: {'✓ 存在' if status['memory_dir_exists'] else '✗ 不存在'}")
+    lines.append(f"技能目录: {'✓ 存在' if status['skills_dir_exists'] else '✗ 不存在'}")
+    lines.append(f"轨迹数据库大小: {status['trajectory_db_size'] / 1024:.1f} KB")
+    
+    return "\n".join(lines)
+
+
+def _compact_context(args: Dict) -> str:
+    """压缩对话历史"""
+    from evolution_system import get_evolution_system
+    from llm import LLMClient
+    
+    evolution = get_evolution_system()
+    client = LLMClient()
+    
+    messages = args.get("messages", [])
+    if not messages:
+        return "[错误] 缺少 messages 参数"
+    
+    compacted = evolution.compaction.compact(messages, client)
+    
+    return f"✓ 压缩完成: {len(messages)} → {len(compacted)} 条消息"
+
+
+# 注册自进化工具
+registry.register(
+    name="evolve",
+    description="执行自进化 — Dream（提取持久知识）+ Distill（打包重复工作流）",
+    parameters={
+        "type": "object",
+        "properties": {
+            "days": {"type": "integer", "description": "扫描天数（默认 7）"},
+        },
+    },
+    handler=_evolve,
+)
+
+registry.register(
+    name="evolution_status",
+    description="获取自进化系统状态",
+    parameters={
+        "type": "object",
+        "properties": {},
+    },
+    handler=_evolution_status,
+)
+
+registry.register(
+    name="compact_context",
+    description="压缩对话历史以保持上下文窗口",
+    parameters={
+        "type": "object",
+        "properties": {
+            "messages": {"type": "array", "description": "对话消息列表"},
+        },
+        "required": ["messages"],
+    },
+    handler=_compact_context,
+    required=["messages"],
+)
