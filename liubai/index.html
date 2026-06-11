@@ -219,6 +219,14 @@ body::before {
   transform: translateY(-1px);
 }
 
+.download-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
 .download-note {
   font-size: 11px;
   color: var(--faint);
@@ -512,15 +520,20 @@ body::before {
 
   <!-- 下载 -->
   <div class="download">
-    <a class="download-btn" href="https://github.com/LiHongwei-cn/liubai">
-      ⬇ GitHub 下载
-    </a>
+    <div class="download-buttons">
+      <a class="download-btn" href="https://github.com/LiHongwei-cn/liubai/releases/download/v1.0.0/liubai-v1.0.0.zip">
+        ⬇ 下载 v1.0.0
+      </a>
+      <a class="download-btn" href="https://github.com/LiHongwei-cn/liubai" style="background:var(--surface);border-color:var(--border);color:var(--dim)">
+        GitHub 源码
+      </a>
+    </div>
     <div class="download-note">macOS · Windows · Python 3.9+ · 完全免费开源</div>
   </div>
 
   <!-- 底部 -->
   <div class="footer">
-    <a href="https://github.com/LiHongwei-cn/liubai">GitHub</a>
+    <a href="https://github.com/LiHongwei-cn/liubai/releases/download/v1.0.0/liubai-v1.0.0.zip">GitHub</a>
     · MIT License
     · 在沉默中相遇
   </div>
