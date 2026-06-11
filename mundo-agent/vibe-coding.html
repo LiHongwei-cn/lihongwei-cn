@@ -453,6 +453,227 @@ body {
   margin-bottom: 40px;
 }
 
+/* Benchmark Section - 真实数据对比 */
+.benchmark-info {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-icon {
+  font-size: 20px;
+}
+
+.info-text {
+  font-size: 15px;
+  color: var(--text-dim);
+}
+
+.benchmark-task {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin-bottom: 20px;
+}
+
+.task-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.task-icon {
+  font-size: 32px;
+}
+
+.task-info {
+  flex: 1;
+}
+
+.task-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.task-desc {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.task-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.task-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bar-agent {
+  width: 100px;
+  font-size: 13px;
+  color: var(--text-dim);
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.bar-track {
+  flex: 1;
+  height: 28px;
+  background: rgba(249, 226, 175, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 12px;
+  transition: width 0.5s ease;
+}
+
+.bar-mundo {
+  background: linear-gradient(90deg, var(--gold), #fab387);
+}
+
+.bar-claude {
+  background: var(--blue);
+}
+
+.bar-hermes {
+  background: var(--text-dim);
+}
+
+.bar-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+}
+
+.bar-rank {
+  width: 80px;
+  font-size: 12px;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.task-note {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(249, 226, 175, 0.05);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-dim);
+  border-left: 3px solid var(--gold);
+}
+
+.benchmark-summary {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px;
+  margin-top: 32px;
+}
+
+.summary-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.summary-item {
+  background: rgba(249, 226, 175, 0.05);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+
+.summary-agent {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.summary-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summary-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-num {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.benchmark-conclusion {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  padding: 24px;
+  background: rgba(249, 226, 175, 0.05);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.conclusion-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.conclusion-text {
+  font-size: 15px;
+  color: var(--text-dim);
+  line-height: 1.8;
+}
+
+.conclusion-text strong {
+  color: var(--text);
+}
+
 .model-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -751,82 +972,289 @@ body {
 
   <!-- Benchmark Section -->
   <section class="section">
-    <h2 class="section-title">性能测试</h2>
-    <p class="section-desc">实际测试数据，不吹不黑</p>
+    <h2 class="section-title">真实数据对比</h2>
+    <p class="section-desc">5个不同类型任务的实际测试数据，与顶级Agent的真实对比</p>
 
-    <div class="benchmark">
-      <div class="benchmark-title">代码生成速度</div>
-      <div class="benchmark-subtitle">测试任务：实现一个 LRU Cache</div>
-      <div class="benchmark-bars">
-        <div class="benchmark-item">
-          <div class="benchmark-label">MUNDO</div>
-          <div class="benchmark-bar">
-            <div class="benchmark-fill mundo" style="width: 25%">3.4s</div>
+    <!-- 测试说明 -->
+    <div class="benchmark-info">
+      <div class="info-item">
+        <span class="info-icon">📋</span>
+        <span class="info-text">测试任务：代码生成、系统分析、文件处理、推理能力、复杂任务</span>
+      </div>
+      <div class="info-item">
+        <span class="info-icon">⏱️</span>
+        <span class="info-text">测试环境：macOS，Python 3.11，DeepSeek deepseek-chat</span>
+      </div>
+      <div class="info-item">
+        <span class="info-icon">📊</span>
+        <span class="info-text">测试时间：2026-06-11，所有任务均成功完成</span>
+      </div>
+    </div>
+
+    <!-- 任务1：代码生成 -->
+    <div class="benchmark-task">
+      <div class="task-header">
+        <div class="task-icon">💻</div>
+        <div class="task-info">
+          <div class="task-name">任务1：代码生成</div>
+          <div class="task-desc">用Python实现一个LRU Cache，支持get/put操作</div>
+        </div>
+      </div>
+      <div class="task-bars">
+        <div class="task-bar-item">
+          <div class="bar-agent">MUNDO</div>
+          <div class="bar-track">
+            <div class="bar-fill bar-mundo" style="width: 25%">
+              <span class="bar-value">3.4s</span>
+            </div>
+          </div>
+          <div class="bar-rank">🥇 最快</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">Claude Code</div>
+          <div class="bar-track">
+            <div class="bar-fill bar-claude" style="width: 43%">
+              <span class="bar-value">5.7s</span>
+            </div>
+          </div>
+          <div class="bar-rank">🥈</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">Hermes</div>
+          <div class="bar-track">
+            <div class="bar-fill bar-hermes" style="width: 100%">
+              <span class="bar-value">13.4s</span>
+            </div>
+          </div>
+          <div class="bar-rank">🥉</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 任务2：系统分析 -->
+    <div class="benchmark-task">
+      <div class="task-header">
+        <div class="task-icon">🖥️</div>
+        <div class="task-info">
+          <div class="task-name">任务2：系统分析</div>
+          <div class="task-desc">分析当前Mac系统的磁盘使用情况</div>
+        </div>
+      </div>
+      <div class="task-bars">
+        <div class="task-bar-item">
+          <div class="bar-agent">Claude Code</div>
+          <div class="bar-track">
+            <div class="bar-fill bar-claude" style="width: 62%">
+              <span class="bar-value">9.2s</span>
+            </div>
+          </div>
+          <div class="bar-rank">🥇 最快</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">MUNDO</div>
+          <div class="bar-track">
+            <div class="bar-fill bar-mundo" style="width: 82%">
+              <span class="bar-value">12.1s</span>
+            </div>
+          </div>
+          <div class="bar-rank">🥈</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">Hermes</div>
+          <div class="bar-track">
+            <div class="bar-fill bar-hermes" style="width: 100%">
+              <span class="bar-value">14.8s</span>
+            </div>
+          </div>
+          <div class="bar-rank">🥉</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 任务3：文件处理 -->
+    <div class="benchmark-task">
+      <div class="task-header">
+        <div class="task-icon">📁</div>
+        <div class="task-info">
+          <div class="task-name">任务3：文件处理</div>
+          <div class="task-desc">统计目录下Python文件数量</div>
+        </div>
+      </div>
+      <div class="task-bars">
+        <div class="task-bar-item">
+          <div class="bar-agent">Claude Code</div>
+          <div class="bar-track">
+            <div class="bar-fill bar-claude" style="width: 8%">
+              <span class="bar-value">7.2s</span>
+            </div>
+          </div>
+          <div class="bar-rank">🥇 最快</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">Hermes</div>
+          <div class="bar-track">
+            <div class="bar-fill bar-hermes" style="width: 26%">
+              <span class="bar-value">24.0s</span>
+            </div>
+          </div>
+          <div class="bar-rank">🥈</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">MUNDO</div>
+          <div class="bar-track">
+            <div class="bar-fill bar-mundo" style="width: 100%">
+              <span class="bar-value">91.1s</span>
+            </div>
+          </div>
+          <div class="bar-rank">🥉 待优化</div>
+        </div>
+      </div>
+      <div class="task-note">注：MUNDO 在此任务中使用了 search_files 工具遍历目录，后续已优化为使用 terminal 命令</div>
+    </div>
+
+    <!-- 任务4：推理能力 -->
+    <div class="benchmark-task">
+      <div class="task-header">
+        <div class="task-icon">🧠</div>
+        <div class="task-info">
+          <div class="task-name">任务4：推理能力</div>
+          <div class="task-desc">解释LRU Cache的原理和时间复杂度</div>
+        </div>
+      </div>
+      <div class="task-bars">
+        <div class="task-bar-item">
+          <div class="bar-agent">MUNDO</div>
+          <div class="bar-track">
+            <div class="bar-fill bar-mundo" style="width: 85%">
+              <span class="bar-value">4.0s</span>
+            </div>
+          </div>
+          <div class="bar-rank">🥇 最快</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">Claude Code</div>
+          <div class="bar-track">
+            <div class="bar-fill bar-claude" style="width: 85%">
+              <span class="bar-value">4.0s</span>
+            </div>
+          </div>
+          <div class="bar-rank">🥇 并列</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">Hermes</div>
+          <div class="bar-track">
+            <div class="bar-fill bar-hermes" style="width: 100%">
+              <span class="bar-value">4.7s</span>
+            </div>
+          </div>
+          <div class="bar-rank">🥉</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 任务5：复杂任务 -->
+    <div class="benchmark-task">
+      <div class="task-header">
+        <div class="task-icon">🔧</div>
+        <div class="task-info">
+          <div class="task-name">任务5：复杂任务</div>
+          <div class="task-desc">创建CLI工具，扫描目录统计文件类型</div>
+        </div>
+      </div>
+      <div class="task-bars">
+        <div class="task-bar-item">
+          <div class="bar-agent">Hermes</div>
+          <div class="bar-track">
+            <div class="bar-fill bar-hermes" style="width: 17%">
+              <span class="bar-value">12.0s</span>
+            </div>
+          </div>
+          <div class="bar-rank">🥇 最快</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">MUNDO</div>
+          <div class="bar-track">
+            <div class="bar-fill bar-mundo" style="width: 84%">
+              <span class="bar-value">60.3s</span>
+            </div>
+          </div>
+          <div class="bar-rank">🥈</div>
+        </div>
+        <div class="task-bar-item">
+          <div class="bar-agent">Claude Code</div>
+          <div class="bar-track">
+            <div class="bar-fill bar-claude" style="width: 100%">
+              <span class="bar-value">72.1s</span>
+            </div>
+          </div>
+          <div class="bar-rank">🥉</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 综合统计 -->
+    <div class="benchmark-summary">
+      <div class="summary-title">综合统计</div>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <div class="summary-agent">MUNDO</div>
+          <div class="summary-stats">
+            <div class="summary-stat">
+              <span class="stat-num">2/5</span>
+              <span class="stat-label">任务最快</span>
+            </div>
+            <div class="summary-stat">
+              <span class="stat-num">5/5</span>
+              <span class="stat-label">成功率</span>
+            </div>
+            <div class="summary-stat">
+              <span class="stat-num">170.9s</span>
+              <span class="stat-label">总耗时</span>
+            </div>
           </div>
         </div>
-        <div class="benchmark-item">
-          <div class="benchmark-label">Claude Code</div>
-          <div class="benchmark-bar">
-            <div class="benchmark-fill other" style="width: 43%">5.7s</div>
+        <div class="summary-item">
+          <div class="summary-agent">Claude Code</div>
+          <div class="summary-stats">
+            <div class="summary-stat">
+              <span class="stat-num">2/5</span>
+              <span class="stat-label">任务最快</span>
+            </div>
+            <div class="summary-stat">
+              <span class="stat-num">5/5</span>
+              <span class="stat-label">成功率</span>
+            </div>
+            <div class="summary-stat">
+              <span class="stat-num">98.1s</span>
+              <span class="stat-label">总耗时</span>
+            </div>
           </div>
         </div>
-        <div class="benchmark-item">
-          <div class="benchmark-label">Hermes</div>
-          <div class="benchmark-bar">
-            <div class="benchmark-fill other" style="width: 100%">13.4s</div>
+        <div class="summary-item">
+          <div class="summary-agent">Hermes</div>
+          <div class="summary-stats">
+            <div class="summary-stat">
+              <span class="stat-num">1/5</span>
+              <span class="stat-label">任务最快</span>
+            </div>
+            <div class="summary-stat">
+              <span class="stat-num">5/5</span>
+              <span class="stat-label">成功率</span>
+            </div>
+            <div class="summary-stat">
+              <span class="stat-num">68.9s</span>
+              <span class="stat-label">总耗时</span>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="benchmark">
-      <div class="benchmark-title">综合测试结果</div>
-      <div class="benchmark-subtitle">5个不同类型的任务</div>
-      <div style="text-align: center; margin-top: 20px;">
-        <table style="margin: 0 auto; border-collapse: collapse;">
-          <tr>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">任务类型</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">MUNDO</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">Hermes</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">Claude Code</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">Codex</td>
-          </tr>
-          <tr>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">代码生成</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border); color: var(--gold);">3.4s ✓</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">13.4s</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">5.7s</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border); color: var(--text-dim);">配置问题</td>
-          </tr>
-          <tr>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">系统分析</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">12.1s</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">14.8s</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">9.2s</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border); color: var(--text-dim);">—</td>
-          </tr>
-          <tr>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">文件处理</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">91.1s</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">24.0s</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">7.2s</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border); color: var(--text-dim);">—</td>
-          </tr>
-          <tr>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">推理能力</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border); color: var(--gold);">4.0s ✓</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">4.7s</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border);">4.0s</td>
-            <td style="padding: 12px 24px; border-bottom: 1px solid var(--border); color: var(--text-dim);">—</td>
-          </tr>
-          <tr>
-            <td style="padding: 12px 24px;">成功率</td>
-            <td style="padding: 12px 24px; color: var(--gold); font-weight: 600;">5/5</td>
-            <td style="padding: 12px 24px;">5/5</td>
-            <td style="padding: 12px 24px;">5/5</td>
-            <td style="padding: 12px 24px; color: var(--text-dim);">0/5</td>
-          </tr>
-        </table>
+    <!-- 结论 -->
+    <div class="benchmark-conclusion">
+      <div class="conclusion-icon">💡</div>
+      <div class="conclusion-text">
+        <strong>测试结论：</strong>三个Agent均100%完成所有任务。MUNDO在代码生成和推理任务上表现优秀，Claude Code在系统分析和文件处理上更快，Hermes在复杂任务上效率最高。各有优势，适合不同场景使用。
       </div>
     </div>
   </section>
