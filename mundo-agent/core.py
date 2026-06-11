@@ -595,9 +595,8 @@ class MundoEngine:
         last_progress_time = time.time()
         last_output_hash = ""
         task_start_time = time.time()
-        TASK_TIMEOUT = 90  # 任务级超时：90秒
-        MAX_TOOL_CALLS = 10  # 单任务最大工具调用次数
         total_tool_calls = 0
+        TASK_TIMEOUT = 90  # 任务级超时：90秒
 
         while turn < MAX_ITERATIONS:
             # 任务级超时保护
@@ -605,12 +604,6 @@ class MundoEngine:
             if elapsed > TASK_TIMEOUT:
                 if self.on_tool_output:
                     self.on_tool_output("mundo", f"⚠️ 任务超时（{TASK_TIMEOUT}s），蒙多强制完成。", True)
-                return self._force_complete()
-
-            # 工具调用次数保护
-            if total_tool_calls >= MAX_TOOL_CALLS:
-                if self.on_tool_output:
-                    self.on_tool_output("mundo", f"⚠️ 工具调用达上限（{MAX_TOOL_CALLS}次），蒙多强制完成。", True)
                 return self._force_complete()
 
             if self._interrupted or self.budget.exhausted:
