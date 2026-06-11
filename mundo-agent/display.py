@@ -1,4 +1,4 @@
-"""蒙多执行控制台 v2.0.8 — 极简艺术家
+"""蒙多执行控制台 v2.0.9 — 极简艺术家
 
 设计原则：
 - 少即是多。每一像素都有存在的理由
@@ -353,7 +353,10 @@ class TaskConsole:
         @kb.add(Keys.BracketedPaste)
         def _(event):
             is_pasting[0] = True
-            event.current_buffer.paste_clipboard_data(event.app.clipboard.get_data())
+            # prompt_toolkit 3.0.x: 粘贴数据在 event.data，不在 clipboard
+            from prompt_toolkit.clipboard import ClipboardData
+            data = event.data.replace("\r\n", "\n").replace("\r", "\n")
+            event.current_buffer.paste_clipboard_data(ClipboardData(text=data))
             is_pasting[0] = False
 
         session = PromptSession(
