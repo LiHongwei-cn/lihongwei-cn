@@ -1,0 +1,88 @@
+{
+  "llm": {
+    "provider": "deepseek",
+    "model": "deepseek-chat",
+    "max_tokens": 4096,
+    "temperature": 0.7,
+    "top_p": 1.0,
+    "stream": true,
+    "timeout": 120,
+    "retry_count": 3,
+    "retry_delay": 2.0
+  },
+  "context": {
+    "max_tokens": 128000,
+    "compress_threshold": 0.7,
+    "compress_target": 0.5,
+    "keep_recent": 8,
+    "inject_memory": true,
+    "inject_project": true,
+    "memory_budget": 3000
+  },
+  "tools": {
+    "enabled": [
+      "terminal",
+      "read_file",
+      "write_file",
+      "edit_file",
+      "search_files",
+      "web_search",
+      "list_directory",
+      "git_operation",
+      "python_execute"
+    ],
+    "require_approval": [
+      "terminal",
+      "write_file",
+      "edit_file",
+      "git_operation"
+    ],
+    "timeout": 30,
+    "max_output": 500000
+  },
+  "sandbox": {
+    "enabled": true,
+    "timeout": 30,
+    "max_memory_mb": 512,
+    "max_output_bytes": 512000,
+    "network": true
+  },
+  "cache": {
+    "enabled": true,
+    "prefix_cache": true,
+    "semantic_cache": true,
+    "result_cache": true,
+    "semantic_threshold": 0.85,
+    "result_ttl": 300
+  },
+  "policy": {
+    "enabled": true,
+    "audit_log": true,
+    "max_audit_entries": 1000
+  },
+  "memory": {
+    "enabled": true,
+    "auto_extract": true,
+    "auto_consolidate": true,
+    "max_facts": 100,
+    "max_context_tokens": 3000
+  },
+  "display": {
+    "theme": "gold",
+    "stream": true,
+    "show_tool_output": true,
+    "max_tool_lines": 5,
+    "show_stats": true,
+    "compact_mode": false
+  },
+  "delegation": {
+    "enabled": true,
+    "max_concurrent": 3,
+    "default_timeout": 120,
+    "agents": {
+      "codex": "codex",
+      "claude": "claude-code",
+      "hermes": "hermes"
+    }
+  }
+}

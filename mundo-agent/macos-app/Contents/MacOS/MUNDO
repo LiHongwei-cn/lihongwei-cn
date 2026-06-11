@@ -1,42 +1,40 @@
 #!/bin/bash
-# MUNDO Agent v2.0.9 — macOS .app 启动脚本
-# 薄壳模式：直接调用 ~/.hermes/mundo-agent/mundo.py，不做同步
-# 版本更新由 mundo.py 内部的 /update 命令处理
+# MUNDO Agent — macOS .app 启动脚本
+# 启动前自动检测版本，脱节则自动同步
 
-MUNDO_HOME="$HOME/.hermes/mundo-agent"
-LAUNCH_SCRIPT="/tmp/mundo-launch.sh"
-
-cat > "$LAUNCH_SCRIPT" <<'SCRIPT'
-#!/bin/bash
-clear
-
-MUNDO_HOME="$HOME/.hermes/mundo-agent"
-
-# 检查蒙多是否安装
-if [ ! -f "$MUNDO_HOME/mundo.py" ]; then
-    echo "错误: 蒙多未安装。请先运行安装脚本。"
-    echo "路径: $MUNDO_HOME/mundo.py"
-    read -p "按回车退出..."
-    exit 1
-fi
-
-# 启动蒙多
-cd "$MUNDO_HOME"
-
-# 检查虚拟环境
-if [ -d "$MUNDO_HOME/venv" ]; then
-    source "$MUNDO_HOME/venv/bin/activate" 2>/dev/null
-fi
-
-python3 mundo.py "$@"
-SCRIPT
-
-chmod +x "$LAUNCH_SCRIPT"
-
-osascript <<EOF
+osascript <<'APPLESCRIPT'
 tell application "Terminal"
     activate
-    do script "$LAUNCH_SCRIPT"
+    do script "
+        clear
+        
+        # ═══ 自动版本同步 ═══
+        SRC=\"$HOME/Desktop/lihongwei-cn/mundo-agent\"
+        DST=\"$HOME/.hermes/mundo-agent\"
+        
+        if [ -f \"$SRC/version.txt\" ] && [ -f \"$DST/version.txt\" ]; then
+            SRC_VER=$(cat \"$SRC/version.txt\" | tr -d '[:space:]')
+            DST_VER=$(cat \"$DST/version.txt\" | tr -d '[:space:]')
+            
+            if [ \"$SRC_VER\" != \"$DST_VER\" ]; then
+                echo \"  🔄 检测到版本脱节，自动同步中...\"
+                
+                # 同步 .py 文件
+                for f in mundo.py core.py llm.py setup.py tools.py approval.py display.py memory.py memory_import.py models.py agents.py delegation.py cloud_sync.py; do
+                    [ -f \"$SRC/$f\" ] && cp \"$SRC/$f\" \"$DST/$f\"
+                done
+                cp \"$SRC/version.txt\" \"$DST/version.txt\"
+                [ -f \"$SRC/requirements.txt\" ] && cp \"$SRC/requirements.txt\" \"$DST/requirements.txt\"
+                
+                echo \"  ✅ 已同步: $DST_VER → $SRC_VER\"
+                echo \"\"
+            fi
+        fi
+        
+        cd ~/.hermes/mundo-agent
+        source venv/bin/activate
+        python3 mundo.py
+    "
     set custom title of front window to "MUNDO"
 end tell
-EOF
+APPLESCRIPT

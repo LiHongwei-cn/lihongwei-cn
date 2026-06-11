@@ -40,6 +40,9 @@ WRITE_TOOLS: Set[str] = {
 
 MAX_PARALLEL_WORKERS = 4
 
+# 工具集合汇总（供外部模块引用）
+TOOLS = READ_ONLY_TOOLS | WRITE_TOOLS | {"python_execute", "git_operation", "web_search", "http_request", "code_analysis"}
+
 
 def _extract_paths(args: Dict[str, Any]) -> Set[str]:
     """从工具参数中提取文件路径"""

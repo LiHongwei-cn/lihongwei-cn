@@ -1,4 +1,4 @@
-"""蒙多插件系统 v2.0.9 — 皇帝的百官
+"""蒙多插件系统 v2.1.0 — 皇帝的百官
 
 可扩展的插件架构。不是简单的 import。是生命周期管理。
 插件有钩子、有依赖、有优先级。
@@ -233,6 +233,10 @@ class PluginLoader:
             )
         except Exception:
             return None
+
+
+# 向后兼容别名
+PluginManager = PluginLoader
 
 
 # 全局单例

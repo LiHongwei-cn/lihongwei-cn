@@ -1,0 +1,62 @@
+                                                                                                                        
+        clear
+        
+        SRC="$HOME/Desktop/lihongwei-cn/mundo-agent"
+        DST="$HOME/.hermes/mundo-agent"
+        
+        if [ -f "$SRC/version.txt" ] && [ -f "$DST/version.txt" ]; then
+            SRC_VER=$(cat "$SRC/version.txt" | tr -d '[:space:]')
+            DST_VER=$(cat "$DST/version.txt" | tr -d '[:space:]')
+            
+            if [ "$SRC_VER" != "$DST_VER" ]; then
+                for f in mundo.py core.py llm.py setup.py tools.py approval.py display.py memory.py memory_import.py models.py agents.py delegation.py cloud_sync.py; do
+                    [ -f "$SRC/$f" ] && cp "$SRC/$f" "$DST/$f"
+                done
+                cp "$SRC/version.txt" "$DST/version.txt"
+                [ -f "$SRC/requirements.txt" ] && cp "$SRC/requirements.txt" "$DST/requirements.txt"
+            fi
+        fi
+        
+        cd ~/.hermes/mundo-agent
+        source venv/bin/activate
+        python3 mundo.py
+    
+huangpeng@huangpengdeMacBook-Air ~ % 
+huangpeng@huangpengdeMacBook-Air ~ %         clear
+
+
+
+
+huangpeng@huangpengdeMacBook-Air ~ %         
+huangpeng@huangpengdeMacBook-Air ~ %         SRC="$HOME/Desktop/lihongwei-cn/mundo-agent"
+huangpeng@huangpengdeMacBook-Air ~ %         DST="$HOME/.hermes/mundo-agent"
+huangpeng@huangpengdeMacBook-Air ~ %         
+huangpeng@huangpengdeMacBook-Air ~ %         if [ -f "$SRC/version.txt" ] && [ -f "$DST/version.txt" ]; then
+then>             SRC_VER=$(cat "$SRC/version.txt" | tr -d '[:space:]')
+then>             DST_VER=$(cat "$DST/version.txt" | tr -d '[:space:]')
+then>             
+then>             if [ "$SRC_VER" != "$DST_VER" ]; then
+then then>                 for f in mundo.py core.py llm.py setup.py tools.py approval.py display.py memory.py memory_import.py models.py agents.py delegation.py cloud_sync.py; do
+then then for>                     [ -f "$SRC/$f" ] && cp "$SRC/$f" "$DST/$f"
+then then for>                 done
+then then>                 cp "$SRC/version.txt" "$DST/version.txt"
+then then>                 [ -f "$SRC/requirements.txt" ] && cp "$SRC/requirements.txt" "$DST/requirements.txt"
+then then>             fi
+then>         fi
+huangpeng@huangpengdeMacBook-Air ~ %         
+huangpeng@huangpengdeMacBook-Air ~ %         cd ~/.hermes/mundo-agent
+huangpeng@huangpengdeMacBook-Air mundo-agent %         source venv/bin/activate
+(venv) huangpeng@huangpengdeMacBook-Air mundo-agent %         python3 mundo.py
+
+  MUNDO v1.2.6 · mimo-v2.5-pro
+
+ ❯ 
+ ❯ 
+ 
+
+
+
+
+
+ 
+主页面内容冗余过多，复制内容没有进行精简处理，输入栏有两个，优化

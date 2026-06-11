@@ -1,4 +1,4 @@
-"""蒙多记忆系统 v2.0.9 — Claude 六套记忆架构"""
+"""蒙多记忆系统 v2.1.0 — Claude 六套记忆架构"""
 
 import re
 import sys
