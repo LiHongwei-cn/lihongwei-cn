@@ -1,4 +1,6 @@
-# MUNDO Agent v2.1.0 — THE EMPEROR
+# MUNDO Agent — THE EMPEROR
+
+> **稳定版：v2.0.9** · **开发版：v2.1.0**（不稳定）
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
@@ -113,7 +115,7 @@ Layer 4: 对话摘要 — 最近 5 次会话摘要（跨会话连续性）
 ```
              M  U  N  D  O
              THE EMPEROR
-             v2.1.0
+             v2.0.9 (stable)
 
   MUNDO · mimo-v2.5-pro · 0 tokens · —
   ❯
@@ -214,12 +216,55 @@ engine.py             兼容层（re-export）
 
 ## 下载
 
+### 稳定版（推荐）
+
+| 平台 | 下载 |
+|------|------|
+| macOS | [mundo-v2.0.9-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.9/mundo-v2.0.9-macos.zip) |
+| Windows | [mundo-v2.0.9-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.9/mundo-v2.0.9-windows.zip) |
+| Linux | [mundo-v2.0.9-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.9/mundo-v2.0.9-linux.zip) |
+| 全平台 | [mundo-v2.0.9-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.0.9/mundo-v2.0.9-all.zip) |
+
+### 开发版（不稳定）
+
 | 平台 | 下载 |
 |------|------|
 | macOS | [mundo-v2.1.0-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.1.0/mundo-v2.1.0-macos.zip) |
 | Windows | [mundo-v2.1.0-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.1.0/mundo-v2.1.0-windows.zip) |
 | Linux | [mundo-v2.1.0-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.1.0/mundo-v2.1.0-linux.zip) |
 | 全平台 | [mundo-v2.1.0-all.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v2.1.0/mundo-v2.1.0-all.zip) |
+
+### 历代版本
+
+所有历史版本可在 [GitHub Releases](https://github.com/LiHongwei-cn/lihongwei-cn/releases) 页面下载。
+
+## 版本历史
+
+| 版本 | 日期 | 说明 |
+|------|------|------|
+| v2.1.0 | 2026-06-12 | 开发版：核心引擎恢复、记忆系统修复 |
+| v2.0.9 | 2026-06-10 | **稳定版**：帝皇无上限、工具循环防护 |
+| v2.0.8 | 2026-06-10 | 三大Agent融合 |
+| v2.0.0 | 2026-06-09 | 任务规划与多模型协调 |
+| v1.8.0 | 2026-06-09 | 全模型智能适配 |
+| v1.7.0 | 2026-06-09 | 小米/DeepSeek 夸克级适配 |
+| v1.6.0 | 2026-06-09 | DeepSeek 适配强化 |
+| v1.5.1 | 2026-06-09 | 帝皇决心 |
+| v1.5.0 | 2026-06-09 | 身体调度 |
+| v1.4.2 | 2026-06-08 | 命令历史即时写入 |
+| v1.4.1 | 2026-06-08 | 夸克级优化 |
+| v1.4.0 | 2026-06-08 | 基础设施质变 |
+| v1.3.1 | 2026-06-08 | 稳定性优化 |
+| v1.2.8 | 2026-06-08 | 时间系统夸克级优化 |
+| v1.2.7 | 2026-06-07 | 粘贴折叠+历史导航修复 |
+| v1.2.6 | 2026-06-07 | 夸克级稳定性优化 |
+| v1.2.5 | 2026-06-07 | THE EMPEROR |
+| v1.2.4 | 2026-06-06 | 无限轮次 |
+| v1.2.3 | 2026-06-05 | Claude Code Token 优化 |
+| v1.2.2 | 2026-06-05 | 稳定性修复 |
+| v1.2.1 | 2026-06-05 | 初始稳定版 |
+| v1.2.0 | 2026-06-04 | THE EMPEROR 正式版 |
+| v1.1.9 | 2026-06-04 | Python 3.11 虚拟环境 |
 
 ## 许可证
 
