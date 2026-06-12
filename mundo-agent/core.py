@@ -1,6 +1,6 @@
-"""蒙多核心引擎 v2.1.0 — Agentic Loop
+"""蒙多核心引擎 v2.2.0 — Agentic Loop
 
-v2.1.0 优化（学习 Hermes/Claude 精华）：
+v2.2.0 优化（学习 Hermes/Claude 精华）：
 - 懒加载模块，减少启动时间
 - 缓存系统提示词和工具 schema
 - 并行执行独立工具调用
