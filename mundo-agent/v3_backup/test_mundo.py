@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""蒙多 v2.2.0 全面测试套件 — 测试所有模块的功能和稳定性
+"""蒙多 v2.1.1 全面测试套件 — 测试所有模块的功能和稳定性
 
 运行方式：
     cd mundo-agent
@@ -497,8 +497,8 @@ def test_tools(suite: TestSuite):
     def test_mimo_memory_search():
         from tools import registry
         # 先添加一条记忆
-        registry.execute("mimo_memory_add", {"content": "蒙多 v2.2.0 测试", "type": "fact"})
-        result = registry.execute("mimo_memory_search", {"query": "蒙多 v2.2.0"})
+        registry.execute("mimo_memory_add", {"content": "蒙多 v2.1.1 测试", "type": "fact"})
+        result = registry.execute("mimo_memory_search", {"query": "蒙多 v2.1.1"})
         suite.assert_in("搜索结果", result)
 
     def test_mimo_task_create():
@@ -595,7 +595,7 @@ def test_tools(suite: TestSuite):
 # ═══════════════════════════════════════════════
 
 if __name__ == "__main__":
-    suite = TestSuite("蒙多 Agent v2.2.0 测试")
+    suite = TestSuite("蒙多 Agent v2.1.1 测试")
     test_tools(suite)
     passed, total, summary = suite.summary()
     print(summary)

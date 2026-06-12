@@ -1,7 +1,7 @@
 ---
 name: mundo-sync
 description: 蒙多三合一同步协议 — 每次更新后强制执行
-version: 2.2.0
+version: 2.1.1
 ---
 
 # MUNDO 三合一同步协议
