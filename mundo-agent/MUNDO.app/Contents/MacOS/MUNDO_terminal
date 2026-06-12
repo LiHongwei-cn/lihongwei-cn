@@ -5,8 +5,8 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 MUNDO_DIR=""
 
-# 定位目录
-[ -f "$SCRIPT_DIR/../../../../mundo.py" ] && MUNDO_DIR="$(cd "$SCRIPT_DIR/../../../../" && pwd)"
+# 定位目录（从Contents/MacOS向上3级到MUNDO.app所在目录）
+[ -f "$SCRIPT_DIR/../../../mundo.py" ] && MUNDO_DIR="$(cd "$SCRIPT_DIR/../../../" && pwd)"
 [ -z "$MUNDO_DIR" ] && [ -f "$HOME/蒙多/mundo.py" ] && MUNDO_DIR="$HOME/蒙多"
 [ -z "$MUNDO_DIR" ] && [ -f "$HOME/Desktop/lihongwei-cn/mundo-agent/mundo.py" ] && MUNDO_DIR="$HOME/Desktop/lihongwei-cn/mundo-agent"
 [ -z "$MUNDO_DIR" ] && [ -f "$HOME/.hermes/mundo-agent/mundo.py" ] && MUNDO_DIR="$HOME/.hermes/mundo-agent"
