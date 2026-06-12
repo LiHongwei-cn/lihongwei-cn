@@ -1,6 +1,7 @@
 """蒙多常量 v2.1.1 — 所有魔法数字的家
 
 一处定义，全局引用。零硬编码散落。
+版本号由版本管理系统自动管理。
 """
 
 from pathlib import Path
@@ -20,10 +21,19 @@ ENV_FILE = MUNDO_HOME / ".env"
 CONFIG_FILE = MUNDO_HOME / "config.json"
 
 # ═══════════════════════════════════════════════
-# 版本
+# 版本 — 由版本管理系统自动管理
 # ═══════════════════════════════════════════════
 
-VERSION = "2.1.1"
+def _get_version():
+    """从版本管理系统获取版本号"""
+    try:
+        from version_manager import get_current_version
+        return get_current_version()
+    except ImportError:
+        # 如果版本管理系统不可用，返回默认版本
+        return "v2.1.1"
+
+VERSION = _get_version()
 
 # ═══════════════════════════════════════════════
 # 默认模型
@@ -96,3 +106,24 @@ IDLE_TIMEOUT = 300
 LONG_TASK_THRESHOLD = 20
 TASK_ABANDON_TIMEOUT = 1800
 PROGRESS_CHECK_INTERVAL = 5
+
+# ═══════════════════════════════════════════════
+# 反射引擎
+# ═══════════════════════════════════════════════
+
+REFLECTION_MAX_TURNS = 10
+REFLECTION_SUCCESS_THRESHOLD = 0.8
+
+# ═══════════════════════════════════════════════
+# 安全强化
+# ═══════════════════════════════════════════════
+
+SECURITY_RATE_LIMIT_PER_MINUTE = 60
+SECURITY_MAX_INPUT_LENGTH = 100000
+
+# ═══════════════════════════════════════════════
+# 知识检索
+# ═══════════════════════════════════════════════
+
+KNOWLEDGE_MAX_CONTEXT_CHARS = 3000
+KNOWLEDGE_SEARCH_TOP_K = 5
