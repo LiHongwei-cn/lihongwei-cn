@@ -1,7 +1,7 @@
 ---
 name: claude-code
 description: "Delegate coding to Claude Code CLI (features, PRs)."
-version: 2.2.0
+version: 2.1.1
 author: Hermes Agent + Teknium
 license: MIT
 platforms: [linux, macos, windows]

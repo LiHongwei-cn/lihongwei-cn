@@ -1,4 +1,4 @@
-"""蒙多自进化系统 v2.2.0 — 融合 MiMo-Code 的 Dream & Distill
+"""蒙多自进化系统 v2.1.1 — 融合 MiMo-Code 的 Dream & Distill
 
 核心功能：
 - Dream: 从会话轨迹中提取持久知识，自动沉淀到项目记忆

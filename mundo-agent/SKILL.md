@@ -1,7 +1,7 @@
 ---
 name: mundo-sync
 description: 蒙多三合一同步协议 — 每次更新后强制执行。覆盖版本同步、页面融合、基准测试、Vibe Coding 生态部署、国产模型适配（DeepSeek/MiMo）、社交媒体内容创建。
-version: 2.2.0
+version: 2.1.1
 ---
 
 # 蒙多 Skill — 蒙多更新同步协议
@@ -47,7 +47,7 @@ Dock 启动器和 MUNDO.command 已内置自动版本检测：
 | `references/agent-benchmark-methodology.md` | Agent真实benchmark方法论（铁律：不允许主观评分） |
 | `references/mimo-reasoning-effort.md` | MiMo推理模型优化（reasoning_effort自动控制） |
 | `references/tool-schema-optimization.md` | 工具Schema优化模式（"不要用X"指令） |
-| `references/mundo-module-class-map.md` | **v2.2.0新增** — 蒙多模块类名映射（测试/导入必备） |
+| `references/mundo-module-class-map.md` | **v2.1.1新增** — 蒙多模块类名映射（测试/导入必备） |
 
 ## 同步范围（v2.0.8 完整清单）
 
@@ -188,7 +188,7 @@ MiMo是推理模型，每次API调用的reasoning token占总token的50-80%。
 - 每次工具调用消耗约7000 token（含推理+schema+上下文）
 - 目标：简单任务2-3次，中等任务5-8次，只有极复杂才允许>10次
 
-## v2.2.0 性能优化
+## v2.1.1 性能优化
 
 基于基准测试数据的三项针对性优化，编码任务性能提升 30-40%：
 
@@ -196,7 +196,7 @@ MiMo是推理模型，每次API调用的reasoning token占总token的50-80%。
 2. **三路智能路由**：编码→Claude Code、系统→Hermes、快速→Codex
 3. **文件读取惰性加载**：`itertools.islice`，效率提升 50%
 
-> 详细数据：`references/performance-benchmark-v2.2.0.md`
+> 详细数据：`references/performance-benchmark-v2.1.1.md`
 
 ## v2.0.8 融合架构（从三大Agent提炼）
 
@@ -212,7 +212,7 @@ MiMo是推理模型，每次API调用的reasoning token占总token的50-80%。
 测试：66/66 通过（100%）。对标分析：平均分 6.6→7.4，工具防护超越 Claude Code(9>7)。
 详见 `ARCHITECTURE_V2.md` 和 `mundo-agent-development` skill 的 `references/v20-fusion-architecture.md`。
 
-## 版本同步验证清单（v2.2.0 新增）
+## 版本同步验证清单（v2.1.1 新增）
 
 每次更新版本号后，必须验证以下文件的版本一致性：
 
@@ -237,7 +237,7 @@ cd ~/.hermes/mundo-agent && grep -c "v2\.0\." *.py | grep -v ":0$"
 
 **批量更新命令（当版本不一致时）：**
 ```bash
-cd ~/.hermes/mundo-agent && sed -i '' 's/v2\.0\.8/v2.2.0/g' tools.py policy.py sandbox.py events.py memory.py approval.py model_adapter.py agents.py
+cd ~/.hermes/mundo-agent && sed -i '' 's/v2\.0\.8/v2.1.1/g' tools.py policy.py sandbox.py events.py memory.py approval.py model_adapter.py agents.py
 ```
 
 ## 蒙多模块类名映射
@@ -329,7 +329,7 @@ print('=' * 55)
 print(f'结果: {ok}/{len(tests)} 通过')
 ```
 
-## 代码统计（v2.2.0）
+## 代码统计（v2.1.1）
 
 - 核心模块: 32 个（13 核心 + 11 基础设施 + 5 扩展 + 3 融合）
 - 总代码行数: ~11500 行
