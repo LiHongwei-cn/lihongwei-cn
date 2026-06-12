@@ -4,8 +4,6 @@
 #  智能定位蒙多目录并启动 mundo.py
 # ============================================================
 
-set -e
-
 # ---- 获取脚本所在目录 ----
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CONTENTS_DIR="$(dirname "$SCRIPT_DIR")"
@@ -13,47 +11,22 @@ APP_DIR="$(dirname "$CONTENTS_DIR")"
 
 # ---- 智能定位蒙多代码目录 ----
 find_mundo_dir() {
-    # 1. APP同级目录（最常见：~/蒙多/MUNDO.app → ~/蒙多/）
-    if [ -f "$APP_DIR/mundo.py" ]; then
-        echo "$APP_DIR"
-        return
-    fi
+    # 1. APP同级目录
+    [ -f "$APP_DIR/mundo.py" ] && { echo "$APP_DIR"; return; }
     
     # 2. ~/蒙多
-    if [ -f "$HOME/蒙多/mundo.py" ]; then
-        echo "$HOME/蒙多"
-        return
-    fi
+    [ -f "$HOME/蒙多/mundo.py" ] && { echo "$HOME/蒙多"; return; }
     
     # 3. Desktop/lihongwei-cn/mundo-agent
-    if [ -f "$HOME/Desktop/lihongwei-cn/mundo-agent/mundo.py" ]; then
-        echo "$HOME/Desktop/lihongwei-cn/mundo-agent"
-        return
-    fi
+    [ -f "$HOME/Desktop/lihongwei-cn/mundo-agent/mundo.py" ] && { echo "$HOME/Desktop/lihongwei-cn/mundo-agent"; return; }
     
     # 4. ~/.hermes/mundo-agent
-    if [ -f "$HOME/.hermes/mundo-agent/mundo.py" ]; then
-        echo "$HOME/.hermes/mundo-agent"
-        return
-    fi
+    [ -f "$HOME/.hermes/mundo-agent/mundo.py" ] && { echo "$HOME/.hermes/mundo-agent"; return; }
     
-    # 5. 向上搜索（最多5级）
-    local dir="$APP_DIR"
-    for i in {1..5}; do
-        dir="$(dirname "$dir")"
-        if [ -f "$dir/mundo.py" ]; then
-            echo "$dir"
-            return
-        fi
-    done
-    
-    # 6. 用find搜索用户目录
+    # 5. find搜索
     local found
-    found=$(find "$HOME" -maxdepth 5 -name "mundo.py" -not -path "*/node_modules/*" -not -path "*/.git/*" 2>/dev/null | head -1)
-    if [ -n "$found" ]; then
-        dirname "$found"
-        return
-    fi
+    found=$(find "$HOME" -maxdepth 5 -name "mundo.py" -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/venv/*" 2>/dev/null | head -1)
+    [ -n "$found" ] && { dirname "$found"; return; }
     
     return 1
 }
@@ -61,9 +34,23 @@ find_mundo_dir() {
 # ---- 定位蒙多目录 ----
 MUNDO_DIR=$(find_mundo_dir)
 if [ -z "$MUNDO_DIR" ]; then
-    osascript -e 'display dialog "❌ 找不到蒙多主程序 (mundo.py)\n\n请确保蒙多代码已正确安装。\n参考：https://github.com/lihongwei-cn/mundo-agent" buttons {"确定"} default button "确定" with icon stop with title "MUNDO — THE EMPEROR"'
+    osascript -e 'display dialog "❌ 找不到蒙多主程序 (mundo.py)\n\n请确保蒙多代码已正确安装。" buttons {"确定"} default button "确定" with icon stop with title "MUNDO — THE EMPEROR"'
     exit 1
 fi
+
+# ---- 关键：检测是否有终端，没有则用Terminal.app打开 ----
+if [ ! -t 0 ] || [ ! -t 1 ]; then
+    # 从Finder启动，没有终端 → 用Terminal.app打开
+    osascript -e "
+        tell application \"Terminal\"
+            activate
+            do script \"cd '$MUNDO_DIR' && bash '$MUNDO_DIR/MUNDO.app/Contents/MacOS/MUNDO_terminal'\" in front window
+        end tell
+    " 2>/dev/null
+    exit 0
+fi
+
+# ---- 以下是终端模式（直接运行） ----
 
 # ---- 定位Python解释器 ----
 PYTHON=""
@@ -74,54 +61,26 @@ elif command -v python3 &>/dev/null; then
 elif command -v python &>/dev/null; then
     PYTHON="python"
 else
-    osascript -e 'display dialog "❌ 未找到Python环境\n\n请安装Python 3.8+:\n  brew install python3\n或访问：https://python.org" buttons {"确定"} default button "确定" with icon stop with title "MUNDO — THE EMPEROR"'
+    echo "❌ 未找到Python环境，请安装Python 3.8+"
+    read -p "按回车退出..."
     exit 1
 fi
 
-# ---- 检查版本 ----
-VERSION_FILE="$MUNDO_DIR/version.txt"
-if [ -f "$VERSION_FILE" ]; then
-    VERSION=$(cat "$VERSION_FILE" | tr -d '[:space:]')
-else
-    VERSION="unknown"
-fi
-
-# ---- 切换到蒙多目录 ----
+# ---- 切换目录 ----
 cd "$MUNDO_DIR"
 
 # ---- 设置环境变量 ----
 export PYTHONPATH="$MUNDO_DIR:$PYTHONPATH"
 export MUNDO_HOME="$MUNDO_DIR"
-export MUNDO_VERSION="$VERSION"
 export MUNDO_LAUNCHED_FROM="app"
 export PYTHONIOENCODING="utf-8"
 export LANG="zh_CN.UTF-8"
 export PYTHONDONTWRITEBYTECODE=1
 
 # ---- 检查依赖 ----
-check_deps() {
-    local missing=()
-    for pkg in requests rich prompt_toolkit; do
-        $PYTHON -c "import $pkg" 2>/dev/null || missing+=("$pkg")
-    done
-    if [ ${#missing[@]} -gt 0 ]; then
-        echo "⚠️  缺少依赖: ${missing[*]}"
-        echo "正在安装..."
-        $PYTHON -m pip install "${missing[@]}" --quiet 2>/dev/null || true
-    fi
-}
+for pkg in requests rich prompt_toolkit; do
+    $PYTHON -c "import $pkg" 2>/dev/null || $PYTHON -m pip install "$pkg" --quiet 2>/dev/null
+done
 
-check_deps
-
-# ---- 启动蒙多 ----
-echo ""
-echo "  ╔══════════════════════════════════════════╗"
-echo "  ║        MUNDO — THE EMPEROR v${VERSION}        ║"
-echo "  ╠══════════════════════════════════════════╣"
-echo "  ║  💪 不废话，直接干活。                     ║"
-echo "  ║  📂 目录: $MUNDO_DIR"
-echo "  ║  🐍 Python: $PYTHON"
-echo "  ╚══════════════════════════════════════════╝"
-echo ""
-
+# ---- 启动 ----
 exec $PYTHON mundo.py
