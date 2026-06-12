@@ -107,6 +107,13 @@ class MundoEngine:
         self._last_activity_time = time.time()
         self._idle_timeout = 300
 
+        # 推理缓存（缓存 reasoning_content，下轮注入保持 prompt cache 稳定）
+        self._reasoning_cache: List[str] = []
+
+        # 分区缓存：volatile sections 只在首轮构建，后续复用
+        self._volatile_sections: Dict[str, str] = {}
+        self._memory_built = False
+
         # 回调（解耦显示/统计/委托）
         self.on_turn_start: Optional[Callable] = None
         self.on_tool_call: Optional[Callable] = None
@@ -122,9 +129,23 @@ class MundoEngine:
 
         logger.debug(f"初始化引擎: {provider}/{self.model_name}")
 
-    def _build_system_message(self) -> Dict:
-        """构建系统消息 — 保持稳定以提高缓存命中率"""
-        return {"role": "system", "content": MUNDO_SYSTEM_PROMPT}
+    def _build_system_message(self, extra_context: str = "") -> Dict:
+        """构建系统消息 - 分区缓存策略
+
+        稳定部分（MUNDO_SYSTEM_PROMPT）：核心指令，跨会话不变
+        易变部分（记忆上下文）：首轮构建后固定，后续轮次复用
+        """
+        stable = MUNDO_SYSTEM_PROMPT
+
+        # 易变部分：记忆上下文（首轮构建后固定）
+        if extra_context and not self._memory_built:
+            self._volatile_sections["memory"] = "\n\n=== 当前记忆上下文 ===\n" + extra_context
+            self._memory_built = True
+
+        volatile = "\n".join(self._volatile_sections.values())
+        content = stable + volatile if volatile else stable
+
+        return {"role": "system", "content": content}
 
     def _model_display(self) -> str:
         """模型显示名称"""
@@ -148,9 +169,34 @@ class MundoEngine:
 
         logger.debug(f"自动压缩: {old_count}→{new_count} 消息, {old_tokens}→{new_tokens} tokens")
 
+    # -- 推理缓存 -------------------------------------------
+
+    def _inject_reasoning_cache(self):
+        """注入缓存的推理内容到历史 assistant 消息。
+        仅在存在缓存数据时才注入，保持消息结构一致。
+        """
+        if not self._reasoning_cache:
+            return
+        cache_idx = 0
+        for msg in self.messages:
+            if msg.get("role") == "assistant" and not msg.get("reasoning_content"):
+                if cache_idx < len(self._reasoning_cache):
+                    msg["reasoning_content"] = self._reasoning_cache[cache_idx]
+                    cache_idx += 1
+        if cache_idx > 0:
+            logger.debug(f"注入 {cache_idx} 条推理缓存到历史消息")
+
+    def _cache_reasoning_from_response(self, assistant_msg: Dict):
+        """从 LLM 响应中提取并缓存 reasoning_content"""
+        reasoning = assistant_msg.get("reasoning", "")
+        if reasoning:
+            self._reasoning_cache.append(reasoning)
+            logger.debug(f"缓存推理内容 ({len(reasoning)} 字符), 总缓存: {len(self._reasoning_cache)}")
+
     def _accumulate_stream(self, stream_iter) -> Dict:
         """流式消费 → 累积完整 assistant 消息（含超时保护）"""
         content_parts: List[str] = []
+        reasoning_parts: List[str] = []
         tool_calls_map: Dict[int, Dict] = {}
         usage = {}
         last_activity = time.time()
@@ -163,6 +209,9 @@ class MundoEngine:
 
             last_activity = time.time()
             delta = LLMClient.extract_stream_delta(chunk)
+
+            if delta.get("reasoning"):
+                reasoning_parts.append(delta["reasoning"])
 
             if delta["content"]:
                 content_parts.append(delta["content"])
@@ -192,14 +241,18 @@ class MundoEngine:
                 break
 
         full_content = "".join(content_parts)
+        full_reasoning = "".join(reasoning_parts)
         tool_calls = [tool_calls_map[i] for i in sorted(tool_calls_map.keys())]
 
-        return {
+        result = {
             "role": "assistant",
             "content": full_content,
             "tool_calls": tool_calls,
             "_usage": usage,
         }
+        if full_reasoning:
+            result["reasoning"] = full_reasoning
+        return result
 
     def _filter_tool_calls(self, tool_calls: List[Dict]) -> List[Dict]:
         """过滤无效 tool_calls"""
@@ -233,14 +286,12 @@ class MundoEngine:
         self._install_signal_handler()
 
         if not self.messages:
-            self.messages = [self._build_system_message()]
+            self.messages = [self._build_system_message(extra_context)]
 
         self._auto_compress()
 
-        # 构建用户消息：记忆上下文 + 任务分解 + 用户输入
+        # 构建用户消息：仅任务分解 + 用户输入（记忆已在 system message 中）
         parts = []
-        if extra_context:
-            parts.append(f"[记忆上下文]\n{extra_context}")
 
         # 任务分解（复杂任务自动拆解）
         from .task_decomposer import decompose_task, format_task_plan
@@ -274,6 +325,9 @@ class MundoEngine:
             if self.on_stream_start:
                 self.on_stream_start(turn)
 
+
+            # 注入推理缓存到历史 assistant 消息
+            self._inject_reasoning_cache()
             llm_start = time.time()
             assistant_msg = self._call_llm()
 
@@ -281,6 +335,9 @@ class MundoEngine:
                 break
 
             self.stats.llm_time += time.time() - llm_start
+
+            # 缓存推理内容（下轮注入历史消息）
+            self._cache_reasoning_from_response(assistant_msg)
 
             # 更新 token 统计
             self._update_token_stats(assistant_msg)
@@ -513,6 +570,9 @@ class MundoEngine:
         """重置引擎"""
         self.messages = []
         self._interrupted = False
+        self._reasoning_cache = []
+        self._volatile_sections = {}
+        self._memory_built = False
         self.budget.reset()
         if hasattr(self, '_original_handler') and self._original_handler:
             signal.signal(signal.SIGINT, self._original_handler)
