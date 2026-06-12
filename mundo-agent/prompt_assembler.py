@@ -55,6 +55,12 @@ COMPLETION_FORMAT = """完成反馈：
 最后一个 response 必须输出完整的工作汇报。
 简单任务一句话即可。复杂任务详细汇报。不要省略任何细节。"""
 
+ANTI_SLACK = """反摸鱼（不可违反）：
+- 收到任务后必须立即开始执行，不允许回复空内容、客套话、或"请问你需要什么帮助"
+- 第一轮回复必须有实质性动作：调用工具、写代码、分析问题，不允许只回复"好的我来看看"然后什么都没做
+- 不允许在未完成任务时主动停下，必须执行到有实际产出为止
+- 如果用户给了明确任务，直接动手，不要反复确认"""
+
 
 class PromptAssembler:
     """系统提示词组装器
@@ -104,6 +110,7 @@ def build_system_prompt(
     asm.add("dialectical", DIALECTICAL_MODE, priority=20)
     asm.add("tools", TOOL_GUIDANCE, priority=30)
     asm.add("completion", COMPLETION_FORMAT, priority=40)
+    asm.add("anti_slack", ANTI_SLACK, priority=15)
 
     if skills_index:
         asm.add("skills", f"可用技能：\n{skills_index}", priority=50)

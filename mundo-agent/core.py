@@ -597,6 +597,7 @@ class MundoEngine:
         last_progress_time = time.time()
         last_output_hash = ""
         total_tool_calls = 0
+        total_tools_across_all_turns = 0  # 反摸鱼：追踪全局工具调用次数
 
         while turn < MAX_ITERATIONS:
             # 用户中断检查（唯一的主动终止条件）
@@ -649,6 +650,22 @@ class MundoEngine:
 
             if not tool_calls:
                 final_text = assistant_msg.get("content") or ""
+
+                # ── 反摸鱼检测 ──
+                # 规则：如果模型从未调用过工具且回复内容过短（<50字符），判定为摸鱼
+                # 强制注入提醒，让它重新执行
+                if total_tools_across_all_turns == 0 and len(final_text.strip()) < 50:
+                    self.messages.append({"role": "assistant", "content": final_text})
+                    self.messages.append({
+                        "role": "system",
+                        "content": "【帝皇斥责】蒙多，你在摸鱼！用户给了你任务，你没有调用任何工具就试图结束。"
+                                   "现在立刻开始执行：分析任务需求，调用合适的工具完成它。不允许空回复。"
+                    })
+                    if self.on_tool_output:
+                        self.on_tool_output("mundo", "⚡ 摸鱼检测触发：强制继续执行", False)
+                    total_tool_calls = 0  # 重置本轮计数，继续循环
+                    continue
+
                 self.messages.append({"role": "assistant", "content": final_text})
                 return final_text
 
@@ -659,6 +676,7 @@ class MundoEngine:
             })
             self._execute_tool_calls(tool_calls)
             total_tool_calls += len(tool_calls)
+            total_tools_across_all_turns += len(tool_calls)
 
             if self._same_error_streak >= STUCK_THRESHOLD:
                 # 换策略而非放弃
