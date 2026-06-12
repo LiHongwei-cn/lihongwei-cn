@@ -18,7 +18,6 @@ find_mundo_dir() {
         [ -f "$dir/mundo.py" ] && { echo "$dir"; return; }
     done
     
-    # find搜索
     local found
     found=$(find "$HOME" -maxdepth 5 -name "mundo.py" -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/venv/*" 2>/dev/null | head -1)
     [ -n "$found" ] && { dirname "$found"; return; }
@@ -40,13 +39,39 @@ PYTHON=""
 
 # ---- 关键：检测是否有终端，没有则用Terminal.app打开 ----
 if [ ! -t 0 ] || [ ! -t 1 ]; then
-    # 从Finder启动，没有终端 → 用Terminal.app打开
-    osascript -e "
-        tell application \"Terminal\"
-            activate
-            do script \"cd '$MUNDO_DIR' && '$PYTHON' mundo.py\" in front window
-        end tell
-    " 2>/dev/null
+    # 从Finder启动，没有终端 → 创建临时脚本让Terminal执行
+    TEMP_SCRIPT="/tmp/mundo-launch-$$.sh"
+    cat > "$TEMP_SCRIPT" << EOF
+#!/bin/bash
+cd "$MUNDO_DIR"
+export PYTHONPATH="$MUNDO_DIR:\$PYTHONPATH"
+export MUNDO_HOME="$MUNDO_DIR"
+export MUNDO_LAUNCHED_FROM="app"
+export PYTHONIOENCODING="utf-8"
+export LANG="zh_CN.UTF-8"
+export PYTHONDONTWRITEBYTECODE=1
+
+# 检查依赖
+for pkg in requests rich prompt_toolkit; do
+    $PYTHON -c "import \$pkg" 2>/dev/null || $PYTHON -m pip install "\$pkg" --quiet 2>/dev/null
+done
+
+echo -ne "\033]0;MUNDO — THE EMPEROR\007"
+
+exec $PYTHON mundo.py
+EOF
+    chmod +x "$TEMP_SCRIPT"
+    
+    # 用Terminal.app执行临时脚本
+    osascript << EOF
+tell application "Terminal"
+    activate
+    do script "$TEMP_SCRIPT"
+end tell
+EOF
+    
+    # 延迟删除临时脚本
+    (sleep 60 && rm -f "$TEMP_SCRIPT") &
     exit 0
 fi
 
