@@ -19,11 +19,16 @@ MUNDO_HOME = Path.home() / ".hermes" / "mundo-agent"
 VENV_DIR = MUNDO_HOME / "venv"
 
 def ensure_venv():
-    """确保在虚拟环境中运行，如果不在则自动激活并重启"""
+    """确保在虚拟环境中运行，跨平台兼容（macOS/Linux/Windows）"""
     if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
         return True  # 已在虚拟环境中
     
-    venv_python = VENV_DIR / "bin" / "python3"
+    # Windows: Scripts/python.exe | macOS/Linux: bin/python3
+    if sys.platform == "win32":
+        venv_python = VENV_DIR / "Scripts" / "python.exe"
+    else:
+        venv_python = VENV_DIR / "bin" / "python3"
+    
     if not venv_python.exists():
         print("首次运行，正在安装虚拟环境...")
         subprocess.run([sys.executable, "-m", "venv", str(VENV_DIR)], check=True)
@@ -35,8 +40,12 @@ def ensure_venv():
             subprocess.run([str(venv_python), "-m", "pip", "install", "-r", str(requirements)], 
                           capture_output=True, check=True)
     
-    # 在虚拟环境中重新启动自己
-    os.execv(str(venv_python), [str(venv_python)] + sys.argv)
+    # 在虚拟环境中重新启动自己（Windows不支持os.execv）
+    if sys.platform == "win32":
+        result = subprocess.run([str(venv_python)] + sys.argv)
+        sys.exit(result.returncode)
+    else:
+        os.execv(str(venv_python), [str(venv_python)] + sys.argv)
 
 # 确保在虚拟环境中运行
 ensure_venv()
