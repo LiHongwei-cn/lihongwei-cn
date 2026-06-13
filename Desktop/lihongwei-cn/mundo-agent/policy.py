@@ -1,4 +1,4 @@
-"""蒙多 Policy 引擎 v2.1.1 — 皇帝的律法
+"""蒙多 Policy 引擎 v2.2.0 — 皇帝的律法
 
 不是简单的正则匹配。是可组合、可继承、可定制的规则引擎。
 每条规则都有优先级、动作、条件。规则可以被覆盖、禁用、链式组合。
@@ -8,13 +8,23 @@
 - 默认拒绝，显式允许
 - 规则可继承：全局 → 项目 → 会话
 - 每条规则都有理由，皇帝不接受无理由的裁决
+
+v2.2.0: 合并 approval.py 的用户审批逻辑，成为唯一审批引擎
 """
 
 import re
+import sys
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import List, Dict, Optional, Callable, Any, Tuple
 from pathlib import Path
+
+# Rich 渲染（可选）
+try:
+    from rich.console import Console
+    _console = Console(highlight=False, force_terminal=True)
+except ImportError:
+    _console = None
 
 
 # ═══════════════════════════════════════════════
@@ -428,6 +438,76 @@ class PolicyEngine:
         if tag:
             rules = [r for r in rules if tag in r.tags]
         return rules
+
+    def ask_user_approval(self, command: str, reason: str, severity: Severity) -> bool:
+        """请求用户审批 — 用于 ASK 动作"""
+        if severity in (Severity.CRITICAL, Severity.HIGH):
+            # 危险操作：默认拒绝，需要明确确认
+            if _console:
+                _console.print(f"\n  [bold error]✗ 权限审批[/]")
+                _console.print(f"  [error]{reason}[/]")
+                _console.print(f"  [dim]命令: {command[:80]}[/]")
+                if severity == Severity.CRITICAL:
+                    _console.print(f"  [bold error]此操作可能导致不可逆的损害[/]")
+            else:
+                print(f"\n  ✗ 权限审批")
+                print(f"  {reason}")
+                print(f"  命令: {command[:80]}")
+                if severity == Severity.CRITICAL:
+                    print(f"  此操作可能导致不可逆的损害")
+            try:
+                answer = input(f"  \033[38;5;210m确认执行？[y/N]：\033[0m").strip().lower()
+            except (EOFError, KeyboardInterrupt):
+                return False
+            return answer == "y"
+        else:
+            # 中等风险：默认允许，需要明确拒绝
+            if _console:
+                _console.print(f"\n  [warning]⚠ 权限审批[/]")
+                _console.print(f"  [warning]{reason}[/]")
+                _console.print(f"  [dim]命令: {command[:80]}[/]")
+            else:
+                print(f"\n  ⚠ 权限审批")
+                print(f"  {reason}")
+                print(f"  命令: {command[:80]}")
+            try:
+                answer = input(f"  \033[38;5;223m是否继续？[Y/n]：\033[0m").strip().lower()
+            except (EOFError, KeyboardInterrupt):
+                return False
+            return answer != "n"
+
+    def approve_tool_call(self, tool_name: str, args: Dict) -> bool:
+        """审批工具调用 — 合并了 approval.py 的逻辑"""
+        ctx = PolicyContext(
+            tool_name=tool_name,
+            tool_args=args,
+            command=args.get("command", ""),
+            file_path=args.get("path", ""),
+            content=args.get("content", ""),
+        )
+        result = self.evaluate(ctx)
+
+        if result.is_allowed:
+            return True
+
+        if result.is_denied:
+            if _console:
+                _console.print(f"\n  [bold error]✗ 策略拒绝[/]")
+                _console.print(f"  [error]{result.reason}[/]")
+            else:
+                print(f"\n  ✗ 策略拒绝")
+                print(f"  {result.reason}")
+            return False
+
+        if result.needs_approval:
+            severity = result.rule.severity if result.rule else Severity.MEDIUM
+            return self.ask_user_approval(
+                command=ctx.command or f"{tool_name} → {args.get('path', '')}",
+                reason=result.reason,
+                severity=severity,
+            )
+
+        return True
 
 
 # 全局单例
