@@ -541,7 +541,13 @@ class MundoCLI:
 
     def process_command(self, line: str) -> bool:
         if line.startswith("!"):
-            os.system(line[1:])
+            cmd = line[1:].strip()
+            if cmd:
+                policy = get_policy_engine()
+                if policy.approve_tool_call("terminal", {"command": cmd}):
+                    os.system(cmd)
+                else:
+                    console.print("  [dim]命令已取消[/]")
             return True
         if not line.startswith("/"):
             return False
