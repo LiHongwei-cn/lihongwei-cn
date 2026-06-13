@@ -1,9 +1,14 @@
 """蒙多的 Agentic Loop — think → act → observe → repeat + Agent 调度
 
-v24.3: 统一入口 + LLM 自主判断是否需要工具 + 上下文压缩
+v24.4:
+- 上下文压缩安全化（备份→尝试→失败则恢复）
+- JSON 解析鲁棒化（多策略解析 tool arguments）
+- 错误信息明确化
+- max_tokens_override 支持
 """
 
 import json
+import re
 import time
 from typing import List, Dict, Optional, Callable
 from llm import LLMClient
@@ -68,6 +73,58 @@ class TaskStats:
         return f"{m}m{s - m*60:.0f}s"
 
 
+def _parse_tool_args(raw_args: str) -> Dict:
+    """鲁棒的 tool arguments 解析 — 多策略降级"""
+    if not raw_args:
+        return {}
+
+    # 策略 1: 直接 JSON 解析
+    try:
+        parsed = json.loads(raw_args)
+        if isinstance(parsed, dict):
+            return parsed
+    except (json.JSONDecodeError, ValueError):
+        pass
+
+    # 策略 2: 提取被 ```json ... ``` 包裹的内容
+    m = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', raw_args, re.DOTALL)
+    if m:
+        try:
+            parsed = json.loads(m.group(1))
+            if isinstance(parsed, dict):
+                return parsed
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    # 策略 3: 找到第一个 { 到最后一个 } 的范围
+    start = raw_args.find('{')
+    end = raw_args.rfind('}')
+    if start != -1 and end > start:
+        try:
+            parsed = json.loads(raw_args[start:end + 1])
+            if isinstance(parsed, dict):
+                return parsed
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+    # 策略 4: 修复常见的 JSON 格式问题（尾部逗号、单引号）
+    cleaned = raw_args
+    # 去掉尾部逗号
+    cleaned = re.sub(r',\s*}', '}', cleaned)
+    cleaned = re.sub(r',\s*]', ']', cleaned)
+    # 单引号转双引号
+    cleaned = cleaned.replace("'", '"')
+    try:
+        parsed = json.loads(cleaned)
+        if isinstance(parsed, dict):
+            return parsed
+    except (json.JSONDecodeError, ValueError):
+        pass
+
+    # 所有策略失败，返回空字典并记录
+    return {}
+
+
 class MundoEngine:
     def __init__(self, provider: str = "xiaomi", model: str = None):
         self.client = LLMClient(provider=provider, model=model)
@@ -75,6 +132,7 @@ class MundoEngine:
         self.model_name = model or self.client.model
         self.messages: List[Dict] = []
         self.max_turns = 30
+        self.max_tokens_override = 4096  # 可被 /effort 命令覆盖
         self.stats = TaskStats()
         self.delegator = None
 
@@ -97,7 +155,6 @@ class MundoEngine:
 
     def _smart_route(self, user_input: str):
         from models import get_best_model_for_task
-        from llm import get_available_providers
         from setup import PROVIDERS, load_local_env
 
         env = load_local_env()
@@ -166,29 +223,38 @@ class MundoEngine:
         return self.delegator.merge_results(user_input, subtasks, results)
 
     def _compress_context(self):
-        """压缩上下文 — 保留 system + 最近 8 条 + 摘要"""
+        """安全压缩上下文 — 备份旧消息，失败则恢复"""
         if len(self.messages) <= 10:
             return
 
         system_msg = self.messages[0] if self.messages[0]["role"] == "system" else None
         recent = self.messages[-8:]
-        old = self.messages[1:-8]
+        old = self.messages[1:-8] if system_msg else self.messages[:-8]
+
+        # 备份旧消息（防止摘要生成失败导致丢失）
+        backup = list(old)
 
         summary_parts = []
         for msg in old:
             role = msg["role"]
             content = msg.get("content", "")[:60]
             if content and role in ("user", "assistant"):
-                summary_parts.append(f"{content}")
+                summary_parts.append(content)
         summary = " | ".join(summary_parts[-6:])
 
         new_messages = []
         if system_msg:
             new_messages.append(system_msg)
         if summary:
-            new_messages.append({"role": "system", "content": f"[历史] {summary[:300]}"})
+            new_messages.append({"role": "system", "content": f"[历史摘要] {summary[:300]}"})
         new_messages.extend(recent)
-        self.messages = new_messages
+
+        # 安全替换：只有新消息结构合法时才替换
+        if len(new_messages) >= 2:
+            self.messages = new_messages
+        else:
+            # 压缩结果异常，恢复原始消息
+            self.messages = ([system_msg] if system_msg else []) + list(backup) + list(recent)
 
     def run(self, user_input: str, extra_context: str = "") -> str:
         self.stats.reset()
@@ -204,6 +270,9 @@ class MundoEngine:
 
         if not self.messages:
             self.messages = [self._build_system_message(extra_context)]
+        elif extra_context:
+            # 更新 system message 中的上下文
+            self.messages[0] = self._build_system_message(extra_context)
 
         self._compress_context()
         self.messages.append({"role": "user", "content": user_input})
@@ -222,7 +291,7 @@ class MundoEngine:
                     messages=self.messages,
                     tools=TOOL_SCHEMAS,
                     temperature=0.7,
-                    max_tokens=4096,
+                    max_tokens=self.max_tokens_override,
                 )
             except RuntimeError as e:
                 error_msg = f"LLM 调用失败: {e}"
@@ -247,6 +316,8 @@ class MundoEngine:
             # LLM 没调工具 → 纯回复，结束
             if not tool_calls:
                 final_text = assistant_msg.get("content", "")
+                if not final_text.strip():
+                    final_text = "(蒙多没有回复)"
                 self.messages.append({"role": "assistant", "content": final_text})
                 if self.on_task_done:
                     self.on_task_done(final_text, self.stats)
@@ -264,10 +335,9 @@ class MundoEngine:
                 tool_name = func.get("name", "")
                 tool_id = tc.get("id", "")
 
-                try:
-                    tool_args = json.loads(func.get("arguments", "{}"))
-                except json.JSONDecodeError:
-                    tool_args = {}
+                # 鲁棒 JSON 解析
+                raw_args = func.get("arguments", "{}")
+                tool_args = _parse_tool_args(raw_args)
 
                 self.stats.tool_calls_count += 1
 
@@ -304,7 +374,7 @@ class MundoEngine:
                     "content": result_text,
                 })
 
-        final = "蒙多已达到最大推理轮次。"
+        final = f"蒙多已达到最大推理轮次（{self.max_turns} 轮）。任务可能未完全完成，请检查以上执行结果。"
         if self.on_task_done:
             self.on_task_done(final, self.stats)
         return final

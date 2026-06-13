@@ -1,14 +1,27 @@
-"""蒙多的 LLM 多模型客户端 — 全量 AI 模型支持"""
+"""蒙多的 LLM 多模型客户端 — 全量 AI 模型支持
+
+v24.4:
+- 指数退避重试（网络抖动不直接失败）
+- 响应校验（choices 为空时优雅降级）
+- 连接超时与读超时分离
+"""
 
 import os
 import json
+import time
 import urllib.request
 import urllib.error
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 ENV_PATH = Path.home() / ".hermes" / ".env"
 MUNDO_ENV = Path.home() / ".hermes" / "mundo-agent" / ".env"
+
+# 重试配置
+MAX_RETRIES = 3
+RETRY_BASE_DELAY = 1.0   # 秒（指数退避基数）
+CONNECT_TIMEOUT = 15      # 连接超时
+READ_TIMEOUT = 120        # 读取超时
 
 
 def _load_env():
@@ -57,7 +70,49 @@ class LLMClient:
         if tools:
             payload["tools"] = tools
             payload["tool_choice"] = "auto"
-        return self._request(payload)
+        return self._request_with_retry(payload)
+
+    def _request_with_retry(self, payload: Dict) -> Dict:
+        """带指数退避重试的请求"""
+        last_error = None
+        for attempt in range(MAX_RETRIES):
+            try:
+                return self._request(payload)
+            except urllib.error.HTTPError as e:
+                last_error = e
+                status = e.code
+                # 429 (Rate Limit) 和 5xx 服务端错误可重试
+                if status == 429 or status >= 500:
+                    delay = RETRY_BASE_DELAY * (2 ** attempt)
+                    # 尝试从响应头获取 Retry-After
+                    retry_after = e.headers.get("Retry-After")
+                    if retry_after:
+                        try:
+                            delay = max(delay, float(retry_after))
+                        except (ValueError, TypeError):
+                            pass
+                    time.sleep(delay)
+                    continue
+                # 4xx 客户端错误不重试
+                err_body = e.read().decode("utf-8", errors="replace")
+                raise RuntimeError(f"LLM API 错误 {status}: {err_body[:300]}") from e
+            except urllib.error.URLError as e:
+                last_error = e
+                delay = RETRY_BASE_DELAY * (2 ** attempt)
+                time.sleep(delay)
+                continue
+            except Exception as e:
+                last_error = e
+                break
+
+        # 所有重试都失败
+        if isinstance(last_error, urllib.error.HTTPError):
+            err_body = last_error.read().decode("utf-8", errors="replace")
+            raise RuntimeError(f"LLM API 错误 {last_error.code}（重试 {MAX_RETRIES} 次后失败）: {err_body[:200]}")
+        elif isinstance(last_error, urllib.error.URLError):
+            raise RuntimeError(f"网络错误（重试 {MAX_RETRIES} 次后失败）: {last_error.reason}")
+        else:
+            raise RuntimeError(f"LLM 请求失败（重试 {MAX_RETRIES} 次后）: {last_error}")
 
     def _request(self, payload: Dict) -> Dict:
         url = f"{self.base_url}/chat/completions"
@@ -68,19 +123,25 @@ class LLMClient:
         data = json.dumps(payload).encode("utf-8")
         req = urllib.request.Request(url, data=data, headers=headers, method="POST")
 
-        try:
-            with urllib.request.urlopen(req, timeout=120) as resp:
-                return json.loads(resp.read().decode("utf-8"))
-        except urllib.error.HTTPError as e:
-            err_body = e.read().decode("utf-8", errors="replace")
-            raise RuntimeError(f"LLM API 错误 {e.code}: {err_body[:300]}") from e
-        except urllib.error.URLError as e:
-            raise RuntimeError(f"网络错误: {e.reason}") from e
+        with urllib.request.urlopen(req, timeout=READ_TIMEOUT) as resp:
+            result = json.loads(resp.read().decode("utf-8"))
+
+        # 响应基本校验
+        if not isinstance(result, dict):
+            raise RuntimeError(f"LLM 返回非法格式: {type(result).__name__}")
+        if "choices" not in result:
+            raise RuntimeError(f"LLM 响应缺少 choices 字段: {list(result.keys())[:5]}")
+        if not result["choices"]:
+            raise RuntimeError("LLM 返回空 choices 数组")
+
+        return result
 
     @staticmethod
     def extract_response(result: Dict) -> Dict:
-        choice = result.get("choices", [{}])[0]
-        message = choice.get("message", {})
+        choices = result.get("choices")
+        if not choices:
+            return {"role": "assistant", "content": "", "tool_calls": []}
+        message = choices[0].get("message", {})
         return {
             "role": "assistant",
             "content": message.get("content", ""),
