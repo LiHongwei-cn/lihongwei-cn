@@ -2,10 +2,12 @@
 import warnings
 warnings.filterwarnings("ignore", message="urllib3 v2 only")
 """
-MUNDO Agent v2.1.4 — THE EMPEROR
+MUNDO Agent v2.2.1 — THE EMPEROR
 独立 AI Agent：LLM 直连 + 工具调用 + Agentic Loop + 权限审批
 融合 Hermes Agent + Claude Code 精华架构
 Rich 渲染所有输出，prompt_toolkit 只管输入
+
+v2.2.1: 修复路径问题 — 确保工作目录和 sys.path 正确设置
 """
 
 import os
@@ -15,42 +17,58 @@ from pathlib import Path
 from typing import Optional
 import uuid
 
+# v2.2.1: 先设置路径，再导入其他模块
 MUNDO_HOME = Path.home() / ".hermes" / "mundo-agent"
 VENV_DIR = MUNDO_HOME / "venv"
 
+# 确保 MUNDO_HOME 在 sys.path 中（解决模块导入问题）
+if str(MUNDO_HOME) not in sys.path:
+    sys.path.insert(0, str(MUNDO_HOME))
+
+# 确保当前工作目录是 MUNDO_HOME（解决相对路径问题）
+os.chdir(MUNDO_HOME)
+
 def ensure_venv():
-    """确保在虚拟环境中运行，跨平台兼容（macOS/Linux/Windows）"""
+    """确保在虚拟环境中运行，跨平台兼容（macOS/Linux/Windows）
+
+    v2.2.1: 修复路径问题 — 保留工作目录和 sys.path
+    """
     if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
         return True  # 已在虚拟环境中
-    
+
     # Windows: Scripts/python.exe | macOS/Linux: bin/python3
     if sys.platform == "win32":
         venv_python = VENV_DIR / "Scripts" / "python.exe"
     else:
         venv_python = VENV_DIR / "bin" / "python3"
-    
+
     if not venv_python.exists():
         print("首次运行，正在安装虚拟环境...")
         subprocess.run([sys.executable, "-m", "venv", str(VENV_DIR)], check=True)
-        subprocess.run([str(venv_python), "-m", "pip", "install", "--upgrade", "pip"], 
+        subprocess.run([str(venv_python), "-m", "pip", "install", "--upgrade", "pip"],
                       capture_output=True, check=True)
         # 安装依赖
         requirements = MUNDO_HOME / "requirements.txt"
         if requirements.exists():
-            subprocess.run([str(venv_python), "-m", "pip", "install", "-r", str(requirements)], 
+            subprocess.run([str(venv_python), "-m", "pip", "install", "-r", str(requirements)],
                           capture_output=True, check=True)
-    
-    # 在虚拟环境中重新启动自己（Windows不支持os.execv）
+
+    # v2.2.1: 在虚拟环境中重新启动自己，保留工作目录
     if sys.platform == "win32":
-        result = subprocess.run([str(venv_python)] + sys.argv)
+        result = subprocess.run([str(venv_python)] + sys.argv, cwd=str(MUNDO_HOME))
         sys.exit(result.returncode)
     else:
+        # 保留当前工作目录
+        os.chdir(MUNDO_HOME)
         os.execv(str(venv_python), [str(venv_python)] + sys.argv)
 
 # 确保在虚拟环境中运行
 ensure_venv()
 
-sys.path.insert(0, str(Path(__file__).parent))
+# v2.2.1: 再次确保路径正确（venv 重启后可能丢失）
+if str(MUNDO_HOME) not in sys.path:
+    sys.path.insert(0, str(MUNDO_HOME))
+os.chdir(MUNDO_HOME)
 
 from core import MundoEngine
 from llm import get_available_providers
