@@ -60,14 +60,15 @@ from setup import (
     is_setup_done, run_setup, load_local_env,
     get_saved_provider, get_saved_model, add_provider_interactive,
 )
-from approval import approve_tool_call
+from policy import get_policy_engine
 from display import TaskConsole, console
 
 from constants import VERSION
 
 
 def safe_execute_tool(name: str, args: dict) -> str:
-    if not approve_tool_call(name, args):
+    policy = get_policy_engine()
+    if not policy.approve_tool_call(name, args):
         return "[用户拒绝执行此操作]"
     return raw_execute_tool(name, args)
 
