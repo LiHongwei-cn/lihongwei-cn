@@ -30,5 +30,4 @@ if [ -f "$SRC/version.txt" ] && [ -f "$DST/version.txt" ]; then
 fi
 
 cd "$HOME/.hermes/mundo-agent"
-source venv/bin/activate
 exec python3 mundo.py "$@"
