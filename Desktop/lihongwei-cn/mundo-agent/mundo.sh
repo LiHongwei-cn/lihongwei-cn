@@ -8,7 +8,7 @@ rm -rf __pycache__
 
 VER=$(cat version.txt 2>/dev/null || echo 'unknown')
 echo ""
-echo "  MUNDO — THE EMPEROR v${VER}"
+echo "  MUNDO — THE EMPEROR ${VER}"
 echo "  ════════════════════════"
 echo ""
 echo "  启动蒙多..."
