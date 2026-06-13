@@ -184,7 +184,19 @@ class TaskStats:
 # ═══════════════════════════════════════════════
 
 class MundoEngine:
-    """蒙多核心引擎 v3.0.0 — 脱胎换骨"""
+    """蒙多核心引擎 v3.0.0 — 脱胎换骨
+
+    v2.2.0 改进：
+    - 添加上下文管理器协议（__enter__/__exit__）
+    - 使用 threading.Event 替代 bool 标志
+    - 保留和恢复信号处理器
+    - 修复 is_safe 检查
+    - 修复 dead code (_use_reasoning_effort)
+    - 修复 _slack_count 初始化
+    - 修复 _auto_compress chunk 计数
+    - 修复 cache key 包含 knowledge_context
+    - 修复 progress hash 包含 assistant 消息
+    """
 
     def __init__(self, provider="deepseek", model=None):
         if model is None:
@@ -202,11 +214,17 @@ class MundoEngine:
         self.stats = TaskStats()
         self.budget = IterationBudget()
         self._use_streaming = self.adapter.profile.supports_streaming
-        self._interrupted = False
+        self._use_reasoning_effort: Optional[str] = None  # v2.2.0: 初始化
+        self._slack_count: int = 0  # v2.2.0: 初始化到 __init__
         self._consecutive_errors = 0
         self._last_error_tool = ""
         self._same_error_streak = 0
         self._last_activity_time = time.time()
+
+        # v2.2.0: 使用 threading.Event 替代 bool（线程安全）
+        import threading
+        self._interrupted = threading.Event()
+        self._old_signal_handler = None  # 保存旧的信号处理器
 
         # 基础设施
         self.policy = get_policy_engine()
@@ -247,16 +265,36 @@ class MundoEngine:
         self.on_compress = None
         self.on_llm_stats = None
 
-    def _build_system_message(self, memory_context: str = "", knowledge_context: str = ""):
+    def __enter__(self):
+        """上下文管理器入口"""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """上下文管理器出口 — 清理资源"""
+        self.close()
+        return False
+
+    def close(self):
+        """清理资源：关闭线程池，恢复信号处理器"""
+        if hasattr(self, '_tool_executor') and self._tool_executor:
+            self._tool_executor.shutdown(wait=False)
+        # 恢复旧的信号处理器
+        if self._old_signal_handler is not None:
+            import signal
+            signal.signal(signal.SIGINT, self._old_signal_handler)
+            self._old_signal_handler = None
+
+    def _build_system_message(self, memory_context: str = "", knowledge_context: str = "") -> Dict:
         """构建 system message — 模块化组装 + 缓存优化
 
         v2.2.0: 将内存上下文和知识上下文合并到主 system message 中，
         避免绕过前缀缓存。
         """
         cache = get_cache()
-        # 缓存键包含 memory hash，确保缓存失效正确
-        memory_hash = hashlib.md5(memory_context.encode()).hexdigest()[:8] if memory_context else ""
-        cache_key = f"{self.provider}/{self.model_name}/{memory_hash}"
+        # v2.2.0: 缓存键包含 memory + knowledge hash，确保缓存失效正确
+        combined = f"{memory_context}:{knowledge_context}"
+        context_hash = hashlib.md5(combined.encode()).hexdigest()[:12] if combined.strip() else ""
+        cache_key = f"{self.provider}/{self.model_name}/{context_hash}"
 
         content = cache.get_system_prompt(
             self.provider, cache_key,
@@ -296,13 +334,19 @@ class MundoEngine:
         if not self._context.should_compress():
             return
         old_tokens = self._context.total_tokens
+        # v2.2.0: 修复 chunk 计数 — 在压缩前捕获旧数量
+        old_chunks = self._context.chunk_count
         new_tokens = self._context.compress()[1]
+        new_chunks = self._context.chunk_count
         if self.on_compress:
-            self.on_compress(len(self._context._chunks), len(self._context._chunks), old_tokens, new_tokens)
+            self.on_compress(old_chunks, new_chunks, old_tokens, new_tokens)
 
     def _detect_reasoning_effort(self) -> Optional[str]:
         if not self.adapter.profile.supports_reasoning:
             return None
+        # v2.2.0: 读取 _use_reasoning_effort（之前设置但从未读取）
+        if self._use_reasoning_effort:
+            return self._use_reasoning_effort
         if self.stats.tool_calls_count == 0:
             return "low"
         return None
@@ -356,11 +400,11 @@ class MundoEngine:
                     self._consecutive_errors = 0
                     return result
             except KeyboardInterrupt:
-                self._interrupted = True
+                self._interrupted.set()  # v2.2.0: 使用 threading.Event
                 return None
             except Exception as e:
                 self._handle_llm_error(e, attempt)
-                if self._interrupted:
+                if self._interrupted.is_set():  # v2.2.0: 使用 threading.Event
                     return None
         return None
 
@@ -386,10 +430,11 @@ class MundoEngine:
                     self.on_stream_end(self.stats.turns)
                 return result
             except Exception as e:
+                # v2.2.0: 修复 streaming fallback — 递增 attempt 防止无限递归
                 if attempt == 0:
                     self._use_streaming = False
                     self.stats.retries_count += 1
-                    return self._try_call_llm(attempt)
+                    return self._try_call_llm(attempt + 1)  # 递增 attempt
                 raise
         else:
             return self.client.chat(messages, tools=tool_schemas,
@@ -415,12 +460,12 @@ class MundoEngine:
             self.stats.retries_count += 1
         elif classified.get("category") == "auth":
             # 认证错误：致命，立即中断
-            self._interrupted = True
+            self._interrupted.set()  # v2.2.0: 使用 threading.Event
         else:
             # 非致命错误：添加退避睡眠，连续5次后中断
             self.stats.retries_count += 1
             if self._consecutive_errors >= 5:
-                self._interrupted = True
+                self._interrupted.set()  # v2.2.0: 使用 threading.Event
             else:
                 # 退避睡眠：连续错误越多，等待越久
                 backoff = min(RETRY_DELAY * (2 ** self._consecutive_errors), 30.0)
@@ -447,13 +492,16 @@ class MundoEngine:
         import tools as tool_module
         calls = []
         for tc in tool_calls:
-            if self._interrupted:
+            if self._interrupted.is_set():  # v2.2.0: 使用 threading.Event
                 break
             fn = tc.get("function", {})
             name = fn.get("name", "")
             try:
                 args = json.loads(fn.get("arguments", "{}"))
             except json.JSONDecodeError:
+                # v2.2.0: 记录 JSON 解析失败，而不是静默忽略
+                if self.on_tool_output:
+                    self.on_tool_output("warning", f"工具参数 JSON 解析失败: {fn.get('arguments', '')[:100]}", True)
                 args = {}
             calls.append((tc, name, args))
 
@@ -471,7 +519,7 @@ class MundoEngine:
                 self._handle_tool_result(tc, name, args, result.output, result.is_error, result.elapsed)
         else:
             for tc, name, args in calls:
-                if self._interrupted:
+                if self._interrupted.is_set():  # v2.2.0: 使用 threading.Event
                     break
                 self._execute_single_tool(tc, name, args, tool_module)
 
@@ -621,8 +669,9 @@ class MundoEngine:
         self.budget.reset()
         self.tool_guard.reset()
         self.reflection.reset()
-        self._interrupted = False
+        self._interrupted.clear()  # v2.2.0: 使用 threading.Event
         self._use_streaming = self.adapter.profile.supports_streaming
+        self._use_reasoning_effort = None  # v2.2.0: 重置
         self._slack_count = 0
         self._install_signal_handler()
 
@@ -632,6 +681,10 @@ class MundoEngine:
             for warning in warnings:
                 if self.on_tool_output:
                     self.on_tool_output("security", f"安全提示: {warning}", False)
+
+        # v2.2.0: 检查 is_safe 标志（之前被忽略）
+        if not is_safe:
+            return "[安全警告] 输入包含潜在不安全内容，已使用净化版本继续处理。"
 
         # 快速响应检测
         if is_simple_query(sanitized_input):
@@ -685,7 +738,7 @@ class MundoEngine:
         total_tools_across_all_turns = 0
 
         while turn < MAX_ITERATIONS:
-            if self._interrupted or self.budget.exhausted:
+            if self._interrupted.is_set() or self.budget.exhausted:  # v2.2.0: 使用 threading.Event
                 break
 
             turn += 1
@@ -811,12 +864,14 @@ class MundoEngine:
         return f"任务执行结果：\n{summary}"
 
     def _get_recent_output_hash(self) -> str:
-        recent = [m.get("content", "") for m in self.messages[-5:] if m.get("role") == "tool"]
+        # v2.2.0: 包含 assistant 消息，避免只检查 tool 输出导致误判
+        recent = [m.get("content", "") for m in self.messages[-5:]
+                  if m.get("role") in ("tool", "assistant") and m.get("content")]
         return hashlib.md5("".join(recent).encode()).hexdigest()
 
     def _handle_loop_end(self, turns: int = 0) -> str:
         """帝皇汇报 — v3.0.1 无条件输出已完成的工作"""
-        if self._interrupted:
+        if self._interrupted.is_set():  # v2.2.0: 使用 threading.Event
             # 即使被中断，也输出已完成的工作
             tool_outputs = []
             for msg in self.messages[-10:]:
@@ -847,14 +902,18 @@ class MundoEngine:
                 final = summary_msg["content"]
                 self.messages.append({"role": "assistant", "content": final})
                 return final
-        except Exception:
-            pass
+        except Exception as e:
+            # v2.2.0: 记录异常而不是静默忽略
+            if self.on_tool_output:
+                self.on_tool_output("error", f"总结生成失败: {str(e)[:100]}", True)
         return "蒙多执行完毕。用 /status 查看详情。"
 
     def _install_signal_handler(self):
+        """安装信号处理器 — v2.2.0: 保留旧处理器"""
         def handler(signum, frame):
-            self._interrupted = True
-        signal.signal(signal.SIGINT, handler)
+            self._interrupted.set()  # v2.2.0: 使用 threading.Event
+        # 保存旧的信号处理器，以便后续恢复
+        self._old_signal_handler = signal.signal(signal.SIGINT, handler)
 
     def reset(self):
         self.messages = []

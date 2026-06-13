@@ -82,6 +82,11 @@ class ContextMapper:
     def usage_ratio(self) -> float:
         return self.total_tokens / self._budget.usable_tokens
 
+    @property
+    def chunk_count(self) -> int:
+        """v2.2.0: 公开的 chunk 计数属性（避免访问私有 _chunks）"""
+        return len(self._chunks)
+
     def add(self, content: str, chunk_type: ChunkType,
             priority: EvictionPriority = EvictionPriority.EVICT_FIRST,
             turn_id: str = "", metadata: Dict = None) -> Chunk:
