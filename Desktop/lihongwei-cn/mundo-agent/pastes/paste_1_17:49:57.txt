@@ -1,0 +1,6 @@
+都接入小米mimov2.5pro模型，apikey：tp-cmjsvo4sm3av9ut22ykrcy381p1au5n48j5w92xmbhjv8n1v  ，专属 Base URL
+
+兼容 OpenAI 接口协议：
+https://token-plan-cn.xiaomimimo.com/v1
+兼容 Anthropic 接口协议：
+https://token-plan-cn.xiaomimimo.com/anthropic

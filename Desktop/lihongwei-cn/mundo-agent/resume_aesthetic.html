@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>黄鹏 - AI Agent开发工程师</title>
+    <style>
+        /* ═══════════════════════════════════════════════
+           中式美学设计 — 留白、虚实、写意
+           ═══════════════════════════════════════════════ */
+
+        :root {
+            /* 墨分五色：焦、浓、重、淡、清 */
+            --ink-jiao: #1a1a1a;
+            --ink-nong: #2c3e50;
+            --ink-zhong: #34495e;
+            --ink-dan: #7f8c8d;
+            --ink-qing: #bdc3c7;
+
+            /* 留白 */
+            --white-space: #fafafa;
+            --paper: #ffffff;
+
+            /* 点睛之笔 */
+            --accent: #2c3e50;
+            --accent-light: #3498db;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'STSong', serif;
+            line-height: 1.8;
+            color: var(--ink-nong);
+            background: var(--white-space);
+            padding: 40px 20px;
+        }
+
+        /* 留白：呼吸感 */
+        .resume {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--paper);
+            padding: 60px 80px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.05);
+        }
+
+        /* ═══ 头部：虚实相生 ═══ */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid var(--ink-qing);
+        }
+
+        .name {
+            font-size: 2.2em;
+            font-weight: 700;
+            color: var(--ink-jiao);
+            letter-spacing: 8px;
+            margin-bottom: 15px;
+        }
+
+        .title {
+            font-size: 1.1em;
+            color: var(--ink-dan);
+            letter-spacing: 4px;
+            font-weight: 300;
+        }
+
+        .contact {
+            margin-top: 25px;
+            font-size: 0.9em;
+            color: var(--ink-zhong);
+        }
+
+        .contact span {
+            margin: 0 15px;
+        }
+
+        /* ═══ 区域：留白有致 ═══ */
+        .section {
+            margin-bottom: 45px;
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--ink-nong);
+            letter-spacing: 6px;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--ink-jiao);
+            display: inline-block;
+        }
+
+        /* ═══ 教育背景 ═══ */
+        .education {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
+        }
+
+        .school {
+            font-weight: 600;
+            color: var(--ink-nong);
+        }
+
+        .major {
+            color: var(--ink-dan);
+            font-size: 0.95em;
+        }
+
+        .date {
+            color: var(--ink-dan);
+            font-size: 0.9em;
+        }
+
+        /* ═══ 技能：写意 ═══ */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .skill-category {
+            margin-bottom: 20px;
+        }
+
+        .skill-category-title {
+            font-weight: 600;
+            color: var(--ink-nong);
+            margin-bottom: 12px;
+            font-size: 1em;
+        }
+
+        .skill-list {
+            list-style: none;
+        }
+
+        .skill-list li {
+            padding: 6px 0;
+            color: var(--ink-zhong);
+            font-size: 0.95em;
+            border-bottom: 1px dotted var(--ink-qing);
+        }
+
+        .skill-list li:last-child {
+            border-bottom: none;
+        }
+
+        /* ═══ 项目：气韵生动 ═══ */
+        .project {
+            margin-bottom: 35px;
+            padding: 25px 30px;
+            background: var(--white-space);
+            border-left: 3px solid var(--ink-jiao);
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 15px;
+        }
+
+        .project-title {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: var(--ink-nong);
+        }
+
+        .project-date {
+            color: var(--ink-dan);
+            font-size: 0.9em;
+        }
+
+        .project-desc {
+            color: var(--ink-zhong);
+            margin-bottom: 15px;
+            line-height: 1.9;
+        }
+
+        .project-modules {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .module {
+            padding: 8px 12px;
+            background: var(--paper);
+            font-size: 0.9em;
+            color: var(--ink-zhong);
+        }
+
+        .module strong {
+            color: var(--ink-nong);
+        }
+
+        .project-achievements {
+            list-style: none;
+        }
+
+        .project-achievements li {
+            padding: 5px 0;
+            color: var(--ink-zhong);
+            font-size: 0.95em;
+        }
+
+        .project-achievements li::before {
+            content: "·";
+            color: var(--ink-jiao);
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* ═══ 其他项目：含蓄 ═══ */
+        .other-projects {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .other-project {
+            padding: 15px;
+            background: var(--white-space);
+        }
+
+        .other-project-title {
+            font-weight: 600;
+            color: var(--ink-nong);
+            margin-bottom: 5px;
+        }
+
+        .other-project-desc {
+            font-size: 0.9em;
+            color: var(--ink-dan);
+        }
+
+        /* ═══ 自我评价：中和 ═══ */
+        .evaluation {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .eval-item {
+            padding: 15px;
+            background: var(--white-space);
+            border-left: 2px solid var(--ink-dan);
+        }
+
+        .eval-title {
+            font-weight: 600;
+            color: var(--ink-nong);
+            margin-bottom: 5px;
+        }
+
+        .eval-desc {
+            font-size: 0.9em;
+            color: var(--ink-dan);
+        }
+
+        /* ═══ 求职意向 ═══ */
+        .intention {
+            margin-top: 45px;
+            padding: 30px;
+            background: var(--ink-nong);
+            color: var(--paper);
+            text-align: center;
+        }
+
+        .intention-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            letter-spacing: 4px;
+            margin-bottom: 15px;
+        }
+
+        .intention-details {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            font-size: 0.95em;
+        }
+
+        /* ═══ 页脚：留白 ═══ */
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            color: var(--ink-dan);
+            font-size: 0.85em;
+            letter-spacing: 2px;
+        }
+
+        /* ═══ 响应式：天人合一 ═══ */
+        @media (max-width: 768px) {
+            .resume {
+                padding: 40px 30px;
+            }
+
+            .skills-grid,
+            .project-modules,
+            .other-projects,
+            .evaluation {
+                grid-template-columns: 1fr;
+            }
+
+            .intention-details {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="resume">
+        <!-- ═══ 头部：虚实相生 ═══ -->
+        <header class="header">
+            <h1 class="name">黄 鹏</h1>
+            <p class="title">AI Agent 开发工程师</p>
+            <div class="contact">
+                <span>13865358206</span>
+                <span>13865358206hp@gmail.com</span>
+                <span>github.com/lihongweimail</span>
+            </div>
+        </header>
+
+        <!-- ═══ 教育背景 ═══ -->
+        <section class="section">
+            <h2 class="section-title">教育背景</h2>
+            <div class="education">
+                <div>
+                    <span class="school">南京航空航天大学金城学院</span>
+                    <span class="major"> · 计算机科学与技术 · 本科（大三）</span>
+                </div>
+                <span class="date">2023.09 - 至今</span>
+            </div>
+        </section>
+
+        <!-- ═══ 核心技能：写意 ═══ -->
+        <section class="section">
+            <h2 class="section-title">核心技能</h2>
+            <div class="skills-grid">
+                <div class="skill-category">
+                    <h3 class="skill-category-title">AI & 大模型</h3>
+                    <ul class="skill-list">
+                        <li>AI Agent 架构设计</li>
+                        <li>多模型调度与集成</li>
+                        <li>Prompt Engineering</li>
+                        <li>RAG 系统设计</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h3 class="skill-category-title">技术栈</h3>
+                    <ul class="skill-list">
+                        <li>Python（精通）、SQL、Shell</li>
+                        <li>FastAPI、asyncio、pytest</li>
+                        <li>SQLite、PostgreSQL、Redis</li>
+                        <li>Git、Docker、Linux</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ 项目经验：气韵生动 ═══ -->
+        <section class="section">
+            <h2 class="section-title">项目经验</h2>
+
+            <div class="project">
+                <div class="project-header">
+                    <span class="project-title">蒙多 Agent — AI智能编排系统</span>
+                    <span class="project-date">2026.05 - 至今 · 独立开发</span>
+                </div>
+                <p class="project-desc">
+                    完整的 AI 智能编排系统，通过多模型调度实现复杂任务自动化。
+                    不是 API 封装，是真正的 Agent 架构。
+                </p>
+                <div class="project-modules">
+                    <div class="module"><strong>推理引擎</strong> 第一性原理拆解、决策矩阵</div>
+                    <div class="module"><strong>对抗验证</strong> 五维攻击验证</div>
+                    <div class="module"><strong>记忆系统</strong> 双层架构、相关性检索</div>
+                    <div class="module"><strong>工具编排</strong> terminal、文件、搜索</div>
+                </div>
+                <ul class="project-achievements">
+                    <li>87 个测试用例全部通过</li>
+                    <li>LLM 超时稳定，内存无泄漏</li>
+                    <li>完整文档 + 部署脚本 + macOS 应用</li>
+                </ul>
+            </div>
+
+            <div class="project">
+                <div class="project-header">
+                    <span class="project-title">100-Days-Of-ML-Code</span>
+                    <span class="project-date">2024</span>
+                </div>
+                <p class="project-desc">
+                    100 天机器学习编程挑战，系统学习机器学习算法与实践。
+                </p>
+                <div class="project-modules">
+                    <div class="module"><strong>监督学习</strong> 线性回归、决策树、随机森林</div>
+                    <div class="module"><strong>无监督学习</strong> K-means、PCA</div>
+                    <div class="module"><strong>深度学习</strong> CNN、RNN、Transformer</div>
+                    <div class="module"><strong>模型评估</strong> 交叉验证、ROC、AUC</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ 其他项目：含蓄 ═══ -->
+        <section class="section">
+            <h2 class="section-title">其他项目</h2>
+            <div class="other-projects">
+                <div class="other-project">
+                    <div class="other-project-title">163spider</div>
+                    <div class="other-project-desc">网易云音乐数据爬虫</div>
+                </div>
+                <div class="other-project">
+                    <div class="other-project-title">Algorithms-in-4-Steps</div>
+                    <div class="other-project-desc">算法学习与实践</div>
+                </div>
+                <div class="other-project">
+                    <div class="other-project-title">Software-Design-zh</div>
+                    <div class="other-project-desc">软件设计哲学翻译</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ 自我评价：中和 ═══ -->
+        <section class="section">
+            <h2 class="section-title">自我评价</h2>
+            <div class="evaluation">
+                <div class="eval-item">
+                    <div class="eval-title">技术热情</div>
+                    <div class="eval-desc">热爱 AI 和新技术，渴望在 AI 行业学习和成长</div>
+                </div>
+                <div class="eval-item">
+                    <div class="eval-title">学习能力</div>
+                    <div class="eval-desc">通过 ML 项目展现持续学习能力</div>
+                </div>
+                <div class="eval-item">
+                    <div class="eval-title">工程实践</div>
+                    <div class="eval-desc">完整的项目开发、测试、部署经验</div>
+                </div>
+                <div class="eval-item">
+                    <div class="eval-title">系统思维</div>
+                    <div class="eval-desc">能够设计复杂的 AI 系统架构</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ 求职意向 ═══ -->
+        <div class="intention">
+            <div class="intention-title">求职意向</div>
+            <div class="intention-details">
+                <span>AI Agent 开发实习生</span>
+                <span>上海 / 杭州 / 南京</span>
+                <span>2025年暑期起</span>
+            </div>
+        </div>
+
+        <!-- ═══ 页脚：留白 ═══ -->
+        <footer class="footer">
+            简历更新于 2025 年 6 月
+        </footer>
+    </div>
+</body>
+</html>

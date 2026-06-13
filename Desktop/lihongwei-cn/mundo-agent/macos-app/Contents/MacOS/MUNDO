@@ -1,0 +1,32 @@
+#!/bin/bash
+# MUNDO Agent v2.1.4 — macOS .app 启动脚本
+# 启动前自动清理缓存，确保加载最新代码
+
+osascript <<'APPLESCRIPT'
+tell application "Terminal"
+    activate
+    do script "
+        clear
+        
+        cd ~/.hermes/mundo-agent
+        
+        # ═══ 清理 Python 字节码缓存 ═══
+        rm -rf __pycache__
+        
+        # ═══ 显示版本 ═══
+        VER=\$(python3 -c \"import sys; sys.path.insert(0,'.'); from constants import VERSION; print(VERSION)\" 2>/dev/null || cat version.txt 2>/dev/null || echo 'unknown')
+        echo \"\"
+        echo \"  MUNDO — THE EMPEROR \$VER\"
+        echo \"  ════════════════════════\"
+        echo \"\"
+        echo \"  启动蒙多...\"
+        echo \"\"
+        
+        # ═══ 启动蒙多 ═══
+        export PYTHONDONTWRITEBYTECODE=1
+        source venv/bin/activate 2>/dev/null
+        python3 mundo.py
+    "
+    set custom title of front window to "MUNDO — THE EMPEROR"
+end tell
+APPLESCRIPT
