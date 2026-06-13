@@ -230,6 +230,10 @@ class MundoEngine:
         self.knowledge = get_knowledge_retriever()
         self.workflow = WorkflowEngine()
 
+        # v2.2.0: 共享线程池（避免每次工具调用创建新线程池）
+        from concurrent.futures import ThreadPoolExecutor
+        self._tool_executor = ThreadPoolExecutor(max_workers=2)
+
         # 回调
         self.on_turn_start = None
         self.on_tool_call = None
@@ -410,11 +414,17 @@ class MundoEngine:
             time.sleep(delay)
             self.stats.retries_count += 1
         elif classified.get("category") == "auth":
-            # 只有认证错误才是真正的致命错误
+            # 认证错误：致命，立即中断
             self._interrupted = True
         else:
-            # 非致命错误：记录但不中断，让 _run_loop 决定是否继续
+            # 非致命错误：添加退避睡眠，连续5次后中断
             self.stats.retries_count += 1
+            if self._consecutive_errors >= 5:
+                self._interrupted = True
+            else:
+                # 退避睡眠：连续错误越多，等待越久
+                backoff = min(RETRY_DELAY * (2 ** self._consecutive_errors), 30.0)
+                time.sleep(backoff)
 
     def _update_token_stats(self, msg: Dict):
         usage = msg.get("_usage", {})
@@ -496,14 +506,13 @@ class MundoEngine:
         TOOL_TIMEOUT = 600 if name in LONG_TIMEOUT_TOOLS else 30
 
         try:
-            from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
-            with ThreadPoolExecutor(max_workers=1) as executor:
-                future = executor.submit(tool_module.execute_tool, name, args)
-                try:
-                    output = future.result(timeout=TOOL_TIMEOUT)
-                except FutureTimeout:
-                    output = f"[工具 {name} 执行超时（{TOOL_TIMEOUT}s）]"
-                    future.cancel()
+            from concurrent.futures import TimeoutError as FutureTimeout
+            future = self._tool_executor.submit(tool_module.execute_tool, name, args)
+            try:
+                output = future.result(timeout=TOOL_TIMEOUT)
+            except FutureTimeout:
+                output = f"[工具 {name} 执行超时（{TOOL_TIMEOUT}s）]"
+                future.cancel()
 
             duration = (time.time() - tool_start) * 1000
 
