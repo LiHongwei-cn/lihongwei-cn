@@ -1,7 +1,7 @@
-"""蒙多常量 v2.1.2 — 所有魔法数字的家
+"""蒙多常量 v2.2.0 — 所有魔法数字的家
 
 一处定义，全局引用。零硬编码散落。
-版本号由版本管理系统自动管理。
+配置优先从 config/settings.json 读取，此处为默认值。
 """
 
 from pathlib import Path
@@ -18,29 +18,21 @@ TIMELINE_DB = MUNDO_HOME / "timeline.db"
 HISTORY_FILE = MUNDO_HOME / ".mundo_history"
 SETUP_FLAG = MUNDO_HOME / ".setup_complete"
 ENV_FILE = MUNDO_HOME / ".env"
-CONFIG_FILE = MUNDO_HOME / "config.json"
+CONFIG_DIR = MUNDO_HOME / "config"
+CONFIG_FILE = CONFIG_DIR / "settings.json"
 
 # ═══════════════════════════════════════════════
-# 版本 — 由版本管理系统自动管理
+# 版本 — 单一来源
 # ═══════════════════════════════════════════════
 
-def _get_version():
-    """从版本管理系统获取版本号"""
-    try:
-        from version_manager import get_current_version
-        return get_current_version()
-    except ImportError:
-        # 如果版本管理系统不可用，返回默认版本
-        return "v2.1.2"
-
-VERSION = _get_version()
+VERSION = "v2.2.0"
 
 # ═══════════════════════════════════════════════
-# 默认模型
+# 默认模型（从 config/settings.json 覆盖）
 # ═══════════════════════════════════════════════
 
-DEFAULT_PROVIDER = "deepseek"
-DEFAULT_MODEL = "deepseek-chat"
+DEFAULT_PROVIDER = "xiaomi"
+DEFAULT_MODEL = "mimo-v2.5-pro"
 
 # ═══════════════════════════════════════════════
 # Token 估算
@@ -49,7 +41,7 @@ DEFAULT_MODEL = "deepseek-chat"
 CHAR_TO_TOKEN = 0.4
 
 # ═══════════════════════════════════════════════
-# 上下文窗口
+# 上下文窗口（默认值，从 config 覆盖）
 # ═══════════════════════════════════════════════
 
 CONTEXT_MAX_TOKENS = 128000
