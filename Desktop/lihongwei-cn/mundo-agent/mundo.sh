@@ -1,27 +1,18 @@
 #!/bin/bash
-# MUNDO Agent — macOS/Linux 启动器
-set -e
+export LANG=zh_CN.UTF-8
+export LC_ALL=zh_CN.UTF-8
+export PYTHONIOENCODING=utf-8
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-cd "$SCRIPT_DIR"
+cd ~/.hermes/mundo-agent
+rm -rf __pycache__
 
-if [ ! -d "venv" ]; then
-    echo "首次运行，正在安装..."
-    bash install.sh
-fi
+VER=$(cat version.txt 2>/dev/null || echo 'unknown')
+echo ""
+echo "  MUNDO — THE EMPEROR v${VER}"
+echo "  ════════════════════════"
+echo ""
+echo "  启动蒙多..."
+echo ""
 
-source venv/bin/activate
-
-case "${1:-}" in
-    -h|--help)
-        echo "用法: mundo [选项]"
-        echo ""
-        echo "  (无参数)     启动蒙多 CLI 交互模式"
-        echo "  -q TEXT      单次查询模式"
-        echo "  -h           显示帮助"
-        echo ""
-        ;;
-    *)
-        exec python3 mundo.py "$@"
-        ;;
-esac
+export PYTHONDONTWRITEBYTECODE=1
+python3 mundo.py
