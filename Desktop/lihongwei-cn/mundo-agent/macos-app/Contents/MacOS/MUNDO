@@ -1,36 +1,12 @@
 #!/bin/bash
 # MUNDO Agent v2.1.5 — macOS .app 启动脚本
 
-# 创建临时启动脚本
-LAUNCH_SCRIPT=$(mktemp /tmp/mundo-launch-XXXXXX.sh)
-cat > "$LAUNCH_SCRIPT" << 'LAUNCH'
-#!/bin/bash
-export LANG=zh_CN.UTF-8
-export LC_ALL=zh_CN.UTF-8
-export PYTHONIOENCODING=utf-8
+SCRIPT_PATH="$HOME/.hermes/mundo-agent/mundo.sh"
 
-cd ~/.hermes/mundo-agent
-rm -rf __pycache__
-
-VER=$(cat version.txt 2>/dev/null || echo 'unknown')
-echo ""
-echo "  MUNDO — THE EMPEROR v${VER}"
-echo "  ════════════════════════"
-echo ""
-echo "  启动蒙多..."
-echo ""
-
-export PYTHONDONTWRITEBYTECODE=1
-python3 mundo.py
-LAUNCH
-
-chmod +x "$LAUNCH_SCRIPT"
-
-# 用 Terminal 打开
-osascript -e "
-tell application \"Terminal\"
+osascript <<EOF
+tell application "Terminal"
     activate
-    do script \"bash '$LAUNCH_SCRIPT'\"
-    set custom title of front window to \"MUNDO — THE EMPEROR\"
+    do script "bash \"$SCRIPT_PATH\""
+    set custom title of front window to "MUNDO — THE EMPEROR"
 end tell
-"
+EOF
