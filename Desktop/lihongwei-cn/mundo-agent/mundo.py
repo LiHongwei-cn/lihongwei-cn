@@ -169,7 +169,7 @@ class MundoCLI:
     def show_banner(self):
         model_disp = self._model_display()
         self.console.init_screen(f"{self.provider}/{model_disp}", VERSION)
-        console.print(f"\n[gold]  MUNDO[/] [dim]v{VERSION} · {model_disp}[/]")
+        console.print(f"\n[gold]  MUNDO[/] [dim]{VERSION} · {model_disp}[/]")
 
         # 启动时检查版本更新
         latest = self._check_latest_version()
@@ -680,7 +680,7 @@ def main():
     args = parser.parse_args()
 
     if args.version:
-        print(f"MUNDO Agent v{VERSION}")
+        print(f"MUNDO Agent {VERSION}")
         return
 
     cli = MundoCLI(provider=args.provider, model=args.model)
