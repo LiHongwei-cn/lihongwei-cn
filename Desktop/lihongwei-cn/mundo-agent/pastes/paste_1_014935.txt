@@ -1,0 +1,41 @@
+ MUNDO v1.2.6 · mimo-v2.5-pro
+ ❯ 记得更新到GitHub自述文件内容和软件包，还有网址项目内容，本地也要同步更新，程序坞的蒙多启动器也要同步更新
+────────────────────────────────────────
+  ┊ 💻 $         cd ~/Desktop/lihongwei-cn && grep -n "启动标识" mundo-agent/README.md  0.1s
+  ┊ 💻 $         grep -n "v1.2" ~/Desktop/lihongwei-cn/index.html | grep -i mundo  0.1s
+  ┊ 💻 $         diff ~/.hermes/mundo-agent/mundo.py ~/Desktop/lihongwei-cn/mundo-agent/mundo.py 2>&1 && echo "mundo.py: sync ok"; diff ~/.hermes/mundo-agent/display.py ~/Desktop/lihongwei-cn/mundo-agent/dis
+play.py 2>&1 && echo "display.py: sync ok"  0.1s
+  ┊ 💻 $         gh release view mundo-v1.2.6 --repo LiHongwei-cn/lihongwei-cn 2>/dev/null | head -20  1.3s
+  ┊ 📖 read      /Users/huangpeng/Desktop/lihongwei-cn/mundo-agent/README.md  0.1s
+  ┊ 💻 $         cat ~/Applications/MUNDO.app/Contents/MacOS/MUNDO > ~/Desktop/lihongwei-cn/mundo-agent/MUNDO.app.sh  0.1s
+  ┊ 💻 $         gh release edit mundo-v1.2.6 --repo LiHongwei-cn/lihongwei-cn --notes '## UI 优化
+ 
+### 启动界面
+- 启动时自动清屏，只显示蒙多标识
+- 极简一行 `MUNDO v1.2.6 · mimo-v2.5-pro`
+- 单一 `❯` 输入栏，无续行提示
+- 粘贴折叠：超1行或200字自动折叠存文件
+ 
+### 启动器
+- MUNDO.app 程序坞启动器：静默版本同步，Terminal 只显示蒙多
+- bash 直接执行，无 AppleScript 嵌套
+ 
+### 稳定性修复
+- tools.py: DuckDuckGo API 失败记录到 stderr
+- memory.py: 清空数据库失败记录到 stderr
+- mundo.py: 保存对话/记忆提取失败记录到 stderr
+ 
+### 代码清理
+- 移除未使用导入，删除死文件，优化错误消息
+ 
+## 下载
+ 
+| 平台 | 下载 |
+|------|------|
+| macOS | [mundo-v1.2.6-macos.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.2.6/mundo-v1.2.6-macos.zip) |
+| Windows | [mundo-v1.2.6-windows.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.2.6/mundo-v1.2.6-windows.zip) |
+| Linux | [mundo-v1.2.6-linux.zip](https://github.com/LiHongwei-cn/lihongwei-cn/releases/download/mundo-v1.2.6/mundo-v1.2.6-linux.zip) |' 2>&1  1.9s
+  ┊ 💻 $         cd ~/Desktop/lihongwei-cn && git add mundo-agent/MUNDO.app.sh && git commit -m "chore: 同步MUNDO.app启动器脚本+更新Release notes" && git push 2>&1 | tail -3  0.1s [exit 1]
+  (°ロ°) synthesi
+ 
+ 
