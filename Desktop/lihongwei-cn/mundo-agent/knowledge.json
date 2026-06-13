@@ -1,0 +1,385 @@
+{
+  "d9006c92a8bc": {
+    "content": "列表推导式是 Python 中创建列表的简洁语法：\n[expression for item in iterable if condition]\n\n示例：\nsquares = [x**2 for x in range(10)]  # [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]\nevens = [x for x in range(20) if x % 2 == 0]  # [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]\nwords = [word.upper() for word in ['hello', 'world']]  # ['HELLO', 'WORLD']\n\n嵌套推导：\nmatrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\nflat = [x for row in matrix for x in row]  # [1, 2, 3, 4, 5, 6, 7, 8, 9]\n\n字典推导：\nsquares_dict = {x: x**2 for x in range(5)}  # {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}\n\n集合推导：\nunique_chars = {char for word in ['hello', 'world'] for char in word}  # {'h', 'e', 'l', 'o', 'w', 'r', 'd'}",
+    "source": "mundo-knowledge/python/syntax",
+    "category": "python_syntax",
+    "metadata": {
+      "topic": "python",
+      "category": "syntax",
+      "title": "Python 列表推导式",
+      "importance": 9,
+      "tags": [
+        "python",
+        "list",
+        "comprehension",
+        "syntax"
+      ]
+    },
+    "created_at": 1781370997.445514,
+    "access_count": 0
+  },
+  "fcb647cbd461": {
+    "content": "装饰器是 Python 的高级函数，用于修改或扩展函数行为：\n\n基本装饰器：\ndef my_decorator(func):\n    def wrapper(*args, **kwargs):\n        print(\"函数调用前\")\n        result = func(*args, **kwargs)\n        print(\"函数调用后\")\n        return result\n    return wrapper\n\n@my_decorator\ndef say_hello():\n    print(\"Hello!\")\n\n带参数的装饰器：\ndef repeat(times):\n    def decorator(func):\n        def wrapper(*args, **kwargs):\n            for _ in range(times):\n                result = func(*args, **kwargs)\n            return result\n        return wrapper\n    return decorator\n\n@repeat(times=3)\ndef greet(name):\n    print(f\"Hello {name}!\")\n\n类装饰器：\nclass Timer:\n    def __init__(self, func):\n        self.func = func\n    \n    def __call__(self, *args, **kwargs):\n        start = time.time()\n        result = self.func(*args, **kwargs)\n        end = time.time()\n        print(f\"{self.func.__name__} 耗时: {end-start:.2f}秒\")\n        return result\n\nfunctools.wraps 保留原函数信息：\nimport functools\n\ndef my_decorator(func):\n    @functools.wraps(func)\n    def wrapper(*args, **kwargs):\n        return func(*args, **kwargs)\n    return wrapper",
+    "source": "mundo-knowledge/python/syntax",
+    "category": "python_syntax",
+    "metadata": {
+      "topic": "python",
+      "category": "syntax",
+      "title": "Python 装饰器",
+      "importance": 9,
+      "tags": [
+        "python",
+        "decorator",
+        "function",
+        "advanced"
+      ]
+    },
+    "created_at": 1781370997.453871,
+    "access_count": 0
+  },
+  "b7ca4a9eab92": {
+    "content": "生成器是惰性求值的迭代器，节省内存：\n\n生成器函数：\ndef fibonacci():\n    a, b = 0, 1\n    while True:\n        yield a\n        a, b = b, a + b\n\n# 使用\nfib = fibonacci()\nnext(fib)  # 0\nnext(fib)  # 1\nnext(fib)  # 1\n\n生成器表达式：\nsquares = (x**2 for x in range(1000000))  # 不立即计算，惰性求值\n\nsend 方法：\ndef accumulator():\n    total = 0\n    while True:\n        value = yield total\n        if value is None:\n            break\n        total += value\n\ngen = accumulator()\nnext(gen)  # 启动生成器\ngen.send(10)  # 10\ngen.send(20)  # 30\ngen.send(30)  # 60\n\nyield from 委托：\ndef chain(*iterables):\n    for it in iterables:\n        yield from it\n\nlist(chain([1, 2], [3, 4], [5, 6]))  # [1, 2, 3, 4, 5, 6]",
+    "source": "mundo-knowledge/python/syntax",
+    "category": "python_syntax",
+    "metadata": {
+      "topic": "python",
+      "category": "syntax",
+      "title": "Python 生成器",
+      "importance": 9,
+      "tags": [
+        "python",
+        "generator",
+        "iterator",
+        "memory"
+      ]
+    },
+    "created_at": 1781370997.460063,
+    "access_count": 0
+  },
+  "1499b629d6fc": {
+    "content": "Python asyncio 异步编程：\n\n基本异步函数：\nimport asyncio\n\nasync def fetch_data(url):\n    print(f\"开始获取 {url}\")\n    await asyncio.sleep(1)  # 模拟 IO 操作\n    return f\"{url} 的数据\"\n\nasync def main():\n    # 并发执行多个协程\n    results = await asyncio.gather(\n        fetch_data(\"url1\"),\n        fetch_data(\"url2\"),\n        fetch_data(\"url3\")\n    )\n    print(results)\n\nasyncio.run(main())\n\n异步上下文管理器：\nclass AsyncResource:\n    async def __aenter__(self):\n        print(\"获取资源\")\n        return self\n    \n    async def __aexit__(self, exc_type, exc_val, exc_tb):\n        print(\"释放资源\")\n\n异步迭代器：\nclass AsyncRange:\n    def __init__(self, stop):\n        self.stop = stop\n        self.current = 0\n    \n    def __aiter__(self):\n        return self\n    \n    async def __anext__(self):\n        if self.current >= self.stop:\n            raise StopAsyncIteration\n        await asyncio.sleep(0.1)\n        self.current += 1\n        return self.current - 1\n\nTaskGroup (Python 3.11+)：\nasync def main():\n    async with asyncio.TaskGroup() as tg:\n        task1 = tg.create_task(fetch_data(\"url1\"))\n        task2 = tg.create_task(fetch_data(\"url2\"))\n    # 所有任务完成后自动退出\n    print(task1.result(), task2.result())",
+    "source": "mundo-knowledge/python/syntax",
+    "category": "python_syntax",
+    "metadata": {
+      "topic": "python",
+      "category": "syntax",
+      "title": "Python 异步编程",
+      "importance": 8,
+      "tags": [
+        "python",
+        "async",
+        "await",
+        "concurrency"
+      ]
+    },
+    "created_at": 1781370997.465936,
+    "access_count": 0
+  },
+  "99494c6fde1f": {
+    "content": "Python 类型注解（Type Hints）：\n\n基本类型：\ndef greet(name: str) -> str:\n    return f\"Hello {name}\"\n\nage: int = 25\nheight: float = 1.75\nis_student: bool = False\n\n容器类型：\nfrom typing import List, Dict, Tuple, Set, Optional\n\nnames: List[str] = [\"Alice\", \"Bob\"]\nscores: Dict[str, int] = {\"Alice\": 95, \"Bob\": 87}\npoint: Tuple[int, int] = (10, 20)\nunique_ids: Set[int] = {1, 2, 3}\n\n可选类型：\ndef find_user(user_id: int) -> Optional[str]:\n    if user_id == 1:\n        return \"Alice\"\n    return None\n\nUnion 类型：\nfrom typing import Union\n\ndef process(value: Union[int, str]) -> str:\n    return str(value)\n\nPython 3.10+ 新语法：\ndef process(value: int | str) -> str:\n    return str(value)\n\ndef find_user(user_id: int) -> str | None:\n    ...\n\nTypeVar 泛型：\nfrom typing import TypeVar, List\n\nT = TypeVar('T')\n\ndef first(items: List[T]) -> T:\n    return items[0]\n\nProtocol（结构化子类型）：\nfrom typing import Protocol\n\nclass Drawable(Protocol):\n    def draw(self) -> None: ...\n\ndef draw_something(shape: Drawable) -> None:\n    shape.draw()",
+    "source": "mundo-knowledge/python/syntax",
+    "category": "python_syntax",
+    "metadata": {
+      "topic": "python",
+      "category": "syntax",
+      "title": "Python 类型注解",
+      "importance": 8,
+      "tags": [
+        "python",
+        "typing",
+        "type-hints",
+        "annotations"
+      ]
+    },
+    "created_at": 1781370997.4734159,
+    "access_count": 0
+  },
+  "b96b4bdc34fc": {
+    "content": "Java OOP 四大特性：\n\n1. 封装：\npublic class Person {\n    private String name;\n    private int age;\n    \n    public String getName() { return name; }\n    public void setName(String name) { this.name = name; }\n    public int getAge() { return age; }\n    public void setAge(int age) { \n        if (age >= 0) this.age = age; \n    }\n}\n\n2. 继承：\npublic class Student extends Person {\n    private String school;\n    \n    public Student(String name, int age, String school) {\n        super(name, age);\n        this.school = school;\n    }\n    \n    @Override\n    public String toString() {\n        return super.toString() + \" studying at \" + school;\n    }\n}\n\n3. 多态：\nAnimal animal = new Dog();  // 向上转型\nanimal.speak();  // 调用 Dog 的 speak 方法\n\nDog dog = (Dog) animal;  // 向下转型\nif (animal instanceof Cat) {  // 类型检查\n    Cat cat = (Cat) animal;\n}\n\n4. 抽象：\npublic abstract class Shape {\n    abstract double area();\n    abstract double perimeter();\n    \n    public void describe() {\n        System.out.println(\"Area: \" + area());\n    }\n}\n\npublic class Circle extends Shape {\n    private double radius;\n    \n    @Override\n    double area() { return Math.PI * radius * radius; }\n    \n    @Override\n    double perimeter() { return 2 * Math.PI * radius; }\n}",
+    "source": "mundo-knowledge/java/syntax",
+    "category": "java_syntax",
+    "metadata": {
+      "topic": "java",
+      "category": "syntax",
+      "title": "Java 面向对象编程",
+      "importance": 9,
+      "tags": [
+        "java",
+        "oop",
+        "inheritance",
+        "polymorphism"
+      ]
+    },
+    "created_at": 1781370997.481339,
+    "access_count": 0
+  },
+  "d4aae8838401": {
+    "content": "Java 集合框架核心接口和实现：\n\nList（有序集合）：\n// ArrayList - 数组实现，随机访问快\nList<String> arrayList = new ArrayList<>();\narrayList.add(\"Alice\");\narrayList.add(\"Bob\");\narrayList.get(0);  // \"Alice\"\n\n// LinkedList - 链表实现，插入删除快\nList<String> linkedList = new LinkedList<>();\nlinkedList.addFirst(\"First\");\nlinkedList.addLast(\"Last\");\n\nSet（无重复集合）：\n// HashSet - 哈希表实现，无序\nSet<String> hashSet = new HashSet<>();\nhashSet.add(\"Alice\");\nhashSet.contains(\"Alice\");  // true\n\n// TreeSet - 红黑树实现，有序\nSet<Integer> treeSet = new TreeSet<>();\ntreeSet.add(3);\ntreeSet.add(1);\ntreeSet.add(2);\n// 遍历顺序: 1, 2, 3\n\nMap（键值对）：\n// HashMap - 哈希表实现\nMap<String, Integer> hashMap = new HashMap<>();\nhashMap.put(\"Alice\", 95);\nhashMap.get(\"Alice\");  // 95\nhashMap.getOrDefault(\"Bob\", 0);  // 0\n\n// TreeMap - 红黑树实现，按键排序\nMap<String, Integer> treeMap = new TreeMap<>();\ntreeMap.put(\"Charlie\", 85);\ntreeMap.put(\"Alice\", 95);\ntreeMap.put(\"Bob\", 87);\n// 遍历顺序: Alice, Bob, Charlie\n\nQueue（队列）：\n// PriorityQueue - 优先队列\nQueue<Integer> pq = new PriorityQueue<>();\npq.offer(3);\npq.offer(1);\npq.offer(2);\npq.poll();  // 1 (最小值)\n\n// Deque - 双端队列\nDeque<String> deque = new ArrayDeque<>();\ndeque.offerFirst(\"First\");\ndeque.offerLast(\"Last\");\ndeque.pollFirst();  // \"First\" ",
+    "source": "mundo-knowledge/java/syntax",
+    "category": "java_syntax",
+    "metadata": {
+      "topic": "java",
+      "category": "syntax",
+      "title": "Java 集合框架",
+      "importance": 9,
+      "tags": [
+        "java",
+        "collections",
+        "list",
+        "set",
+        "map"
+      ]
+    },
+    "created_at": 1781370997.488589,
+    "access_count": 0
+  },
+  "80aa4de41329": {
+    "content": "Java 8+ Lambda 表达式和 Stream API：\n\nLambda 表达式：\n// 无参数\nRunnable r = () -> System.out.println(\"Hello\");\n\n// 单参数\nConsumer<String> printer = s -> System.out.println(s);\n\n// 多参数\nComparator<String> comp = (a, b) -> a.length() - b.length();\n\n// 方法引用\nConsumer<String> printer = System.out::println;\nFunction<String, Integer> parser = Integer::parseInt;\n\nStream API：\nList<String> names = Arrays.asList(\"Alice\", \"Bob\", \"Charlie\", \"David\");\n\n// 过滤\nList<String> filtered = names.stream()\n    .filter(name -> name.length() > 3)\n    .collect(Collectors.toList());\n// [Alice, Charlie, David]\n\n// 映射\nList<Integer> lengths = names.stream()\n    .map(String::length)\n    .collect(Collectors.toList());\n// [5, 3, 7, 5]\n\n// 归约\nint totalLength = names.stream()\n    .mapToInt(String::length)\n    .sum();  // 20\n\n// 分组\nMap<Integer, List<String>> grouped = names.stream()\n    .collect(Collectors.groupingBy(String::length));\n// {3=[Bob], 5=[Alice, David], 7=[Charlie]}\n\n// 排序\nList<String> sorted = names.stream()\n    .sorted(Comparator.comparing(String::length).reversed())\n    .collect(Collectors.toList());\n// [Charlie, Alice, David, Bob]\n\n// 并行流\nlong count = names.parallelStream()\n    .filter(name -> name.startsWith(\"A\"))\n    .count();",
+    "source": "mundo-knowledge/java/syntax",
+    "category": "java_syntax",
+    "metadata": {
+      "topic": "java",
+      "category": "syntax",
+      "title": "Java Lambda 和 Stream",
+      "importance": 9,
+      "tags": [
+        "java",
+        "lambda",
+        "stream",
+        "functional"
+      ]
+    },
+    "created_at": 1781370997.49545,
+    "access_count": 0
+  },
+  "f1ba28da84f5": {
+    "content": "数组（Array）：\n- 连续内存存储\n- O(1) 随机访问\n- O(n) 插入/删除（需要移动元素）\n- 固定大小（静态数组）或动态扩容（动态数组）\n\nPython 实现：\nclass DynamicArray:\n    def __init__(self):\n        self.data = []\n        self.size = 0\n    \n    def get(self, index):\n        return self.data[index]\n    \n    def append(self, value):\n        self.data.append(value)\n        self.size += 1\n\n链表（Linked List）：\n- 非连续内存存储\n- O(n) 随机访问\n- O(1) 插入/删除（已知位置）\n- 动态大小\n\nPython 实现：\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\nclass LinkedList:\n    def __init__(self):\n        self.head = None\n    \n    def append(self, val):\n        if not self.head:\n            self.head = ListNode(val)\n        else:\n            curr = self.head\n            while curr.next:\n                curr = curr.next\n            curr.next = ListNode(val)\n    \n    def delete(self, val):\n        if self.head and self.head.val == val:\n            self.head = self.head.next\n            return\n        curr = self.head\n        while curr.next and curr.next.val != val:\n            curr = curr.next\n        if curr.next:\n            curr.next = curr.next.next\n\n选择依据：\n- 频繁随机访问 → 数组\n- 频繁插入/删除 → 链表\n- 内存受限 → 链表（无需连续空间）",
+    "source": "mundo-knowledge/programming/fundamentals",
+    "category": "programming_fundamentals",
+    "metadata": {
+      "topic": "programming",
+      "category": "fundamentals",
+      "title": "数据结构 - 数组和链表",
+      "importance": 10,
+      "tags": [
+        "data-structure",
+        "array",
+        "linked-list",
+        "complexity"
+      ]
+    },
+    "created_at": 1781370997.5039082,
+    "access_count": 0
+  },
+  "06e4796c6763": {
+    "content": "栈（Stack）- LIFO（后进先出）：\nclass Stack:\n    def __init__(self):\n        self.items = []\n    \n    def push(self, item):\n        self.items.append(item)\n    \n    def pop(self):\n        return self.items.pop()\n    \n    def peek(self):\n        return self.items[-1]\n    \n    def is_empty(self):\n        return len(self.items) == 0\n\n应用场景：\n- 函数调用栈\n- 括号匹配\n- 表达式求值\n- 深度优先搜索（DFS）\n\n队列（Queue）- FIFO（先进先出）：\nfrom collections import deque\n\nclass Queue:\n    def __init__(self):\n        self.items = deque()\n    \n    def enqueue(self, item):\n        self.items.append(item)\n    \n    def dequeue(self):\n        return self.items.popleft()\n    \n    def front(self):\n        return self.items[0]\n    \n    def is_empty(self):\n        return len(self.items) == 0\n\n应用场景：\n- 任务调度\n- 广度优先搜索（BFS）\n- 缓存（LRU Cache）\n- 消息队列\n\n双端队列（Deque）：\nclass Deque:\n    def __init__(self):\n        self.items = deque()\n    \n    def add_front(self, item):\n        self.items.appendleft(item)\n    \n    def add_rear(self, item):\n        self.items.append(item)\n    \n    def remove_front(self):\n        return self.items.popleft()\n    \n    def remove_rear(self):\n        return self.items.pop()",
+    "source": "mundo-knowledge/programming/fundamentals",
+    "category": "programming_fundamentals",
+    "metadata": {
+      "topic": "programming",
+      "category": "fundamentals",
+      "title": "数据结构 - 栈和队列",
+      "importance": 10,
+      "tags": [
+        "data-structure",
+        "stack",
+        "queue",
+        "deque"
+      ]
+    },
+    "created_at": 1781370997.510187,
+    "access_count": 0
+  },
+  "a02ce951faa6": {
+    "content": "常见排序算法：\n\n1. 冒泡排序（Bubble Sort）- O(n²)：\ndef bubble_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(0, n-i-1):\n            if arr[j] > arr[j+1]:\n                arr[j], arr[j+1] = arr[j+1], arr[j]\n    return arr\n\n2. 选择排序（Selection Sort）- O(n²)：\ndef selection_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        min_idx = i\n        for j in range(i+1, n):\n            if arr[j] < arr[min_idx]:\n                min_idx = j\n        arr[i], arr[min_idx] = arr[min_idx], arr[i]\n    return arr\n\n3. 插入排序（Insertion Sort）- O(n²)：\ndef insertion_sort(arr):\n    for i in range(1, len(arr)):\n        key = arr[i]\n        j = i-1\n        while j >= 0 and key < arr[j]:\n            arr[j+1] = arr[j]\n            j -= 1\n        arr[j+1] = key\n    return arr\n\n4. 快速排序（Quick Sort）- O(n log n) 平均：\ndef quick_sort(arr):\n    if len(arr) <= 1:\n        return arr\n    pivot = arr[len(arr) // 2]\n    left = [x for x in arr if x < pivot]\n    middle = [x for x in arr if x == pivot]\n    right = [x for x in arr if x > pivot]\n    return quick_sort(left) + middle + quick_sort(right)\n\n5. 归并排序（Merge Sort）- O(n log n)：\ndef merge_sort(arr):\n    if len(arr) <= 1:\n        return arr\n    mid = len(arr) // 2\n    left = merge_sort(arr[:mid])\n    right = merge_sort(arr[mid:])\n    return merge(left, right)\n\ndef merge(left, right):\n    result = []\n    i = j = 0\n    while i < len(left) and j < len(right):\n        if left[i] <= right[j]:\n            result.append(left[i])\n            i += 1\n        else:\n            result.append(right[j])\n            j += 1\n    result.extend(left[i:])\n    result.extend(right[j:])\n    return result",
+    "source": "mundo-knowledge/programming/fundamentals",
+    "category": "programming_fundamentals",
+    "metadata": {
+      "topic": "programming",
+      "category": "fundamentals",
+      "title": "算法 - 排序算法",
+      "importance": 10,
+      "tags": [
+        "algorithm",
+        "sorting",
+        "complexity",
+        "divide-conquer"
+      ]
+    },
+    "created_at": 1781370997.515507,
+    "access_count": 0
+  },
+  "dfed31794013": {
+    "content": "常见搜索算法：\n\n1. 线性搜索（Linear Search）- O(n)：\ndef linear_search(arr, target):\n    for i, val in enumerate(arr):\n        if val == target:\n            return i\n    return -1\n\n2. 二分搜索（Binary Search）- O(log n)：\ndef binary_search(arr, target):\n    left, right = 0, len(arr) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1\n\n递归版本：\ndef binary_search_recursive(arr, target, left, right):\n    if left > right:\n        return -1\n    mid = (left + right) // 2\n    if arr[mid] == target:\n        return mid\n    elif arr[mid] < target:\n        return binary_search_recursive(arr, target, mid + 1, right)\n    else:\n        return binary_search_recursive(arr, target, left, mid - 1)\n\n3. 深度优先搜索（DFS）：\ndef dfs(graph, node, visited=None):\n    if visited is None:\n        visited = set()\n    visited.add(node)\n    print(node)\n    for neighbor in graph[node]:\n        if neighbor not in visited:\n            dfs(graph, neighbor, visited)\n\n4. 广度优先搜索（BFS）：\nfrom collections import deque\n\ndef bfs(graph, start):\n    visited = set([start])\n    queue = deque([start])\n    while queue:\n        node = queue.popleft()\n        print(node)\n        for neighbor in graph[node]:\n            if neighbor not in visited:\n                visited.add(neighbor)\n                queue.append(neighbor)\n\n选择依据：\n- 无序数据 → 线性搜索\n- 有序数据 → 二分搜索\n- 图/树遍历 → DFS（栈）或 BFS（队列）",
+    "source": "mundo-knowledge/programming/fundamentals",
+    "category": "programming_fundamentals",
+    "metadata": {
+      "topic": "programming",
+      "category": "fundamentals",
+      "title": "算法 - 搜索算法",
+      "importance": 10,
+      "tags": [
+        "algorithm",
+        "search",
+        "binary-search",
+        "dfs",
+        "bfs"
+      ]
+    },
+    "created_at": 1781370997.522845,
+    "access_count": 0
+  },
+  "7a13b2e05732": {
+    "content": "创建型设计模式：\n\n1. 单例模式（Singleton）：\nclass Singleton:\n    _instance = None\n    \n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n        return cls._instance\n\n2. 工厂模式（Factory）：\nclass Animal:\n    def speak(self):\n        pass\n\nclass Dog(Animal):\n    def speak(self):\n        return \"Woof!\"\n\nclass Cat(Animal):\n    def speak(self):\n        return \"Meow!\"\n\nclass AnimalFactory:\n    @staticmethod\n    def create(animal_type):\n        if animal_type == \"dog\":\n            return Dog()\n        elif animal_type == \"cat\":\n            return Cat()\n        raise ValueError(f\"Unknown animal: {animal_type}\")\n\n3. 建造者模式（Builder）：\nclass Computer:\n    def __init__(self):\n        self.cpu = None\n        self.ram = None\n        self.storage = None\n\nclass ComputerBuilder:\n    def __init__(self):\n        self.computer = Computer()\n    \n    def set_cpu(self, cpu):\n        self.computer.cpu = cpu\n        return self\n    \n    def set_ram(self, ram):\n        self.computer.ram = ram\n        return self\n    \n    def set_storage(self, storage):\n        self.computer.storage = storage\n        return self\n    \n    def build(self):\n        return self.computer\n\n使用：\ncomputer = (ComputerBuilder()\n    .set_cpu(\"Intel i7\")\n    .set_ram(\"16GB\")\n    .set_storage(\"512GB SSD\")\n    .build())\n\n4. 原型模式（Prototype）：\nimport copy\n\nclass Prototype:\n    def clone(self):\n        return copy.deepcopy(self)",
+    "source": "mundo-knowledge/programming/fundamentals",
+    "category": "programming_fundamentals",
+    "metadata": {
+      "topic": "programming",
+      "category": "fundamentals",
+      "title": "设计模式 - 创建型",
+      "importance": 9,
+      "tags": [
+        "design-pattern",
+        "singleton",
+        "factory",
+        "builder"
+      ]
+    },
+    "created_at": 1781370997.530537,
+    "access_count": 0
+  },
+  "1b0343b66893": {
+    "content": "结构型设计模式：\n\n1. 适配器模式（Adapter）：\nclass EuropeanSocket:\n    def voltage(self):\n        return 230\n\nclass AmericanSocket:\n    def voltage(self):\n        return 120\n\nclass Adapter:\n    def __init__(self, european_socket):\n        self.european_socket = european_socket\n    \n    def voltage(self):\n        return self.european_socket.voltage() * 0.52  # 转换\n\n2. 装饰器模式（Decorator）：\nclass Coffee:\n    def cost(self):\n        return 5\n\nclass MilkDecorator:\n    def __init__(self, coffee):\n        self.coffee = coffee\n    \n    def cost(self):\n        return self.coffee.cost() + 2\n\nclass SugarDecorator:\n    def __init__(self, coffee):\n        self.coffee = coffee\n    \n    def cost(self):\n        return self.coffee.cost() + 1\n\n使用：\ncoffee = Coffee()\ncoffee_with_milk = MilkDecorator(coffee)\ncoffee_with_milk_and_sugar = SugarDecorator(coffee_with_milk)\nprint(coffee_with_milk_and_sugar.cost())  # 8\n\n3. 外观模式（Facade）：\nclass CPU:\n    def process(self):\n        return \"Processing\"\n\nclass Memory:\n    def load(self):\n        return \"Loading\"\n\nclass HardDrive:\n    def read(self):\n        return \"Reading\"\n\nclass ComputerFacade:\n    def __init__(self):\n        self.cpu = CPU()\n        self.memory = Memory()\n        self.hard_drive = HardDrive()\n    \n    def start(self):\n        return f\"{self.hard_drive.read()} -> {self.memory.load()} -> {self.cpu.process()}\"\n\n4. 代理模式（Proxy）：\nclass RealImage:\n    def __init__(self, filename):\n        self.filename = filename\n        self.load_from_disk()\n    \n    def load_from_disk(self):\n        print(f\"Loading {self.filename}\")\n    \n    def display(self):\n        print(f\"Displaying {self.filename}\")\n\nclass ProxyImage:\n    def __init__(self, filename):\n        self.filename = filename\n        self.real_image = None\n    \n    def display(self):\n        if self.real_image is None:\n            self.real_image = RealImage(self.filename)\n        self.real_image.display()",
+    "source": "mundo-knowledge/programming/fundamentals",
+    "category": "programming_fundamentals",
+    "metadata": {
+      "topic": "programming",
+      "category": "fundamentals",
+      "title": "设计模式 - 结构型",
+      "importance": 9,
+      "tags": [
+        "design-pattern",
+        "adapter",
+        "decorator",
+        "facade",
+        "proxy"
+      ]
+    },
+    "created_at": 1781370997.5379012,
+    "access_count": 0
+  },
+  "9949ec6d9e80": {
+    "content": "RAG（Retrieval-Augmented Generation）基本原理：\n\n核心思想：\n将检索（Retrieval）与生成（Generation）结合，让 LLM 能够访问外部知识。\n\n架构：\n1. 索引阶段（Indexing）：\n   - 文档分块（Chunking）\n   - 向量化（Embedding）\n   - 存储到向量数据库\n\n2. 检索阶段（Retrieval）：\n   - 用户查询向量化\n   - 相似度搜索（余弦相似度、欧氏距离）\n   - 返回 Top-K 相关文档\n\n3. 生成阶段（Generation）：\n   - 将检索到的文档作为上下文\n   - 与用户查询一起输入 LLM\n   - LLM 基于上下文生成回答\n\n优势：\n- 减少幻觉（Hallucination）\n- 知识可更新（无需重新训练）\n- 可追溯来源\n- 节省训练成本\n\n挑战：\n- 检索质量影响生成质量\n- 文档分块策略很重要\n- 向量相似度不等于语义相似度\n- 上下文窗口限制\n\n应用场景：\n- 知识库问答\n- 文档对话\n- 客服系统\n- 研究助手",
+    "source": "mundo-knowledge/rag/theory",
+    "category": "rag_theory",
+    "metadata": {
+      "topic": "rag",
+      "category": "theory",
+      "title": "RAG 基本原理",
+      "importance": 10,
+      "tags": [
+        "rag",
+        "retrieval",
+        "generation",
+        "llm"
+      ]
+    },
+    "created_at": 1781370997.546048,
+    "access_count": 0
+  },
+  "1ff556c24256": {
+    "content": "RAG 文档分块（Chunking）策略：\n\n1. 固定大小分块：\ndef fixed_size_chunk(text, chunk_size=500, overlap=50):\n    chunks = []\n    start = 0\n    while start < len(text):\n        end = start + chunk_size\n        chunks.append(text[start:end])\n        start = end - overlap\n    return chunks\n\n2. 句子分块：\nimport nltk\nnltk.download('punkt')\n\ndef sentence_chunk(text, max_chunk_size=500):\n    sentences = nltk.sent_tokenize(text)\n    chunks = []\n    current_chunk = []\n    current_size = 0\n    \n    for sentence in sentences:\n        if current_size + len(sentence) > max_chunk_size:\n            chunks.append(' '.join(current_chunk))\n            current_chunk = [sentence]\n            current_size = len(sentence)\n        else:\n            current_chunk.append(sentence)\n            current_size += len(sentence)\n    \n    if current_chunk:\n        chunks.append(' '.join(current_chunk))\n    return chunks\n\n3. 语义分块：\ndef semantic_chunk(text, similarity_threshold=0.8):\n    sentences = nltk.sent_tokenize(text)\n    chunks = []\n    current_chunk = [sentences[0]]\n    \n    for i in range(1, len(sentences)):\n        similarity = compute_similarity(sentences[i-1], sentences[i])\n        if similarity > similarity_threshold:\n            current_chunk.append(sentences[i])\n        else:\n            chunks.append(' '.join(current_chunk))\n            current_chunk = [sentences[i]]\n    \n    if current_chunk:\n        chunks.append(' '.join(current_chunk))\n    return chunks\n\n4. 递归分块：\ndef recursive_chunk(text, chunk_size=500, separators=[\"\n\n\", \"\n\", \" \", \"\"]):\n    if len(text) <= chunk_size:\n        return [text]\n    \n    for sep in separators:\n        if sep in text:\n            splits = text.split(sep)\n            chunks = []\n            current_chunk = []\n            current_size = 0\n            \n            for split in splits:\n                if current_size + len(split) > chunk_size:\n                    chunks.append(sep.join(current_chunk))\n                    current_chunk = [split]\n                    current_size = len(split)\n                else:\n                    current_chunk.append(split)\n                    current_size += len(split)\n            \n            if current_chunk:\n                chunks.append(sep.join(current_chunk))\n            return chunks\n    \n    return [text]\n\n最佳实践：\n- chunk_size: 500-1000 tokens\n- overlap: 50-100 tokens\n- 根据文档类型选择策略\n- 保留元数据（标题、来源）",
+    "source": "mundo-knowledge/rag/theory",
+    "category": "rag_theory",
+    "metadata": {
+      "topic": "rag",
+      "category": "theory",
+      "title": "RAG 文档分块策略",
+      "importance": 9,
+      "tags": [
+        "rag",
+        "chunking",
+        "text-splitting",
+        "preprocessing"
+      ]
+    },
+    "created_at": 1781370997.55152,
+    "access_count": 0
+  },
+  "4b70de4ea24f": {
+    "content": "RAG 向量检索技术：\n\n1. 向量化（Embedding）：\nfrom sentence_transformers import SentenceTransformer\n\nmodel = SentenceTransformer('all-MiniLM-L6-v2')\nembeddings = model.encode([\"Hello world\", \"How are you?\"])\n\n2. 相似度计算：\nimport numpy as np\n\ndef cosine_similarity(a, b):\n    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))\n\ndef euclidean_distance(a, b):\n    return np.linalg.norm(a - b)\n\n3. 向量数据库：\n# FAISS (Facebook AI Similarity Search)\nimport faiss\n\ndimension = 384  # 向量维度\nindex = faiss.IndexFlatL2(dimension)\nindex.add(embeddings)  # 添加向量\n\n# 搜索\nquery_embedding = model.encode([\"search query\"])\ndistances, indices = index.search(query_embedding, k=5)  # Top-5\n\n# ChromaDB\nimport chromadb\n\nclient = chromadb.Client()\ncollection = client.create_collection(\"my_collection\")\n\ncollection.add(\n    documents=[\"doc1\", \"doc2\"],\n    embeddings=[embedding1, embedding2],\n    ids=[\"id1\", \"id2\"]\n)\n\nresults = collection.query(\n    query_embeddings=[query_embedding],\n    n_results=5\n)\n\n4. 混合检索（Hybrid Retrieval）：\n# BM25 + 向量检索\nfrom rank_bm25 import BM25Okapi\n\ndef hybrid_retrieval(query, documents, query_embedding, doc_embeddings, alpha=0.5):\n    # BM25 分数\n    tokenized_docs = [doc.split() for doc in documents]\n    bm25 = BM25Okapi(tokenized_docs)\n    bm25_scores = bm25.get_scores(query.split())\n    \n    # 向量相似度分数\n    vector_scores = [cosine_similarity(query_embedding, doc_emb) \n                     for doc_emb in doc_embeddings]\n    \n    # 加权融合\n    combined_scores = alpha * bm25_scores + (1 - alpha) * np.array(vector_scores)\n    \n    # 返回排序后的文档索引\n    return np.argsort(combined_scores)[::-1]\n\n最佳实践：\n- 选择合适的 Embedding 模型\n- 使用混合检索提高准确率\n- 定期更新向量索引\n- 缓存热门查询结果",
+    "source": "mundo-knowledge/rag/theory",
+    "category": "rag_theory",
+    "metadata": {
+      "topic": "rag",
+      "category": "theory",
+      "title": "RAG 向量检索",
+      "importance": 9,
+      "tags": [
+        "rag",
+        "embedding",
+        "vector-db",
+        "similarity-search"
+      ]
+    },
+    "created_at": 1781370997.560103,
+    "access_count": 0
+  },
+  "26a3507a2872": {
+    "content": "SOLID 面向对象设计原则：\n\n1. 单一职责原则（SRP）：\n一个类应该只有一个引起它变化的原因。\n\n# 违反 SRP\nclass User:\n    def save_to_db(self): ...\n    def send_email(self): ...\n    def generate_report(self): ...\n\n# 遵循 SRP\nclass User: ...\nclass UserRepository:\n    def save(self, user): ...\nclass EmailService:\n    def send(self, user, message): ...\nclass ReportGenerator:\n    def generate(self, user): ...\n\n2. 开闭原则（OCP）：\n对扩展开放，对修改关闭。\n\n# 违反 OCP\ndef calculate_area(shape):\n    if isinstance(shape, Circle):\n        return 3.14 * shape.radius ** 2\n    elif isinstance(shape, Rectangle):\n        return shape.width * shape.height\n\n# 遵循 OCP\nclass Shape(ABC):\n    @abstractmethod\n    def area(self): ...\n\nclass Circle(Shape):\n    def area(self):\n        return 3.14 * self.radius ** 2\n\nclass Rectangle(Shape):\n    def area(self):\n        return self.width * self.height\n\n3. 里氏替换原则（LSP）：\n子类必须能够替换它的父类。\n\n4. 接口隔离原则（ISP）：\n客户端不应该依赖它不需要的接口。\n\n# 违反 ISP\nclass Worker(ABC):\n    @abstractmethod\n    def work(self): ...\n    @abstractmethod\n    def eat(self): ...\n\n# 遵循 ISP\nclass Workable(ABC):\n    @abstractmethod\n    def work(self): ...\n\nclass Eatable(ABC):\n    @abstractmethod\n    def eat(self): ...\n\nclass Robot(Workable):  # Robot 不需要 eat\n    def work(self): ...\n\n5. 依赖倒置原则（DIP）：\n高层模块不应该依赖低层模块，两者都应该依赖抽象。\n\n# 违反 DIP\nclass MySQLDatabase:\n    def query(self): ...\n\nclass UserService:\n    def __init__(self):\n        self.db = MySQLDatabase()  # 直接依赖具体实现\n\n# 遵循 DIP\nclass Database(ABC):\n    @abstractmethod\n    def query(self): ...\n\nclass MySQLDatabase(Database): ...\nclass PostgreSQLDatabase(Database): ...\n\nclass UserService:\n    def __init__(self, db: Database):  # 依赖抽象\n        self.db = db",
+    "source": "mundo-knowledge/software_engineering/architecture",
+    "category": "software_engineering_architecture",
+    "metadata": {
+      "topic": "software_engineering",
+      "category": "architecture",
+      "title": "SOLID 原则",
+      "importance": 10,
+      "tags": [
+        "solid",
+        "design-principle",
+        "oop",
+        "architecture"
+      ]
+    },
+    "created_at": 1781370997.57241,
+    "access_count": 0
+  },
+  "af9f8ed12de7": {
+    "content": "RESTful API 设计原则：\n\n1. 资源命名：\n# 使用名词，复数形式\nGET    /users          # 获取用户列表\nGET    /users/123      # 获取特定用户\nPOST   /users          # 创建用户\nPUT    /users/123      # 更新用户（全量）\nPATCH  /users/123      # 更新用户（部分）\nDELETE /users/123      # 删除用户\n\n# 嵌套资源\nGET    /users/123/posts        # 获取用户的所有帖子\nGET    /users/123/posts/456    # 获取用户的特定帖子\n\n2. HTTP 方法语义：\n- GET: 获取资源，幂等\n- POST: 创建资源，非幂等\n- PUT: 更新资源（全量），幂等\n- PATCH: 更新资源（部分），非幂等\n- DELETE: 删除资源，幂等\n\n3. 状态码：\n200 OK                    # 成功\n201 Created               # 创建成功\n204 No Content            # 删除成功\n400 Bad Request           # 请求错误\n401 Unauthorized          # 未认证\n403 Forbidden             # 无权限\n404 Not Found             # 资源不存在\n409 Conflict              # 冲突\n500 Internal Server Error # 服务器错误\n\n4. 查询参数：\nGET /users?page=1&limit=10          # 分页\nGET /users?sort=name&order=asc      # 排序\nGET /users?filter[role]=admin       # 过滤\nGET /users?fields=name,email        # 字段选择\n\n5. 版本控制：\n# URL 路径版本\nGET /api/v1/users\nGET /api/v2/users\n\n# Header 版本\nGET /users\nAccept: application/vnd.myapi.v1+json\n\n6. 错误响应：\n{\n    \"error\": {\n        \"code\": \"VALIDATION_ERROR\",\n        \"message\": \"Invalid input data\",\n        \"details\": [\n            {\"field\": \"email\", \"message\": \"Invalid email format\"}\n        ]\n    }\n}\n\n最佳实践：\n- 使用 HTTPS\n- 无状态（Stateless）\n- 使用 HATEOAS（可选）\n- 限流（Rate Limiting）\n- 缓存（Cache-Control）",
+    "source": "mundo-knowledge/software_engineering/architecture",
+    "category": "software_engineering_architecture",
+    "metadata": {
+      "topic": "software_engineering",
+      "category": "architecture",
+      "title": "RESTful API 设计",
+      "importance": 9,
+      "tags": [
+        "rest",
+        "api",
+        "http",
+        "web-development"
+      ]
+    },
+    "created_at": 1781370997.58136,
+    "access_count": 0
+  },
+  "cab618f6349b": {
+    "content": "微服务架构设计：\n\n核心原则：\n1. 单一职责：每个服务负责一个业务能力\n2. 独立部署：服务可以独立部署和扩展\n3. 去中心化治理：服务可以选择不同的技术栈\n4. 故障隔离：一个服务故障不影响其他服务\n\n架构组件：\n1. API Gateway：\n   - 路由请求\n   - 负载均衡\n   - 认证授权\n   - 限流熔断\n\n2. 服务注册与发现：\n   - 服务注册中心（Consul, Eureka, Nacos）\n   - 服务发现（客户端/服务端）\n\n3. 配置中心：\n   - 集中管理配置\n   - 动态配置更新\n   - 配置版本控制\n\n4. 服务通信：\n   - 同步：REST, gRPC\n   - 异步：消息队列（Kafka, RabbitMQ）\n\n5. 服务治理：\n   - 熔断器（Circuit Breaker）\n   - 限流（Rate Limiting）\n   - 降级（Fallback）\n   - 重试（Retry）\n\n示例架构：\n┌─────────────┐\n│   Client    │\n└──────┬──────┘\n       │\n┌──────▼──────┐\n│ API Gateway │\n└──────┬──────┘\n       │\n┌──────▼──────┐\n│ Service     │\n│ Discovery   │\n└──────┬──────┘\n       │\n┌──────┴──────┬──────────────┬──────────────┐\n│             │              │              │\n▼             ▼              ▼              ▼\nUser Service  Order Service  Product Service  Payment Service\n│             │              │              │\n▼             ▼              ▼              ▼\nUser DB       Order DB       Product DB     Payment DB\n\nPython 实现（FastAPI）：\nfrom fastapi import FastAPI\nimport httpx\n\napp = FastAPI()\n\n@app.get(\"/users/{user_id}\")\nasync def get_user(user_id: int):\n    async with httpx.AsyncClient() as client:\n        response = await client.get(f\"http://user-service/users/{user_id}\")\n        return response.json()\n\n@app.get(\"/orders/{order_id}\")\nasync def get_order(order_id: int):\n    async with httpx.AsyncClient() as client:\n        order = await client.get(f\"http://order-service/orders/{order_id}\")\n        user = await client.get(f\"http://user-service/users/{order.json()['user_id']}\")\n        return {\"order\": order.json(), \"user\": user.json()}",
+    "source": "mundo-knowledge/software_engineering/architecture",
+    "category": "software_engineering_architecture",
+    "metadata": {
+      "topic": "software_engineering",
+      "category": "architecture",
+      "title": "微服务架构",
+      "importance": 9,
+      "tags": [
+        "microservices",
+        "architecture",
+        "distributed-system",
+        "api-gateway"
+      ]
+    },
+    "created_at": 1781370997.591904,
+    "access_count": 0
+  }
+}
