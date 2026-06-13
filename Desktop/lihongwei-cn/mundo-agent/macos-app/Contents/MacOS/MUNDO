@@ -24,7 +24,6 @@ tell application "Terminal"
         
         # ═══ 启动蒙多 ═══
         export PYTHONDONTWRITEBYTECODE=1
-        source venv/bin/activate 2>/dev/null
         python3 mundo.py
     "
     set custom title of front window to "MUNDO — THE EMPEROR"
