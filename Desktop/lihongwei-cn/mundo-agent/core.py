@@ -243,11 +243,19 @@ class MundoEngine:
         self.on_compress = None
         self.on_llm_stats = None
 
-    def _build_system_message(self):
-        """构建 system message — 模块化组装 + 缓存优化"""
+    def _build_system_message(self, memory_context: str = "", knowledge_context: str = ""):
+        """构建 system message — 模块化组装 + 缓存优化
+
+        v2.2.0: 将内存上下文和知识上下文合并到主 system message 中，
+        避免绕过前缀缓存。
+        """
         cache = get_cache()
+        # 缓存键包含 memory hash，确保缓存失效正确
+        memory_hash = hashlib.md5(memory_context.encode()).hexdigest()[:8] if memory_context else ""
+        cache_key = f"{self.provider}/{self.model_name}/{memory_hash}"
+
         content = cache.get_system_prompt(
-            self.provider, self.model_name,
+            self.provider, cache_key,
             lambda: build_system_prompt(
                 model_adapter=self.adapter,
                 quark_optimizer=True,
@@ -255,6 +263,16 @@ class MundoEngine:
                 model_name=self.model_name,
             )
         )
+
+        # 合并内存上下文和知识上下文
+        if memory_context or knowledge_context:
+            parts = [content]
+            if knowledge_context:
+                parts.append(f"\n[相关知识]\n{knowledge_context}")
+            if memory_context:
+                parts.append(f"\n[记忆上下文]\n{memory_context}")
+            content = "\n".join(parts)
+
         return {"role": "system", "content": content}
 
     def _model_display(self):
@@ -613,23 +631,26 @@ class MundoEngine:
         # 智能模型切换
         self.switch_model_for_task(sanitized_input)
 
+        # v2.2.0: RAG 知识检索
+        knowledge_context = self.knowledge.get_context_for_query(sanitized_input)
+
         if not self.messages:
-            self.messages = [self._build_system_message()]
+            self.messages = [self._build_system_message(
+                memory_context=extra_context,
+                knowledge_context=knowledge_context,
+            )]
+        else:
+            # 如果已有消息，更新系统消息（合并上下文）
+            if self.messages and self.messages[0].get("role") == "system":
+                self.messages[0] = self._build_system_message(
+                    memory_context=extra_context,
+                    knowledge_context=knowledge_context,
+                )
 
         # 智能消息压缩
         self.messages = MessageCompressor.compress_messages(self.messages)
         self._auto_compress()
 
-        # v3.0.0: RAG 知识检索
-        knowledge_context = self.knowledge.get_context_for_query(sanitized_input)
-        if knowledge_context:
-            self.messages.append({
-                "role": "system",
-                "content": f"[相关知识]\n{knowledge_context}"
-            })
-
-        if extra_context:
-            self.messages.append({"role": "system", "content": f"[记忆上下文]\n{extra_context}"})
         self.messages.append({"role": "user", "content": sanitized_input})
 
         turn_id = self.timeline.start_turn(sanitized_input)
