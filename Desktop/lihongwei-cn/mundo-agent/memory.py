@@ -1,4 +1,10 @@
-"""蒙多记忆系统 v2.1.1 — Claude 六套记忆架构"""
+"""蒙多记忆系统 v2.2.0 — Claude 六套记忆架构
+
+v2.2.0 改进：
+- auto_extract: 收窄触发条件，增加最小长度和去重
+- _rebuild_fts: 只在表不存在时创建，不每次重建
+- generate_session_summary: 改进摘要质量
+"""
 
 import re
 import sys
@@ -108,49 +114,41 @@ class MundoMemory:
                 );
             """)
 
-            # FTS5 — 先销毁损坏的，再重建
-            self._rebuild_fts(conn)
+            # FTS5 — 只在表不存在时创建
+            self._ensure_fts(conn)
 
-    def _rebuild_fts(self, conn):
-        """销毁并重建 FTS5 虚拟表，自动修复损坏"""
-        # 1. 删触发器
-        for trig in ("conversations_ai", "conversations_ad"):
-            try:
-                conn.execute(f"DROP TRIGGER IF EXISTS {trig}")
-            except Exception:
-                pass
+    def _ensure_fts(self, conn):
+        """确保 FTS5 虚拟表存在，不存在则创建"""
+        # 检查 FTS 表是否已存在
+        existing = {r[0] for r in conn.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name='conversations_fts'"
+        ).fetchall()}
 
-        # 2. 删 FTS5 虚拟表及其内部表
-        for tbl in ("conversations_fts", "conversations_fts_data",
-                     "conversations_fts_idx", "conversations_fts_docsize",
-                     "conversations_fts_config"):
-            try:
-                conn.execute(f"DROP TABLE IF EXISTS {tbl}")
-            except Exception:
-                pass
+        if 'conversations_fts' in existing:
+            return  # 已存在，跳过
 
-        # 3. 重建
+        # 创建 FTS5 虚拟表
         conn.execute("""
             CREATE VIRTUAL TABLE conversations_fts USING fts5(
                 title, summary, content='conversations', content_rowid='rowid'
             )
         """)
 
-        # 4. 重建触发器
+        # 创建触发器
         conn.execute("""
-            CREATE TRIGGER conversations_ai AFTER INSERT ON conversations BEGIN
+            CREATE TRIGGER IF NOT EXISTS conversations_ai AFTER INSERT ON conversations BEGIN
                 INSERT INTO conversations_fts(rowid, title, summary)
                 VALUES (new.rowid, new.title, new.summary);
             END
         """)
         conn.execute("""
-            CREATE TRIGGER conversations_ad AFTER DELETE ON conversations BEGIN
+            CREATE TRIGGER IF NOT EXISTS conversations_ad AFTER DELETE ON conversations BEGIN
                 INSERT INTO conversations_fts(conversations_fts, rowid, title, summary)
                 VALUES ('delete', old.rowid, old.title, old.summary);
             END
         """)
 
-        # 5. 回填已有数据
+        # 回填已有数据
         try:
             conn.execute("""
                 INSERT INTO conversations_fts(rowid, title, summary)
@@ -165,27 +163,47 @@ class MundoMemory:
 
     def auto_extract(self, user_msg: str, assistant_msg: str,
                      project: str = "") -> List[int]:
-        """轻量规则提取，不调 LLM"""
+        """轻量规则提取，不调 LLM
+
+        v2.2.0 改进：
+        - 收窄触发条件：需要同时包含动作+对象
+        - 增加最小长度阈值（>20 字符才提取）
+        - 增加去重检查（相似记忆不重复创建）
+        """
         extracted = []
         patterns = [
-            (r"记住|remember|记一下", "fact", 7),
-            (r"我喜欢|我偏好|我习惯|I prefer", "preference", 8),
-            (r"不要|别用|禁止|don't|never", "constraint", 8),
-            (r"以后|下次|always|从现在起", "rule", 7),
-            (r"错误|报错|bug|问题出在", "lesson", 6),
-            (r"用.*框架|用.*库|技术栈|tech stack", "code_pattern", 7),
-            (r"目录|文件结构|项目结构|project structure", "code_pattern", 6),
+            # 需要同时包含动作+对象的模式
+            (r"记住.{4,}|remember.{4,}|记一下.{4,}", "fact", 7),
+            (r"我喜欢.{4,}|我偏好.{4,}|我习惯.{4,}|I prefer.{4,}", "preference", 8),
+            (r"不要.{4,}|别用.{4,}|禁止.{4,}|don't.{4,}|never.{4,}", "constraint", 8),
+            (r"以后.{4,}|下次.{4,}|always.{4,}|从现在起.{4,}", "rule", 7),
+            # 错误/bug 需要更具体的描述
+            (r"错误.{8,}|报错.{8,}|bug.{8,}|问题出在.{4,}", "lesson", 6),
+            # 技术栈需要具体说明
+            (r"用.{2,}框架|用.{2,}库|技术栈.{4,}|tech stack.{4,}", "code_pattern", 7),
+            (r"目录.{4,}|文件结构.{4,}|项目结构.{4,}|project structure.{4,}", "code_pattern", 6),
         ]
         for pattern, category, importance in patterns:
             if re.search(pattern, user_msg, re.IGNORECASE):
                 content = user_msg.strip()[:200]
-                if len(content) > 10:
-                    mid = self.remember(
-                        content=content, category=category,
-                        source="auto_extract", importance=importance,
-                        project=project
-                    )
-                    extracted.append(mid)
+                # 最小长度检查
+                if len(content) < 20:
+                    continue
+                # 去重检查：检查是否有相似记忆
+                content_hash = hashlib.md5(content.encode()).hexdigest()[:16]
+                with sqlite3.connect(str(self.db_path)) as conn:
+                    existing = conn.execute(
+                        "SELECT id FROM memories WHERE content_hash = ? OR content = ?",
+                        (content_hash, content)
+                    ).fetchone()
+                    if existing:
+                        continue  # 已存在，跳过
+                mid = self.remember(
+                    content=content, category=category,
+                    source="auto_extract", importance=importance,
+                    project=project
+                )
+                extracted.append(mid)
         return extracted
 
     # ═══════════════════════════════════════════════
@@ -608,18 +626,57 @@ class MundoMemory:
                     print(f"[memory] 清空表 {table_name} 失败: {e}", file=sys.stderr)
 
     def generate_session_summary(self, session_id: str, messages: List[Dict]):
+        """生成会话摘要 — v2.2.0 改进
+
+        改进：
+        - 提取用户消息 + 助手关键回复
+        - 包含使用的工具
+        - 限制长度（200 字符）
+        """
         user_msgs = [m for m in messages if m.get("role") == "user"]
+        assistant_msgs = [m for m in messages if m.get("role") == "assistant"]
+        tool_calls = []
+        for m in messages:
+            if m.get("tool_calls"):
+                for tc in m["tool_calls"]:
+                    fname = tc.get("function", {}).get("name", "")
+                    if fname:
+                        tool_calls.append(fname)
+
         if not user_msgs:
             return
+
+        # 标题：前3条用户消息的关键内容
         topics = []
         for um in user_msgs[:3]:
-            content = (um.get("content") or "")[:100]
+            content = (um.get("content") or "")[:80]
             if content:
                 topics.append(content)
         title = "; ".join(topics)
         if len(title) > 200:
             title = title[:200] + "..."
-        summary = " | ".join((um.get("content") or "")[:150] for um in user_msgs[-3:])
+
+        # 摘要：用户意图 + 助手关键回复 + 使用的工具
+        summary_parts = []
+        # 用户意图
+        for um in user_msgs[-2:]:
+            content = (um.get("content") or "")[:100]
+            if content:
+                summary_parts.append(f"用户: {content}")
+        # 助手关键回复（最后一句）
+        if assistant_msgs:
+            last_reply = (assistant_msgs[-1].get("content") or "")[:100]
+            if last_reply:
+                summary_parts.append(f"助手: {last_reply}")
+        # 使用的工具
+        if tool_calls:
+            unique_tools = list(set(tool_calls))[:5]
+            summary_parts.append(f"工具: {', '.join(unique_tools)}")
+
+        summary = " | ".join(summary_parts)
+        if len(summary) > 300:
+            summary = summary[:300] + "..."
+
         self.save_conversation(
             conv_id=session_id, title=title, summary=summary,
             messages=messages
