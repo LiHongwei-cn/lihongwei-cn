@@ -1,3 +1,4 @@
 rich>=13.0
 prompt_toolkit>=3.0
 httpx>=0.24
+scrapling[all]>=0.2.99
