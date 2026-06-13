@@ -233,36 +233,6 @@ body::after {
 }
 .card:hover .card-badge { opacity: 1; }
 
-/* 蒙多卡片金光效果 */
-.card-mundo {
-  position: relative;
-  border: 1px solid rgba(255, 215, 0, 0.15);
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.03), rgba(255, 215, 0, 0.01));
-}
-.card-mundo::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.05), rgba(255, 215, 0, 0.15));
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  animation: mundoGlow 3s ease-in-out infinite;
-}
-.card-mundo:hover::before {
-  opacity: 1;
-}
-.card-mundo:hover {
-  border-color: rgba(255, 215, 0, 0.3);
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.06), rgba(255, 215, 0, 0.02));
-}
-
-@keyframes mundoGlow {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.7; }
-}
-
 /* ====== 底部 ====== */
 .footer {
   text-align: center;
@@ -339,15 +309,6 @@ body::after {
     <div class="cat-section">
       <div class="cat-label">🛠️ 工具</div>
       <div class="nav-grid">
-
-        <a class="card card-mundo" href="https://github.com/LiHongwei-cn/mundo-agent" data-id="mundo-agent">
-          <div class="card-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706)">👑</div>
-          <div class="card-body">
-            <div class="card-title">MUNDO Agent</div>
-            <div class="card-desc">AI 智能体框架 · 反射引擎 · 安全强化 · 智能恢复 · RAG 知识检索</div>
-          </div>
-          <span class="card-badge" data-views="..."></span>
-        </a>
 
         <a class="card" href="skill-store/" data-id="skill-store">
           <div class="card-icon" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">🏪</div>
