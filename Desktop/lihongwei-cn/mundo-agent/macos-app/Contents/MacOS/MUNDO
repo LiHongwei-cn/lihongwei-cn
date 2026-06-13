@@ -5,6 +5,10 @@
 LAUNCH_SCRIPT=$(mktemp /tmp/mundo-launch-XXXXXX.sh)
 cat > "$LAUNCH_SCRIPT" << 'LAUNCH'
 #!/bin/bash
+export LANG=zh_CN.UTF-8
+export LC_ALL=zh_CN.UTF-8
+export PYTHONIOENCODING=utf-8
+
 cd ~/.hermes/mundo-agent
 rm -rf __pycache__
 
