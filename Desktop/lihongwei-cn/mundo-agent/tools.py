@@ -680,6 +680,28 @@ def _web_search(args: Dict) -> str:
     if not query:
         return "[错误: web_search 缺少 query 参数]"
     try:
+        # 优先使用 Scrapling 解析搜索结果
+        try:
+            from scrapling.fetchers import Fetcher
+            import urllib.parse
+            url = f"https://www.google.com/search?q={urllib.parse.quote(query)}"
+            page = Fetcher.get(url, timeout=15)
+            results = []
+            # 提取搜索结果标题和链接
+            for item in page.css('div.g'):
+                title = item.css('h3::text').get('')
+                link = item.css('a::attr(href)').get('')
+                snippet = item.css('.VwiC3b::text').get('')
+                if title and link:
+                    results.append(f"**{title}**\n{link}\n{snippet}")
+            if results:
+                return _truncate(f"搜索: {query}\n\n" + "\n\n".join(results[:5]))
+        except ImportError:
+            pass  # Scrapling 未安装，回退到简单方法
+        except Exception:
+            pass  # Scrapling 解析失败，回退到简单方法
+
+        # 回退：直接抓取 HTML
         import urllib.request
         import urllib.parse
         url = f"https://www.google.com/search?q={urllib.parse.quote(query)}"
