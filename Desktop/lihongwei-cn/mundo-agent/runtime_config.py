@@ -173,7 +173,7 @@ class RuntimeConfig:
 class ConfigManager:
     """配置管理器 — 分层加载、热重载"""
 
-    GLOBAL_PATH = Path.home() / ".hermes" / "mundo-agent" / "config.json"
+    GLOBAL_PATH = Path.home() / ".hermes" / "mundo-agent" / "config" / "settings.json"
     PROJECT_PATH = Path.cwd() / ".mundo" / "config.json"
 
     def __init__(self):
