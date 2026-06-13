@@ -20,7 +20,7 @@ import json
 import time
 import socket
 import random
-import threading
+# threading removed in v2.2.0 (single-threaded, no lock needed)
 from pathlib import Path
 from typing import List, Dict, Iterator, Optional, Tuple
 from dataclasses import dataclass, field
@@ -50,37 +50,35 @@ class CircuitState(Enum):
 
 @dataclass
 class CircuitBreaker:
-    """断路器：连续失败N次自动熔断，避免无效请求"""
+    """断路器：连续失败N次自动熔断，避免无效请求
+
+    v2.2.0: 移除 threading.Lock（单线程使用，无需锁）
+    """
     failure_threshold: int = 3
     recovery_timeout: float = 60.0
     _state: CircuitState = field(default=CircuitState.CLOSED, repr=False)
     _failure_count: int = field(default=0, repr=False)
     _last_failure_time: float = field(default=0.0, repr=False)
-    _lock: threading.Lock = field(default_factory=threading.Lock, repr=False)
 
     @property
     def state(self) -> CircuitState:
-        with self._lock:
-            if self._state == CircuitState.OPEN:
-                if time.time() - self._last_failure_time > self.recovery_timeout:
-                    self._state = CircuitState.HALF_OPEN
-            return self._state
+        if self._state == CircuitState.OPEN:
+            if time.time() - self._last_failure_time > self.recovery_timeout:
+                self._state = CircuitState.HALF_OPEN
+        return self._state
 
     def record_success(self):
-        with self._lock:
-            self._failure_count = 0
-            self._state = CircuitState.CLOSED
+        self._failure_count = 0
+        self._state = CircuitState.CLOSED
 
     def record_failure(self):
-        with self._lock:
-            self._failure_count += 1
-            self._last_failure_time = time.time()
-            if self._failure_count >= self.failure_threshold:
-                self._state = CircuitState.OPEN
+        self._failure_count += 1
+        self._last_failure_time = time.time()
+        if self._failure_count >= self.failure_threshold:
+            self._state = CircuitState.OPEN
 
     def allow_request(self) -> bool:
-        state = self.state
-        return state != CircuitState.OPEN
+        return self.state != CircuitState.OPEN
 
 
 # ═══════════════════════════════════════════════
