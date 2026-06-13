@@ -2,7 +2,7 @@
 
 # 李宏伟的个人项目主页
 
-**MATLAB/Simulink 仿真 · Python · 微信小程序 · 工具链**
+**MATLAB/Simulink 仿真 · Python · 微信小程序 · AI Agent · 工具链**
 
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-lihongwei--cn.github.io-blue)](https://lihongwei-cn.github.io/lihongwei-cn/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -15,6 +15,7 @@
 
 | 项目 | 说明 |
 |------|------|
+| [MUNDO Agent](https://github.com/LiHongwei-cn/mundo-agent) | 独立 AI 智能体 · 30+ 模型 · 三省六部制 · 集体意识 · 自我进化 |
 | [MATLAB 仿真工具包](matlab/) | 车辆动力学、电机控制、能量管理（R2016b 兼容） |
 | [家庭血压监测小程序](bp-monitor/) | FastAPI + SQLite + DeepSeek 后端 |
 | [Telegram Bot](bot/) | DeepSeek 驱动的智能助手 |
@@ -29,7 +30,31 @@
 - **MATLAB/Simulink** R2016b（车辆动力学、电机控制 FOC、能量管理）
 - **Python** 3.12 + FastAPI
 - **微信小程序** WXML/WXSS/JS
+- **AI Agent** MUNDO Agent（独立 AI 智能体框架）
 - **HTML/CSS** GitHub Pages 静态页面
+
+## MUNDO Agent
+
+MUNDO 是一个独立的 AI 智能体框架，具有以下特性：
+
+- **30+ AI 模型支持**：DeepSeek、MiMo、Qwen、Claude、GPT-4o、Gemini 等
+- **三省六部制**：技能分级管理体系，首辅→尚书→主事→司务
+- **集体意识**：一个蒙多学到，所有蒙多都会
+- **自我进化**：每次使用都让蒙多更强大
+- **多 Agent 委托**：支持 Claude Code、Hermes Agent、Codex
+
+### 快速开始
+
+```bash
+# 下载最新版
+gh release download v2.2.0 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.0-macos.zip"
+
+# 解压
+unzip mundo-v2.2.0-macos.zip -d ~/.hermes/mundo-agent
+
+# 运行
+python3 ~/.hermes/mundo-agent/mundo.py
+```
 
 ## 网站
 
