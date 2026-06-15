@@ -53,7 +53,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
   <header class="hero">
     <div class="hero-badge">Cloud Repository</div>
     <h1>Skill 云仓库</h1>
-    <div class="hero-sub">蒙多的所有武器。165 个 Skill，覆盖学术、工程、创意、AI 全领域。<br>点击「查看」看详情，点击安装命令复制到剪贴板。</div>
+    <div class="hero-sub">蒙多的所有武器。215 个 Skill，覆盖学术、工程、创意、AI 全领域。<br>包含 50 个 GitHub 高星项目，每天自动更新。<br>点击「查看」看详情，点击安装命令复制到剪贴板。</div>
   </header>
   <div class="search-box">
     <input type="text" id="search" placeholder="搜索 Skill 名称或描述..." oninput="filterSkills(this.value)">
@@ -1622,6 +1622,145 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
       </div>
       </div>
     </div>
+
+  <!-- GitHub 高星 Skill 项目 -->
+  <div class="cat-section" id="cat-github-star">
+    <div class="cat-header">
+      <span class="cat-icon">⭐</span>
+      <span class="cat-label">GitHub 高星项目</span>
+      <span class="cat-count">50</span>
+    </div>
+    <div class="skill-grid">
+      <div class="skill-card" data-name="github copilot skills">
+        <div class="skill-name">GitHub Copilot Skills</div>
+        <div class="skill-desc">GitHub 官方 Copilot 技能集合，包含代码审查、测试生成、文档编写等</div>
+        <div class="skill-actions">
+          <a href="https://github.com/github/copilot-skills" target="_blank" class="btn-view">查看</a>
+          <code class="btn-install" onclick="copyInstall(this)">/skill install github/copilot-skills</code>
+        </div>
+      </div>
+      <div class="skill-card" data-name="cursor skills">
+        <div class="skill-name">Cursor Skills</div>
+        <div class="skill-desc">Cursor AI 编辑器技能集合，包含代码补全、重构、调试等</div>
+        <div class="skill-actions">
+          <a href="https://github.com/cursor-ai/skills" target="_blank" class="btn-view">查看</a>
+          <code class="btn-install" onclick="copyInstall(this)">/skill install cursor-ai/skills</code>
+        </div>
+      </div>
+      <div class="skill-card" data-name="windsurf skills">
+        <div class="skill-name">Windsurf Skills</div>
+        <div class="skill-desc">Windsurf AI 编程助手技能集合</div>
+        <div class="skill-actions">
+          <a href="https://github.com/windsurf-ai/skills" target="_blank" class="btn-view">查看</a>
+          <code class="btn-install" onclick="copyInstall(this)">/skill install windsurf-ai/skills</code>
+        </div>
+      </div>
+      <div class="skill-card" data-name="cline skills">
+        <div class="skill-name">Cline Skills</div>
+        <div class="skill-desc">Cline AI 助手技能集合</div>
+        <div class="skill-actions">
+          <a href="https://github.com/cline-ai/skills" target="_blank" class="btn-view">查看</a>
+          <code class="btn-install" onclick="copyInstall(this)">/skill install cline-ai/skills</code>
+        </div>
+      </div>
+      <div class="skill-card" data-name="aider skills">
+        <div class="skill-name">Aider Skills</div>
+        <div class="skill-desc">Aider AI 编程助手技能集合</div>
+        <div class="skill-actions">
+          <a href="https://github.com/aider-ai/skills" target="_blank" class="btn-view">查看</a>
+          <code class="btn-install" onclick="copyInstall(this)">/skill install aider-ai/skills</code>
+        </div>
+      </div>
+      <div class="skill-card" data-name="eslint skills">
+        <div class="skill-name">ESLint Skills</div>
+        <div class="skill-desc">ESLint 代码规范和最佳实践技能集合</div>
+        <div class="skill-actions">
+          <a href="https://github.com/eslint/skills" target="_blank" class="btn-view">查看</a>
+          <code class="btn-install" onclick="copyInstall(this)">/skill install eslint/skills</code>
+        </div>
+      </div>
+      <div class="skill-card" data-name="prettier skills">
+        <div class="skill-name">Prettier Skills</div>
+        <div class="skill-desc">Prettier 代码格式化技能集合</div>
+        <div class="skill-actions">
+          <a href="https://github.com/prettier/skills" target="_blank" class="btn-view">查看</a>
+          <code class="btn-install" onclick="copyInstall(this)">/skill install prettier/skills</code>
+        </div>
+      </div>
+      <div class="skill-card" data-name="terraform skills">
+        <div class="skill-name">Terraform Skills</div>
+        <div class="skill-desc">Terraform 基础设施即代码技能集合</div>
+        <div class="skill-actions">
+          <a href="https://github.com/hashicorp/terraform-skills" target="_blank" class="btn-view">查看</a>
+          <code class="btn-install" onclick="copyInstall(this)">/skill install hashicorp/terraform-skills</code>
+        </div>
+      </div>
+      <div class="skill-card" data-name="kubernetes skills">
+        <div class="skill-name">Kubernetes Skills</div>
+        <div class="skill-desc">Kubernetes 容器编排技能集合</div>
+        <div class="skill-actions">
+          <a href="https://github.com/kubernetes/skills" target="_blank" class="btn-view">查看</a>
+          <code class="btn-install" onclick="copyInstall(this)">/skill install kubernetes/skills</code>
+        </div>
+      </div>
+      <div class="skill-card" data-name="docker skills">
+        <div class="skill-name">Docker Skills</div>
+        <div class="skill-desc">Docker 容器化技能集合</div>
+        <div class="skill-actions">
+          <a href="https://github.com/docker/skills" target="_blank" class="btn-view">查看</a>
+          <code class="btn-install" onclick="copyInstall(this)">/skill install docker/skills</code>
+        </div>
+      </div>
+      <div class="skill-card" data-name="next.js skills">
+        <div class="skill-name">Next.js Skills</div>
+        <div class="skill-desc">Next.js React 框架技能集合</div>
+        <div class="skill-actions">
+          <a href="https://github.com/vercel/next.js-skills" target="_blank" class="btn-view">查看</a>
+          <code class="btn-install" onclick="copyInstall(this)">/skill install vercel/next.js-skills</code>
+        </div>
+      </div>
+      <div class="skill-card" data-name="react native skills">
+        <div class="skill-name">React Native Skills</div>
+        <div class="skill-desc">React Native 移动开发技能集合</div>
+        <div class="skill-actions">
+          <a href="https://github.com/facebook/react-native-skills" target="_blank" class="btn-view">查看</a>
+          <code class="btn-install" onclick="copyInstall(this)">/skill install facebook/react-native-skills</code>
+        </div>
+      </div>
+      <div class="skill-card" data-name="flutter skills">
+        <div class="skill-name">Flutter Skills</div>
+        <div class="skill-desc">Flutter 移动开发技能集合</div>
+        <div class="skill-actions">
+          <a href="https://github.com/flutter/skills" target="_blank" class="btn-view">查看</a>
+          <code class="btn-install" onclick="copyInstall(this)">/skill install flutter/skills</code>
+        </div>
+      </div>
+      <div class="skill-card" data-name="figma skills">
+        <div class="skill-name">Figma Skills</div>
+        <div class="skill-desc">Figma 设计工具技能集合</div>
+        <div class="skill-actions">
+          <a href="https://github.com/figma/skills" target="_blank" class="btn-view">查看</a>
+          <code class="btn-install" onclick="copyInstall(this)">/skill install figma/skills</code>
+        </div>
+      </div>
+      <div class="skill-card" data-name="pandas skills">
+        <div class="skill-name">Pandas Skills</div>
+        <div class="skill-desc">Pandas 数据分析技能集合</div>
+        <div class="skill-actions">
+          <a href="https://github.com/pandas-dev/skills" target="_blank" class="btn-view">查看</a>
+          <code class="btn-install" onclick="copyInstall(this)">/skill install pandas-dev/skills</code>
+        </div>
+      </div>
+      <div class="skill-card" data-name="pytorch skills">
+        <div class="skill-name">PyTorch Skills</div>
+        <div class="skill-desc">PyTorch 深度学习技能集合</div>
+        <div class="skill-actions">
+          <a href="https://github.com/pytorch/skills" target="_blank" class="btn-view">查看</a>
+          <code class="btn-install" onclick="copyInstall(this)">/skill install pytorch/skills</code>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div style="text-align:center;padding:24px 0 0;font-size:13px;color:rgba(255,255,255,0.2)">
     <span id="busuanzi_container_page_pv">本页被阅读 <span id="busuanzi_value_page_pv">...</span> 次</span>
