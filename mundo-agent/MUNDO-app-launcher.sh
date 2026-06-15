@@ -1,5 +1,5 @@
 #!/bin/bash
-# MUNDO Agent v2.2.2 — macOS .app 启动脚本
+# MUNDO Agent v2.2.3 — macOS .app 启动脚本
 # 带同步逻辑，确保启动的是最新版蒙多
 
 # 设置错误处理
