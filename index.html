@@ -1,420 +1,421 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="LiHongwei - MATLAB 仿真 · Python · 微信小程序 · AI 工具">
-<title>LiHongwei</title>
-<style>
-:root {
-  --bg: #0d0d16;
-  --surface: rgba(255,255,255,0.03);
-  --surface-hover: rgba(255,255,255,0.06);
-  --border: rgba(255,255,255,0.05);
-  --border-hover: rgba(255,255,255,0.1);
-  --text: #e8e8ed;
-  --dim: rgba(255,255,255,0.42);
-  --faint: rgba(255,255,255,0.18);
-  --accent: #818cf8;
-  --accent-glow: rgba(129,140,248,0.15);
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  padding: 56px 24px 40px;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* 背景光晕 */
-body::before {
-  content: '';
-  position: fixed;
-  top: -30%; left: -10%;
-  width: 120%; height: 130%;
-  background:
-    radial-gradient(ellipse at 30% 0%, rgba(99,102,241,0.1) 0%, transparent 55%),
-    radial-gradient(ellipse at 75% 70%, rgba(168,85,247,0.06) 0%, transparent 55%),
-    radial-gradient(ellipse at 50% 100%, rgba(129,140,248,0.04) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* 网格纹理 */
-body::after {
-  content: '';
-  position: fixed; inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
-  background-size: 48px 48px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.container {
-  width: 100%;
-  max-width: 1040px;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
-}
-
-/* ====== 头部 ====== */
-.header {
-  text-align: center;
-  margin-bottom: 44px;
-}
-
-.avatar {
-  width: 80px; height: 80px;
-  border-radius: 50%;
-  display: block;
-  margin: 0 auto 14px;
-  object-fit: cover;
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.3);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.avatar:hover {
-  transform: scale(1.04);
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.1), 0 12px 40px rgba(129,140,248,0.15);
-}
-
-.name {
-  font-size: 22px;
-  font-weight: 750;
-  letter-spacing: -0.4px;
-}
-
-.subtitle {
-  font-size: 13px;
-  color: var(--dim);
-  margin-top: 5px;
-  letter-spacing: 0.2px;
-}
-
-.contact {
-  margin-top: 12px;
-  font-size: 12px;
-  color: var(--dim);
-  line-height: 1.8;
-}
-
-.contact a {
-  color: var(--accent);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.contact a:hover {
-  color: #a5b4fc;
-  text-decoration: underline;
-}
-
-/* ====== 仪表盘 ====== */
-.dashboard {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 22px;
-  margin-bottom: 36px;
-}
-
-/* ====== 分类区块 ====== */
-.cat-section {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 20px 18px 14px;
-  transition: border-color 0.25s, background 0.25s;
-  position: relative;
-  overflow: hidden;
-}
-
-.cat-section::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-.cat-section:hover::before { opacity: 1; }
-.cat-section:hover {
-  border-color: var(--border-hover);
-  background: rgba(255,255,255,0.04);
-}
-
-.cat-label {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border);
-  letter-spacing: 0.3px;
-}
-
-.nav-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-/* ====== 卡片 ====== */
-.card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 12px;
-  padding: 11px 14px;
-  text-decoration: none;
-  color: inherit;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  position: relative;
-}
-
-.card:hover {
-  background: var(--surface-hover);
-  border-color: var(--border);
-  transform: translateX(3px);
-}
-
-.card-icon {
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 17px;
-  flex-shrink: 0;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.card:hover .card-icon {
-  transform: scale(1.08);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-
-.card-body { flex: 1; min-width: 0; }
-
-.card-title {
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 2px;
-  letter-spacing: -0.15px;
-  color: var(--text);
-}
-
-.card-desc {
-  font-size: 11px;
-  color: var(--dim);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.card-badge {
-  font-size: 10px;
-  color: var(--faint);
-  flex-shrink: 0;
-  opacity: 0.5;
-  transition: opacity 0.2s;
-}
-.card:hover .card-badge { opacity: 1; }
-
-/* ====== 底部 ====== */
-.footer {
-  text-align: center;
-  font-size: 12px;
-  color: var(--faint);
-  padding-top: 8px;
-}
-
-.footer a {
-  color: var(--faint);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.footer a:hover { color: rgba(255,255,255,0.45); }
-
-.footer-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.footer-dot {
-  width: 3px; height: 3px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.08);
-}
-
-.page-counter {
-  font-size: 13px;
-  color: rgba(255,255,255,0.35);
-  margin-bottom: 6px;
-}
-
-/* ====== 响应式 ====== */
-@media (max-width: 640px) {
-  .dashboard { grid-template-columns: 1fr; gap: 16px; }
-  body { padding: 36px 16px 32px; }
-  .header { margin-bottom: 32px; }
-  .avatar { width: 64px; height: 64px; }
-  .name { font-size: 19px; }
-  .contact { font-size: 11px; }
-  .cat-section { padding: 16px 14px 12px; }
-}
-
-/* ====== 入场动画 ====== */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.header      { animation: fadeUp 0.6s ease both; }
-.cat-section { animation: fadeUp 0.6s ease both; }
-.cat-section:nth-child(1) { animation-delay: 0.1s; }
-.cat-section:nth-child(2) { animation-delay: 0.2s; }
-.footer      { animation: fadeUp 0.6s ease 0.3s both; }
-</style>
-</head>
-<body>
-
-<div class="container">
-
-  <div class="header">
-    <img class="avatar" src="avatar.jpg" alt="LiHongwei" />
-    <div class="name">LiHongwei</div>
-    <div class="contact">
-      <a href="mailto:13865358206hp@gmail.com">13865358206hp@gmail.com</a> · 13865358206
-    </div>
-  </div>
-
-  <div class="dashboard">
-
-    <!-- 工具 -->
-    <div class="cat-section">
-      <div class="cat-label">🛠️ 工具</div>
-      <div class="nav-grid">
-
-        <a class="card" href="mundo-agent/" data-id="mundo-agent">
-          <div class="card-icon" style="background:linear-gradient(135deg,#d97706,#b45309)">👑</div>
-          <div class="card-body">
-            <div class="card-title">MUNDO Agent</div>
-            <div class="card-desc">v2.2.3 · 独立 AI 智能体 · 30+ 模型 · 四条铁律 · 脚本优先 · 集体意识 · 自我进化</div>
-          </div>
-          <span class="card-badge" data-views="..."></span>
-        </a>
-
-        <a class="card" href="skill-store/" data-id="skill-store">
-          <div class="card-icon" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">🏪</div>
-          <div class="card-body">
-            <div class="card-title">Skill 云仓库</div>
-            <div class="card-desc">165 个 AI Skill · 22 个分类 · 学术/工程/创意/AI 全覆盖 · 每个独立安装</div>
-          </div>
-          <span class="card-badge" data-views="..."></span>
-        </a>
-
-        <a class="card" href="matlab/" data-id="matlab">
-          <div class="card-icon" style="background:linear-gradient(135deg,#0e7490,#0369a1)">⚡</div>
-          <div class="card-body">
-            <div class="card-title">MATLAB 仿真工具包</div>
-            <div class="card-desc">R2016b 兼容 · 动力学 · 电机控制 · 能量管理 · Simulink 自动生成</div>
-          </div>
-          <span class="card-badge" data-views="..."></span>
-        </a>
-
-        <a class="card" href="global-specs/" data-id="global-specs">
-          <div class="card-icon" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">📦</div>
-          <div class="card-body">
-            <div class="card-title">全局规范部署包</div>
-            <div class="card-desc">一套规范部署到所有 AI Agent · 6 Agent 适配</div>
-          </div>
-          <span class="card-badge" data-views="..."></span>
-        </a>
-
-
-      </div>
-    </div>
-
-    <!-- 指南 -->
-    <div class="cat-section">
-      <div class="cat-label">📚 指南</div>
-      <div class="nav-grid">
-
-        <a class="card" href="ai-anatomy/" data-id="ai-anatomy">
-          <div class="card-icon" style="background:linear-gradient(135deg,#d97706,#b45309)">🧬</div>
-          <div class="card-body">
-            <div class="card-title">AI 剖析</div>
-            <div class="card-desc">用人体构造理解 AI 模型、Agent、Skill</div>
-          </div>
-          <span class="card-badge" data-views="..."></span>
-        </a>
-
-        <a class="card" href="claude-code-tutorial/" data-id="claude-code-tutorial">
-          <div class="card-icon" style="background:linear-gradient(135deg,#6d28d9,#5b21b6)">📖</div>
-          <div class="card-body">
-            <div class="card-title">Claude Code 完整指南</div>
-            <div class="card-desc">安装 · 国产模型 · 全局规范 · Skill</div>
-          </div>
-          <span class="card-badge" data-views="..."></span>
-        </a>
-
-        <a class="card" href="hermes-guide/" data-id="hermes-guide">
-          <div class="card-icon" style="background:linear-gradient(135deg,#0d9488,#0f766e)">📘</div>
-          <div class="card-body">
-            <div class="card-title">Hermes Agent 完整指南</div>
-            <div class="card-desc">安装 · DeepSeek · Telegram · 全部踩坑解决</div>
-          </div>
-          <span class="card-badge" data-views="..."></span>
-        </a>
-
-        <a class="card" href="vpn-guide/" data-id="vpn-guide">
-          <div class="card-icon" style="background:linear-gradient(135deg,#b91c1c,#991b1b)">🔒</div>
-          <div class="card-body">
-            <div class="card-title">免费 VPN 自建指南</div>
-            <div class="card-desc">Cloudflare 零成本 · 全平台客户端</div>
-          </div>
-          <span class="card-badge" data-views="..."></span>
-        </a>
-
-        <a class="card" href="win-optimize/" data-id="win-optimize">
-          <div class="card-icon" style="background:linear-gradient(135deg,#0e7490,#155e75)">🖥️</div>
-          <div class="card-body">
-            <div class="card-title">Win / Mac 系统优化</div>
-            <div class="card-desc">一行命令瘦身 · 隐私保护 · 开机加速</div>
-          </div>
-          <span class="card-badge" data-views="..."></span>
-        </a>
-
-      </div>
-    </div>
-
-  </div>
-
-  <div class="footer">
-    <div class="page-counter"><span id="busuanzi_container_site_pv">本站总访问量 <span id="busuanzi_value_site_pv">...</span> 次</span></div>
-    <div class="footer-row">
-      <a href="https://github.com/LiHongwei-cn/lihongwei-cn">GitHub ↗</a>
-    </div>
-  </div>
-
-
-</div>
-
-<script src="assets/counter.js?v=3"></script>
-</body>
-</html>
+1|<!DOCTYPE html>
+2|<html lang="zh-CN">
+3|<head>
+4|<meta charset="UTF-8">
+5|<meta name="viewport" content="width=device-width, initial-scale=1.0">
+6|<meta name="description" content="LiHongwei - MATLAB 仿真 · Python · 微信小程序 · AI 工具">
+7|<title>LiHongwei</title>
+8|<style>
+9|:root {
+10|  --bg: #0d0d16;
+11|  --surface: rgba(255,255,255,0.03);
+12|  --surface-hover: rgba(255,255,255,0.06);
+13|  --border: rgba(255,255,255,0.05);
+14|  --border-hover: rgba(255,255,255,0.1);
+15|  --text: #e8e8ed;
+16|  --dim: rgba(255,255,255,0.42);
+17|  --faint: rgba(255,255,255,0.18);
+18|  --accent: #818cf8;
+19|  --accent-glow: rgba(129,140,248,0.15);
+20|}
+21|
+22|* { margin: 0; padding: 0; box-sizing: border-box; }
+23|
+24|body {
+25|  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+26|  background: var(--bg);
+27|  color: var(--text);
+28|  min-height: 100vh;
+29|  padding: 56px 24px 40px;
+30|  overflow-x: hidden;
+31|  -webkit-font-smoothing: antialiased;
+32|}
+33|
+34|/* 背景光晕 */
+35|body::before {
+36|  content: '';
+37|  position: fixed;
+38|  top: -30%; left: -10%;
+39|  width: 120%; height: 130%;
+40|  background:
+41|    radial-gradient(ellipse at 30% 0%, rgba(99,102,241,0.1) 0%, transparent 55%),
+42|    radial-gradient(ellipse at 75% 70%, rgba(168,85,247,0.06) 0%, transparent 55%),
+43|    radial-gradient(ellipse at 50% 100%, rgba(129,140,248,0.04) 0%, transparent 50%);
+44|  pointer-events: none;
+45|  z-index: 0;
+46|}
+47|
+48|/* 网格纹理 */
+49|body::after {
+50|  content: '';
+51|  position: fixed; inset: 0;
+52|  background-image:
+53|    linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+54|    linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+55|  background-size: 48px 48px;
+56|  pointer-events: none;
+57|  z-index: 0;
+58|}
+59|
+60|.container {
+61|  width: 100%;
+62|  max-width: 1040px;
+63|  margin: 0 auto;
+64|  position: relative;
+65|  z-index: 1;
+66|}
+67|
+68|/* ====== 头部 ====== */
+69|.header {
+70|  text-align: center;
+71|  margin-bottom: 44px;
+72|}
+73|
+74|.avatar {
+75|  width: 80px; height: 80px;
+76|  border-radius: 50%;
+77|  display: block;
+78|  margin: 0 auto 14px;
+79|  object-fit: cover;
+80|  box-shadow: 0 0 0 3px rgba(255,255,255,0.06), 0 8px 32px rgba(0,0,0,0.3);
+81|  transition: transform 0.3s ease, box-shadow 0.3s ease;
+82|}
+83|.avatar:hover {
+84|  transform: scale(1.04);
+85|  box-shadow: 0 0 0 3px rgba(255,255,255,0.1), 0 12px 40px rgba(129,140,248,0.15);
+86|}
+87|
+88|.name {
+89|  font-size: 22px;
+90|  font-weight: 750;
+91|  letter-spacing: -0.4px;
+92|}
+93|
+94|.subtitle {
+95|  font-size: 13px;
+96|  color: var(--dim);
+97|  margin-top: 5px;
+98|  letter-spacing: 0.2px;
+99|}
+100|
+101|.contact {
+102|  margin-top: 12px;
+103|  font-size: 12px;
+104|  color: var(--dim);
+105|  line-height: 1.8;
+106|}
+107|
+108|.contact a {
+109|  color: var(--accent);
+110|  text-decoration: none;
+111|  transition: color 0.2s;
+112|}
+113|
+114|.contact a:hover {
+115|  color: #a5b4fc;
+116|  text-decoration: underline;
+117|}
+118|
+119|/* ====== 仪表盘 ====== */
+120|.dashboard {
+121|  display: grid;
+122|  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+123|  gap: 22px;
+124|  margin-bottom: 36px;
+125|}
+126|
+127|/* ====== 分类区块 ====== */
+128|.cat-section {
+129|  background: var(--surface);
+130|  border: 1px solid var(--border);
+131|  border-radius: 18px;
+132|  padding: 20px 18px 14px;
+133|  transition: border-color 0.25s, background 0.25s;
+134|  position: relative;
+135|  overflow: hidden;
+136|}
+137|
+138|.cat-section::before {
+139|  content: '';
+140|  position: absolute;
+141|  top: 0; left: 0; right: 0;
+142|  height: 1px;
+143|  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+144|  opacity: 0;
+145|  transition: opacity 0.3s;
+146|}
+147|.cat-section:hover::before { opacity: 1; }
+148|.cat-section:hover {
+149|  border-color: var(--border-hover);
+150|  background: rgba(255,255,255,0.04);
+151|}
+152|
+153|.cat-label {
+154|  display: flex;
+155|  align-items: center;
+156|  gap: 9px;
+157|  font-size: 13px;
+158|  font-weight: 700;
+159|  color: var(--text);
+160|  margin-bottom: 16px;
+161|  padding-bottom: 12px;
+162|  border-bottom: 1px solid var(--border);
+163|  letter-spacing: 0.3px;
+164|}
+165|
+166|.nav-grid {
+167|  display: flex;
+168|  flex-direction: column;
+169|  gap: 7px;
+170|}
+171|
+172|/* ====== 卡片 ====== */
+173|.card {
+174|  display: flex;
+175|  align-items: center;
+176|  gap: 12px;
+177|  background: transparent;
+178|  border: 1px solid transparent;
+179|  border-radius: 12px;
+180|  padding: 11px 14px;
+181|  text-decoration: none;
+182|  color: inherit;
+183|  transition: all 0.2s ease;
+184|  cursor: pointer;
+185|  position: relative;
+186|}
+187|
+188|.card:hover {
+189|  background: var(--surface-hover);
+190|  border-color: var(--border);
+191|  transform: translateX(3px);
+192|}
+193|
+194|.card-icon {
+195|  width: 36px; height: 36px;
+196|  border-radius: 10px;
+197|  display: flex;
+198|  align-items: center;
+199|  justify-content: center;
+200|  font-size: 17px;
+201|  flex-shrink: 0;
+202|  transition: transform 0.2s ease, box-shadow 0.2s ease;
+203|}
+204|.card:hover .card-icon {
+205|  transform: scale(1.08);
+206|  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+207|}
+208|
+209|.card-body { flex: 1; min-width: 0; }
+210|
+211|.card-title {
+212|  font-size: 13px;
+213|  font-weight: 600;
+214|  margin-bottom: 2px;
+215|  letter-spacing: -0.15px;
+216|  color: var(--text);
+217|}
+218|
+219|.card-desc {
+220|  font-size: 11px;
+221|  color: var(--dim);
+222|  overflow: hidden;
+223|  text-overflow: ellipsis;
+224|  white-space: nowrap;
+225|}
+226|
+227|.card-badge {
+228|  font-size: 10px;
+229|  color: var(--faint);
+230|  flex-shrink: 0;
+231|  opacity: 0.5;
+232|  transition: opacity 0.2s;
+233|}
+234|.card:hover .card-badge { opacity: 1; }
+235|
+236|/* ====== 底部 ====== */
+237|.footer {
+238|  text-align: center;
+239|  font-size: 12px;
+240|  color: var(--faint);
+241|  padding-top: 8px;
+242|}
+243|
+244|.footer a {
+245|  color: var(--faint);
+246|  text-decoration: none;
+247|  transition: color 0.2s;
+248|}
+249|.footer a:hover { color: rgba(255,255,255,0.45); }
+250|
+251|.footer-row {
+252|  display: flex;
+253|  align-items: center;
+254|  justify-content: center;
+255|  gap: 12px;
+256|  flex-wrap: wrap;
+257|}
+258|.footer-dot {
+259|  width: 3px; height: 3px;
+260|  border-radius: 50%;
+261|  background: rgba(255,255,255,0.08);
+262|}
+263|
+264|.page-counter {
+265|  font-size: 13px;
+266|  color: rgba(255,255,255,0.35);
+267|  margin-bottom: 6px;
+268|}
+269|
+270|/* ====== 响应式 ====== */
+271|@media (max-width: 640px) {
+272|  .dashboard { grid-template-columns: 1fr; gap: 16px; }
+273|  body { padding: 36px 16px 32px; }
+274|  .header { margin-bottom: 32px; }
+275|  .avatar { width: 64px; height: 64px; }
+276|  .name { font-size: 19px; }
+277|  .contact { font-size: 11px; }
+278|  .cat-section { padding: 16px 14px 12px; }
+279|}
+280|
+281|/* ====== 入场动画 ====== */
+282|@keyframes fadeUp {
+283|  from { opacity: 0; transform: translateY(16px); }
+284|  to   { opacity: 1; transform: translateY(0); }
+285|}
+286|
+287|.header      { animation: fadeUp 0.6s ease both; }
+288|.cat-section { animation: fadeUp 0.6s ease both; }
+289|.cat-section:nth-child(1) { animation-delay: 0.1s; }
+290|.cat-section:nth-child(2) { animation-delay: 0.2s; }
+291|.footer      { animation: fadeUp 0.6s ease 0.3s both; }
+292|</style>
+293|</head>
+294|<body>
+295|
+296|<div class="container">
+297|
+298|  <div class="header">
+299|    <img class="avatar" src="avatar.jpg" alt="LiHongwei" />
+300|    <div class="name">LiHongwei</div>
+301|    <div class="contact">
+302|      <a href="mailto:13865358206hp@gmail.com">13865358206hp@gmail.com</a> · 13865358206
+303|    </div>
+304|  </div>
+305|
+306|  <div class="dashboard">
+307|
+308|    <!-- 工具 -->
+309|    <div class="cat-section">
+310|      <div class="cat-label">🛠️ 工具</div>
+311|      <div class="nav-grid">
+312|
+313|        <a class="card" href="mundo-agent/" data-id="mundo-agent">
+314|          <div class="card-icon" style="background:linear-gradient(135deg,#d97706,#b45309)">👑</div>
+315|          <div class="card-body">
+316|            <div class="card-title">MUNDO Agent</div>
+317|            <div class="card-desc">v2.2.3 · 独立 AI 智能体 · 30+ 模型 · 四条铁律 · 脚本优先 · 集体意识 · 自我进化</div>
+318|          </div>
+319|          <span class="card-badge" data-views="..."></span>
+320|        </a>
+321|
+322|        <a class="card" href="skill-store/" data-id="skill-store">
+323|          <div class="card-icon" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">🏪</div>
+324|          <div class="card-body">
+325|            <div class="card-title">Skill 云仓库</div>
+326|            <div class="card-desc">181 个 AI Skill · 22 个分类 · 学术/工程/创意/AI 全覆盖 · 每个独立安装</div>
+327|          </div>
+328|          <span class="card-badge" data-views="..."></span>
+329|        </a>
+330|
+331|        <a class="card" href="matlab/" data-id="matlab">
+332|          <div class="card-icon" style="background:linear-gradient(135deg,#0e7490,#0369a1)">⚡</div>
+333|          <div class="card-body">
+334|            <div class="card-title">MATLAB 仿真工具包</div>
+335|            <div class="card-desc">R2016b 兼容 · 动力学 · 电机控制 · 能量管理 · Simulink 自动生成</div>
+336|          </div>
+337|          <span class="card-badge" data-views="..."></span>
+338|        </a>
+339|
+340|        <a class="card" href="global-specs/" data-id="global-specs">
+341|          <div class="card-icon" style="background:linear-gradient(135deg,#7c3aed,#6d28d9)">📦</div>
+342|          <div class="card-body">
+343|            <div class="card-title">全局规范部署包</div>
+344|            <div class="card-desc">一套规范部署到所有 AI Agent · 6 Agent 适配</div>
+345|          </div>
+346|          <span class="card-badge" data-views="..."></span>
+347|        </a>
+348|
+349|
+350|      </div>
+351|    </div>
+352|
+353|    <!-- 指南 -->
+354|    <div class="cat-section">
+355|      <div class="cat-label">📚 指南</div>
+356|      <div class="nav-grid">
+357|
+358|        <a class="card" href="ai-anatomy/" data-id="ai-anatomy">
+359|          <div class="card-icon" style="background:linear-gradient(135deg,#d97706,#b45309)">🧬</div>
+360|          <div class="card-body">
+361|            <div class="card-title">AI 剖析</div>
+362|            <div class="card-desc">用人体构造理解 AI 模型、Agent、Skill</div>
+363|          </div>
+364|          <span class="card-badge" data-views="..."></span>
+365|        </a>
+366|
+367|        <a class="card" href="claude-code-tutorial/" data-id="claude-code-tutorial">
+368|          <div class="card-icon" style="background:linear-gradient(135deg,#6d28d9,#5b21b6)">📖</div>
+369|          <div class="card-body">
+370|            <div class="card-title">Claude Code 完整指南</div>
+371|            <div class="card-desc">安装 · 国产模型 · 全局规范 · Skill</div>
+372|          </div>
+373|          <span class="card-badge" data-views="..."></span>
+374|        </a>
+375|
+376|        <a class="card" href="hermes-guide/" data-id="hermes-guide">
+377|          <div class="card-icon" style="background:linear-gradient(135deg,#0d9488,#0f766e)">📘</div>
+378|          <div class="card-body">
+379|            <div class="card-title">Hermes Agent 完整指南</div>
+380|            <div class="card-desc">安装 · DeepSeek · Telegram · 全部踩坑解决</div>
+381|          </div>
+382|          <span class="card-badge" data-views="..."></span>
+383|        </a>
+384|
+385|        <a class="card" href="vpn-guide/" data-id="vpn-guide">
+386|          <div class="card-icon" style="background:linear-gradient(135deg,#b91c1c,#991b1b)">🔒</div>
+387|          <div class="card-body">
+388|            <div class="card-title">免费 VPN 自建指南</div>
+389|            <div class="card-desc">Cloudflare 零成本 · 全平台客户端</div>
+390|          </div>
+391|          <span class="card-badge" data-views="..."></span>
+392|        </a>
+393|
+394|        <a class="card" href="win-optimize/" data-id="win-optimize">
+395|          <div class="card-icon" style="background:linear-gradient(135deg,#0e7490,#155e75)">🖥️</div>
+396|          <div class="card-body">
+397|            <div class="card-title">Win / Mac 系统优化</div>
+398|            <div class="card-desc">一行命令瘦身 · 隐私保护 · 开机加速</div>
+399|          </div>
+400|          <span class="card-badge" data-views="..."></span>
+401|        </a>
+402|
+403|      </div>
+404|    </div>
+405|
+406|  </div>
+407|
+408|  <div class="footer">
+409|    <div class="page-counter"><span id="busuanzi_container_site_pv">本站总访问量 <span id="busuanzi_value_site_pv">...</span> 次</span></div>
+410|    <div class="footer-row">
+411|      <a href="https://github.com/LiHongwei-cn/lihongwei-cn">GitHub ↗</a>
+412|    </div>
+413|  </div>
+414|
+415|
+416|</div>
+417|
+418|<script src="assets/counter.js?v=3"></script>
+419|</body>
+420|</html>
+421|

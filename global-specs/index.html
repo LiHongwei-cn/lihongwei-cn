@@ -1,603 +1,630 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="全局规范部署包 — 一套规范，部署到所有 AI Agent。支持 Claude Code / Hermes / Codex / Cursor / Windsurf / Copilot">
-<title>全局规范部署包</title>
-<style>
-:root {
-  --bg: #0d1117;
-  --card: #161b22;
-  --border: #30363d;
-  --text: #e6edf3;
-  --dim: rgba(255,255,255,0.5);
-  --accent: #58a6ff;
-  --green: #3fb950;
-  --orange: #d29922;
-  --red: #f85149;
-  --purple: #a371f7;
-  --purple-dim: rgba(163,113,247,0.1);
-  --radius: 12px;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.7}
-.container{max-width:860px;margin:0 auto;padding:32px 24px 80px}
-
-/* Back link */
-.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color 0.2s}
-.back-link:hover{color:var(--text)}
-
-/* Hero */
-.hero{text-align:center;padding:40px 0 24px}
-.hero-badge{display:inline-block;background:rgba(163,113,247,0.1);color:var(--purple);border:1px solid rgba(163,113,247,0.2);padding:4px 14px;border-radius:20px;font-size:12px;margin-bottom:16px;letter-spacing:1px}
-.hero h1{font-size:36px;font-weight:800;background:linear-gradient(135deg,#a371f7,#58a6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
-.hero p{font-size:15px;color:var(--dim);max-width:640px;margin:0 auto}
-
-/* Section */
-.section{margin-bottom:44px}
-.section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px;color:var(--text)}
-.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--purple-dim);color:var(--purple);font-size:14px;font-weight:700;flex-shrink:0}
-.section-title .icon{font-size:20px}
-
-/* What-is box */
-.what-is{background:linear-gradient(135deg,rgba(88,166,255,0.06),rgba(163,113,247,0.06));border:1px solid rgba(88,166,255,0.12);border-radius:var(--radius);padding:22px 28px;margin-bottom:28px}
-.what-is h3{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:10px}
-.what-is p{font-size:13px;color:var(--dim);line-height:1.8;margin-bottom:6px}
-.what-is p:last-child{margin-bottom:0}
-
-/* Download box */
-.dl-box{background:var(--purple-dim);border:1px solid rgba(163,113,247,0.2);border-radius:var(--radius);padding:28px 32px;text-align:center;margin-bottom:24px}
-.dl-box h3{font-size:16px;font-weight:700;color:var(--purple);margin-bottom:8px}
-.dl-box p{font-size:13px;color:var(--dim);margin-bottom:16px}
-.dl-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.dl-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c3aed,#4c72ff);color:#fff;text-decoration:none;padding:12px 28px;border-radius:var(--radius);font-size:14px;font-weight:600;transition:transform 0.15s,box-shadow 0.15s}
-.dl-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(124,58,237,0.3)}
-.dl-btn.clone{background:linear-gradient(135deg,#238636,#1a7f37)}
-.dl-btn.clone:hover{box-shadow:0 8px 24px rgba(35,134,54,0.3)}
-
-/* Package grid */
-.pkg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
-.pkg-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;transition:border-color 0.2s}
-.pkg-card:hover{border-color:rgba(163,113,247,0.3)}
-.pkg-card h4{font-size:14px;font-weight:600;margin-bottom:4px;color:var(--text)}
-.pkg-card p{font-size:12px;color:var(--dim)}
-
-/* Step list */
-.step-list{display:flex;flex-direction:column;gap:10px}
-.step-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;padding-left:56px;position:relative}
-.step-item .step-num{position:absolute;left:16px;top:18px;width:26px;height:26px;border-radius:8px;background:var(--purple-dim);color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
-.step-item h4{font-size:14px;font-weight:600;margin-bottom:4px;color:var(--text)}
-.step-item .desc{font-size:13px;color:var(--dim);line-height:1.6}
-.step-item .gotcha{font-size:12px;color:var(--orange);margin-top:6px;padding:6px 10px;background:rgba(210,153,34,0.06);border-radius:6px;border-left:2px solid rgba(210,153,34,0.3)}
-.step-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:var(--purple)}
-.step-item .cmd{background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 16px;margin-top:6px;font-family:'Consolas','Cascadia Code','Courier New',monospace;font-size:13px;color:#b8c7ff;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
-
-/* Platform tabs */
-.platform-tabs{display:flex;gap:4px;margin-bottom:16px}
-.platform-tab{padding:7px 18px;border-radius:8px 8px 0 0;border:1px solid var(--border);background:var(--card);color:var(--dim);cursor:pointer;font-size:13px;font-weight:600;transition:all 0.15s;user-select:none}
-.platform-tab.active{background:var(--purple-dim);color:var(--purple);border-color:rgba(163,113,247,0.25)}
-
-/* Tips */
-.tip{background:rgba(210,153,34,0.07);border:1px solid rgba(210,153,34,0.12);border-radius:var(--radius);padding:14px 18px;font-size:13px;color:var(--orange);margin-top:12px}
-.tip.info{background:rgba(88,166,255,0.07);border-color:rgba(88,166,255,0.12);color:var(--accent)}
-.tip.green{background:rgba(63,185,80,0.07);border-color:rgba(63,185,80,0.12);color:var(--green)}
-
-/* After-install: directory tree */
-.tree{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;font-family:'Consolas','Cascadia Code','Courier New',monospace;font-size:12px;line-height:1.8;overflow-x:auto;white-space:pre;color:var(--dim)}
-.tree .dir{color:var(--accent)}
-.tree .file{color:var(--dim)}
-.tree .hl{color:var(--green)}
-
-/* Skills grid */
-.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
-.skill-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;transition:border-color 0.2s,transform 0.15s;cursor:default}
-.skill-card:hover{border-color:rgba(163,113,247,0.3);transform:translateY(-1px)}
-.skill-card .skill-icon{font-size:22px;margin-bottom:8px}
-.skill-card .skill-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
-.skill-card .skill-desc{font-size:12px;color:var(--dim);line-height:1.5;margin-bottom:6px}
-.skill-card .skill-trigger{font-size:11px;color:var(--purple);font-family:'Consolas','Cascadia Code','Courier New',monospace;background:var(--purple-dim);padding:2px 8px;border-radius:4px;display:inline-block}
-
-/* FAQ */
-.faq-list{display:flex;flex-direction:column;gap:8px}
-.faq-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
-.faq-q{padding:14px 18px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;user-select:none;transition:background 0.15s}
-.faq-q:hover{background:rgba(255,255,255,0.02)}
-.faq-q .faq-arrow{font-size:11px;transition:transform 0.2s;color:var(--dim)}
-.faq-a{padding:0 18px 14px;font-size:13px;color:var(--dim);line-height:1.7;display:none}
-.faq-item.open .faq-a{display:block}
-.faq-item.open .faq-arrow{transform:rotate(90deg)}
-.faq-a code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:var(--purple)}
-.faq-a .cmd{background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 14px;margin:6px 0;font-family:'Consolas','Cascadia Code','Courier New',monospace;font-size:12px;color:#b8c7ff;overflow-x:auto;white-space:pre-wrap}
-
-/* Footer */
-.footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:32px}
-.footer a{color:rgba(255,255,255,0.35);text-decoration:none}
-.footer a:hover{color:rgba(255,255,255,0.6)}
-
-/* Badge */
-.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;margin-left:4px}
-.badge.mac{background:rgba(88,166,255,0.12);color:var(--accent)}
-.badge.win{background:rgba(210,153,34,0.12);color:var(--orange)}
-
-@media(max-width:640px){
-  .container{padding:20px 16px 60px}
-  .hero h1{font-size:26px}
-  .pkg-grid{grid-template-columns:1fr}
-  .skills-grid{grid-template-columns:1fr}
-  .step-item{padding:16px 16px 16px 48px}
-  .step-item .step-num{left:14px;top:16px;width:22px;height:22px;font-size:11px}
-  .dl-row{flex-direction:column;align-items:center}
-  .dl-box{padding:20px}
-}
-</style>
-</head>
-<body>
-<div class="container">
-
-  <a class="back-link" href="../">← 返回主页</a>
-
-  <!-- ===== Hero ===== -->
-  <div class="hero">
-    <div class="hero-badge">macOS / Windows / Linux</div>
-    <h1>全局规范部署包</h1>
-    <p>一套规范，部署到所有 AI Agent。<br>Claude Code / Hermes / Codex / Cursor / Windsurf / Copilot — 一条命令全搞定。</p>
-  </div>
-
-  <!-- ===== 这是什么 ===== -->
-  <div class="what-is" id="what">
-    <h3>💡 这是什么？</h3>
-    <p>
-      全局规范部署包是一套<strong>跨 Agent 的通用行为规范</strong>。安装后，你所有正在使用的 AI Agent 都会自动遵循同一套代码风格、安全红线、辩证思维规范。
-    </p>
-    <p>
-      它支持 <strong>6 个 Agent</strong>：Claude Code、Hermes Agent、OpenAI Codex、Cursor、Windsurf、GitHub Copilot。安装脚本自动检测你装了哪些 Agent，只部署对应的配置。
-    </p>
-    <p>
-      <strong>一句话</strong>：一套规范管所有 AI。改一次，全部生效。
-    </p>
-  </div>
-
-  <!-- ===== 下载 ===== -->
-  <div class="section">
-    <div class="dl-box">
-      <h3>⬇ 获取部署包</h3>
-      <p>任选一种方式</p>
-      <div class="dl-row">
-        <a class="dl-btn" href="https://github.com/your-username/your-repo/archive/refs/heads/main.zip">
-          📦 下载 ZIP
-        </a>
-        <a class="dl-btn clone" href="https://github.com/your-username/your-repo">
-          🧬 Clone 仓库
-        </a>
-      </div>
-      <p style="margin-top:12px;font-size:11px;color:rgba(255,255,255,0.2)">
-        部署包位于仓库的 <code>global-specs/</code> 目录
-      </p>
-    </div>
-  </div>
-
-  <!-- ===== 包含内容 ===== -->
-  <div class="section">
-    <h2 class="section-title"><span class="num">1</span> 包含内容</h2>
-    <div class="pkg-grid">
-      <div class="pkg-card">
-        <h4>🌐 通用规范核心</h4>
-        <p>core-spec.md — 代码风格 · 安全红线 · 辩证思维 · Git 规范 · 跨平台要求。所有 Agent 共享同一份。</p>
-      </div>
-      <div class="pkg-card">
-        <h4>🧩 6 个 Agent 适配</h4>
-        <p>Claude Code · Hermes · Codex · Cursor · Windsurf · Copilot — 自动检测，按需部署</p>
-      </div>
-      <div class="pkg-card">
-        <h4>📐 6 大规范</h4>
-        <p>代码风格 · Git 工作流 · 测试 · 性能 · Agent 调度 · 安全</p>
-      </div>
-      <div class="pkg-card">
-        <h4>🧠 14 个 Skills</h4>
-        <p>代码洁癖 · 知识审查 · 蒙多跨界 · 论文全流程 · 首页布局 · 安全审查</p>
-      </div>
-      <div class="pkg-card">
-        <h4>📦 一键部署脚本</h4>
-        <p>install.sh（macOS/Linux）· install.bat（Windows）— 检测已安装 Agent，只部署对应的</p>
-      </div>
-      <div class="pkg-card">
-        <h4>📄 项目模板</h4>
-        <p>通用规范模板，复制到新项目即可让任何 Agent 遵循你的规范</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== 详细安装步骤 ===== -->
-  <div class="section">
-    <h2 class="section-title"><span class="num">2</span> 安装步骤</h2>
-
-    <div class="platform-tabs" id="install-tabs">
-      <div class="platform-tab active" data-os="mac">🍎 macOS / Linux</div>
-      <div class="platform-tab" data-os="win">🪟 Windows</div>
-    </div>
-
-    <!-- macOS / Linux -->
-    <div class="step-list" id="steps-mac">
-      <p style="font-size:13px;color:var(--dim);margin-bottom:10px">
-        进入 <code>global-specs/</code> 目录，然后运行安装脚本：
-      </p>
-
-      <div class="step-item">
-        <span class="step-num">1</span>
-        <h4>赋予执行权限</h4>
-        <p class="desc">给安装脚本添加可执行权限，让脚本可以运行。</p>
-        <div class="cmd">chmod +x install.sh</div>
-        <div class="gotcha">⚠ 常见问题：如果提示 <code>Permission denied</code>，说明文件权限不正确，执行上面的命令即可。</div>
-      </div>
-
-      <div class="step-item">
-        <span class="step-num">2</span>
-        <h4>运行安装脚本</h4>
-        <p class="desc">脚本自动检测已安装的 Agent（Claude Code / Hermes / Codex 等），只部署对应的配置文件到各 Agent 的配置目录。</p>
-        <div class="cmd">./install.sh</div>
-        <div class="gotcha">⚠ 脚本会检测 ~/.claude/、~/.hermes/、~/.codex/ 等目录。未安装的 Agent 自动跳过。</div>
-      </div>
-
-      <div class="step-item">
-        <span class="step-num">3</span>
-        <h4>编辑 API Key</h4>
-        <p class="desc">安装完成后，打开 <code>~/.claude/settings.json</code>，将占位 Key 替换为你的真实 DeepSeek API Key。</p>
-        <div class="cmd">vim ~/.claude/settings.json
-# 或
-open ~/.claude/settings.json</div>
-        <div class="gotcha">⚠ 常见问题：如果已有 <code>settings.json</code>，安装脚本不会覆盖它。此时需手动对比合并，或删除旧文件重新安装。</div>
-      </div>
-
-      <div class="step-item">
-        <span class="step-num">4</span>
-        <h4>验证安装</h4>
-        <p class="desc">启动 Claude Code，输入 <code>/neat</code> 测试 Skill 是否正常加载。</p>
-        <div class="cmd">claude
-/neat</div>
-        <div class="gotcha" style="color:var(--green);border-color:rgba(63,185,80,0.25);background:rgba(63,185,80,0.04)">✓ 如果 Skill 开始盘点文件，说明部署成功。</div>
-      </div>
-    </div>
-
-    <!-- Windows -->
-    <div class="step-list" id="steps-win" style="display:none">
-      <p style="font-size:13px;color:var(--dim);margin-bottom:10px">
-        进入 <code>global-specs\</code> 目录，然后：
-      </p>
-
-      <div class="step-item">
-        <span class="step-num">1</span>
-        <h4>双击运行安装脚本</h4>
-        <p class="desc">双击 <code>install.bat</code>，或在终端中运行它。脚本会自动检查 Claude Code 是否已安装，然后部署所有文件到 <code>%USERPROFILE%\.claude\</code>。</p>
-        <div class="cmd">install.bat</div>
-        <div class="gotcha">⚠ 常见问题：如果窗口一闪而过，在终端里运行 <code>install.bat</code> 可以看到报错信息。也可以右键 →「以管理员身份运行」试试。</div>
-      </div>
-
-      <div class="step-item">
-        <span class="step-num">2</span>
-        <h4>编辑 API Key</h4>
-        <p class="desc">安装完成后，用记事本打开 <code>%USERPROFILE%\.claude\settings.json</code>，将占位 Key 替换为真实 DeepSeek API Key。</p>
-        <div class="cmd">notepad %USERPROFILE%\.claude\settings.json</div>
-        <div class="gotcha">⚠ 常见问题：如果已有 <code>settings.json</code>，脚本不会覆盖。需手动合并或备份后重装。</div>
-      </div>
-
-      <div class="step-item">
-        <span class="step-num">3</span>
-        <h4>验证安装</h4>
-        <p class="desc">启动 Claude Code，输入 <code>/neat</code> 测试。</p>
-        <div class="cmd">claude
-/neat</div>
-        <div class="gotcha" style="color:var(--green);border-color:rgba(63,185,80,0.25);background:rgba(63,185,80,0.04)">✓ Skill 开始盘点文件 → 部署成功。</div>
-      </div>
-    </div>
-
-    <div class="tip info" style="margin-top:16px">
-      💡 安装脚本不会覆盖已有的 <code>settings.json</code> 和 <code>settings.local.json</code>，保护你的现有配置。
-    </div>
-  </div>
-
-  <!-- ===== 安装后效果 ===== -->
-  <div class="section">
-    <h2 class="section-title"><span class="num">3</span> 安装后效果</h2>
-
-    <p style="font-size:13px;color:var(--dim);margin-bottom:12px">
-      安装完成后，你的 <code>~/.claude/</code> 目录结构如下：
-    </p>
-    <div class="tree">
-<span class="dir">~/.claude/</span>
-├── <span class="file">CLAUDE.md</span>                <span class="hl">← 全局指令（代码洁癖 · 安装洁癖 · 蒙多 · 记忆系统）</span>
-├── <span class="file">settings.json</span>             <span class="hl">← API 配置（DeepSeek 接入）</span>
-├── <span class="file">settings.local.json</span>       <span class="hl">← 本地覆盖配置</span>
-├── <span class="dir">rules/</span>
-│   ├── <span class="file">coding-style.md</span>        <span class="hl">← 代码风格规范</span>
-│   ├── <span class="file">git-workflow.md</span>        <span class="hl">← Git 工作流规范</span>
-│   ├── <span class="file">testing.md</span>              <span class="hl">← 测试规范</span>
-│   ├── <span class="file">performance.md</span>          <span class="hl">← 性能规范</span>
-│   ├── <span class="file">agents.md</span>               <span class="hl">← Agent 调度规范</span>
-│   └── <span class="file">security.md</span>             <span class="hl">← 安全红线规范</span>
-└── <span class="dir">skills/</span>
-    ├── <span class="dir">code-tidy/</span>              <span class="hl">← 代码洁癖整理</span>
-    ├── <span class="dir">neat-freak/</span>             <span class="hl">← 知识库洁癖审查</span>
-    ├── <span class="dir">蒙多/</span>                   <span class="hl">← 跨界学习引擎</span>
-    ├── <span class="dir">homepage-layout/</span>        <span class="hl">← 首页布局自检</span>
-    ├── <span class="dir">nature-writing/</span>         <span class="hl">← Nature 级论文撰写</span>
-    ├── <span class="dir">nature-polishing/</span>       <span class="hl">← Nature 级论文润色</span>
-    ├── <span class="dir">nature-figure/</span>          <span class="hl">← 论文配图制作</span>
-    ├── <span class="dir">nature-citation/</span>        <span class="hl">← 引用匹配</span>
-    ├── <span class="dir">nature-data/</span>            <span class="hl">← 数据可用性声明</span>
-    ├── <span class="dir">nature-reader/</span>          <span class="hl">← 论文翻译/精读</span>
+1|<!DOCTYPE html>
+2|<html lang="zh-CN">
+3|<head>
+4|<meta charset="UTF-8">
+5|<meta name="viewport" content="width=device-width, initial-scale=1.0">
+6|<meta name="description" content="全局规范部署包 — 一套规范，部署到所有 AI Agent。支持 Claude Code / Hermes / Codex / Cursor / Windsurf / Copilot">
+7|<title>全局规范部署包</title>
+8|<style>
+9|:root {
+10|  --bg: #0d1117;
+11|  --card: #161b22;
+12|  --border: #30363d;
+13|  --text: #e6edf3;
+14|  --dim: rgba(255,255,255,0.5);
+15|  --accent: #58a6ff;
+16|  --green: #3fb950;
+17|  --orange: #d29922;
+18|  --red: #f85149;
+19|  --purple: #a371f7;
+20|  --purple-dim: rgba(163,113,247,0.1);
+21|  --radius: 12px;
+22|}
+23|*{margin:0;padding:0;box-sizing:border-box}
+24|html{scroll-behavior:smooth}
+25|body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.7}
+26|.container{max-width:860px;margin:0 auto;padding:32px 24px 80px}
+27|
+28|/* Back link */
+29|.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color 0.2s}
+30|.back-link:hover{color:var(--text)}
+31|
+32|/* Hero */
+33|.hero{text-align:center;padding:40px 0 24px}
+34|.hero-badge{display:inline-block;background:rgba(163,113,247,0.1);color:var(--purple);border:1px solid rgba(163,113,247,0.2);padding:4px 14px;border-radius:20px;font-size:12px;margin-bottom:16px;letter-spacing:1px}
+35|.hero h1{font-size:36px;font-weight:800;background:linear-gradient(135deg,#a371f7,#58a6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
+36|.hero p{font-size:15px;color:var(--dim);max-width:640px;margin:0 auto}
+37|
+38|/* Section */
+39|.section{margin-bottom:44px}
+40|.section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px;color:var(--text)}
+41|.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--purple-dim);color:var(--purple);font-size:14px;font-weight:700;flex-shrink:0}
+42|.section-title .icon{font-size:20px}
+43|
+44|/* What-is box */
+45|.what-is{background:linear-gradient(135deg,rgba(88,166,255,0.06),rgba(163,113,247,0.06));border:1px solid rgba(88,166,255,0.12);border-radius:var(--radius);padding:22px 28px;margin-bottom:28px}
+46|.what-is h3{font-size:15px;font-weight:700;color:var(--accent);margin-bottom:10px}
+47|.what-is p{font-size:13px;color:var(--dim);line-height:1.8;margin-bottom:6px}
+48|.what-is p:last-child{margin-bottom:0}
+49|
+50|/* Download box */
+51|.dl-box{background:var(--purple-dim);border:1px solid rgba(163,113,247,0.2);border-radius:var(--radius);padding:28px 32px;text-align:center;margin-bottom:24px}
+52|.dl-box h3{font-size:16px;font-weight:700;color:var(--purple);margin-bottom:8px}
+53|.dl-box p{font-size:13px;color:var(--dim);margin-bottom:16px}
+54|.dl-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+55|.dl-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#7c3aed,#4c72ff);color:#fff;text-decoration:none;padding:12px 28px;border-radius:var(--radius);font-size:14px;font-weight:600;transition:transform 0.15s,box-shadow 0.15s}
+56|.dl-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(124,58,237,0.3)}
+57|.dl-btn.clone{background:linear-gradient(135deg,#238636,#1a7f37)}
+58|.dl-btn.clone:hover{box-shadow:0 8px 24px rgba(35,134,54,0.3)}
+59|
+60|/* Package grid */
+61|.pkg-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+62|.pkg-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;transition:border-color 0.2s}
+63|.pkg-card:hover{border-color:rgba(163,113,247,0.3)}
+64|.pkg-card h4{font-size:14px;font-weight:600;margin-bottom:4px;color:var(--text)}
+65|.pkg-card p{font-size:12px;color:var(--dim)}
+66|
+67|/* Step list */
+68|.step-list{display:flex;flex-direction:column;gap:10px}
+69|.step-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;padding-left:56px;position:relative}
+70|.step-item .step-num{position:absolute;left:16px;top:18px;width:26px;height:26px;border-radius:8px;background:var(--purple-dim);color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+71|.step-item h4{font-size:14px;font-weight:600;margin-bottom:4px;color:var(--text)}
+72|.step-item .desc{font-size:13px;color:var(--dim);line-height:1.6}
+73|.step-item .gotcha{font-size:12px;color:var(--orange);margin-top:6px;padding:6px 10px;background:rgba(210,153,34,0.06);border-radius:6px;border-left:2px solid rgba(210,153,34,0.3)}
+74|.step-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:var(--purple)}
+75|.step-item .cmd{background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 16px;margin-top:6px;font-family:'Consolas','Cascadia Code','Courier New',monospace;font-size:13px;color:#b8c7ff;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+76|
+77|/* Platform tabs */
+78|.platform-tabs{display:flex;gap:4px;margin-bottom:16px}
+79|.platform-tab{padding:7px 18px;border-radius:8px 8px 0 0;border:1px solid var(--border);background:var(--card);color:var(--dim);cursor:pointer;font-size:13px;font-weight:600;transition:all 0.15s;user-select:none}
+80|.platform-tab.active{background:var(--purple-dim);color:var(--purple);border-color:rgba(163,113,247,0.25)}
+81|
+82|/* Tips */
+83|.tip{background:rgba(210,153,34,0.07);border:1px solid rgba(210,153,34,0.12);border-radius:var(--radius);padding:14px 18px;font-size:13px;color:var(--orange);margin-top:12px}
+84|.tip.info{background:rgba(88,166,255,0.07);border-color:rgba(88,166,255,0.12);color:var(--accent)}
+85|.tip.green{background:rgba(63,185,80,0.07);border-color:rgba(63,185,80,0.12);color:var(--green)}
+86|
+87|/* After-install: directory tree */
+88|.tree{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;font-family:'Consolas','Cascadia Code','Courier New',monospace;font-size:12px;line-height:1.8;overflow-x:auto;white-space:pre;color:var(--dim)}
+89|.tree .dir{color:var(--accent)}
+90|.tree .file{color:var(--dim)}
+91|.tree .hl{color:var(--green)}
+92|
+93|/* Skills grid */
+94|.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+95|.skill-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;transition:border-color 0.2s,transform 0.15s;cursor:default}
+96|.skill-card:hover{border-color:rgba(163,113,247,0.3);transform:translateY(-1px)}
+97|.skill-card .skill-icon{font-size:22px;margin-bottom:8px}
+98|.skill-card .skill-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+99|.skill-card .skill-desc{font-size:12px;color:var(--dim);line-height:1.5;margin-bottom:6px}
+100|.skill-card .skill-trigger{font-size:11px;color:var(--purple);font-family:'Consolas','Cascadia Code','Courier New',monospace;background:var(--purple-dim);padding:2px 8px;border-radius:4px;display:inline-block}
+101|
+102|/* FAQ */
+103|.faq-list{display:flex;flex-direction:column;gap:8px}
+104|.faq-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+105|.faq-q{padding:14px 18px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;user-select:none;transition:background 0.15s}
+106|.faq-q:hover{background:rgba(255,255,255,0.02)}
+107|.faq-q .faq-arrow{font-size:11px;transition:transform 0.2s;color:var(--dim)}
+108|.faq-a{padding:0 18px 14px;font-size:13px;color:var(--dim);line-height:1.7;display:none}
+109|.faq-item.open .faq-a{display:block}
+110|.faq-item.open .faq-arrow{transform:rotate(90deg)}
+111|.faq-a code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:var(--purple)}
+112|.faq-a .cmd{background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px 14px;margin:6px 0;font-family:'Consolas','Cascadia Code','Courier New',monospace;font-size:12px;color:#b8c7ff;overflow-x:auto;white-space:pre-wrap}
+113|
+114|/* Footer */
+115|.footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:32px}
+116|.footer a{color:rgba(255,255,255,0.35);text-decoration:none}
+117|.footer a:hover{color:rgba(255,255,255,0.6)}
+118|
+119|/* Badge */
+120|.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;margin-left:4px}
+121|.badge.mac{background:rgba(88,166,255,0.12);color:var(--accent)}
+122|.badge.win{background:rgba(210,153,34,0.12);color:var(--orange)}
+123|
+124|@media(max-width:640px){
+125|  .container{padding:20px 16px 60px}
+126|  .hero h1{font-size:26px}
+127|  .pkg-grid{grid-template-columns:1fr}
+128|  .skills-grid{grid-template-columns:1fr}
+129|  .step-item{padding:16px 16px 16px 48px}
+130|  .step-item .step-num{left:14px;top:16px;width:22px;height:22px;font-size:11px}
+131|  .dl-row{flex-direction:column;align-items:center}
+132|  .dl-box{padding:20px}
+133|}
+134|</style>
+135|</head>
+136|<body>
+137|<div class="container">
+138|
+139|  <a class="back-link" href="../">← 返回主页</a>
+140|
+141|  <!-- ===== Hero ===== -->
+142|  <div class="hero">
+143|    <div class="hero-badge">macOS / Windows / Linux</div>
+144|    <h1>全局规范部署包</h1>
+145|    <p>一套规范，部署到所有 AI Agent。<br>Claude Code / Hermes / Codex / Cursor / Windsurf / Copilot — 一条命令全搞定。</p>
+146|  </div>
+147|
+148|  <!-- ===== 这是什么 ===== -->
+149|  <div class="what-is" id="what">
+150|    <h3>💡 这是什么？</h3>
+151|    <p>
+152|      全局规范部署包是一套<strong>跨 Agent 的通用行为规范</strong>。安装后，你所有正在使用的 AI Agent 都会自动遵循同一套代码风格、安全红线、辩证思维规范。
+153|    </p>
+154|    <p>
+155|      它支持 <strong>6 个 Agent</strong>：Claude Code、Hermes Agent、OpenAI Codex、Cursor、Windsurf、GitHub Copilot。安装脚本自动检测你装了哪些 Agent，只部署对应的配置。
+156|    </p>
+157|    <p>
+158|      <strong>一句话</strong>：一套规范管所有 AI。改一次，全部生效。
+159|    </p>
+160|  </div>
+161|
+162|  <!-- ===== 下载 ===== -->
+163|  <div class="section">
+164|    <div class="dl-box">
+165|      <h3>⬇ 获取部署包</h3>
+166|      <p>任选一种方式</p>
+167|      <div class="dl-row">
+168|        <a class="dl-btn" href="https://github.com/LiHongwei-cn/lihongwei-cn/archive/refs/heads/main.zip">
+169|          📦 下载 ZIP
+170|        </a>
+171|        <a class="dl-btn clone" href="https://github.com/LiHongwei-cn/lihongwei-cn">
+172|          🧬 Clone 仓库
+173|        </a>
+174|      </div>
+175|      <p style="margin-top:12px;font-size:11px;color:rgba(255,255,255,0.2)">
+176|        部署包位于仓库的 <code>global-specs/</code> 目录
+177|      </p>
+178|    </div>
+179|  </div>
+180|
+181|  <!-- ===== 包含内容 ===== -->
+182|  <div class="section">
+183|    <h2 class="section-title"><span class="num">1</span> 包含内容</h2>
+184|    <div class="pkg-grid">
+185|      <div class="pkg-card">
+186|        <h4>🌐 通用规范核心</h4>
+187|        <p>core-spec.md — 代码风格 · 安全红线 · 辩证思维 · Git 规范 · 跨平台要求。所有 Agent 共享同一份。</p>
+188|      </div>
+189|      <div class="pkg-card">
+190|        <h4>🧩 6 个 Agent 适配</h4>
+191|        <p>Claude Code · Hermes · Codex · Cursor · Windsurf · Copilot — 自动检测，按需部署</p>
+192|      </div>
+193|      <div class="pkg-card">
+194|        <h4>📐 6 大规范</h4>
+195|        <p>代码风格 · Git 工作流 · 测试 · 性能 · Agent 调度 · 安全</p>
+196|      </div>
+197|      <div class="pkg-card">
+198|        <h4>🧠 17 个 Skills</h4>
+199|        <p>代码洁癖 · 知识审查 · 蒙多跨界 · 论文全流程 · 首页布局 · 安全审查</p>
+200|      </div>
+201|      <div class="pkg-card">
+202|        <h4>📦 一键部署脚本</h4>
+203|        <p>install.sh（macOS/Linux）· install.bat（Windows）— 检测已安装 Agent，只部署对应的</p>
+204|      </div>
+205|      <div class="pkg-card">
+206|        <h4>📄 项目模板</h4>
+207|        <p>通用规范模板，复制到新项目即可让任何 Agent 遵循你的规范</p>
+208|      </div>
+209|    </div>
+210|  </div>
+211|
+212|  <!-- ===== 详细安装步骤 ===== -->
+213|  <div class="section">
+214|    <h2 class="section-title"><span class="num">2</span> 安装步骤</h2>
+215|
+216|    <div class="platform-tabs" id="install-tabs">
+217|      <div class="platform-tab active" data-os="mac">🍎 macOS / Linux</div>
+218|      <div class="platform-tab" data-os="win">🪟 Windows</div>
+219|    </div>
+220|
+221|    <!-- macOS / Linux -->
+222|    <div class="step-list" id="steps-mac">
+223|      <p style="font-size:13px;color:var(--dim);margin-bottom:10px">
+224|        进入 <code>global-specs/</code> 目录，然后运行安装脚本：
+225|      </p>
+226|
+227|      <div class="step-item">
+228|        <span class="step-num">1</span>
+229|        <h4>赋予执行权限</h4>
+230|        <p class="desc">给安装脚本添加可执行权限，让脚本可以运行。</p>
+231|        <div class="cmd">chmod +x install.sh</div>
+232|        <div class="gotcha">⚠ 常见问题：如果提示 <code>Permission denied</code>，说明文件权限不正确，执行上面的命令即可。</div>
+233|      </div>
+234|
+235|      <div class="step-item">
+236|        <span class="step-num">2</span>
+237|        <h4>运行安装脚本</h4>
+238|        <p class="desc">脚本自动检测已安装的 Agent（Claude Code / Hermes / Codex 等），只部署对应的配置文件到各 Agent 的配置目录。</p>
+239|        <div class="cmd">./install.sh</div>
+240|        <div class="gotcha">⚠ 脚本会检测 ~/.claude/、~/.hermes/、~/.codex/ 等目录。未安装的 Agent 自动跳过。</div>
+241|      </div>
+242|
+243|      <div class="step-item">
+244|        <span class="step-num">3</span>
+245|        <h4>编辑 API Key</h4>
+246|        <p class="desc">安装完成后，打开 <code>~/.claude/settings.json</code>，将占位 Key 替换为你的真实 DeepSeek API Key。</p>
+247|        <div class="cmd">vim ~/.claude/settings.json
+248|# 或
+249|open ~/.claude/settings.json</div>
+250|        <div class="gotcha">⚠ 常见问题：如果已有 <code>settings.json</code>，安装脚本不会覆盖它。此时需手动对比合并，或删除旧文件重新安装。</div>
+251|      </div>
+252|
+253|      <div class="step-item">
+254|        <span class="step-num">4</span>
+255|        <h4>验证安装</h4>
+256|        <p class="desc">启动 Claude Code，输入 <code>/neat</code> 测试 Skill 是否正常加载。</p>
+257|        <div class="cmd">claude
+258|/neat</div>
+259|        <div class="gotcha" style="color:var(--green);border-color:rgba(63,185,80,0.25);background:rgba(63,185,80,0.04)">✓ 如果 Skill 开始盘点文件，说明部署成功。</div>
+260|      </div>
+261|    </div>
+262|
+263|    <!-- Windows -->
+264|    <div class="step-list" id="steps-win" style="display:none">
+265|      <p style="font-size:13px;color:var(--dim);margin-bottom:10px">
+266|        进入 <code>global-specs\</code> 目录，然后：
+267|      </p>
+268|
+269|      <div class="step-item">
+270|        <span class="step-num">1</span>
+271|        <h4>双击运行安装脚本</h4>
+272|        <p class="desc">双击 <code>install.bat</code>，或在终端中运行它。脚本会自动检查 Claude Code 是否已安装，然后部署所有文件到 <code>%USERPROFILE%\.claude\</code>。</p>
+273|        <div class="cmd">install.bat</div>
+274|        <div class="gotcha">⚠ 常见问题：如果窗口一闪而过，在终端里运行 <code>install.bat</code> 可以看到报错信息。也可以右键 →「以管理员身份运行」试试。</div>
+275|      </div>
+276|
+277|      <div class="step-item">
+278|        <span class="step-num">2</span>
+279|        <h4>编辑 API Key</h4>
+280|        <p class="desc">安装完成后，用记事本打开 <code>%USERPROFILE%\.claude\settings.json</code>，将占位 Key 替换为真实 DeepSeek API Key。</p>
+281|        <div class="cmd">notepad %USERPROFILE%\.claude\settings.json</div>
+282|        <div class="gotcha">⚠ 常见问题：如果已有 <code>settings.json</code>，脚本不会覆盖。需手动合并或备份后重装。</div>
+283|      </div>
+284|
+285|      <div class="step-item">
+286|        <span class="step-num">3</span>
+287|        <h4>验证安装</h4>
+288|        <p class="desc">启动 Claude Code，输入 <code>/neat</code> 测试。</p>
+289|        <div class="cmd">claude
+290|/neat</div>
+291|        <div class="gotcha" style="color:var(--green);border-color:rgba(63,185,80,0.25);background:rgba(63,185,80,0.04)">✓ Skill 开始盘点文件 → 部署成功。</div>
+292|      </div>
+293|    </div>
+294|
+295|    <div class="tip info" style="margin-top:16px">
+296|      💡 安装脚本不会覆盖已有的 <code>settings.json</code> 和 <code>settings.local.json</code>，保护你的现有配置。
+297|    </div>
+298|  </div>
+299|
+300|  <!-- ===== 安装后效果 ===== -->
+301|  <div class="section">
+302|    <h2 class="section-title"><span class="num">3</span> 安装后效果</h2>
+303|
+304|    <p style="font-size:13px;color:var(--dim);margin-bottom:12px">
+305|      安装完成后，你的 <code>~/.claude/</code> 目录结构如下：
+306|    </p>
+307|    <div class="tree">
+308|<span class="dir">~/.claude/</span>
+309|├── <span class="file">CLAUDE.md</span>                <span class="hl">← 全局指令（代码洁癖 · 安装洁癖 · 蒙多 · 记忆系统）</span>
+310|├── <span class="file">settings.json</span>             <span class="hl">← API 配置（DeepSeek 接入）</span>
+311|├── <span class="file">settings.local.json</span>       <span class="hl">← 本地覆盖配置</span>
+312|├── <span class="dir">rules/</span>
+313|│   ├── <span class="file">coding-style.md</span>        <span class="hl">← 代码风格规范</span>
+314|│   ├── <span class="file">git-workflow.md</span>        <span class="hl">← Git 工作流规范</span>
+315|│   ├── <span class="file">testing.md</span>              <span class="hl">← 测试规范</span>
+316|│   ├── <span class="file">performance.md</span>          <span class="hl">← 性能规范</span>
+317|│   ├── <span class="file">agents.md</span>               <span class="hl">← Agent 调度规范</span>
+318|│   └── <span class="file">security.md</span>             <span class="hl">← 安全红线规范</span>
+319|└── <span class="dir">skills/</span>
+320|    ├── <span class="dir">code-tidy/</span>              <span class="hl">← 代码洁癖整理</span>
+321|    ├── <span class="dir">neat-freak/</span>             <span class="hl">← 知识库洁癖审查</span>
+322|    ├── <span class="dir">蒙多/</span>                   <span class="hl">← 跨界学习引擎</span>
+323|    ├── <span class="dir">homepage-layout/</span>        <span class="hl">← 首页布局自检</span>
+324|    ├── <span class="dir">nature-writing/</span>         <span class="hl">← Nature 级论文撰写</span>
+325|    ├── <span class="dir">nature-polishing/</span>       <span class="hl">← Nature 级论文润色</span>
+326|    ├── <span class="dir">nature-figure/</span>          <span class="hl">← 论文配图制作</span>
+327|    ├── <span class="dir">nature-citation/</span>        <span class="hl">← 引用匹配</span>
+328|    ├── <span class="dir">nature-data/</span>            <span class="hl">← 数据可用性声明</span>
+329|    ├── <span class="dir">nature-reader/</span>          <span class="hl">← 论文翻译/精读</span>
     ├── <span class="dir">nature-response/</span>        <span class="hl">← 审稿回复</span>
     ├── <span class="dir">nature-paper2ppt/</span>       <span class="hl">← 论文转PPT</span>
-    └── <span class="dir">nature-academic-search/</span> <span class="hl">← 文献检索</span></div>
+    ├── <span class="dir">nature-academic-search/</span> <span class="hl">← 文献检索</span>
+    ├── <span class="dir">research-rigor/</span>        <span class="hl">← 科研辩证思维</span>
+    ├── <span class="dir">resume-builder/</span>        <span class="hl">← 简历制作</span>
+    ├── <span class="dir">cheat-on-content/</span>      <span class="hl">← 内容创作预测</span>
+    ├── <span class="dir">mundo/</span>                 <span class="hl">← MUNDO Agent</span>
+    └── <span class="dir">蒙多/</span>                   <span class="hl">← 跨界学习引擎</span></div>
 
     <p style="font-size:13px;color:var(--dim);margin-top:14px">
-      启动 Claude Code 后，所有 Skill <strong>自动启用</strong>，无需手动注册。你只需正常说话，Claude 会根据你的意图自动匹配并调用对应 Skill。
-    </p>
-  </div>
-
-  <!-- ===== Skills 卡片区 ===== -->
-  <div class="section">
-    <h2 class="section-title"><span class="num">4</span> Skills 列表</h2>
-    <p style="font-size:13px;color:var(--dim);margin-bottom:14px">
-      全部 Skill <strong>自动触发</strong>，无需手动输入指令。触发词仅供参考——实际匹配比关键词更智能。
-    </p>
-    <div class="skills-grid">
-
-      <div class="skill-card">
-        <div class="skill-icon">🧹</div>
-        <div class="skill-name">code-tidy</div>
-        <div class="skill-desc">代码洁癖级整理：清除死代码、冗余注释、未用导入，统一排序与结构。</div>
-        <span class="skill-trigger">/code-tidy · 整理代码 · 清理</span>
-      </div>
-
-      <div class="skill-card">
-        <div class="skill-icon">📋</div>
-        <div class="skill-name">neat-freak</div>
-        <div class="skill-desc">知识库洁癖审查：收尾时审查 CLAUDE.md、docs/、memory，同步代码与文档。</div>
-        <span class="skill-trigger">/neat · 收尾 · 同步一下 · 整理文档</span>
-      </div>
-
-      <div class="skill-card">
-        <div class="skill-icon">🟣</div>
-        <div class="skill-name">蒙多</div>
-        <div class="skill-desc">跨界学习引擎：遇到瓶颈时向多 AI 模型 + GitHub/Stack Overflow 并行搜索找方案。</div>
-        <span class="skill-trigger">/蒙多 · 卡住了 · 没思路 · 报错</span>
-      </div>
-
-      <div class="skill-card">
-        <div class="skill-icon">🏠</div>
-        <div class="skill-name">homepage-layout</div>
-        <div class="skill-desc">网站首页布局自检与修复：新增项目页面后自动检查卡片排列、响应式布局。</div>
-        <span class="skill-trigger">/homepage · 主页布局 · 首页排版</span>
-      </div>
-
-      <div class="skill-card">
-        <div class="skill-icon">✏️</div>
-        <div class="skill-name">nature-writing</div>
-        <div class="skill-desc">Nature 级论文撰写：从实验笔记/大纲生成论文草稿，包含摘要、引言、方法等。</div>
-        <span class="skill-trigger">/nature-write · 写论文 · 实验报告</span>
-      </div>
-
-      <div class="skill-card">
-        <div class="skill-icon">✨</div>
-        <div class="skill-name">nature-polishing</div>
-        <div class="skill-desc">Nature 级论文润色：英文学术文本润色，中文学术文本翻译为 Nature 级英文。</div>
-        <span class="skill-trigger">/nature-polish · 润色 · 翻译成英文</span>
-      </div>
-
-      <div class="skill-card">
-        <div class="skill-icon">📊</div>
-        <div class="skill-name">nature-figure</div>
-        <div class="skill-desc">论文配图制作：Nature 风格多面板科学图表，matplotlib 代码生成。</div>
-        <span class="skill-trigger">/nature-fig · 画图 · 做图 · Figure</span>
-      </div>
-
-      <div class="skill-card">
-        <div class="skill-icon">📖</div>
-        <div class="skill-name">nature-citation</div>
-        <div class="skill-desc">引用匹配：为论文段落自动匹配 Nature/CNS 系列引用，导出参考文献。</div>
-        <span class="skill-trigger">/nature-cite · 引用 · 参考文献</span>
-      </div>
-
-      <div class="skill-card">
-        <div class="skill-icon">💾</div>
-        <div class="skill-name">nature-data</div>
-        <div class="skill-desc">数据声明：准备数据可用性声明、数据仓库计划、FAIR 元数据检查。</div>
-        <span class="skill-trigger">/nature-data · 数据声明 · FAIR</span>
-      </div>
-
-      <div class="skill-card">
-        <div class="skill-icon">📖</div>
-        <div class="skill-name">nature-reader</div>
-        <div class="skill-desc">论文精读翻译：全文翻译/中英对照阅读，图文对应标注。</div>
-        <span class="skill-trigger">/nature-read · 翻译论文 · 精读</span>
-      </div>
-
-      <div class="skill-card">
-        <div class="skill-icon">📝</div>
-        <div class="skill-name">nature-response</div>
-        <div class="skill-desc">审稿回复起草：逐条回应 Reviewer 意见，生成修改说明。</div>
-        <span class="skill-trigger">/nature-resp · 审稿回复 · Reviewer</span>
-      </div>
-
-      <div class="skill-card">
-        <div class="skill-icon">📽️</div>
-        <div class="skill-name">nature-paper2ppt</div>
-        <div class="skill-desc">论文转 PPT：生成组会报告、学术演讲幻灯片。</div>
-        <span class="skill-trigger">/nature-ppt · PPT · 组会 · 答辩</span>
-      </div>
-
-      <div class="skill-card">
-        <div class="skill-icon">🔍</div>
-        <div class="skill-name">nature-academic-search</div>
-        <div class="skill-desc">多源文献检索：PubMed/CrossRef/arXiv 搜索，引用格式转换。</div>
-        <span class="skill-trigger">/nature-search · 查文献 · 找论文</span>
-      </div>
-
-      <div class="skill-card">
-        <div class="skill-icon">🔒</div>
-        <div class="skill-name">security-review</div>
-        <div class="skill-desc">提交前安全审查：检查硬编码密钥、注入风险、敏感信息泄露。</div>
-        <span class="skill-trigger">/security · 安全审查 · 安全检查</span>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ===== API Key 配置 ===== -->
-  <div class="section">
-    <h2 class="section-title"><span class="num">5</span> 配置 API Key</h2>
-    <div class="step-item">
-      <span class="step-num">1</span>
-      <h4>获取 DeepSeek API Key</h4>
-      <p class="desc">访问 <a href="https://platform.deepseek.com/api_keys" style="color:var(--accent)" target="_blank">platform.deepseek.com/api_keys</a>，登录后创建 API Key。新用户注册通常有免费额度。</p>
-    </div>
-    <div class="step-item" style="margin-top:10px">
-      <span class="step-num">2</span>
-      <h4>填入配置文件</h4>
-      <p class="desc">编辑 <code>~/.claude/settings.json</code>，将 <code>&lt;你的 DeepSeek API Key&gt;</code> 替换为真实 Key：</p>
-      <div class="cmd">{
-  "env": {
-    "ANTHROPIC_AUTH_TOKEN": "sk-你的真实Key",
-    ...
-  }
-}</div>
-    </div>
-    <div class="tip info" style="margin-top:12px">
-      💡 也可以通过环境变量设置：<code>export ANTHROPIC_AUTH_TOKEN="sk-xxx"</code>（macOS/Linux）或 <code>setx ANTHROPIC_AUTH_TOKEN "sk-xxx"</code>（Windows）。
-    </div>
-  </div>
-
-  <!-- ===== FAQ ===== -->
-  <div class="section">
-    <h2 class="section-title"><span class="num">6</span> 常见问题 FAQ</h2>
-    <div class="faq-list">
-
-      <div class="faq-item open">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
-          <span class="faq-arrow">▶</span> 安装失败怎么办？
-        </div>
-        <div class="faq-a">
-          <p>按以下顺序排查：</p>
-          <p>1. 确认 Claude Code 已安装：终端运行 <code>claude --version</code></p>
-          <p>2. 确认在 <code>global-specs/</code> 目录下运行安装脚本</p>
-          <p>3. macOS/Linux 确认已执行 <code>chmod +x install.sh</code></p>
-          <p>4. Windows 用管理员身份运行终端再试</p>
-          <p>5. 如果还是不行，可以手动复制：将 CLAUDE.md → <code>~/.claude/CLAUDE.md</code>，rules/*.md → <code>~/.claude/rules/</code>，skills/* → <code>~/.claude/skills/</code></p>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
-          <span class="faq-arrow">▶</span> API Key 在哪获取？
-        </div>
-        <div class="faq-a">
-          <p>本部署包默认使用 <strong>DeepSeek</strong> 作为模型提供商（通过 Anthropic 兼容接口）。</p>
-          <p>获取地址：<a href="https://platform.deepseek.com/api_keys" style="color:var(--accent)" target="_blank">platform.deepseek.com/api_keys</a></p>
-          <p>新用户注册后有免费额度。获取后填入 <code>~/.claude/settings.json</code> 的 <code>ANTHROPIC_AUTH_TOKEN</code> 字段。</p>
-          <p>如果使用官方 Anthropic API，修改 <code>ANTHROPIC_BASE_URL</code> 为默认值并填入 Anthropic Key 即可。</p>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
-          <span class="faq-arrow">▶</span> Windows 和 Mac 有什么区别？
-        </div>
-        <div class="faq-a">
-          <p>核心功能<strong>完全一致</strong>。差异仅在安装脚本和路径格式：</p>
-          <p>• Mac/Linux 用 <code>install.sh</code>，配置路径 <code>~/.claude/</code></p>
-          <p>• Windows 用 <code>install.bat</code>，配置路径 <code>%USERPROFILE%\.claude\</code></p>
-          <p>• Windows 上 Claude Code 通过 npm 安装：<code>npm install -g @anthropic-ai/claude-code</code></p>
-          <p>• Mac 上可以通过 Homebrew：<code>brew install claude-code</code></p>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
-          <span class="faq-arrow">▶</span> 已有的 settings.json 会被覆盖吗？
-        </div>
-        <div class="faq-a">
-          <p><strong>不会。</strong>安装脚本会自动检测 <code>settings.json</code> 和 <code>settings.local.json</code> 是否已存在：</p>
-          <p>• 不存在 → 新建并复制模板</p>
-          <p>• 已存在 → 跳过，保护你的已有配置</p>
-          <p>如果需要强制覆盖，先删除旧文件再运行安装脚本。</p>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
-          <span class="faq-arrow">▶</span> Skills 不自动触发怎么办？
-        </div>
-        <div class="faq-a">
-          <p>确认以下几点：</p>
-          <p>1. <code>~/.claude/skills/</code> 目录下有对应的 Skill 文件夹</p>
-          <p>2. Skill 文件夹内有合法的 <code>SKILL.md</code>（含 frontmatter 的 name 和 description）</p>
-          <p>3. 重启 Claude Code 再试</p>
-          <p>4. 手动测试：输入 <code>/skill-name</code> 看是否能加载</p>
-          <p>如果手动也加载不了，检查 SKILL.md 的 YAML frontmatter 格式是否正确。</p>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
-          <span class="faq-arrow">▶</span> 如何更新已安装的规范？
-        </div>
-        <div class="faq-a">
-          <p>重新拉取最新代码后再次运行安装脚本即可。脚本会<strong>覆盖</strong> CLAUDE.md、rules/ 和 skills/（但不覆盖 settings.json）。</p>
-          <div class="cmd">cd global-specs/
-git pull
-./install.sh    # 或 install.bat (Windows)</div>
-        </div>
-      </div>
-
-      <div class="faq-item">
-        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
-          <span class="faq-arrow">▶</span> 可以只安装部分内容吗？
-        </div>
-        <div class="faq-a">
-          <p>可以。不需要手动运行完整脚本：</p>
-          <p>• 只要全局 CLAUDE.md → <code>cp CLAUDE.md ~/.claude/CLAUDE.md</code></p>
-          <p>• 只要某几个 Skill → <code>cp -r skills/code-tidy ~/.claude/skills/</code></p>
-          <p>• 只要规范文件 → <code>cp rules/*.md ~/.claude/rules/</code></p>
-          <p>所有组件相互独立，按需取用即可。</p>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ===== 页脚 ===== -->
-  <div style="text-align:center;padding:24px 0 8px;font-size:13px;color:rgba(255,255,255,0.15)">
-    <span id="busuanzi_container_page_pv">本页被阅读 <span id="busuanzi_value_page_pv">...</span> 次</span>
-  </div>
-
-  <div class="footer">
-    <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs">📂 GitHub 仓库 ↗</a>
-    &nbsp;·&nbsp;
-    <a href="https://lihongwei-cn.github.io/lihongwei-cn/">🏠 项目主页 ↗</a>
-  </div>
-
+335|      启动 Claude Code 后，所有 Skill <strong>自动启用</strong>，无需手动注册。你只需正常说话，Claude 会根据你的意图自动匹配并调用对应 Skill。
+336|    </p>
+337|  </div>
+338|
+339|  <!-- ===== Skills 卡片区 ===== -->
+340|  <div class="section">
+341|    <h2 class="section-title"><span class="num">4</span> Skills 列表</h2>
+342|    <p style="font-size:13px;color:var(--dim);margin-bottom:14px">
+343|      全部 Skill <strong>自动触发</strong>，无需手动输入指令。触发词仅供参考——实际匹配比关键词更智能。
+344|    </p>
+345|    <div class="skills-grid">
+346|
+347|      <div class="skill-card">
+348|        <div class="skill-icon">🧹</div>
+349|        <div class="skill-name">code-tidy</div>
+350|        <div class="skill-desc">代码洁癖级整理：清除死代码、冗余注释、未用导入，统一排序与结构。</div>
+351|        <span class="skill-trigger">/code-tidy · 整理代码 · 清理</span>
+352|      </div>
+353|
+354|      <div class="skill-card">
+355|        <div class="skill-icon">📋</div>
+356|        <div class="skill-name">neat-freak</div>
+357|        <div class="skill-desc">知识库洁癖审查：收尾时审查 CLAUDE.md、docs/、memory，同步代码与文档。</div>
+358|        <span class="skill-trigger">/neat · 收尾 · 同步一下 · 整理文档</span>
+359|      </div>
+360|
+361|      <div class="skill-card">
+362|        <div class="skill-icon">🟣</div>
+363|        <div class="skill-name">蒙多</div>
+364|        <div class="skill-desc">跨界学习引擎：遇到瓶颈时向多 AI 模型 + GitHub/Stack Overflow 并行搜索找方案。</div>
+365|        <span class="skill-trigger">/蒙多 · 卡住了 · 没思路 · 报错</span>
+366|      </div>
+367|
+368|      <div class="skill-card">
+369|        <div class="skill-icon">🏠</div>
+370|        <div class="skill-name">homepage-layout</div>
+371|        <div class="skill-desc">网站首页布局自检与修复：新增项目页面后自动检查卡片排列、响应式布局。</div>
+372|        <span class="skill-trigger">/homepage · 主页布局 · 首页排版</span>
+373|      </div>
+374|
+375|      <div class="skill-card">
+376|        <div class="skill-icon">✏️</div>
+377|        <div class="skill-name">nature-writing</div>
+378|        <div class="skill-desc">Nature 级论文撰写：从实验笔记/大纲生成论文草稿，包含摘要、引言、方法等。</div>
+379|        <span class="skill-trigger">/nature-write · 写论文 · 实验报告</span>
+380|      </div>
+381|
+382|      <div class="skill-card">
+383|        <div class="skill-icon">✨</div>
+384|        <div class="skill-name">nature-polishing</div>
+385|        <div class="skill-desc">Nature 级论文润色：英文学术文本润色，中文学术文本翻译为 Nature 级英文。</div>
+386|        <span class="skill-trigger">/nature-polish · 润色 · 翻译成英文</span>
+387|      </div>
+388|
+389|      <div class="skill-card">
+390|        <div class="skill-icon">📊</div>
+391|        <div class="skill-name">nature-figure</div>
+392|        <div class="skill-desc">论文配图制作：Nature 风格多面板科学图表，matplotlib 代码生成。</div>
+393|        <span class="skill-trigger">/nature-fig · 画图 · 做图 · Figure</span>
+394|      </div>
+395|
+396|      <div class="skill-card">
+397|        <div class="skill-icon">📖</div>
+398|        <div class="skill-name">nature-citation</div>
+399|        <div class="skill-desc">引用匹配：为论文段落自动匹配 Nature/CNS 系列引用，导出参考文献。</div>
+400|        <span class="skill-trigger">/nature-cite · 引用 · 参考文献</span>
+401|      </div>
+402|
+403|      <div class="skill-card">
+404|        <div class="skill-icon">💾</div>
+405|        <div class="skill-name">nature-data</div>
+406|        <div class="skill-desc">数据声明：准备数据可用性声明、数据仓库计划、FAIR 元数据检查。</div>
+407|        <span class="skill-trigger">/nature-data · 数据声明 · FAIR</span>
+408|      </div>
+409|
+410|      <div class="skill-card">
+411|        <div class="skill-icon">📖</div>
+412|        <div class="skill-name">nature-reader</div>
+413|        <div class="skill-desc">论文精读翻译：全文翻译/中英对照阅读，图文对应标注。</div>
+414|        <span class="skill-trigger">/nature-read · 翻译论文 · 精读</span>
+415|      </div>
+416|
+417|      <div class="skill-card">
+418|        <div class="skill-icon">📝</div>
+419|        <div class="skill-name">nature-response</div>
+420|        <div class="skill-desc">审稿回复起草：逐条回应 Reviewer 意见，生成修改说明。</div>
+421|        <span class="skill-trigger">/nature-resp · 审稿回复 · Reviewer</span>
+422|      </div>
+423|
+424|      <div class="skill-card">
+425|        <div class="skill-icon">📽️</div>
+426|        <div class="skill-name">nature-paper2ppt</div>
+427|        <div class="skill-desc">论文转 PPT：生成组会报告、学术演讲幻灯片。</div>
+428|        <span class="skill-trigger">/nature-ppt · PPT · 组会 · 答辩</span>
+429|      </div>
+430|
+431|      <div class="skill-card">
+432|        <div class="skill-icon">🔍</div>
+433|        <div class="skill-name">nature-academic-search</div>
+434|        <div class="skill-desc">多源文献检索：PubMed/CrossRef/arXiv 搜索，引用格式转换。</div>
+435|        <span class="skill-trigger">/nature-search · 查文献 · 找论文</span>
+436|      </div>
+437|
+<div class="skill-card">
+  <div class="skill-icon">📊</div>
+  <div class="skill-name">research-rigor</div>
+  <div class="skill-desc">科研辩证思维引擎：盲假设协议 + 证据质量评估 + 跨模型对审，适用于论文写作、实验设计、方案论证。</div>
+  <span class="skill-trigger">/research · 科研 · 论文 · 方案论证</span>
 </div>
 
-<!-- Platform tab switcher -->
-<script>
-(function(){
-  var tabs = document.querySelectorAll('#install-tabs .platform-tab');
-  var mac = document.getElementById('steps-mac');
-  var win = document.getElementById('steps-win');
-  tabs.forEach(function(t){
-    t.addEventListener('click',function(){
-      tabs.forEach(function(x){x.classList.remove('active')});
-      t.classList.add('active');
-      var os = t.getAttribute('data-os');
-      mac.style.display = os === 'mac' ? '' : 'none';
-      win.style.display = os === 'win' ? '' : 'none';
-    });
-  });
-})();
-</script>
+<div class="skill-card">
+  <div class="skill-icon">📄</div>
+  <div class="skill-name">resume-builder</div>
+  <div class="skill-desc">制作/优化专业简历（HTML格式）。白底专业风格，禁止深色主题和过度设计。</div>
+  <span class="skill-trigger">/resume · 简历 · CV · 求职</span>
+</div>
 
-<script src="../assets/counter.js?v=3"></script>
-</body>
-</html>
+<div class="skill-card">
+  <div class="skill-icon">📈</div>
+  <div class="skill-name">cheat-on-content</div>
+  <div class="skill-desc">内容创作者预测引擎：打分 → 盲预测 → 复盘 → 进化 rubric 循环，适用于视频、文章、播客。</div>
+  <span class="skill-trigger">/cheat · 打分 · 预测 · 复盘</span>
+</div>
+
+<div class="skill-card">
+  <div class="skill-icon">👑</div>
+  <div class="skill-name">mundo</div>
+  <div class="skill-desc">MUNDO — THE EMPEROR. 独立 AI 智能体，30+ 模型，三省六部制，集体意识，自我进化。</div>
+  <span class="skill-trigger">/mundo · 蒙多 · 独立 Agent</span>
+</div>
+
+</div>
+446|  </div>
+447|
+448|  <!-- ===== API Key 配置 ===== -->
+449|  <div class="section">
+450|    <h2 class="section-title"><span class="num">5</span> 配置 API Key</h2>
+451|    <div class="step-item">
+452|      <span class="step-num">1</span>
+453|      <h4>获取 DeepSeek API Key</h4>
+454|      <p class="desc">访问 <a href="https://platform.deepseek.com/api_keys" style="color:var(--accent)" target="_blank">platform.deepseek.com/api_keys</a>，登录后创建 API Key。新用户注册通常有免费额度。</p>
+455|    </div>
+456|    <div class="step-item" style="margin-top:10px">
+457|      <span class="step-num">2</span>
+458|      <h4>填入配置文件</h4>
+459|      <p class="desc">编辑 <code>~/.claude/settings.json</code>，将 <code>&lt;你的 DeepSeek API Key&gt;</code> 替换为真实 Key：</p>
+460|      <div class="cmd">{
+461|  "env": {
+462|    "ANTHROPIC_AUTH_TOKEN": "sk-你的真实Key",
+463|    ...
+464|  }
+465|}</div>
+466|    </div>
+467|    <div class="tip info" style="margin-top:12px">
+468|      💡 也可以通过环境变量设置：<code>export ANTHROPIC_AUTH_TOKEN="sk-xxx"</code>（macOS/Linux）或 <code>setx ANTHROPIC_AUTH_TOKEN "sk-xxx"</code>（Windows）。
+469|    </div>
+470|  </div>
+471|
+472|  <!-- ===== FAQ ===== -->
+473|  <div class="section">
+474|    <h2 class="section-title"><span class="num">6</span> 常见问题 FAQ</h2>
+475|    <div class="faq-list">
+476|
+477|      <div class="faq-item open">
+478|        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+479|          <span class="faq-arrow">▶</span> 安装失败怎么办？
+480|        </div>
+481|        <div class="faq-a">
+482|          <p>按以下顺序排查：</p>
+483|          <p>1. 确认 Claude Code 已安装：终端运行 <code>claude --version</code></p>
+484|          <p>2. 确认在 <code>global-specs/</code> 目录下运行安装脚本</p>
+485|          <p>3. macOS/Linux 确认已执行 <code>chmod +x install.sh</code></p>
+486|          <p>4. Windows 用管理员身份运行终端再试</p>
+487|          <p>5. 如果还是不行，可以手动复制：将 CLAUDE.md → <code>~/.claude/CLAUDE.md</code>，rules/*.md → <code>~/.claude/rules/</code>，skills/* → <code>~/.claude/skills/</code></p>
+488|        </div>
+489|      </div>
+490|
+491|      <div class="faq-item">
+492|        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+493|          <span class="faq-arrow">▶</span> API Key 在哪获取？
+494|        </div>
+495|        <div class="faq-a">
+496|          <p>本部署包默认使用 <strong>DeepSeek</strong> 作为模型提供商（通过 Anthropic 兼容接口）。</p>
+497|          <p>获取地址：<a href="https://platform.deepseek.com/api_keys" style="color:var(--accent)" target="_blank">platform.deepseek.com/api_keys</a></p>
+498|          <p>新用户注册后有免费额度。获取后填入 <code>~/.claude/settings.json</code> 的 <code>ANTHROPIC_AUTH_TOKEN</code> 字段。</p>
+499|          <p>如果使用官方 Anthropic API，修改 <code>ANTHROPIC_BASE_URL</code> 为默认值并填入 Anthropic Key 即可。</p>
+500|        </div>
+501|      </div>
+502|
+503|      <div class="faq-item">
+504|        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+505|          <span class="faq-arrow">▶</span> Windows 和 Mac 有什么区别？
+506|        </div>
+507|        <div class="faq-a">
+508|          <p>核心功能<strong>完全一致</strong>。差异仅在安装脚本和路径格式：</p>
+509|          <p>• Mac/Linux 用 <code>install.sh</code>，配置路径 <code>~/.claude/</code></p>
+510|          <p>• Windows 用 <code>install.bat</code>，配置路径 <code>%USERPROFILE%\.claude\</code></p>
+511|          <p>• Windows 上 Claude Code 通过 npm 安装：<code>npm install -g @anthropic-ai/claude-code</code></p>
+512|          <p>• Mac 上可以通过 Homebrew：<code>brew install claude-code</code></p>
+513|        </div>
+514|      </div>
+515|
+516|      <div class="faq-item">
+517|        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+518|          <span class="faq-arrow">▶</span> 已有的 settings.json 会被覆盖吗？
+519|        </div>
+520|        <div class="faq-a">
+521|          <p><strong>不会。</strong>安装脚本会自动检测 <code>settings.json</code> 和 <code>settings.local.json</code> 是否已存在：</p>
+522|          <p>• 不存在 → 新建并复制模板</p>
+523|          <p>• 已存在 → 跳过，保护你的已有配置</p>
+524|          <p>如果需要强制覆盖，先删除旧文件再运行安装脚本。</p>
+525|        </div>
+526|      </div>
+527|
+528|      <div class="faq-item">
+529|        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+530|          <span class="faq-arrow">▶</span> Skills 不自动触发怎么办？
+531|        </div>
+532|        <div class="faq-a">
+533|          <p>确认以下几点：</p>
+534|          <p>1. <code>~/.claude/skills/</code> 目录下有对应的 Skill 文件夹</p>
+535|          <p>2. Skill 文件夹内有合法的 <code>SKILL.md</code>（含 frontmatter 的 name 和 description）</p>
+536|          <p>3. 重启 Claude Code 再试</p>
+537|          <p>4. 手动测试：输入 <code>/skill-name</code> 看是否能加载</p>
+538|          <p>如果手动也加载不了，检查 SKILL.md 的 YAML frontmatter 格式是否正确。</p>
+539|        </div>
+540|      </div>
+541|
+542|      <div class="faq-item">
+543|        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+544|          <span class="faq-arrow">▶</span> 如何更新已安装的规范？
+545|        </div>
+546|        <div class="faq-a">
+547|          <p>重新拉取最新代码后再次运行安装脚本即可。脚本会<strong>覆盖</strong> CLAUDE.md、rules/ 和 skills/（但不覆盖 settings.json）。</p>
+548|          <div class="cmd">cd global-specs/
+549|git pull
+550|./install.sh    # 或 install.bat (Windows)</div>
+551|        </div>
+552|      </div>
+553|
+554|      <div class="faq-item">
+555|        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+556|          <span class="faq-arrow">▶</span> 可以只安装部分内容吗？
+557|        </div>
+558|        <div class="faq-a">
+559|          <p>可以。不需要手动运行完整脚本：</p>
+560|          <p>• 只要全局 CLAUDE.md → <code>cp CLAUDE.md ~/.claude/CLAUDE.md</code></p>
+561|          <p>• 只要某几个 Skill → <code>cp -r skills/code-tidy ~/.claude/skills/</code></p>
+562|          <p>• 只要规范文件 → <code>cp rules/*.md ~/.claude/rules/</code></p>
+563|          <p>所有组件相互独立，按需取用即可。</p>
+564|        </div>
+565|      </div>
+566|
+567|    </div>
+568|  </div>
+569|
+570|  <!-- ===== 页脚 ===== -->
+571|  <div style="text-align:center;padding:24px 0 8px;font-size:13px;color:rgba(255,255,255,0.15)">
+572|    <span id="busuanzi_container_page_pv">本页被阅读 <span id="busuanzi_value_page_pv">...</span> 次</span>
+573|  </div>
+574|
+575|  <div class="footer">
+576|    <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs">📂 GitHub 仓库 ↗</a>
+577|    &nbsp;·&nbsp;
+578|    <a href="https://lihongwei-cn.github.io/lihongwei-cn/">🏠 项目主页 ↗</a>
+579|  </div>
+580|
+581|</div>
+582|
+583|<!-- Platform tab switcher -->
+584|<script>
+585|(function(){
+586|  var tabs = document.querySelectorAll('#install-tabs .platform-tab');
+587|  var mac = document.getElementById('steps-mac');
+588|  var win = document.getElementById('steps-win');
+589|  tabs.forEach(function(t){
+590|    t.addEventListener('click',function(){
+591|      tabs.forEach(function(x){x.classList.remove('active')});
+592|      t.classList.add('active');
+593|      var os = t.getAttribute('data-os');
+594|      mac.style.display = os === 'mac' ? '' : 'none';
+595|      win.style.display = os === 'win' ? '' : 'none';
+596|    });
+597|  });
+598|})();
+599|</script>
+600|
+601|<script src="../assets/counter.js?v=3"></script>
+602|</body>
+603|</html>
+604|
