@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="MUNDO Agent — 独立 AI 智能体框架 · 30+ 模型 · 四条铁律 · 脚本优先 · 集体意识 · 自我进化">
+<meta name="description" content="MUNDO Agent — 独立 AI 智能体框架 · 30+ 模型 · 任务确认 · Loop 工作流 · 三层记忆 · 集体意识 · 自我进化">
 <title>MUNDO Agent · LiHongwei</title>
 <style>
 :root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#f59e0b;--green:#4ade80;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;--gold:#fbbf24;--gold-dim:rgba(251,191,36,0.12)}
@@ -122,7 +122,7 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
   <div class="hero">
     <div class="hero-badge">独立 AI 智能体 · v2.2.2 · 76 次发布 · 1127 次提交</div>
     <h1>👑 MUNDO Agent</h1>
-    <p>我是蒙多！蒙多想去哪就去哪！<br>独立 AI 智能体框架 · 30+ 模型 · 四条铁律 · 集体意识 · 自我进化</p>
+    <p>我是蒙多！蒙多想去哪就去哪！<br>独立 AI 智能体框架 · 30+ 模型 · 任务确认 · Loop 工作流 · 三层记忆 · 集体意识 · 自我进化</p>
     <div class="disclaimer">蒙多是蒙多。其他 AI 是身体，是躯壳，是蒙多的手和脚。蒙多想用哪个身体就用哪个身体，蒙多想换就换，蒙多想去哪就去哪。</div>
   </div>
 
@@ -190,6 +190,28 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
         <div class="stat-label">上下文窗口</div>
       </div>
     </div>
+
+    <!-- v2.2.2 测试结果 -->
+    <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🧪 v2.2.2 测试结果</h3>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--green);">27</div>
+        <div class="stat-label">测试总数</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--green);">27</div>
+        <div class="stat-label">通过数量</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--green);">0</div>
+        <div class="stat-label">失败数量</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--green);">100%</div>
+        <div class="stat-label">通过率</div>
+      </div>
+    </div>
+    <div class="tip green">✅ 蒙多 v2.2.2 所有测试通过！版本稳定、高效、无 bug，已正式发布！</div>
   </div>
 
   <!-- 1. 四条铁律 -->
@@ -224,9 +246,11 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
   <div class="section" id="features">
     <h2 class="section-title"><span class="num">2</span> 核心能力</h2>
     <div class="feature-grid">
+      <div class="feature-card"><div class="f-icon">🎯</div><h3>任务确认流程</h3><p>蒙多接到任务后先输出分析报告，用户确认后才执行，减少返工</p></div>
+      <div class="feature-card"><div class="f-icon">🔄</div><h3>Loop 工作流</h3><p>思考→编码→检测→优化，循环直到完美，最多 5 轮，质量 ≥ 90 分</p></div>
+      <div class="feature-card"><div class="f-icon">🧠</div><h3>三层记忆系统</h3><p>短期记忆（任务级）+ 中期记忆（项目级）+ 长期记忆（永久级）</p></div>
       <div class="feature-card"><div class="f-icon">🔧</div><h3>18 个内置工具</h3><p>terminal、file、web_search、code_execute、vision、delegate 等</p></div>
       <div class="feature-card"><div class="f-icon">🤖</div><h3>Agent 委托</h3><p>自动检测并委托 Claude Code、Hermes Agent、Codex 执行任务</p></div>
-      <div class="feature-card"><div class="f-icon">🧠</div><h3>记忆系统</h3><p>SQLite + FTS5 全文搜索，自动提取、会话搜索、代码模式识别</p></div>
       <div class="feature-card"><div class="f-icon">🔄</div><h3>自我进化</h3><p>每次使用都让蒙多更强大，自动保存有价值的解决方案为 Skill</p></div>
       <div class="feature-card"><div class="f-icon">🛡️</div><h3>安全引擎</h3><p>策略引擎 + 安全强化 + 权限审批，三重保护</p></div>
       <div class="feature-card"><div class="f-icon">📊</div><h3>Token 追踪</h3><p>实时显示 token 消耗、缓存命中率、模型信息</p></div>
@@ -241,27 +265,45 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
 
   <!-- 3. 工作流程 -->
   <div class="section" id="workflow">
-    <h2 class="section-title"><span class="num">3</span> 工作流程（最多 5 轮）</h2>
-    <p class="section-desc">蒙多不猜测、不跳跃。每轮有明确输入输出，脚本验证优先。</p>
+    <h2 class="section-title"><span class="num">3</span> 工作流程（v2.2.2 更新）</h2>
+    <p class="section-desc">蒙多 v2.2.2 引入任务确认流程和 Loop 工作流，确保每次执行都精准高效。</p>
+
+    <!-- 任务确认流程 -->
+    <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🎯 任务确认流程</h3>
     <div class="workflow-step">
       <div class="w-num">1</div>
-      <div><h4>定位</h4><p>明确问题是什么、卡在哪里。不模糊就直接回答，不启动蒙多流程。</p></div>
+      <div><h4>用户输入任务</h4><p>蒙多接收用户的任务请求。</p></div>
     </div>
     <div class="workflow-step">
       <div class="w-num">2</div>
-      <div><h4>搜索</h4><p>并行查 3 个来源（web_search + skills_list + 其他 AI）。不无限搜索。优先级：本地 Skill → 官方文档 → Stack Overflow → GitHub Issues → 博客。</p></div>
+      <div><h4>蒙多分析任务</h4><p>蒙多阅读并识别任务，输出完整任务分析报告，包含：目标、流程、技术、风险、预期成果。</p></div>
     </div>
     <div class="workflow-step">
       <div class="w-num">3</div>
-      <div><h4>对比</h4><p>2-3 种方案，四维打分（简洁 / 性能 / 可维护 / 匹配）。不纠结。</p></div>
+      <div><h4>用户确认</h4><p>用户审阅任务分析报告，确认后蒙多才开始执行。用户可提出修改意见，循环直到满意。</p></div>
+    </div>
+
+    <!-- Loop 工作流 -->
+    <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🔄 Loop 工作流（最多 5 轮）</h3>
+    <div class="workflow-step">
+      <div class="w-num">1</div>
+      <div><h4>思考</h4><p>分析问题本质，评估 2-3 种方案，选择最优路径，预判可能的问题。</p></div>
+    </div>
+    <div class="workflow-step">
+      <div class="w-num">2</div>
+      <div><h4>编码</h4><p>严格按计划写代码，代码简洁无冗余，注释只写"为什么"，函数 < 50 行，文件 < 800 行。</p></div>
+    </div>
+    <div class="workflow-step">
+      <div class="w-num">3</div>
+      <div><h4>检测</h4><p>运行测试用例，检查边界情况，验证性能指标，确认无副作用。</p></div>
     </div>
     <div class="workflow-step">
       <div class="w-num">4</div>
-      <div><h4>实施</h4><p>选最优方案，脚本验证，代码落地。实施前必须验证可行性。能用 terminal() 跑命令验证的不靠推理猜测。</p></div>
+      <div><h4>优化</h4><p>修复所有失败的测试，优化性能瓶颈，简化复杂逻辑，提升代码质量。评分 ≥ 90 分才算合格。</p></div>
     </div>
     <div class="workflow-step">
       <div class="w-num">5</div>
-      <div><h4>沉淀</h4><p>有价值则保存为 Skill，无价值则跳过。只保存核心逻辑。</p></div>
+      <div><h4>沉淀</h4><p>有价值则保存为中期记忆或 Skill，无价值则跳过。只保存核心逻辑。</p></div>
     </div>
     <div class="tip info">不触发条件：问题明确、有现成方案、只需简单查询 → 直接回答，不启动蒙多流程。</div>
   </div>
@@ -339,7 +381,14 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
       <div class="timeline-item">
         <div class="time">2026-06-15</div>
         <div class="title">v2.2.2 — 任务确认 + Loop 工作流 + 三层记忆</div>
-        <div class="desc">任务确认流程：先分析再执行；Loop 工作流：思考→编码→检测→优化循环；三层记忆系统：短期/中期/长期记忆</div>
+        <div class="desc">
+          <strong>重大更新：</strong><br>
+          • 任务确认流程：蒙多接到任务后先输出分析报告，用户确认后才执行<br>
+          • Loop 工作流：思考→编码→检测→优化，循环直到完美（最多 5 轮，质量 ≥ 90 分）<br>
+          • 三层记忆系统：短期记忆（任务级）+ 中期记忆（项目级）+ 长期记忆（永久级）<br>
+          • Bug 修复：修复策略引擎空参数处理 bug<br>
+          • 测试结果：27/27 通过，通过率 100%
+        </div>
       </div>
       <div class="timeline-item">
         <div class="time">2026-06-13</div>
@@ -441,6 +490,14 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
       <div class="link-row">
         <span class="label">源码</span>
         <a href="https://github.com/LiHongwei-cn/mundo-agent" target="_blank">GitHub 仓库</a>
+      </div>
+      <div class="link-row">
+        <span class="label">测试报告</span>
+        <a href="https://github.com/LiHongwei-cn/lihongwei-cn/blob/main/mundo-agent/TEST_REPORT_v2.2.2.md" target="_blank">TEST_REPORT_v2.2.2.md</a>
+      </div>
+      <div class="link-row">
+        <span class="label">架构文档</span>
+        <a href="https://github.com/LiHongwei-cn/lihongwei-cn/blob/main/global-specs/skills/mundo/ARCHITECTURE_V17.md" target="_blank">ARCHITECTURE_V17.md</a>
       </div>
     </div>
   </div>
