@@ -1,5 +1,5 @@
 #!/bin/bash
-# MUNDO Agent v2.2.4 — macOS 双击启动器
+# MUNDO Agent v2.2.3 — macOS 双击启动器
 # 同步逻辑静默执行，Terminal 只显示蒙多
 # v2.2.4: 修复同步源路径 + 全量文件同步（不再硬编码文件列表）
 
