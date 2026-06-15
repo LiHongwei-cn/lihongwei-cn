@@ -2,12 +2,12 @@
 import warnings
 warnings.filterwarnings("ignore", message="urllib3 v2 only")
 """
-MUNDO Agent v2.2.1 — THE EMPEROR
+MUNDO Agent v2.2.4 — THE EMPEROR
 独立 AI Agent：LLM 直连 + 工具调用 + Agentic Loop + 权限审批
 融合 Hermes Agent + Claude Code 精华架构
 Rich 渲染所有输出，prompt_toolkit 只管输入
 
-v2.2.1: 修复路径问题 — 确保工作目录和 sys.path 正确设置
+v2.2.4: 修复路径问题 — 确保工作目录和 sys.path 正确设置
 """
 
 import os
@@ -31,7 +31,7 @@ os.chdir(MUNDO_HOME)
 def ensure_venv():
     """确保在虚拟环境中运行，跨平台兼容（macOS/Linux/Windows）
 
-    v2.2.1: 修复路径问题 — 保留工作目录和 sys.path
+    v2.2.4: 修复路径问题 — 保留工作目录和 sys.path
     """
     if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix):
         return True  # 已在虚拟环境中
