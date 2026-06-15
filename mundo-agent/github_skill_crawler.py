@@ -5,8 +5,14 @@ import re
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional, List, Dict
 
-from scrapling.fetchers import Fetcher
+try:
+    from scrapling.fetchers import Fetcher
+    HAS_SCRAPLING = True
+except ImportError:
+    HAS_SCRAPLING = False
+    print("⚠️  Scrapling 未安装，使用备用方案")
 
 STORE_DIR = Path(__file__).parent / "skill_store"
 RAW_DATA_FILE = STORE_DIR / "github_raw.json"
@@ -28,7 +34,7 @@ def parse_stars(text: str) -> int:
     return int(n * {"k": 1000, "m": 1_000_000}.get(m.group(2), 1))
 
 
-def extract_card(card, query: str) -> dict | None:
+def extract_card(card, query: str) -> Optional[Dict]:
     """从搜索卡片提取仓库信息"""
     links = card.css("a[data-testid='results-list']") or card.css("a")
     if not links:
@@ -60,7 +66,7 @@ def extract_card(card, query: str) -> dict | None:
     }
 
 
-def crawl_page(query: str, page: int = 1) -> list[dict]:
+def crawl_page(query: str, page: int = 1) -> List[Dict]:
     """爬取单页"""
     url = f"{SEARCH_URL}?q={query}&type=repositories&s=stars&o=desc&p={page}"
     try:
@@ -72,7 +78,7 @@ def crawl_page(query: str, page: int = 1) -> list[dict]:
         return []
 
 
-def run_crawler() -> list[dict]:
+def run_crawler() -> List[Dict]:
     """完整爬取流程"""
     print("[爬虫] 开始抓取 GitHub 高星 skill 项目...")
     results, seen = [], set()

@@ -57,7 +57,7 @@ def sync_skills() -> dict:
         return {"status": "empty", "total": 0}
 
     # 分类
-    buckets: dict[str, list] = {}
+    buckets = {}
     for p in projects:
         buckets.setdefault(classify(p), []).append(p)
 
@@ -85,7 +85,7 @@ def sync_skills() -> dict:
     return {"status": "ok", "total": len(projects), "categories": len(buckets)}
 
 
-def search(keyword: str) -> list[dict]:
+def search(keyword: str) -> List[Dict]:
     kw = keyword.lower()
     results = []
     for f in STORE.glob("category_*.json"):
@@ -95,7 +95,7 @@ def search(keyword: str) -> list[dict]:
     return sorted(results, key=lambda x: x.get("stars", 0), reverse=True)
 
 
-def top(limit: int = 20) -> list[dict]:
+def top(limit: int = 20) -> List[Dict]:
     all_s = []
     for f in STORE.glob("category_*.json"):
         all_s.extend(_load(f, {}).get("projects", []))

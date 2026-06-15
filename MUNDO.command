@@ -17,7 +17,7 @@ if [ -f "$SRC/version.txt" ] && [ -f "$DST/version.txt" ]; then
         echo "  版本不同步: $DST_VER → $SRC_VER，正在同步..."
 
         # 同步核心 Python 文件
-        for f in mundo.py core.py llm.py setup.py tools.py display.py memory.py memory_import.py agents.py delegation.py claude_integration.py codex_integration.py hermes_integration.py policy.py security_hardening.py; do
+        for f in mundo.py core.py llm.py setup.py tools.py display.py memory.py memory_import.py agents.py delegation.py claude_integration.py codex_integration.py hermes_integration.py policy.py security_hardening.py skill_cloud.py github_skill_crawler.py skill_cloud_scheduler.py; do
             [ -f "$SRC/$f" ] && cp "$SRC/$f" "$DST/$f"
         done
 
