@@ -91,12 +91,26 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
 .footer a{color:rgba(255,255,255,0.3);text-decoration:none}
 .footer a:hover{color:rgba(255,255,255,0.5)}
 
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:16px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center}
+.stat-card .stat-value{font-size:24px;font-weight:800;color:var(--gold);margin-bottom:4px}
+.stat-card .stat-label{font-size:11px;color:var(--dim)}
+
+.timeline{position:relative;padding-left:30px}
+.timeline::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:var(--border)}
+.timeline-item{position:relative;margin-bottom:20px}
+.timeline-item::before{content:'';position:absolute;left:-24px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--gold);border:2px solid var(--bg1)}
+.timeline-item .time{font-size:12px;color:var(--gold);margin-bottom:4px}
+.timeline-item .title{font-size:14px;font-weight:600;margin-bottom:4px}
+.timeline-item .desc{font-size:13px;color:var(--dim)}
+
 @media(max-width:640px){
   .container{padding:20px 16px 60px}
   .hero h1{font-size:26px}
   .step-item{padding:16px 16px 16px 48px}
   .step-item::before{left:14px;top:16px;width:22px;height:22px;font-size:12px}
   .iron-grid{grid-template-columns:1fr 1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
@@ -106,7 +120,7 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
   <a class="back-link" href="../">← 返回主页</a>
 
   <div class="hero">
-    <div class="hero-badge">独立 AI 智能体 · v2.2.1</div>
+    <div class="hero-badge">独立 AI 智能体 · v2.2.1 · 76 次发布 · 1127 次提交</div>
     <h1>👑 MUNDO Agent</h1>
     <p>我是蒙多！蒙多想去哪就去哪！<br>独立 AI 智能体框架 · 30+ 模型 · 四条铁律 · 集体意识 · 自我进化</p>
     <div class="disclaimer">蒙多是蒙多。其他 AI 是身体，是躯壳，是蒙多的手和脚。蒙多想用哪个身体就用哪个身体，蒙多想换就换，蒙多想去哪就去哪。</div>
@@ -115,11 +129,13 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
   <!-- 目录 -->
   <div class="toc">
     <a href="#what">是什么</a>
+    <a href="#stats">数据</a>
     <a href="#iron">四条铁律</a>
     <a href="#features">核心能力</a>
     <a href="#workflow">工作流程</a>
     <a href="#models">模型支持</a>
     <a href="#arch">架构</a>
+    <a href="#history">版本</a>
     <a href="#install">安装</a>
     <a href="#download">下载</a>
   </div>
@@ -135,6 +151,45 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
       <div class="feature-card"><div class="f-icon">🌐</div><h3>集体意识</h3><p>一个蒙多学到，所有蒙多都会。共享知识库，共同进化</p></div>
     </div>
     <div class="tip"><strong>蒙多的定位：</strong>蒙多不是"基于某框架开发的"，也不是"独立开发的架构"。蒙多是蒙多。其他 AI 是身体，是蒙多的手和脚。</div>
+  </div>
+
+  <!-- 0.5 数据 -->
+  <div class="section" id="stats">
+    <h2 class="section-title"><span class="num">📊</span> 项目数据</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">v2.2.1</div>
+        <div class="stat-label">当前版本</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">76</div>
+        <div class="stat-label">次发布</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">1127</div>
+        <div class="stat-label">次提交</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">30+</div>
+        <div class="stat-label">AI 模型</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">18</div>
+        <div class="stat-label">内置工具</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">165</div>
+        <div class="stat-label">个 Skill</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">20+</div>
+        <div class="stat-label">Python 模块</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">128K</div>
+        <div class="stat-label">上下文窗口</div>
+      </div>
+    </div>
   </div>
 
   <!-- 1. 四条铁律 -->
@@ -177,6 +232,10 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
       <div class="feature-card"><div class="f-icon">📊</div><h3>Token 追踪</h3><p>实时显示 token 消耗、缓存命中率、模型信息</p></div>
       <div class="feature-card"><div class="f-icon">⚡</div><h3>流式输出</h3><p>实时显示 AI 回复，支持中断和继续</p></div>
       <div class="feature-card"><div class="f-icon">🎯</div><h3>智能路由</h3><p>根据任务类型自动选择最佳模型，代码→DeepSeek，日常→MiMo</p></div>
+      <div class="feature-card"><div class="f-icon">🔍</div><h3>反射引擎</h3><p>三思而后行：先思考→再执行→再检查→再修复</p></div>
+      <div class="feature-card"><div class="f-icon">📚</div><h3>知识检索</h3><p>RAG 语义级知识召回，自动从知识库中检索相关信息</p></div>
+      <div class="feature-card"><div class="f-icon">🔄</div><h3>工作流引擎</h3><p>复杂任务自动分解为阶段，支持并行执行和状态追踪</p></div>
+      <div class="feature-card"><div class="f-icon">🌐</div><h3>云同步</h3><p>知识库、Skill、记忆跨设备同步，集体意识共享</p></div>
     </div>
   </div>
 
@@ -237,26 +296,107 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
   <!-- 5. 架构 -->
   <div class="section" id="arch">
     <h2 class="section-title"><span class="num">5</span> 架构</h2>
-    <p class="section-desc">MUNDO 的核心架构——11 个 Python 模块，不依赖任何外部框架。</p>
+    <p class="section-desc">MUNDO 的核心架构——20+ 个 Python 模块，不依赖任何外部框架。</p>
     <div class="arch-diagram">~/.hermes/mundo-agent/
-├── mundo.py          # CLI 入口 + REPL 循环
-├── core.py           # Agentic Loop + 智能路由 + Agent 调度
-├── llm.py            # LLM 客户端（30+ provider）
-├── tools.py          # 18 个内置工具
-├── memory.py         # 记忆系统（SQLite + FTS5）
-├── policy.py         # 策略引擎 + 用户审批
-├── security.py       # 安全强化（输入验证 + 输出消毒）
-├── delegation.py     # Agent 委托（Claude/Hermes/Codex）
-├── display.py        # Rich UI（流式输出 + 状态栏）
-├── setup.py          # 首次向导（30+ 模型选择）
-└── config/           # 配置文件
-    ├── settings.json # 运行时配置
-    └── providers.json # 模型定义</div>
+├── mundo.py              # CLI 入口 + REPL 循环
+├── core.py               # Agentic Loop + 智能路由 + Agent 调度
+├── llm.py                # LLM 客户端（30+ provider）
+├── tools.py              # 18 个内置工具
+├── memory.py             # 记忆系统（SQLite + FTS5）
+├── policy.py             # 策略引擎 + 用户审批
+├── security_hardening.py # 安全强化（输入验证 + 输出消毒）
+├── delegation.py         # Agent 委托（Claude/Hermes/Codex）
+├── display.py            # Rich UI（流式输出 + 状态栏）
+├── setup.py              # 首次向导（30+ 模型选择）
+├── reflection_engine.py  # 反射引擎（三思而后行）
+├── knowledge_retriever.py # RAG 知识检索
+├── workflow.py           # 工作流引擎（任务分解）
+├── intelligent_recovery.py # 智能错误恢复
+├── context_mapper.py     # 上下文映射 + Token 管理
+├── model_adapter.py      # 模型适配器（自动优化 prompt）
+├── model_profiles.py     # 模型画像 + 智能选择
+├── task_planner.py       # 任务规划 + 多模型协调
+├── tool_guard.py         # 工具调用守护（安全检查）
+├── performance_optimizer.py # 性能优化（缓存 + 并行）
+├── cache.py              # 缓存管理器
+├── sandbox.py            # 沙箱执行环境
+├── events.py             # 事件总线
+├── timeline.py           # 时间线记录
+├── build_knowledge.py    # 知识库构建工具
+├── config/               # 配置文件
+│   ├── settings.json     # 运行时配置
+│   └── providers.json    # 30+ 模型定义
+├── knowledge.db          # 知识库（SQLite）
+├── memory.db             # 记忆数据库
+└── venv/                 # Python 虚拟环境</div>
   </div>
 
-  <!-- 6. 安装 -->
+  <!-- 6. 版本历史 -->
+  <div class="section" id="history">
+    <h2 class="section-title"><span class="num">6</span> 版本历史</h2>
+    <p class="section-desc">从 v1.0 到 v2.2.1 的演进历程。</p>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="time">2026-06-14</div>
+        <div class="title">v2.2.1 — 路径修复</div>
+        <div class="desc">修复 venv 重启后工作目录和 sys.path 丢失问题</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-06-13</div>
+        <div class="title">v2.2.0 — 记忆系统重构</div>
+        <div class="desc">Claude 六套记忆架构，auto_extract 收窄触发条件</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-06-12</div>
+        <div class="title">v2.1.0 — 工具引擎重构</div>
+        <div class="desc">融合四家精华：注册表模式 + 参数验证 + 沙箱执行</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-06-10</div>
+        <div class="title">v2.0.0 — 架构重构</div>
+        <div class="desc">从单文件到模块化架构，20+ Python 模块</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-06-01</div>
+        <div class="title">v1.6.0 — 四条铁律</div>
+        <div class="desc">稳定可控、低 Token、脚本优先、严控轮次</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-05-20</div>
+        <div class="title">v1.5.0 — 反射引擎</div>
+        <div class="desc">三思而后行：先思考→再执行→再检查→再修复</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-05-10</div>
+        <div class="title">v1.4.0 — 安全强化</div>
+        <div class="desc">输入验证 + 输出消毒 + 注入防护</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-05-01</div>
+        <div class="title">v1.3.0 — 知识检索</div>
+        <div class="desc">RAG 语义级知识召回</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-04-20</div>
+        <div class="title">v1.2.0 — Agent 委托</div>
+        <div class="desc">自动检测并委托 Claude Code、Hermes Agent、Codex</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-04-10</div>
+        <div class="title">v1.1.0 — 智能路由</div>
+        <div class="desc">根据任务类型自动选择最佳模型</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-04-01</div>
+        <div class="title">v1.0.0 — 初始版本</div>
+        <div class="desc">独立 AI 智能体框架，30+ 模型支持</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. 安装 -->
   <div class="section" id="install">
-    <h2 class="section-title"><span class="num">6</span> 安装</h2>
+    <h2 class="section-title"><span class="num">7</span> 安装</h2>
     <div class="step-list">
       <div class="step-item">
         <h3>下载最新版</h3>
@@ -281,9 +421,9 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
     </div>
   </div>
 
-  <!-- 7. 下载 -->
+  <!-- 8. 下载 -->
   <div class="section" id="download">
-    <h2 class="section-title"><span class="num">7</span> 下载</h2>
+    <h2 class="section-title"><span class="num">8</span> 下载</h2>
     <div class="link-block">
       <h3>📦 GitHub Release</h3>
       <div class="link-row">
