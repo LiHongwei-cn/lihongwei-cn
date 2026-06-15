@@ -3,6 +3,7 @@
 import json
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional, List, Dict
 
 from github_skill_crawler import run_crawler
 
