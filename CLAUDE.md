@@ -24,6 +24,7 @@ This file provides guidance to Claude Code when working with code in this reposi
 - GitHub 仓库：`https://github.com/LiHongwei-cn/lihongwei-cn`
 - 网站地址：`https://lihongwei-cn.github.io/lihongwei-cn/`
 - Telegram Bot：`bot/tgbot.py`（蒙多学习引擎：自动搜索 GitHub + Stack Overflow，DeepSeek-V4-Pro 驱动，支持图片理解，22 项测试全通过）
+- 蒙多 v17：任务确认流程 + Loop 工作流 + 三层记忆系统（详见 `/蒙多` skill 和 `ARCHITECTURE_V17.md`）
 
 ## 项目概览
 

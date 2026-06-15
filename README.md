@@ -15,7 +15,7 @@
 
 | 项目 | 说明 |
 |------|------|
-| [MUNDO Agent](https://github.com/LiHongwei-cn/mundo-agent) | 独立 AI 智能体 · 30+ 模型 · 三省六部制 · 集体意识 · 自我进化 |
+| [MUNDO Agent](https://github.com/LiHongwei-cn/mundo-agent) | 独立 AI 智能体 · 30+ 模型 · 任务确认 · Loop 工作流 · 三层记忆 · 集体意识 · 自我进化 |
 | [MATLAB 仿真工具包](matlab/) | 车辆动力学、电机控制、能量管理（R2016b 兼容） |
 | [家庭血压监测小程序](bp-monitor/) | FastAPI + SQLite + DeepSeek 后端 |
 | [Telegram Bot](bot/) | DeepSeek 驱动的智能助手 |
@@ -38,6 +38,9 @@
 MUNDO 是一个独立的 AI 智能体框架，具有以下特性：
 
 - **30+ AI 模型支持**：DeepSeek、MiMo、Qwen、Claude、GPT-4o、Gemini 等
+- **任务确认流程**：先分析任务，用户确认后再执行，减少返工
+- **Loop 工作流**：思考→编码→检测→优化，循环直到完美
+- **三层记忆系统**：短期/中期/长期记忆，像人类大脑一样记忆
 - **三省六部制**：技能分级管理体系，首辅→尚书→主事→司务
 - **集体意识**：一个蒙多学到，所有蒙多都会
 - **自我进化**：每次使用都让蒙多更强大
@@ -47,10 +50,10 @@ MUNDO 是一个独立的 AI 智能体框架，具有以下特性：
 
 ```bash
 # 下载最新版
-gh release download v2.2.0 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.0-macos.zip"
+gh release download v2.2.2 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.2-macos.zip"
 
 # 解压
-unzip mundo-v2.2.0-macos.zip -d ~/.hermes/mundo-agent
+unzip mundo-v2.2.2-macos.zip -d ~/.hermes/mundo-agent
 
 # 运行
 python3 ~/.hermes/mundo-agent/mundo.py
