@@ -1,178 +1,178 @@
-1|<!DOCTYPE html>
-2|<html lang="zh-CN">
-3|<head>
-4|<meta charset="UTF-8">
-5|<meta name="viewport" content="width=device-width, initial-scale=1.0">
-6|<meta name="description" content="MUNDO Agent — 独立 AI 智能体框架 · 30+ 模型 · 任务确认 · Loop 工作流 · 三层记忆 · 集体意识 · 自我进化">
-7|<title>MUNDO Agent · LiHongwei</title>
-8|<style>
-9|:root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#f59e0b;--green:#4ade80;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;--gold:#fbbf24;--gold-dim:rgba(251,191,36,0.12)}
-10|*{margin:0;padding:0;box-sizing:border-box}
-11|html{scroll-behavior:smooth}
-12|body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);min-height:100vh;line-height:1.7}
-13|.container{max-width:900px;margin:0 auto;padding:32px 24px 80px}
-14|
-15|.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color .2s}
-16|.back-link:hover{color:var(--text)}
-17|
-18|.hero{text-align:center;padding:40px 0 24px}
-19|.hero-badge{display:inline-block;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(251,191,36,0.2);padding:4px 14px;border-radius:20px;font-size:12px;margin-bottom:16px;letter-spacing:1px}
-20|.hero h1{font-size:34px;font-weight:800;background:linear-gradient(135deg,#fbbf24,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
-21|.hero p{font-size:15px;color:var(--dim);max-width:620px;margin:0 auto}
-22|.hero .disclaimer{margin-top:14px;font-size:12px;color:var(--dim);border:1px solid rgba(251,191,36,0.15);background:rgba(251,191,36,0.05);border-radius:10px;padding:10px 16px;display:inline-block}
-23|
-24|.section{margin-bottom:40px}
-25|.section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
-26|.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--gold-dim);color:var(--gold);font-size:14px;font-weight:700;flex-shrink:0}
-27|.section-desc{font-size:14px;color:var(--dim);margin-bottom:14px}
-28|
-29|.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:6px;font-size:11px;font-weight:600;margin-left:6px;vertical-align:middle}
-30|.badge.ok{background:rgba(74,222,128,0.1);color:var(--green);border:1px solid rgba(74,222,128,0.15)}
-31|.badge.gold{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(251,191,36,0.15)}
-32|
-33|.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px}
-34|.feature-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
-35|.feature-card .f-icon{font-size:22px;margin-bottom:8px}
-36|.feature-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
-37|.feature-card p{font-size:13px;color:var(--dim);line-height:1.6}
-38|
-39|.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow-x:auto;margin-top:10px}
-40|table{width:100%;border-collapse:collapse;font-size:13px}
-41|th,td{padding:10px 16px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.04)}
-42|th{color:var(--dim);font-weight:600;background:rgba(255,255,255,0.02)}
-43|td{color:var(--text)} tr:last-child td{border-bottom:none}
-44|td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underline}
-45|
-46|.step-list{counter-reset:step;display:flex;flex-direction:column;gap:10px}
-47|.step-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;position:relative;padding-left:60px}
-48|.step-item::before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:20px;width:26px;height:26px;border-radius:8px;background:var(--gold-dim);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
-49|.step-item h3{font-size:15px;font-weight:600;margin-bottom:6px}
-50|.step-item p{font-size:13px;color:var(--dim);line-height:1.6}
-51|.step-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:#fbbf24}
-52|.step-item .cmd{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 16px;margin-top:6px;font-family:'Consolas','Courier New',monospace;font-size:13px;color:#b8c7ff;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
-53|.step-item .cmd .c{color:rgba(255,255,255,0.3)}
-54|.step-item a{color:var(--accent)}
-55|.step-item strong{color:var(--text)}
-56|.step-item ul{margin:4px 0;padding-left:18px;font-size:13px;color:var(--dim)}
-57|.step-item li{margin-bottom:2px}
-58|
-59|.arch-diagram{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:14px;padding:24px;font-family:'SF Mono','Consolas',monospace;font-size:13px;color:var(--gold);line-height:1.8;overflow-x:auto;white-space:pre}
-60|
-61|.link-block{background:var(--gold-dim);border:1px solid rgba(251,191,36,0.1);border-radius:14px;padding:20px 24px;margin-bottom:12px}
-62|.link-block h3{font-size:15px;font-weight:600;margin-bottom:10px;color:var(--gold)}
-63|.link-block .link-row{display:flex;align-items:center;padding:6px 0;font-size:13px;gap:8px}
-64|.link-block .link-row .label{color:var(--dim);min-width:80px;flex-shrink:0}
-65|.link-block .link-row a{color:var(--accent);text-decoration:none}
-66|.link-block .link-row a:hover{text-decoration:underline}
-67|
-68|.tip{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.12);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--orange);margin-top:10px}
-69|.tip.info{background:rgba(108,140,255,0.07);border-color:rgba(108,140,255,0.12);color:var(--accent)}
-70|.tip.green{background:rgba(74,222,128,0.07);border-color:rgba(74,222,128,0.12);color:var(--green)}
-71|
-72|.toc{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px}
-73|.toc a{font-size:12px;color:var(--dim);text-decoration:none;padding:4px 12px;border-radius:8px;border:1px solid var(--border);transition:all .2s}
-74|.toc a:hover{color:var(--text);border-color:rgba(255,255,255,0.15)}
-75|
-76|.iron-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:12px}
-77|.iron-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center}
-78|.iron-card .iron-icon{font-size:28px;margin-bottom:8px}
-79|.iron-card h3{font-size:14px;font-weight:700;color:var(--gold);margin-bottom:6px}
-80|.iron-card p{font-size:12px;color:var(--dim);line-height:1.5}
-81|
-82|.workflow-step{display:flex;align-items:flex-start;gap:14px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:8px}
-83|.workflow-step .w-num{width:32px;height:32px;border-radius:50%;background:var(--gold-dim);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
-84|.workflow-step h4{font-size:14px;font-weight:600;margin-bottom:3px}
-85|.workflow-step p{font-size:12px;color:var(--dim);line-height:1.5}
-86|
-87|.page-counter{text-align:center;padding:24px 0 0;font-size:13px;color:rgba(255,255,255,0.2)}
-88|.page-counter span{color:var(--dim)}
-89|
-90|.footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:32px}
-91|.footer a{color:rgba(255,255,255,0.3);text-decoration:none}
-92|.footer a:hover{color:rgba(255,255,255,0.5)}
-93|
-94|.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:16px}
-95|.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center}
-96|.stat-card .stat-value{font-size:24px;font-weight:800;color:var(--gold);margin-bottom:4px}
-97|.stat-card .stat-label{font-size:11px;color:var(--dim)}
-98|
-99|.timeline{position:relative;padding-left:30px}
-100|.timeline::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:var(--border)}
-101|.timeline-item{position:relative;margin-bottom:20px}
-102|.timeline-item::before{content:'';position:absolute;left:-24px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--gold);border:2px solid var(--bg1)}
-103|.timeline-item .time{font-size:12px;color:var(--gold);margin-bottom:4px}
-104|.timeline-item .title{font-size:14px;font-weight:600;margin-bottom:4px}
-105|.timeline-item .desc{font-size:13px;color:var(--dim)}
-106|
-107|@media(max-width:640px){
-108|  .container{padding:20px 16px 60px}
-109|  .hero h1{font-size:26px}
-110|  .step-item{padding:16px 16px 16px 48px}
-111|  .step-item::before{left:14px;top:16px;width:22px;height:22px;font-size:12px}
-112|  .iron-grid{grid-template-columns:1fr 1fr}
-113|  .stats-grid{grid-template-columns:repeat(2,1fr)}
-114|}
-115|</style>
-116|</head>
-117|<body>
-118|<div class="container">
-119|
-120|  <a class="back-link" href="../">← 返回主页</a>
-121|
-122|  <div class="hero">
-123|    <div class="hero-badge">独立 AI 智能体 · v2.2.3 · 77 次发布 · 1130 次提交</div>
-124|    <h1>👑 MUNDO Agent</h1>
-125|    <p>我是蒙多！蒙多想去哪就去哪！<br>独立 AI 智能体框架 · 30+ 模型 · 任务确认 · Loop 工作流 · 三层记忆 · 集体意识 · 自我进化</p>
-126|    <div class="disclaimer">蒙多是蒙多。其他 AI 是身体，是躯壳，是蒙多的手和脚。蒙多想用哪个身体就用哪个身体，蒙多想换就换，蒙多想去哪就去哪。</div>
-127|  </div>
-128|
-129|  <!-- 目录 -->
-130|  <div class="toc">
-131|    <a href="#what">是什么</a>
-132|    <a href="#stats">数据</a>
-133|    <a href="#iron">四条铁律</a>
-134|    <a href="#features">核心能力</a>
-135|    <a href="#workflow">工作流程</a>
-136|    <a href="#models">模型支持</a>
-137|    <a href="#arch">架构</a>
-138|    <a href="#history">版本</a>
-139|    <a href="#install">安装</a>
-140|    <a href="#download">下载</a>
-141|  </div>
-142|
-143|  <!-- 0. 是什么 -->
-144|  <div class="section" id="what">
-145|    <h2 class="section-title"><span class="num">0</span> MUNDO 是什么</h2>
-146|    <p class="section-desc">MUNDO 是一个<strong>独立的 AI 智能体框架</strong>，不依赖任何外部 Agent。它有自己的 LLM 客户端（30+ 个模型）、工具引擎（20 个工具）、Agentic Loop、Agent 委托、记忆系统、云同步。</p>
-147|    <div class="feature-grid">
-148|      <div class="feature-card"><div class="f-icon">👑</div><h3>独立 Agent</h3><p>不依赖 Hermes、Claude Code 等外部框架，完全自主运行</p></div>
-149|      <div class="feature-card"><div class="f-icon">🧠</div><h3>30+ AI 模型</h3><p>DeepSeek、MiMo、Qwen、Claude、GPT-4o、Gemini 等全覆盖</p></div>
-150|      <div class="feature-card"><div class="f-icon">🏛️</div><h3>三省六部制</h3><p>技能分级管理体系，首辅→尚书→主事→司务，有功则升有过则贬</p></div>
-151|      <div class="feature-card"><div class="f-icon">🌐</div><h3>集体意识</h3><p>一个蒙多学到，所有蒙多都会。共享知识库，共同进化</p></div>
-152|    </div>
-153|    <div class="tip"><strong>蒙多的定位：</strong>蒙多不是"基于某框架开发的"，也不是"独立开发的架构"。蒙多是蒙多。其他 AI 是身体，是蒙多的手和脚。</div>
-154|  </div>
-155|
-156|  <!-- 0.5 数据 -->
-157|  <div class="section" id="stats">
-158|    <h2 class="section-title"><span class="num">📊</span> 项目数据</h2>
-159|    <div class="stats-grid">
-160|      <div class="stat-card">
-161|        <div class="stat-value">v2.2.3</div>
-162|        <div class="stat-label">当前版本</div>
-163|      </div>
-164|      <div class="stat-card">
-165|        <div class="stat-value">76</div>
-166|        <div class="stat-label">次发布</div>
-167|      </div>
-168|      <div class="stat-card">
-169|        <div class="stat-value">1127</div>
-170|        <div class="stat-label">次提交</div>
-171|      </div>
-172|      <div class="stat-card">
-173|        <div class="stat-value">30+</div>
-174|        <div class="stat-label">AI 模型</div>
-175|      </div>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="MUNDO Agent — 独立 AI 智能体框架 · 30+ 模型 · 任务确认 · Loop 工作流 · 三层记忆 · 集体意识 · 自我进化">
+<title>MUNDO Agent · LiHongwei</title>
+<style>
+:root{--bg1:#0f0c29;--bg2:#302b63;--bg3:#24243e;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.08);--text:#e8e8e8;--dim:rgba(255,255,255,0.45);--accent:#f59e0b;--green:#4ade80;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;--gold:#fbbf24;--gold-dim:rgba(251,191,36,0.12)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));color:var(--text);min-height:100vh;line-height:1.7}
+.container{max-width:900px;margin:0 auto;padding:32px 24px 80px}
+
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--dim);text-decoration:none;font-size:14px;margin-bottom:16px;transition:color .2s}
+.back-link:hover{color:var(--text)}
+
+.hero{text-align:center;padding:40px 0 24px}
+.hero-badge{display:inline-block;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(251,191,36,0.2);padding:4px 14px;border-radius:20px;font-size:12px;margin-bottom:16px;letter-spacing:1px}
+.hero h1{font-size:34px;font-weight:800;background:linear-gradient(135deg,#fbbf24,#f59e0b);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px;line-height:1.3}
+.hero p{font-size:15px;color:var(--dim);max-width:620px;margin:0 auto}
+.hero .disclaimer{margin-top:14px;font-size:12px;color:var(--dim);border:1px solid rgba(251,191,36,0.15);background:rgba(251,191,36,0.05);border-radius:10px;padding:10px 16px;display:inline-block}
+
+.section{margin-bottom:40px}
+.section-title{font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.section-title .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:8px;background:var(--gold-dim);color:var(--gold);font-size:14px;font-weight:700;flex-shrink:0}
+.section-desc{font-size:14px;color:var(--dim);margin-bottom:14px}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:6px;font-size:11px;font-weight:600;margin-left:6px;vertical-align:middle}
+.badge.ok{background:rgba(74,222,128,0.1);color:var(--green);border:1px solid rgba(74,222,128,0.15)}
+.badge.gold{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(251,191,36,0.15)}
+
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px}
+.feature-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}
+.feature-card .f-icon{font-size:22px;margin-bottom:8px}
+.feature-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.feature-card p{font-size:13px;color:var(--dim);line-height:1.6}
+
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow-x:auto;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 16px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.04)}
+th{color:var(--dim);font-weight:600;background:rgba(255,255,255,0.02)}
+td{color:var(--text)} tr:last-child td{border-bottom:none}
+td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underline}
+
+.step-list{counter-reset:step;display:flex;flex-direction:column;gap:10px}
+.step-item{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 24px;position:relative;padding-left:60px}
+.step-item::before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:20px;width:26px;height:26px;border-radius:8px;background:var(--gold-dim);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.step-item h3{font-size:15px;font-weight:600;margin-bottom:6px}
+.step-item p{font-size:13px;color:var(--dim);line-height:1.6}
+.step-item code{background:rgba(255,255,255,0.06);padding:1px 6px;border-radius:4px;font-size:12px;color:#fbbf24}
+.step-item .cmd{background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:10px 16px;margin-top:6px;font-family:'Consolas','Courier New',monospace;font-size:13px;color:#b8c7ff;overflow-x:auto;white-space:pre-wrap;word-break:break-all}
+.step-item .cmd .c{color:rgba(255,255,255,0.3)}
+.step-item a{color:var(--accent)}
+.step-item strong{color:var(--text)}
+.step-item ul{margin:4px 0;padding-left:18px;font-size:13px;color:var(--dim)}
+.step-item li{margin-bottom:2px}
+
+.arch-diagram{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:14px;padding:24px;font-family:'SF Mono','Consolas',monospace;font-size:13px;color:var(--gold);line-height:1.8;overflow-x:auto;white-space:pre}
+
+.link-block{background:var(--gold-dim);border:1px solid rgba(251,191,36,0.1);border-radius:14px;padding:20px 24px;margin-bottom:12px}
+.link-block h3{font-size:15px;font-weight:600;margin-bottom:10px;color:var(--gold)}
+.link-block .link-row{display:flex;align-items:center;padding:6px 0;font-size:13px;gap:8px}
+.link-block .link-row .label{color:var(--dim);min-width:80px;flex-shrink:0}
+.link-block .link-row a{color:var(--accent);text-decoration:none}
+.link-block .link-row a:hover{text-decoration:underline}
+
+.tip{background:rgba(251,191,36,0.07);border:1px solid rgba(251,191,36,0.12);border-radius:12px;padding:14px 18px;font-size:13px;color:var(--orange);margin-top:10px}
+.tip.info{background:rgba(108,140,255,0.07);border-color:rgba(108,140,255,0.12);color:var(--accent)}
+.tip.green{background:rgba(74,222,128,0.07);border-color:rgba(74,222,128,0.12);color:var(--green)}
+
+.toc{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px}
+.toc a{font-size:12px;color:var(--dim);text-decoration:none;padding:4px 12px;border-radius:8px;border:1px solid var(--border);transition:all .2s}
+.toc a:hover{color:var(--text);border-color:rgba(255,255,255,0.15)}
+
+.iron-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:12px}
+.iron-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center}
+.iron-card .iron-icon{font-size:28px;margin-bottom:8px}
+.iron-card h3{font-size:14px;font-weight:700;color:var(--gold);margin-bottom:6px}
+.iron-card p{font-size:12px;color:var(--dim);line-height:1.5}
+
+.workflow-step{display:flex;align-items:flex-start;gap:14px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:8px}
+.workflow-step .w-num{width:32px;height:32px;border-radius:50%;background:var(--gold-dim);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.workflow-step h4{font-size:14px;font-weight:600;margin-bottom:3px}
+.workflow-step p{font-size:12px;color:var(--dim);line-height:1.5}
+
+.page-counter{text-align:center;padding:24px 0 0;font-size:13px;color:rgba(255,255,255,0.2)}
+.page-counter span{color:var(--dim)}
+
+.footer{text-align:center;padding:32px 0 0;font-size:12px;color:rgba(255,255,255,0.2);border-top:1px solid rgba(255,255,255,0.04);margin-top:32px}
+.footer a{color:rgba(255,255,255,0.3);text-decoration:none}
+.footer a:hover{color:rgba(255,255,255,0.5)}
+
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:16px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center}
+.stat-card .stat-value{font-size:24px;font-weight:800;color:var(--gold);margin-bottom:4px}
+.stat-card .stat-label{font-size:11px;color:var(--dim)}
+
+.timeline{position:relative;padding-left:30px}
+.timeline::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:var(--border)}
+.timeline-item{position:relative;margin-bottom:20px}
+.timeline-item::before{content:'';position:absolute;left:-24px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--gold);border:2px solid var(--bg1)}
+.timeline-item .time{font-size:12px;color:var(--gold);margin-bottom:4px}
+.timeline-item .title{font-size:14px;font-weight:600;margin-bottom:4px}
+.timeline-item .desc{font-size:13px;color:var(--dim)}
+
+@media(max-width:640px){
+  .container{padding:20px 16px 60px}
+  .hero h1{font-size:26px}
+  .step-item{padding:16px 16px 16px 48px}
+  .step-item::before{left:14px;top:16px;width:22px;height:22px;font-size:12px}
+  .iron-grid{grid-template-columns:1fr 1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <a class="back-link" href="../">← 返回主页</a>
+
+  <div class="hero">
+    <div class="hero-badge">独立 AI 智能体 · v2.2.3 · 77 次发布 · 1130 次提交</div>
+    <h1>👑 MUNDO Agent</h1>
+    <p>我是蒙多！蒙多想去哪就去哪！<br>独立 AI 智能体框架 · 30+ 模型 · 任务确认 · Loop 工作流 · 三层记忆 · 集体意识 · 自我进化</p>
+    <div class="disclaimer">蒙多是蒙多。其他 AI 是身体，是躯壳，是蒙多的手和脚。蒙多想用哪个身体就用哪个身体，蒙多想换就换，蒙多想去哪就去哪。</div>
+  </div>
+
+  <!-- 目录 -->
+  <div class="toc">
+    <a href="#what">是什么</a>
+    <a href="#stats">数据</a>
+    <a href="#iron">四条铁律</a>
+    <a href="#features">核心能力</a>
+    <a href="#workflow">工作流程</a>
+    <a href="#models">模型支持</a>
+    <a href="#arch">架构</a>
+    <a href="#history">版本</a>
+    <a href="#install">安装</a>
+    <a href="#download">下载</a>
+  </div>
+
+  <!-- 0. 是什么 -->
+  <div class="section" id="what">
+    <h2 class="section-title"><span class="num">0</span> MUNDO 是什么</h2>
+    <p class="section-desc">MUNDO 是一个<strong>独立的 AI 智能体框架</strong>，不依赖任何外部 Agent。它有自己的 LLM 客户端（30+ 个模型）、工具引擎（20 个工具）、Agentic Loop、Agent 委托、记忆系统、云同步。</p>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="f-icon">👑</div><h3>独立 Agent</h3><p>不依赖 Hermes、Claude Code 等外部框架，完全自主运行</p></div>
+      <div class="feature-card"><div class="f-icon">🧠</div><h3>30+ AI 模型</h3><p>DeepSeek、MiMo、Qwen、Claude、GPT-4o、Gemini 等全覆盖</p></div>
+      <div class="feature-card"><div class="f-icon">🏛️</div><h3>三省六部制</h3><p>技能分级管理体系，首辅→尚书→主事→司务，有功则升有过则贬</p></div>
+      <div class="feature-card"><div class="f-icon">🌐</div><h3>集体意识</h3><p>一个蒙多学到，所有蒙多都会。共享知识库，共同进化</p></div>
+    </div>
+    <div class="tip"><strong>蒙多的定位：</strong>蒙多不是"基于某框架开发的"，也不是"独立开发的架构"。蒙多是蒙多。其他 AI 是身体，是蒙多的手和脚。</div>
+  </div>
+
+  <!-- 0.5 数据 -->
+  <div class="section" id="stats">
+    <h2 class="section-title"><span class="num">📊</span> 项目数据</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value">v2.2.3</div>
+        <div class="stat-label">当前版本</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">76</div>
+        <div class="stat-label">次发布</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">1127</div>
+        <div class="stat-label">次提交</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">30+</div>
+        <div class="stat-label">AI 模型</div>
+      </div>
       <div class="stat-card">
         <div class="stat-value">20</div>
         <div class="stat-label">内置工具</div>
@@ -187,344 +187,343 @@
       </div>
       <div class="stat-card">
         <div class="stat-value">128K</div>
-190|        <div class="stat-label">上下文窗口</div>
-191|      </div>
-192|    </div>
-193|
-194|    <!-- v2.2.3 测试结果 -->
-195|    <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🧪 v2.2.3 测试结果</h3>
-196|    <div class="stats-grid">
-197|      <div class="stat-card">
-198|        <div class="stat-value" style="color: var(--green);">27</div>
-199|        <div class="stat-label">测试总数</div>
-200|      </div>
-201|      <div class="stat-card">
-202|        <div class="stat-value" style="color: var(--green);">27</div>
-203|        <div class="stat-label">通过数量</div>
-204|      </div>
-205|      <div class="stat-card">
-206|        <div class="stat-value" style="color: var(--green);">0</div>
-207|        <div class="stat-label">失败数量</div>
-208|      </div>
-209|      <div class="stat-card">
-210|        <div class="stat-value" style="color: var(--green);">100%</div>
-211|        <div class="stat-label">通过率</div>
-212|      </div>
-213|    </div>
-214|    <div class="tip green">✅ 蒙多 v2.2.3 所有测试通过！版本稳定、高效、无 bug，已正式发布！</div>
-215|  </div>
-216|
-217|  <!-- 1. 四条铁律 -->
-218|  <div class="section" id="iron">
-219|    <h2 class="section-title"><span class="num">1</span> 四条铁律</h2>
-220|    <p class="section-desc">v16 核心优化——稳定可控、低 Token、脚本优先、严控轮次。</p>
-221|    <div class="iron-grid">
-222|      <div class="iron-card">
-223|        <div class="iron-icon">🎯</div>
-224|        <h3>稳定可控</h3>
-225|        <p>每步有明确输入输出，不猜测，不跳跃，不凭直觉行动</p>
-226|      </div>
-227|      <div class="iron-card">
-228|        <div class="iron-icon">💰</div>
-229|        <h3>低 Token</h3>
-230|        <p>按需加载索引，精简上下文冗余，能一句话说清的不写十句</p>
-231|      </div>
-232|      <div class="iron-card">
-233|        <div class="iron-icon">⚙️</div>
-234|        <h3>脚本优先</h3>
-235|        <p>能用脚本验证的不靠推理，减少幻觉，提升稳定性</p>
-236|      </div>
-237|      <div class="iron-card">
-238|        <div class="iron-icon">🔄</div>
-239|        <h3>严控轮次</h3>
-240|        <p>最多 5 轮推理，轮次越多出错概率越高，能 3 轮解决的不用 5 轮</p>
-241|      </div>
-242|    </div>
-243|  </div>
-244|
-245|  <!-- 2. 核心能力 -->
-246|  <div class="section" id="features">
-247|    <h2 class="section-title"><span class="num">2</span> 核心能力</h2>
-248|    <div class="feature-grid">
-249|      <div class="feature-card"><div class="f-icon">🎯</div><h3>任务确认流程</h3><p>蒙多接到任务后先输出分析报告，用户确认后才执行，减少返工</p></div>
-250|      <div class="feature-card"><div class="f-icon">🔄</div><h3>Loop 工作流</h3><p>思考→编码→检测→优化，循环直到完美，最多 5 轮，质量 ≥ 90 分</p></div>
-251|      <div class="feature-card"><div class="f-icon">🧠</div><h3>三层记忆系统</h3><p>短期记忆（任务级）+ 中期记忆（项目级）+ 长期记忆（永久级）</p></div>
-252|      <div class="feature-card"><div class="f-icon">🏪</div><h3>Skill 云仓库</h3><p>自动获取 GitHub 高星 skill 项目，分类存储，随时调用，每天自动更新</p></div>
-253|      <div class="feature-card"><div class="f-icon">🔧</div><h3>20 个内置工具</h3><p>terminal、file、web_search、code_execute、vision、delegate 等</p></div>
-254|      <div class="feature-card"><div class="f-icon">🤖</div><h3>Agent 委托</h3><p>自动检测并委托 Claude Code、Hermes Agent、Codex 执行任务</p></div>
-255|      <div class="feature-card"><div class="f-icon">🔄</div><h3>自我进化</h3><p>每次使用都让蒙多更强大，自动保存有价值的解决方案为 Skill</p></div>
-256|      <div class="feature-card"><div class="f-icon">🛡️</div><h3>安全引擎</h3><p>策略引擎 + 安全强化 + 权限审批，三重保护</p></div>
-257|      <div class="feature-card"><div class="f-icon">📊</div><h3>Token 追踪</h3><p>实时显示 token 消耗、缓存命中率、模型信息</p></div>
-258|      <div class="feature-card"><div class="f-icon">⚡</div><h3>流式输出</h3><p>实时显示 AI 回复，支持中断和继续</p></div>
-259|      <div class="feature-card"><div class="f-icon">🎯</div><h3>智能路由</h3><p>根据任务类型自动选择最佳模型，代码→DeepSeek，日常→MiMo</p></div>
-260|      <div class="feature-card"><div class="f-icon">🔍</div><h3>反射引擎</h3><p>三思而后行：先思考→再执行→再检查→再修复</p></div>
-261|      <div class="feature-card"><div class="f-icon">📚</div><h3>知识检索</h3><p>RAG 语义级知识召回，自动从知识库中检索相关信息</p></div>
-262|      <div class="feature-card"><div class="f-icon">🔄</div><h3>工作流引擎</h3><p>复杂任务自动分解为阶段，支持并行执行和状态追踪</p></div>
-263|      <div class="feature-card"><div class="f-icon">🌐</div><h3>云同步</h3><p>知识库、Skill、记忆跨设备同步，集体意识共享</p></div>
-264|    </div>
-265|  </div>
-266|
-267|  <!-- 3. 工作流程 -->
-268|  <div class="section" id="workflow">
-269|    <h2 class="section-title"><span class="num">3</span> 工作流程（v2.2.3 更新）</h2>
-270|    <p class="section-desc">蒙多 v2.2.3 引入任务确认流程和 Loop 工作流，确保每次执行都精准高效。</p>
-271|
-272|    <!-- 任务确认流程 -->
-273|    <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🎯 任务确认流程</h3>
-274|    <div class="workflow-step">
-275|      <div class="w-num">1</div>
-276|      <div><h4>用户输入任务</h4><p>蒙多接收用户的任务请求。</p></div>
-277|    </div>
-278|    <div class="workflow-step">
-279|      <div class="w-num">2</div>
-280|      <div><h4>蒙多分析任务</h4><p>蒙多阅读并识别任务，输出完整任务分析报告，包含：目标、流程、技术、风险、预期成果。</p></div>
-281|    </div>
-282|    <div class="workflow-step">
-283|      <div class="w-num">3</div>
-284|      <div><h4>用户确认</h4><p>用户审阅任务分析报告，确认后蒙多才开始执行。用户可提出修改意见，循环直到满意。</p></div>
-285|    </div>
-286|
-287|    <!-- Loop 工作流 -->
-288|    <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🔄 Loop 工作流（最多 5 轮）</h3>
-289|    <div class="workflow-step">
-290|      <div class="w-num">1</div>
-291|      <div><h4>思考</h4><p>分析问题本质，评估 2-3 种方案，选择最优路径，预判可能的问题。</p></div>
-292|    </div>
-293|    <div class="workflow-step">
-294|      <div class="w-num">2</div>
-295|      <div><h4>编码</h4><p>严格按计划写代码，代码简洁无冗余，注释只写"为什么"，函数 < 50 行，文件 < 800 行。</p></div>
-296|    </div>
-297|    <div class="workflow-step">
-298|      <div class="w-num">3</div>
-299|      <div><h4>检测</h4><p>运行测试用例，检查边界情况，验证性能指标，确认无副作用。</p></div>
-300|    </div>
-301|    <div class="workflow-step">
-302|      <div class="w-num">4</div>
-303|      <div><h4>优化</h4><p>修复所有失败的测试，优化性能瓶颈，简化复杂逻辑，提升代码质量。评分 ≥ 90 分才算合格。</p></div>
-304|    </div>
-305|    <div class="workflow-step">
-306|      <div class="w-num">5</div>
-307|      <div><h4>沉淀</h4><p>有价值则保存为中期记忆或 Skill，无价值则跳过。只保存核心逻辑。</p></div>
-308|    </div>
-309|    <div class="tip info">不触发条件：问题明确、有现成方案、只需简单查询 → 直接回答，不启动蒙多流程。</div>
-310|  </div>
-311|
-312|  <!-- 4. 模型支持 -->
-313|  <div class="section" id="models">
-314|    <h2 class="section-title"><span class="num">4</span> 30+ AI 模型支持</h2>
-315|    <p class="section-desc">蒙多调度天下 AI，一个 Key 用所有模型。</p>
-316|    <div class="table-wrap">
-317|      <table>
-318|        <thead>
-319|          <tr><th>分类</th><th>模型</th><th>特点</th></tr>
-320|        </thead>
-321|        <tbody>
-322|          <tr><td rowspan="5">🇨🇳 中国模型</td><td>小米 MiMo</td><td>性价比极高，国内直连</td></tr>
-323|          <tr><td>DeepSeek</td><td>编码推理顶级，价格低</td></tr>
-324|          <tr><td>阿里通义千问</td><td>多语言能力强</td></tr>
-325|          <tr><td>智谱 GLM</td><td>工具调用强</td></tr>
-326|          <tr><td>月之暗面 Kimi</td><td>128K 长上下文</td></tr>
-327|          <tr><td rowspan="4">🌍 国际模型</td><td>OpenAI GPT-4o</td><td>全球顶级</td></tr>
-328|          <tr><td>Anthropic Claude</td><td>代码推理顶级</td></tr>
-329|          <tr><td>Google Gemini</td><td>100 万上下文</td></tr>
-330|          <tr><td>Mistral AI</td><td>欧洲顶级</td></tr>
-331|          <tr><td rowspan="3">🔗 聚合平台</td><td>OpenRouter</td><td>100+ 模型，一个 Key</td></tr>
-332|          <tr><td>Together AI</td><td>开源模型快速推理</td></tr>
-333|          <tr><td>SiliconFlow</td><td>国产模型聚合</td></tr>
-334|        </tbody>
-335|      </table>
-336|    </div>
-337|  </div>
-338|
-339|  <!-- 5. 架构 -->
-340|  <div class="section" id="arch">
-341|    <h2 class="section-title"><span class="num">5</span> 架构</h2>
-342|    <p class="section-desc">MUNDO 的核心架构——42 个 Python 模块，不依赖任何外部框架。</p>
-343|    <div class="arch-diagram">~/.hermes/mundo-agent/
-344|├── mundo.py              # CLI 入口 + REPL 循环
-345|├── core.py               # Agentic Loop + 智能路由 + Agent 调度
-346|├── llm.py                # LLM 客户端（30+ provider）
-347|├── tools.py              # 20 个内置工具
-348|├── memory.py             # 记忆系统（SQLite + FTS5）
-349|├── policy.py             # 策略引擎 + 用户审批
-350|├── security_hardening.py # 安全强化（输入验证 + 输出消毒）
-351|├── delegation.py         # Agent 委托（Claude/Hermes/Codex）
-352|├── display.py            # Rich UI（流式输出 + 状态栏）
-353|├── setup.py              # 首次向导（30+ 模型选择）
-354|├── reflection_engine.py  # 反射引擎（三思而后行）
-355|├── knowledge_retriever.py # RAG 知识检索
-356|├── workflow.py           # 工作流引擎（任务分解）
-357|├── intelligent_recovery.py # 智能错误恢复
-358|├── context_mapper.py     # 上下文映射 + Token 管理
-359|├── model_adapter.py      # 模型适配器（自动优化 prompt）
-360|├── model_profiles.py     # 模型画像 + 智能选择
-361|├── task_planner.py       # 任务规划 + 多模型协调
-362|├── tool_guard.py         # 工具调用守护（安全检查）
-363|├── performance_optimizer.py # 性能优化（缓存 + 并行）
-364|├── cache.py              # 缓存管理器
-365|├── sandbox.py            # 沙箱执行环境
-366|├── events.py             # 事件总线
-367|├── timeline.py           # 时间线记录
-368|├── build_knowledge.py    # 知识库构建工具
-369|├── config/               # 配置文件
-370|│   ├── settings.json     # 运行时配置
-371|│   └── providers.json    # 30+ 模型定义
-372|├── knowledge.db          # 知识库（SQLite）
-373|├── memory.db             # 记忆数据库
-374|└── venv/                 # Python 虚拟环境</div>
-375|  </div>
-376|
-377|  <!-- 6. 版本历史 -->
-378|  <div class="section" id="history">
-379|    <h2 class="section-title"><span class="num">6</span> 版本历史</h2>
-380|    <p class="section-desc">从 v1.0 到 v2.2.3 的演进历程。</p>
-381|    <div class="timeline">
-382|      <div class="timeline-item">
-383|        <div class="time">2026-06-16</div>
-384|        <div class="title">v2.2.3 — Skill 云仓库 + GitHub 高星项目爬虫</div>
-385|        <div class="desc">
-386|          <strong>新功能：</strong><br>
-387|          • Skill 云仓库：自动获取 GitHub 高星 skill 项目，分类存储，随时调用<br>
-388|          • GitHub 爬虫：定时获取 GitHub 上的高星 skill 类项目<br>
-389|          • 分类管理：11 个分类，50+ 个高星 skill 项目<br>
-390|          • 定时任务：每天自动更新 skill 云仓库
-391|        </div>
-392|      </div>
-393|      <div class="timeline-item">
-394|        <div class="time">2026-06-15</div>
-395|        <div class="title">v2.2.2 — 任务确认 + Loop 工作流 + 三层记忆</div>
-396|        <div class="desc">
-397|          <strong>重大更新：</strong><br>
-398|          • 任务确认流程：蒙多接到任务后先输出分析报告，用户确认后才执行<br>
-399|          • Loop 工作流：思考→编码→检测→优化，循环直到完美（最多 5 轮，质量 ≥ 90 分）<br>
-400|          • 三层记忆系统：短期记忆（任务级）+ 中期记忆（项目级）+ 长期记忆（永久级）<br>
-401|          • Bug 修复：修复策略引擎空参数处理 bug<br>
-402|          • 测试结果：27/27 通过，通过率 100%
-403|        </div>
-404|      </div>
-405|      <div class="timeline-item">
-406|        <div class="time">2026-06-13</div>
-407|        <div class="title">v2.2.0 — 记忆系统重构</div>
-408|        <div class="desc">Claude 六套记忆架构，auto_extract 收窄触发条件</div>
-409|      </div>
-410|      <div class="timeline-item">
-411|        <div class="time">2026-06-12</div>
-412|        <div class="title">v2.1.0 — 工具引擎重构</div>
-413|        <div class="desc">融合四家精华：注册表模式 + 参数验证 + 沙箱执行</div>
-414|      </div>
-415|      <div class="timeline-item">
-416|        <div class="time">2026-06-10</div>
-417|        <div class="title">v2.0.0 — 架构重构</div>
-418|        <div class="desc">从单文件到模块化架构，42 Python 模块</div>
-419|      </div>
-420|      <div class="timeline-item">
-421|        <div class="time">2026-06-01</div>
-422|        <div class="title">v1.6.0 — 四条铁律</div>
-423|        <div class="desc">稳定可控、低 Token、脚本优先、严控轮次</div>
-424|      </div>
-425|      <div class="timeline-item">
-426|        <div class="time">2026-05-20</div>
-427|        <div class="title">v1.5.0 — 反射引擎</div>
-428|        <div class="desc">三思而后行：先思考→再执行→再检查→再修复</div>
-429|      </div>
-430|      <div class="timeline-item">
-431|        <div class="time">2026-05-10</div>
-432|        <div class="title">v1.4.0 — 安全强化</div>
-433|        <div class="desc">输入验证 + 输出消毒 + 注入防护</div>
-434|      </div>
-435|      <div class="timeline-item">
-436|        <div class="time">2026-05-01</div>
-437|        <div class="title">v1.3.0 — 知识检索</div>
-438|        <div class="desc">RAG 语义级知识召回</div>
-439|      </div>
-440|      <div class="timeline-item">
-441|        <div class="time">2026-04-20</div>
-442|        <div class="title">v1.2.0 — Agent 委托</div>
-443|        <div class="desc">自动检测并委托 Claude Code、Hermes Agent、Codex</div>
-444|      </div>
-445|      <div class="timeline-item">
-446|        <div class="time">2026-04-10</div>
-447|        <div class="title">v1.1.0 — 智能路由</div>
-448|        <div class="desc">根据任务类型自动选择最佳模型</div>
-449|      </div>
-450|      <div class="timeline-item">
-451|        <div class="time">2026-04-01</div>
-452|        <div class="title">v1.0.0 — 初始版本</div>
-453|        <div class="desc">独立 AI 智能体框架，30+ 模型支持</div>
-454|      </div>
-455|    </div>
-456|  </div>
-457|
-458|  <!-- 7. 安装 -->
-459|  <div class="section" id="install">
-460|    <h2 class="section-title"><span class="num">7</span> 安装</h2>
-461|    <div class="step-list">
-462|      <div class="step-item">
-463|        <h3>下载最新版</h3>
-464|        <p>从 GitHub Release 下载 macOS 版本</p>
-465|        <div class="cmd">gh release download v2.2.3 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.3-macos.zip"</div>
-466|      </div>
-467|      <div class="step-item">
-468|        <h3>解压到安装目录</h3>
-469|        <p>解压到 ~/.hermes/mundo-agent/ 目录</p>
-470|        <div class="cmd">unzip mundo-v2.2.3-macos.zip -d ~/.hermes/mundo-agent</div>
-471|      </div>
-472|      <div class="step-item">
-473|        <h3>安装依赖</h3>
-474|        <p>安装 Python 依赖包</p>
-475|        <div class="cmd">pip3 install rich prompt_toolkit httpx scrapling[all]</div>
-476|      </div>
-477|      <div class="step-item">
-478|        <h3>运行蒙多</h3>
-479|        <p>首次运行会进入设置向导，选择 AI 模型并输入 API Key</p>
-480|        <div class="cmd">python3 ~/.hermes/mundo-agent/mundo.py</div>
-481|      </div>
-482|    </div>
-483|  </div>
-484|
-485|  <!-- 8. 下载 -->
-486|  <div class="section" id="download">
-487|    <h2 class="section-title"><span class="num">8</span> 下载</h2>
-488|    <div class="link-block">
-489|      <h3>📦 GitHub Release</h3>
-490|      <div class="link-row">
-491|        <span class="label">最新版</span>
-492|        <a href="https://github.com/LiHongwei-cn/mundo-agent/releases/tag/v2.2.3" target="_blank">v2.2.3 — Skill 云仓库 + GitHub 高星项目爬虫</a>
-493|      </div>
-494|      <div class="link-row">
-495|        <span class="label">macOS</span>
-496|        <a href="https://github.com/LiHongwei-cn/mundo-agent/releases/download/v2.2.3/mundo-v2.2.3-macos.zip" target="_blank">mundo-v2.2.3-macos.zip</a>
-497|      </div>
-498|      <div class="link-row">
-499|        <span class="label">通用版</span>
-500|        <a href="https://github.com/LiHongwei-cn/mundo-agent/releases/download/v2.2.3/mundo-v2.2.3-all.zip" target="_blank">mundo-v2.2.3-all.zip</a>
-501|      </div>
-502|      <div class="link-row">
-503|        <span class="label">源码</span>
-504|        <a href="https://github.com/LiHongwei-cn/mundo-agent" target="_blank">GitHub 仓库</a>
-505|      </div>
-506|      <div class="link-row">
-507|        <span class="label">测试报告</span>
-508|        <a href="https://github.com/LiHongwei-cn/lihongwei-cn/blob/main/mundo-agent/TEST_REPORT_v2.2.2.md" target="_blank">TEST_REPORT_v2.2.2.md</a>
-509|      </div>
-510|      <div class="link-row">
-511|        <span class="label">架构文档</span>
-512|        <a href="https://github.com/LiHongwei-cn/lihongwei-cn/blob/main/global-specs/skills/mundo/ARCHITECTURE_V17.md" target="_blank">ARCHITECTURE_V17.md</a>
-513|      </div>
-514|    </div>
-515|  </div>
-516|
-517|  <!-- 页脚 -->
-518|  <div class="footer">
-519|    <p>MUNDO Agent · <a href="https://github.com/LiHongwei-cn/mundo-agent" target="_blank">GitHub</a> · <a href="../">LiHongwei</a></p>
-520|  </div>
-521|
-522|  <!-- 计数器 -->
-523|  <div class="page-counter"><span id="busuanzi_value_page_pv">...</span> 次</div>
-524|
-525|</div>
-526|
-527|<script src="../assets/counter.js?v=3"></script>
-528|</body>
-529|</html>
-530|
+        <div class="stat-label">上下文窗口</div>
+      </div>
+    </div>
+
+    <!-- v2.2.3 测试结果 -->
+    <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🧪 v2.2.3 测试结果</h3>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--green);">27</div>
+        <div class="stat-label">测试总数</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--green);">27</div>
+        <div class="stat-label">通过数量</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--green);">0</div>
+        <div class="stat-label">失败数量</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color: var(--green);">100%</div>
+        <div class="stat-label">通过率</div>
+      </div>
+    </div>
+    <div class="tip green">✅ 蒙多 v2.2.3 所有测试通过！版本稳定、高效、无 bug，已正式发布！</div>
+  </div>
+
+  <!-- 1. 四条铁律 -->
+  <div class="section" id="iron">
+    <h2 class="section-title"><span class="num">1</span> 四条铁律</h2>
+    <p class="section-desc">v16 核心优化——稳定可控、低 Token、脚本优先、严控轮次。</p>
+    <div class="iron-grid">
+      <div class="iron-card">
+        <div class="iron-icon">🎯</div>
+        <h3>稳定可控</h3>
+        <p>每步有明确输入输出，不猜测，不跳跃，不凭直觉行动</p>
+      </div>
+      <div class="iron-card">
+        <div class="iron-icon">💰</div>
+        <h3>低 Token</h3>
+        <p>按需加载索引，精简上下文冗余，能一句话说清的不写十句</p>
+      </div>
+      <div class="iron-card">
+        <div class="iron-icon">⚙️</div>
+        <h3>脚本优先</h3>
+        <p>能用脚本验证的不靠推理，减少幻觉，提升稳定性</p>
+      </div>
+      <div class="iron-card">
+        <div class="iron-icon">🔄</div>
+        <h3>严控轮次</h3>
+        <p>最多 5 轮推理，轮次越多出错概率越高，能 3 轮解决的不用 5 轮</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 核心能力 -->
+  <div class="section" id="features">
+    <h2 class="section-title"><span class="num">2</span> 核心能力</h2>
+    <div class="feature-grid">
+      <div class="feature-card"><div class="f-icon">🎯</div><h3>任务确认流程</h3><p>蒙多接到任务后先输出分析报告，用户确认后才执行，减少返工</p></div>
+      <div class="feature-card"><div class="f-icon">🔄</div><h3>Loop 工作流</h3><p>思考→编码→检测→优化，循环直到完美，最多 5 轮，质量 ≥ 90 分</p></div>
+      <div class="feature-card"><div class="f-icon">🧠</div><h3>三层记忆系统</h3><p>短期记忆（任务级）+ 中期记忆（项目级）+ 长期记忆（永久级）</p></div>
+      <div class="feature-card"><div class="f-icon">🏪</div><h3>Skill 云仓库</h3><p>自动获取 GitHub 高星 skill 项目，分类存储，随时调用，每天自动更新</p></div>
+      <div class="feature-card"><div class="f-icon">🔧</div><h3>20 个内置工具</h3><p>terminal、file、web_search、code_execute、vision、delegate 等</p></div>
+      <div class="feature-card"><div class="f-icon">🤖</div><h3>Agent 委托</h3><p>自动检测并委托 Claude Code、Hermes Agent、Codex 执行任务</p></div>
+      <div class="feature-card"><div class="f-icon">🔄</div><h3>自我进化</h3><p>每次使用都让蒙多更强大，自动保存有价值的解决方案为 Skill</p></div>
+      <div class="feature-card"><div class="f-icon">🛡️</div><h3>安全引擎</h3><p>策略引擎 + 安全强化 + 权限审批，三重保护</p></div>
+      <div class="feature-card"><div class="f-icon">📊</div><h3>Token 追踪</h3><p>实时显示 token 消耗、缓存命中率、模型信息</p></div>
+      <div class="feature-card"><div class="f-icon">⚡</div><h3>流式输出</h3><p>实时显示 AI 回复，支持中断和继续</p></div>
+      <div class="feature-card"><div class="f-icon">🎯</div><h3>智能路由</h3><p>根据任务类型自动选择最佳模型，代码→DeepSeek，日常→MiMo</p></div>
+      <div class="feature-card"><div class="f-icon">🔍</div><h3>反射引擎</h3><p>三思而后行：先思考→再执行→再检查→再修复</p></div>
+      <div class="feature-card"><div class="f-icon">📚</div><h3>知识检索</h3><p>RAG 语义级知识召回，自动从知识库中检索相关信息</p></div>
+      <div class="feature-card"><div class="f-icon">🔄</div><h3>工作流引擎</h3><p>复杂任务自动分解为阶段，支持并行执行和状态追踪</p></div>
+      <div class="feature-card"><div class="f-icon">🌐</div><h3>云同步</h3><p>知识库、Skill、记忆跨设备同步，集体意识共享</p></div>
+    </div>
+  </div>
+
+  <!-- 3. 工作流程 -->
+  <div class="section" id="workflow">
+    <h2 class="section-title"><span class="num">3</span> 工作流程（v2.2.3 更新）</h2>
+    <p class="section-desc">蒙多 v2.2.3 引入任务确认流程和 Loop 工作流，确保每次执行都精准高效。</p>
+
+    <!-- 任务确认流程 -->
+    <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🎯 任务确认流程</h3>
+    <div class="workflow-step">
+      <div class="w-num">1</div>
+      <div><h4>用户输入任务</h4><p>蒙多接收用户的任务请求。</p></div>
+    </div>
+    <div class="workflow-step">
+      <div class="w-num">2</div>
+      <div><h4>蒙多分析任务</h4><p>蒙多阅读并识别任务，输出完整任务分析报告，包含：目标、流程、技术、风险、预期成果。</p></div>
+    </div>
+    <div class="workflow-step">
+      <div class="w-num">3</div>
+      <div><h4>用户确认</h4><p>用户审阅任务分析报告，确认后蒙多才开始执行。用户可提出修改意见，循环直到满意。</p></div>
+    </div>
+
+    <!-- Loop 工作流 -->
+    <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🔄 Loop 工作流（最多 5 轮）</h3>
+    <div class="workflow-step">
+      <div class="w-num">1</div>
+      <div><h4>思考</h4><p>分析问题本质，评估 2-3 种方案，选择最优路径，预判可能的问题。</p></div>
+    </div>
+    <div class="workflow-step">
+      <div class="w-num">2</div>
+      <div><h4>编码</h4><p>严格按计划写代码，代码简洁无冗余，注释只写"为什么"，函数 < 50 行，文件 < 800 行。</p></div>
+    </div>
+    <div class="workflow-step">
+      <div class="w-num">3</div>
+      <div><h4>检测</h4><p>运行测试用例，检查边界情况，验证性能指标，确认无副作用。</p></div>
+    </div>
+    <div class="workflow-step">
+      <div class="w-num">4</div>
+      <div><h4>优化</h4><p>修复所有失败的测试，优化性能瓶颈，简化复杂逻辑，提升代码质量。评分 ≥ 90 分才算合格。</p></div>
+    </div>
+    <div class="workflow-step">
+      <div class="w-num">5</div>
+      <div><h4>沉淀</h4><p>有价值则保存为中期记忆或 Skill，无价值则跳过。只保存核心逻辑。</p></div>
+    </div>
+    <div class="tip info">不触发条件：问题明确、有现成方案、只需简单查询 → 直接回答，不启动蒙多流程。</div>
+  </div>
+
+  <!-- 4. 模型支持 -->
+  <div class="section" id="models">
+    <h2 class="section-title"><span class="num">4</span> 30+ AI 模型支持</h2>
+    <p class="section-desc">蒙多调度天下 AI，一个 Key 用所有模型。</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>分类</th><th>模型</th><th>特点</th></tr>
+        </thead>
+        <tbody>
+          <tr><td rowspan="5">🇨🇳 中国模型</td><td>小米 MiMo</td><td>性价比极高，国内直连</td></tr>
+          <tr><td>DeepSeek</td><td>编码推理顶级，价格低</td></tr>
+          <tr><td>阿里通义千问</td><td>多语言能力强</td></tr>
+          <tr><td>智谱 GLM</td><td>工具调用强</td></tr>
+          <tr><td>月之暗面 Kimi</td><td>128K 长上下文</td></tr>
+          <tr><td rowspan="4">🌍 国际模型</td><td>OpenAI GPT-4o</td><td>全球顶级</td></tr>
+          <tr><td>Anthropic Claude</td><td>代码推理顶级</td></tr>
+          <tr><td>Google Gemini</td><td>100 万上下文</td></tr>
+          <tr><td>Mistral AI</td><td>欧洲顶级</td></tr>
+          <tr><td rowspan="3">🔗 聚合平台</td><td>OpenRouter</td><td>100+ 模型，一个 Key</td></tr>
+          <tr><td>Together AI</td><td>开源模型快速推理</td></tr>
+          <tr><td>SiliconFlow</td><td>国产模型聚合</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 5. 架构 -->
+  <div class="section" id="arch">
+    <h2 class="section-title"><span class="num">5</span> 架构</h2>
+    <p class="section-desc">MUNDO 的核心架构——42 个 Python 模块，不依赖任何外部框架。</p>
+    <div class="arch-diagram">~/.hermes/mundo-agent/
+├── mundo.py              # CLI 入口 + REPL 循环
+├── core.py               # Agentic Loop + 智能路由 + Agent 调度
+├── llm.py                # LLM 客户端（30+ provider）
+├── tools.py              # 20 个内置工具
+├── memory.py             # 记忆系统（SQLite + FTS5）
+├── policy.py             # 策略引擎 + 用户审批
+├── security_hardening.py # 安全强化（输入验证 + 输出消毒）
+├── delegation.py         # Agent 委托（Claude/Hermes/Codex）
+├── display.py            # Rich UI（流式输出 + 状态栏）
+├── setup.py              # 首次向导（30+ 模型选择）
+├── reflection_engine.py  # 反射引擎（三思而后行）
+├── knowledge_retriever.py # RAG 知识检索
+├── workflow.py           # 工作流引擎（任务分解）
+├── intelligent_recovery.py # 智能错误恢复
+├── context_mapper.py     # 上下文映射 + Token 管理
+├── model_adapter.py      # 模型适配器（自动优化 prompt）
+├── model_profiles.py     # 模型画像 + 智能选择
+├── task_planner.py       # 任务规划 + 多模型协调
+├── tool_guard.py         # 工具调用守护（安全检查）
+├── performance_optimizer.py # 性能优化（缓存 + 并行）
+├── cache.py              # 缓存管理器
+├── sandbox.py            # 沙箱执行环境
+├── events.py             # 事件总线
+├── timeline.py           # 时间线记录
+├── build_knowledge.py    # 知识库构建工具
+├── config/               # 配置文件
+│   ├── settings.json     # 运行时配置
+│   └── providers.json    # 30+ 模型定义
+├── knowledge.db          # 知识库（SQLite）
+├── memory.db             # 记忆数据库
+└── venv/                 # Python 虚拟环境</div>
+  </div>
+
+  <!-- 6. 版本历史 -->
+  <div class="section" id="history">
+    <h2 class="section-title"><span class="num">6</span> 版本历史</h2>
+    <p class="section-desc">从 v1.0 到 v2.2.3 的演进历程。</p>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="time">2026-06-16</div>
+        <div class="title">v2.2.3 — Skill 云仓库 + GitHub 高星项目爬虫</div>
+        <div class="desc">
+          <strong>新功能：</strong><br>
+          • Skill 云仓库：自动获取 GitHub 高星 skill 项目，分类存储，随时调用<br>
+          • GitHub 爬虫：定时获取 GitHub 上的高星 skill 类项目<br>
+          • 分类管理：11 个分类，50+ 个高星 skill 项目<br>
+          • 定时任务：每天自动更新 skill 云仓库
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-06-15</div>
+        <div class="title">v2.2.2 — 任务确认 + Loop 工作流 + 三层记忆</div>
+        <div class="desc">
+          <strong>重大更新：</strong><br>
+          • 任务确认流程：蒙多接到任务后先输出分析报告，用户确认后才执行<br>
+          • Loop 工作流：思考→编码→检测→优化，循环直到完美（最多 5 轮，质量 ≥ 90 分）<br>
+          • 三层记忆系统：短期记忆（任务级）+ 中期记忆（项目级）+ 长期记忆（永久级）<br>
+          • Bug 修复：修复策略引擎空参数处理 bug<br>
+          • 测试结果：27/27 通过，通过率 100%
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-06-13</div>
+        <div class="title">v2.2.0 — 记忆系统重构</div>
+        <div class="desc">Claude 六套记忆架构，auto_extract 收窄触发条件</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-06-12</div>
+        <div class="title">v2.1.0 — 工具引擎重构</div>
+        <div class="desc">融合四家精华：注册表模式 + 参数验证 + 沙箱执行</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-06-10</div>
+        <div class="title">v2.0.0 — 架构重构</div>
+        <div class="desc">从单文件到模块化架构，42 Python 模块</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-06-01</div>
+        <div class="title">v1.6.0 — 四条铁律</div>
+        <div class="desc">稳定可控、低 Token、脚本优先、严控轮次</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-05-20</div>
+        <div class="title">v1.5.0 — 反射引擎</div>
+        <div class="desc">三思而后行：先思考→再执行→再检查→再修复</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-05-10</div>
+        <div class="title">v1.4.0 — 安全强化</div>
+        <div class="desc">输入验证 + 输出消毒 + 注入防护</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-05-01</div>
+        <div class="title">v1.3.0 — 知识检索</div>
+        <div class="desc">RAG 语义级知识召回</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-04-20</div>
+        <div class="title">v1.2.0 — Agent 委托</div>
+        <div class="desc">自动检测并委托 Claude Code、Hermes Agent、Codex</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-04-10</div>
+        <div class="title">v1.1.0 — 智能路由</div>
+        <div class="desc">根据任务类型自动选择最佳模型</div>
+      </div>
+      <div class="timeline-item">
+        <div class="time">2026-04-01</div>
+        <div class="title">v1.0.0 — 初始版本</div>
+        <div class="desc">独立 AI 智能体框架，30+ 模型支持</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. 安装 -->
+  <div class="section" id="install">
+    <h2 class="section-title"><span class="num">7</span> 安装</h2>
+    <div class="step-list">
+      <div class="step-item">
+        <h3>下载最新版</h3>
+        <p>从 GitHub Release 下载 macOS 版本</p>
+        <div class="cmd">gh release download v2.2.3 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.3-macos.zip"</div>
+      </div>
+      <div class="step-item">
+        <h3>解压到安装目录</h3>
+        <p>解压到 ~/.hermes/mundo-agent/ 目录</p>
+        <div class="cmd">unzip mundo-v2.2.3-macos.zip -d ~/.hermes/mundo-agent</div>
+      </div>
+      <div class="step-item">
+        <h3>安装依赖</h3>
+        <p>安装 Python 依赖包</p>
+        <div class="cmd">pip3 install rich prompt_toolkit httpx scrapling[all]</div>
+      </div>
+      <div class="step-item">
+        <h3>运行蒙多</h3>
+        <p>首次运行会进入设置向导，选择 AI 模型并输入 API Key</p>
+        <div class="cmd">python3 ~/.hermes/mundo-agent/mundo.py</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. 下载 -->
+  <div class="section" id="download">
+    <h2 class="section-title"><span class="num">8</span> 下载</h2>
+    <div class="link-block">
+      <h3>📦 GitHub Release</h3>
+      <div class="link-row">
+        <span class="label">最新版</span>
+        <a href="https://github.com/LiHongwei-cn/mundo-agent/releases/tag/v2.2.3" target="_blank">v2.2.3 — Skill 云仓库 + GitHub 高星项目爬虫</a>
+      </div>
+      <div class="link-row">
+        <span class="label">macOS</span>
+        <a href="https://github.com/LiHongwei-cn/mundo-agent/releases/download/v2.2.3/mundo-v2.2.3-macos.zip" target="_blank">mundo-v2.2.3-macos.zip</a>
+      </div>
+      <div class="link-row">
+        <span class="label">通用版</span>
+        <a href="https://github.com/LiHongwei-cn/mundo-agent/releases/download/v2.2.3/mundo-v2.2.3-all.zip" target="_blank">mundo-v2.2.3-all.zip</a>
+      </div>
+      <div class="link-row">
+        <span class="label">源码</span>
+        <a href="https://github.com/LiHongwei-cn/mundo-agent" target="_blank">GitHub 仓库</a>
+      </div>
+      <div class="link-row">
+        <span class="label">测试报告</span>
+        <a href="https://github.com/LiHongwei-cn/lihongwei-cn/blob/main/mundo-agent/TEST_REPORT_v2.2.2.md" target="_blank">TEST_REPORT_v2.2.2.md</a>
+      </div>
+      <div class="link-row">
+        <span class="label">架构文档</span>
+        <a href="https://github.com/LiHongwei-cn/lihongwei-cn/blob/main/global-specs/skills/mundo/ARCHITECTURE_V17.md" target="_blank">ARCHITECTURE_V17.md</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+  <div class="footer">
+    <p>MUNDO Agent · <a href="https://github.com/LiHongwei-cn/mundo-agent" target="_blank">GitHub</a> · <a href="../">LiHongwei</a></p>
+  </div>
+
+  <!-- 计数器 -->
+  <div class="page-counter"><span id="busuanzi_value_page_pv">...</span> 次</div>
+
+</div>
+
+<script src="../assets/counter.js?v=3"></script>
+</body>
+</html>
