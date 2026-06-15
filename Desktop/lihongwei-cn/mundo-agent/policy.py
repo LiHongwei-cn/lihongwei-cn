@@ -401,6 +401,8 @@ class PolicyEngine:
 
     def evaluate_tool(self, tool_name: str, tool_args: Dict) -> PolicyResult:
         """快捷方法：评估工具调用"""
+        if tool_args is None:
+            tool_args = {}
         ctx = PolicyContext(
             tool_name=tool_name,
             tool_args=tool_args,
