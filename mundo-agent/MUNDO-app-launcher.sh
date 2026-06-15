@@ -1,7 +1,7 @@
 #!/bin/bash
 # MUNDO Agent v2.2.3 — macOS .app 启动脚本
 # 带同步逻辑，确保启动的是最新版蒙多
-# v2.2.4: 修复 PATH 环境变量 + 更好的错误处理
+# v2.2.3: 修复 com.apple.macl 权限问题 — 复制到 ~/.hermes/ 执行
 
 # 确保 PATH 包含常用目录（.app 启动时 PATH 可能不完整）
 export PATH="/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:$PATH"
@@ -10,6 +10,7 @@ export LC_ALL=zh_CN.UTF-8
 
 # 获取路径
 MUNDO_COMMAND="$HOME/Desktop/lihongwei-cn/MUNDO.command"
+MUNDO_HERMES="$HOME/.hermes"
 MUNDO_DST="$HOME/.hermes/mundo-agent"
 
 # 错误处理函数
@@ -33,11 +34,16 @@ if [ ! -f "$MUNDO_DST/mundo.py" ]; then
     show_error "找不到 mundo.py 文件！\n\n路径: $MUNDO_DST/mundo.py\n\n请先运行 MUNDO.command 完成初始化。"
 fi
 
-# 使用 osascript 打开 Terminal 并执行 MUNDO.command
+# 复制 MUNDO.command 到 ~/.hermes/ 避免 com.apple.macl 权限问题
+mkdir -p "$MUNDO_HERMES"
+cp "$MUNDO_COMMAND" "$MUNDO_HERMES/MUNDO.command"
+chmod +x "$MUNDO_HERMES/MUNDO.command"
+
+# 使用 osascript 打开 Terminal 并执行 ~/.hermes/MUNDO.command
 osascript <<'EOF'
 tell application "Terminal"
     activate
-    do script "bash \"$HOME/Desktop/lihongwei-cn/MUNDO.command\""
+    do script "bash ~/.hermes/MUNDO.command"
 end tell
 EOF
 
