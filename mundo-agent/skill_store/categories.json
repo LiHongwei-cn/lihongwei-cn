@@ -1,0 +1,115 @@
+{
+  "code-generation": {
+    "name": "代码生成",
+    "keywords": [
+      "code",
+      "generate",
+      "codegen",
+      "scaffold",
+      "boilerplate"
+    ],
+    "description": "自动生成代码、模板、脚手架"
+  },
+  "code-review": {
+    "name": "代码审查",
+    "keywords": [
+      "review",
+      "lint",
+      "static-analysis",
+      "quality"
+    ],
+    "description": "代码审查、静态分析、质量检查"
+  },
+  "testing": {
+    "name": "测试",
+    "keywords": [
+      "test",
+      "tdd",
+      "bdd",
+      "coverage",
+      "e2e",
+      "unit-test"
+    ],
+    "description": "单元测试、集成测试、E2E 测试"
+  },
+  "refactoring": {
+    "name": "重构优化",
+    "keywords": [
+      "refactor",
+      "clean",
+      "optimize",
+      "performance"
+    ],
+    "description": "代码重构、性能优化、死代码清理"
+  },
+  "documentation": {
+    "name": "文档生成",
+    "keywords": [
+      "doc",
+      "readme",
+      "markdown",
+      "api-doc",
+      "changelog"
+    ],
+    "description": "文档生成、README、API 文档"
+  },
+  "security": {
+    "name": "安全",
+    "keywords": [
+      "security",
+      "audit",
+      "vulnerability",
+      "cve",
+      "pentest"
+    ],
+    "description": "安全审计、漏洞扫描、渗透测试"
+  },
+  "devops": {
+    "name": "DevOps",
+    "keywords": [
+      "ci",
+      "cd",
+      "deploy",
+      "docker",
+      "kubernetes",
+      "pipeline"
+    ],
+    "description": "CI/CD、部署、容器化、流水线"
+  },
+  "agent-framework": {
+    "name": "Agent 框架",
+    "keywords": [
+      "agent",
+      "framework",
+      "orchestration",
+      "workflow",
+      "multi-agent"
+    ],
+    "description": "AI Agent 框架、工作流编排"
+  },
+  "prompt-engineering": {
+    "name": "提示工程",
+    "keywords": [
+      "prompt",
+      "chain-of-thought",
+      "few-shot",
+      "in-context"
+    ],
+    "description": "提示词优化、思维链、少样本学习"
+  },
+  "mcp": {
+    "name": "MCP 协议",
+    "keywords": [
+      "mcp",
+      "model-context-protocol",
+      "tool-use",
+      "function-call"
+    ],
+    "description": "MCP 服务器、工具调用、协议集成"
+  },
+  "other": {
+    "name": "其他",
+    "keywords": [],
+    "description": "未分类的 skill 项目"
+  }
+}
