@@ -3,7 +3,7 @@
 # 每次启动强制同步源码到运行时，确保始终最新
 
 # 优先使用完整源目录（含所有模块），回退到核心目录
-SRC_FULL="$HOME/Desktop/lihongwei-cn/mundo-agent"
+SRC_FULL="$HOME/Desktop/lihongwei-cn/Desktop/lihongwei-cn/mundo-agent"
 SRC_CORE="$HOME/Desktop/lihongwei-cn/mundo-agent"
 DST="$HOME/.hermes/mundo-agent"
 

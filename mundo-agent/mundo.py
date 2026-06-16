@@ -2,12 +2,12 @@
 import warnings
 warnings.filterwarnings("ignore", message="urllib3 v2 only")
 """
-MUNDO Agent v2.2.3 — THE EMPEROR
+MUNDO Agent v2.2.5 — THE EMPEROR
 独立 AI Agent：LLM 直连 + 工具调用 + Agentic Loop + 权限审批
 融合 Hermes Agent + Claude Code 精华架构
 Rich 渲染所有输出，prompt_toolkit 只管输入
 
-v2.2.3: 修复路径问题 — 确保工作目录和 sys.path 正确设置
+v2.2.5: 修复启动器路径问题 + 清理不存在的文件引用 + 同步最新版
 """
 
 import os
@@ -467,9 +467,9 @@ class MundoCLI:
             "mundo.py", "constants.py", "core.py", "llm.py",
             "delegation.py", "hermes_integration.py", "claude_integration.py",
             "codex_integration.py", "tools.py", "display.py", "setup.py",
-            "approval.py", "memory.py", "hooks.py", "cache.py",
-            "context_discipline.py", "context_mapper.py", "dispatch.py",
-            "events.py", "failover.py", "cloud_sync.py", "engine.py",
+            "approval.py", "memory.py", "cache.py",
+            "context_mapper.py", "dispatch.py",
+            "events.py", "engine.py",
             "agents.py", "version.txt"
         ]
 
