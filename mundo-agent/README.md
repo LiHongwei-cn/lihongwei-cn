@@ -1,4 +1,4 @@
-# 👑 MUNDO Agent v2.2.5
+# 👑 MUNDO Agent v2.2.6
 
 **我是蒙多！蒙多想去哪就去哪！**
 
@@ -15,6 +15,8 @@
 - **三层记忆** — 短期记忆（任务级）+ 中期记忆（项目级）+ 长期记忆（永久级）
 - **三省六部制** — 技能分级管理体系，首辅→尚书→主事→司务
 - **集体意识** — 一个蒙多学到，所有蒙多都会。共享知识库，共同进化
+- **三层记忆** — 短期（跨上下文，用完即弃）、中期（项目级维持）、长期（择优选取+冲突检测）
+- **权限弹窗** — Rich Panel 可视化对话框，用户掌控每一个权限决策
 
 ---
 
@@ -24,10 +26,10 @@
 
 ```bash
 # 下载最新版
-gh release download v2.2.5 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.5-macos.zip"
+gh release download v2.2.6 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.6-macos.zip"
 
 # 解压到安装目录
-unzip mundo-v2.2.5-macos.zip -d ~/.hermes/mundo-agent
+unzip mundo-v2.2.6-macos.zip -d ~/.hermes/mundo-agent
 
 # 安装依赖
 pip3 install rich prompt_toolkit httpx scrapling[all]
@@ -74,7 +76,7 @@ python3 mundo.py -q "你的问题"
 
 | 指标 | 数值 |
 |------|------|
-| 当前版本 | v2.2.5 |
+| 当前版本 | v2.2.6 |
 | 发布次数 | 79 |
 | 提交次数 | 1136 |
 | AI 模型 | 30+ |
@@ -84,7 +86,7 @@ python3 mundo.py -q "你的问题"
 
 ---
 
-## 🔄 v2.2.5 更新内容
+## 🔄 v2.2.6 更新内容
 
 **Bug 修复：**
 - 修复 MUNDO.command 启动器路径重复问题（SRC_FULL 路径修正）
@@ -97,7 +99,7 @@ python3 mundo.py -q "你的问题"
 
 | 版本 | 日期 | 更新内容 |
 |------|------|----------|
-| v2.2.5 | 2026-06-17 | 路径修复 + 启动器优化 |
+| v2.2.6 | 2026-06-17 | 路径修复 + 启动器优化 |
 | v2.2.4 | 2026-06-16 | Skill 云仓库 + GitHub 高星项目爬虫 |
 | v2.2.2 | 2026-06-15 | 任务确认 + Loop 工作流 + 三层记忆 |
 | v2.2.0 | 2026-06-13 | 记忆系统重构 |

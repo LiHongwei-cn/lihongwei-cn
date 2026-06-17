@@ -1,9 +1,10 @@
-"""蒙多记忆系统 v2.2.0 — Claude 六套记忆架构
+"""蒙多记忆系统 v2.2.6 — 三层记忆架构
 
-v2.2.0 改进：
-- auto_extract: 收窄触发条件，增加最小长度和去重
-- _rebuild_fts: 只在表不存在时创建，不每次重建
-- generate_session_summary: 改进摘要质量
+v2.2.6 重构：
+- 三层记忆：短期（跨上下文，用完即弃）、中期（项目级维持）、长期（择优选取+时间戳）
+- 长期记忆冲突检测：新旧记忆冲突时提示用户选择覆盖或保留
+- 所有长期记忆带时间戳，近期记忆优先
+- 向后兼容 v2.2.0 API
 """
 
 import re
@@ -48,6 +49,10 @@ class MundoMemory:
                     "source": "TEXT DEFAULT 'manual'",
                     "tags": "TEXT DEFAULT ''",
                     "tokens": "INTEGER DEFAULT 0",
+                    "memory_tier": "TEXT DEFAULT 'long'",
+                    "session_id": "TEXT DEFAULT ''",
+                    "superseded_by": "INTEGER DEFAULT 0",
+                    "expires_at": "TEXT DEFAULT ''",
                 })
                 if 'conversations' in existing_tables:
                     self._ensure_columns(conn, "conversations", {
@@ -72,11 +77,17 @@ class MundoMemory:
                     access_count INTEGER DEFAULT 0,
                     tokens INTEGER DEFAULT 0,
                     tags TEXT DEFAULT '',
-                    content_hash TEXT DEFAULT ''
+                    content_hash TEXT DEFAULT '',
+                    memory_tier TEXT DEFAULT 'long',
+                    session_id TEXT DEFAULT '',
+                    superseded_by INTEGER DEFAULT 0,
+                    expires_at TEXT DEFAULT ''
                 );
                 CREATE INDEX IF NOT EXISTS idx_category ON memories(category);
                 CREATE INDEX IF NOT EXISTS idx_importance ON memories(importance DESC);
                 CREATE INDEX IF NOT EXISTS idx_project ON memories(project);
+                CREATE INDEX IF NOT EXISTS idx_tier ON memories(memory_tier);
+                CREATE INDEX IF NOT EXISTS idx_session ON memories(session_id);
 
                 CREATE TABLE IF NOT EXISTS conversations (
                     id TEXT PRIMARY KEY,
@@ -417,25 +428,27 @@ class MundoMemory:
 
     def remember(self, content: str, category: str = "fact",
                  source: str = "manual", importance: int = 5,
-                 project: str = "", tags: str = "") -> int:
+                 project: str = "", tags: str = "",
+                 memory_tier: str = "long", session_id: str = "",
+                 expires_at: str = "") -> int:
         now = datetime.now(timezone.utc).isoformat()
         tokens = len(content)
         c_hash = hashlib.md5(content.encode()).hexdigest()[:12]
 
         with sqlite3.connect(str(self.db_path)) as conn:
             existing = conn.execute(
-                "SELECT id FROM memories WHERE content_hash = ? AND category = ?",
-                (c_hash, category)
+                "SELECT id FROM memories WHERE content_hash = ? AND category = ? AND memory_tier = ?",
+                (c_hash, category, memory_tier)
             ).fetchone()
             if existing:
                 conn.execute(
-                    "UPDATE memories SET content=?, importance=MAX(importance,?), updated_at=?, tokens=?, tags=?, project=? WHERE id=?",
-                    (content, importance, now, tokens, tags, project, existing[0])
+                    "UPDATE memories SET content=?, importance=MAX(importance,?), updated_at=?, tokens=?, tags=?, project=?, session_id=? WHERE id=?",
+                    (content, importance, now, tokens, tags, project, session_id, existing[0])
                 )
                 return existing[0]
             cursor = conn.execute(
-                "INSERT INTO memories (content,category,source,importance,project,created_at,updated_at,tokens,tags,content_hash) VALUES (?,?,?,?,?,?,?,?,?,?)",
-                (content, category, source, importance, project, now, now, tokens, tags, c_hash)
+                "INSERT INTO memories (content,category,source,importance,project,created_at,updated_at,tokens,tags,content_hash,memory_tier,session_id,expires_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                (content, category, source, importance, project, now, now, tokens, tags, c_hash, memory_tier, session_id, expires_at)
             )
             return cursor.lastrowid
 
@@ -587,6 +600,9 @@ class MundoMemory:
             by_cat = conn.execute(
                 "SELECT category, COUNT(*) FROM memories GROUP BY category"
             ).fetchall()
+            by_tier = conn.execute(
+                "SELECT memory_tier, COUNT(*) FROM memories WHERE superseded_by=0 GROUP BY memory_tier"
+            ).fetchall()
             convs = conn.execute("SELECT COUNT(*) FROM conversations").fetchone()[0]
             profiles = conn.execute("SELECT COUNT(*) FROM user_profile").fetchone()[0]
             projects = conn.execute("SELECT COUNT(*) FROM projects").fetchone()[0]
@@ -598,6 +614,7 @@ class MundoMemory:
             "profile_keys": profiles,
             "projects": projects,
             "by_category": dict(by_cat),
+            "by_tier": dict(by_tier),
         }
 
     def get_recent_summaries(self, limit: int = 3) -> str:
@@ -609,6 +626,274 @@ class MundoMemory:
         if not rows:
             return ""
         return "\n".join(f"- [{r[2][:10]}] {r[0] or r[1][:80]}" for r in rows)
+
+    # ═══════════════════════════════════════════════
+    # 7. 三层记忆架构 — v2.2.6
+    # ═══════════════════════════════════════════════
+
+    # ── 短期记忆：跨上下文，用完即弃 ──
+
+    def store_short(self, content: str, category: str = "fact",
+                    session_id: str = "", importance: int = 5,
+                    project: str = "", tags: str = "") -> int:
+        """存储短期记忆 — 会话级，跨上下文传递，会话结束即弃"""
+        return self.remember(
+            content=content, category=category, source="short_term",
+            importance=importance, project=project, tags=tags,
+            memory_tier="short", session_id=session_id,
+        )
+
+    def get_short_term(self, session_id: str, limit: int = 20) -> List[Tuple]:
+        """获取当前会话的短期记忆"""
+        with sqlite3.connect(str(self.db_path)) as conn:
+            return conn.execute(
+                """SELECT id, content, category, importance FROM memories
+                   WHERE memory_tier='short' AND session_id=?
+                   AND superseded_by=0
+                   ORDER BY created_at DESC LIMIT ?""",
+                (session_id, limit)
+            ).fetchall()
+
+    def clear_session(self, session_id: str) -> int:
+        """清除指定会话的所有短期记忆（用完即弃）"""
+        with sqlite3.connect(str(self.db_path)) as conn:
+            result = conn.execute(
+                "DELETE FROM memories WHERE memory_tier='short' AND session_id=?",
+                (session_id,)
+            )
+            return result.rowcount
+
+    def cleanup_expired_short(self) -> int:
+        """清理所有过期的短期记忆（无 session_id 的孤儿记录）"""
+        with sqlite3.connect(str(self.db_path)) as conn:
+            result = conn.execute(
+                "DELETE FROM memories WHERE memory_tier='short' AND session_id=''"
+            )
+            return result.rowcount
+
+    # ── 中期记忆：项目级维持 ──
+
+    def store_mid(self, content: str, category: str = "fact",
+                  project: str = "", importance: int = 6,
+                  tags: str = "") -> int:
+        """存储中期记忆 — 绑定项目，项目活跃期间维持"""
+        return self.remember(
+            content=content, category=category, source="mid_term",
+            importance=importance, project=project, tags=tags,
+            memory_tier="mid",
+        )
+
+    def get_mid_term(self, project: str, limit: int = 30) -> List[Tuple]:
+        """获取指定项目的中期记忆"""
+        with sqlite3.connect(str(self.db_path)) as conn:
+            return conn.execute(
+                """SELECT id, content, category, importance FROM memories
+                   WHERE memory_tier='mid' AND (project=? OR project='')
+                   AND superseded_by=0
+                   ORDER BY importance DESC, updated_at DESC LIMIT ?""",
+                (project, limit)
+            ).fetchall()
+
+    def cleanup_project(self, project: str) -> int:
+        """清除指定项目的所有中期记忆"""
+        with sqlite3.connect(str(self.db_path)) as conn:
+            result = conn.execute(
+                "DELETE FROM memories WHERE memory_tier='mid' AND project=?",
+                (project,)
+            )
+            return result.rowcount
+
+    # ── 长期记忆：择优选取 + 时间戳 + 冲突检测 ──
+
+    def store_long(self, content: str, category: str = "fact",
+                   importance: int = 7, project: str = "",
+                   tags: str = "", source: str = "user") -> int:
+        """存储长期记忆 — 择优选取，带时间戳，冲突时提示用户"""
+        now = datetime.now(timezone.utc).isoformat()
+        tokens = len(content)
+        c_hash = hashlib.md5(content.encode()).hexdigest()[:12]
+
+        # 冲突检测：同 category + 同 tags 的长期记忆
+        conflicts = self._detect_long_conflicts(category, tags, c_hash)
+        if conflicts:
+            resolved = self._resolve_conflict(content, conflicts, now)
+            if resolved is not None:
+                return resolved
+
+        # 无冲突，直接存储
+        with sqlite3.connect(str(self.db_path)) as conn:
+            cursor = conn.execute(
+                """INSERT INTO memories
+                   (content,category,source,importance,project,created_at,updated_at,
+                    tokens,tags,content_hash,memory_tier,session_id)
+                   VALUES (?,?,?,?,?,?,?,?,?,?,'long','')""",
+                (content, category, source, importance, project, now, now, tokens, tags, c_hash)
+            )
+            return cursor.lastrowid
+
+    def _detect_long_conflicts(self, category: str, tags: str,
+                               content_hash: str) -> List[Dict]:
+        """检测长期记忆冲突：同 category + 同 tags 的已有记忆"""
+        if not tags:
+            return []
+        with sqlite3.connect(str(self.db_path)) as conn:
+            rows = conn.execute(
+                """SELECT id, content, importance, created_at, updated_at
+                   FROM memories
+                   WHERE memory_tier='long' AND category=? AND tags=?
+                   AND superseded_by=0 AND content_hash!=?
+                   ORDER BY updated_at DESC""",
+                (category, tags, content_hash)
+            ).fetchall()
+        return [
+            {"id": r[0], "content": r[1], "importance": r[2],
+             "created_at": r[3], "updated_at": r[4]}
+            for r in rows
+        ]
+
+    def _resolve_conflict(self, new_content: str, conflicts: List[Dict],
+                          now: str) -> Optional[int]:
+        """冲突解决：提示用户选择覆盖旧记忆或保留
+
+        不删除旧记忆，而是标记 superseded_by 指向新记忆。
+        用户选择保留时，旧记忆不变，新记忆不写入。
+        """
+        try:
+            from rich.console import Console as _C
+            from rich.panel import Panel as _Panel
+            from rich.text import Text as _Text
+            _c = _C(highlight=False, force_terminal=True)
+        except ImportError:
+            _c = None
+            _Panel = None
+            _Text = None
+
+        old = conflicts[0]  # 最近的冲突记忆
+
+        if _c and _Panel and _Text:
+            tbl_text = _Text()
+            tbl_text.append("旧记忆（", style="dim")
+            tbl_text.append(old["updated_at"][:10], style="yellow")
+            tbl_text.append("）:\n", style="dim")
+            tbl_text.append(f"  {old['content'][:120]}\n", style="white")
+            tbl_text.append("\n新记忆:\n", style="dim")
+            tbl_text.append(f"  {new_content[:120]}\n", style="green")
+
+            _c.print()
+            _c.print(_Panel(
+                tbl_text, title="⚡ 记忆冲突",
+                border_style="yellow", width=min(_c.width, 72),
+                padding=(1, 2),
+            ))
+            _c.print("  [bold yellow][u] 更新覆盖[/]  [k] 保留旧记忆[/]  [s] 两者都留[/]")
+            try:
+                answer = input("  ❯ ").strip().lower()
+            except (EOFError, KeyboardInterrupt):
+                answer = "k"
+        else:
+            print(f"\n  ⚡ 记忆冲突")
+            print(f"  旧({old['updated_at'][:10]}): {old['content'][:80]}")
+            print(f"  新: {new_content[:80]}")
+            try:
+                answer = input("  [u]更新 [k]保留旧 [s]两者都留：").strip().lower()
+            except (EOFError, KeyboardInterrupt):
+                answer = "k"
+
+        if answer == "u":
+            # 更新覆盖：旧记忆标记 superseded_by，新记忆写入
+            with sqlite3.connect(str(self.db_path)) as conn:
+                cursor = conn.execute(
+                    """INSERT INTO memories
+                       (content,category,source,importance,project,created_at,updated_at,
+                        tokens,tags,content_hash,memory_tier,session_id)
+                       VALUES (?,?,'user',?,'',?,?,'','',?,'long','')""",
+                    (new_content, "fact", old["importance"], now, now,
+                     hashlib.md5(new_content.encode()).hexdigest()[:12])
+                )
+                new_id = cursor.lastrowid
+                conn.execute(
+                    "UPDATE memories SET superseded_by=? WHERE id=?",
+                    (new_id, old["id"])
+                )
+            return new_id
+
+        elif answer == "s":
+            # 两者都留：直接写入新记忆，旧记忆不变
+            with sqlite3.connect(str(self.db_path)) as conn:
+                cursor = conn.execute(
+                    """INSERT INTO memories
+                       (content,category,source,importance,project,created_at,updated_at,
+                        tokens,tags,content_hash,memory_tier,session_id)
+                       VALUES (?,?,'user',?,'',?,?,'','',?,'long','')""",
+                    (new_content, "fact", old["importance"], now, now,
+                     hashlib.md5(new_content.encode()).hexdigest()[:12])
+                )
+                return cursor.lastrowid
+
+        # answer == "k" 或其他：保留旧记忆，新记忆不写入
+        return old["id"]
+
+    def get_long_term(self, query: str = "", category: str = "",
+                      limit: int = 20) -> List[Tuple]:
+        """获取长期记忆，近期优先"""
+        with sqlite3.connect(str(self.db_path)) as conn:
+            if query:
+                like = f"%{query}%"
+                return conn.execute(
+                    """SELECT id, content, category, importance, updated_at FROM memories
+                       WHERE memory_tier='long' AND superseded_by=0
+                       AND (content LIKE ? OR tags LIKE ?)
+                       ORDER BY updated_at DESC, importance DESC LIMIT ?""",
+                    (like, like, limit)
+                ).fetchall()
+            if category:
+                return conn.execute(
+                    """SELECT id, content, category, importance, updated_at FROM memories
+                       WHERE memory_tier='long' AND superseded_by=0 AND category=?
+                       ORDER BY updated_at DESC, importance DESC LIMIT ?""",
+                    (category, limit)
+                ).fetchall()
+            return conn.execute(
+                """SELECT id, content, category, importance, updated_at FROM memories
+                   WHERE memory_tier='long' AND superseded_by=0
+                   ORDER BY updated_at DESC, importance DESC LIMIT ?""",
+                (limit,)
+            ).fetchall()
+
+    def get_superseded_history(self, memory_id: int) -> List[Dict]:
+        """查看某条长期记忆的历史版本链"""
+        chain = []
+        with sqlite3.connect(str(self.db_path)) as conn:
+            current = memory_id
+            while current:
+                row = conn.execute(
+                    "SELECT id, content, created_at, superseded_by FROM memories WHERE id=?",
+                    (current,)
+                ).fetchone()
+                if not row:
+                    break
+                chain.append({"id": row[0], "content": row[1], "date": row[2][:10]})
+                current = row[3] if row[3] else None
+        return chain
+
+    def get_memory_by_tier(self, tier: str = "all") -> Dict[str, Dict]:
+        """按层级统计记忆"""
+        with sqlite3.connect(str(self.db_path)) as conn:
+            if tier == "all":
+                result = {}
+                for t in ("short", "mid", "long"):
+                    rows = conn.execute(
+                        """SELECT COUNT(*), COALESCE(SUM(tokens),0) FROM memories
+                           WHERE memory_tier=? AND superseded_by=0""",
+                        (t,)
+                    ).fetchone()
+                    result[t] = {"count": rows[0], "tokens": rows[1]}
+                return result
+            rows = conn.execute(
+                "SELECT COUNT(*), COALESCE(SUM(tokens),0) FROM memories WHERE memory_tier=?",
+                (tier,)
+            ).fetchone()
+            return {tier: {"count": rows[0], "tokens": rows[1]}}
 
     def delete_all(self):
         """删除所有记忆数据（测试用）"""

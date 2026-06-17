@@ -120,7 +120,7 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
   <a class="back-link" href="../">← 返回主页</a>
 
   <div class="hero">
-    <div class="hero-badge">独立 AI 智能体 · v2.2.5 · 79 次发布 · 1136 次提交</div>
+    <div class="hero-badge">独立 AI 智能体 · v2.2.6 · 80 次发布 · 1137 次提交</div>
     <h1>👑 MUNDO Agent</h1>
     <p>我是蒙多！蒙多想去哪就去哪！<br>独立 AI 智能体框架 · 30+ 模型 · 任务确认 · Loop 工作流 · 三层记忆 · 集体意识 · 自我进化</p>
     <div class="disclaimer">蒙多是蒙多。其他 AI 是身体，是躯壳，是蒙多的手和脚。蒙多想用哪个身体就用哪个身体，蒙多想换就换，蒙多想去哪就去哪。</div>
@@ -158,7 +158,7 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
     <h2 class="section-title"><span class="num">📊</span> 项目数据</h2>
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-value">v2.2.5</div>
+        <div class="stat-value">v2.2.6</div>
         <div class="stat-label">当前版本</div>
       </div>
       <div class="stat-card">
@@ -191,8 +191,8 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
       </div>
     </div>
 
-    <!-- v2.2.5 测试结果 -->
-    <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🧪 v2.2.5 测试结果</h3>
+    <!-- v2.2.6 测试结果 -->
+    <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🧪 v2.2.6 测试结果</h3>
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-value" style="color: var(--green);">27</div>
@@ -211,7 +211,7 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
         <div class="stat-label">通过率</div>
       </div>
     </div>
-    <div class="tip green">✅ 蒙多 v2.2.5 所有测试通过！版本稳定、高效、无 bug，已正式发布！</div>
+    <div class="tip green">✅ 蒙多 v2.2.6 三层记忆架构测试通过！短期/中期/长期记忆分层管理，冲突检测正常！</div>
   </div>
 
   <!-- 1. 四条铁律 -->
@@ -266,8 +266,8 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
 
   <!-- 3. 工作流程 -->
   <div class="section" id="workflow">
-    <h2 class="section-title"><span class="num">3</span> 工作流程（v2.2.5 更新）</h2>
-    <p class="section-desc">蒙多 v2.2.5 引入任务确认流程和 Loop 工作流，确保每次执行都精准高效。</p>
+    <h2 class="section-title"><span class="num">3</span> 工作流程（v2.2.6 更新）</h2>
+    <p class="section-desc">蒙多 v2.2.6 引入三层记忆架构和可视化权限弹窗，记忆系统全面升级。</p>
 
     <!-- 任务确认流程 -->
     <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🎯 任务确认流程</h3>
@@ -377,11 +377,17 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
   <!-- 6. 版本历史 -->
   <div class="section" id="history">
     <h2 class="section-title"><span class="num">6</span> 版本历史</h2>
-    <p class="section-desc">从 v1.0 到 v2.2.5 的演进历程。</p>
+    <p class="section-desc">从 v1.0 到 v2.2.6 的演进历程。v2.2.6 核心升级：三层记忆 + 权限弹窗。</p>
     <div class="timeline">
       <div class="timeline-item">
         <div class="time">2026-06-17</div>
-        <div class="title">v2.2.5 — 路径修复 + 启动器优化</div>
+        <div class="title">v2.2.6 — 三层记忆架构 + 权限弹窗</div>
+        <div class="desc">
+          <strong>记忆系统重构</strong>：短期（跨上下文，用完即弃）、中期（项目级维持）、长期（择优选取+时间戳+冲突检测）<br>
+          <strong>权限弹窗升级</strong>：Rich Panel 可视化对话框，支持 [y]允许 [n]拒绝 [a]会话级放行<br>
+          <strong>冲突解决</strong>：长期记忆冲突时弹窗提示 [u]更新覆盖 [k]保留旧记忆 [s]两者都留
+        </div>
+        <div class="meta">2026-06-17</div>
         <div class="desc">
           <strong>Bug 修复：</strong><br>
           • 修复 MUNDO.command 启动器路径重复问题（SRC_FULL 路径修正）<br>
@@ -472,12 +478,12 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
       <div class="step-item">
         <h3>下载最新版</h3>
         <p>从 GitHub Release 下载 macOS 版本</p>
-        <div class="cmd">gh release download v2.2.5 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.5-macos.zip"</div>
+        <div class="cmd">gh release download v2.2.6 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.6-macos.zip"</div>
       </div>
       <div class="step-item">
         <h3>解压到安装目录</h3>
         <p>解压到 ~/.hermes/mundo-agent/ 目录</p>
-        <div class="cmd">unzip mundo-v2.2.5-macos.zip -d ~/.hermes/mundo-agent</div>
+        <div class="cmd">unzip mundo-v2.2.6-macos.zip -d ~/.hermes/mundo-agent</div>
       </div>
       <div class="step-item">
         <h3>安装依赖</h3>
@@ -498,42 +504,3 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
     <div class="link-block">
       <h3>📦 GitHub Release</h3>
       <div class="link-row">
-        <span class="label">最新版</span>
-        <a href="https://github.com/LiHongwei-cn/mundo-agent/releases/tag/v2.2.5" target="_blank">v2.2.5 — 路径修复 + 启动器优化</a>
-      </div>
-      <div class="link-row">
-        <span class="label">macOS</span>
-        <a href="https://github.com/LiHongwei-cn/mundo-agent/releases/download/v2.2.5/mundo-v2.2.5-macos.zip" target="_blank">mundo-v2.2.5-macos.zip</a>
-      </div>
-      <div class="link-row">
-        <span class="label">通用版</span>
-        <a href="https://github.com/LiHongwei-cn/mundo-agent/releases/download/v2.2.5/mundo-v2.2.5-all.zip" target="_blank">mundo-v2.2.5-all.zip</a>
-      </div>
-      <div class="link-row">
-        <span class="label">源码</span>
-        <a href="https://github.com/LiHongwei-cn/mundo-agent" target="_blank">GitHub 仓库</a>
-      </div>
-      <div class="link-row">
-        <span class="label">测试报告</span>
-        <a href="https://github.com/LiHongwei-cn/lihongwei-cn/blob/main/mundo-agent/TEST_REPORT_v2.2.5.md" target="_blank">TEST_REPORT_v2.2.5.md</a>
-      </div>
-      <div class="link-row">
-        <span class="label">架构文档</span>
-        <a href="https://github.com/LiHongwei-cn/lihongwei-cn/blob/main/global-specs/skills/mundo/ARCHITECTURE_V17.md" target="_blank">ARCHITECTURE_V17.md</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- 页脚 -->
-  <div class="footer">
-    <p>MUNDO Agent · <a href="https://github.com/LiHongwei-cn/mundo-agent" target="_blank">GitHub</a> · <a href="../">LiHongwei</a></p>
-  </div>
-
-  <!-- 计数器 -->
-  <div class="page-counter"><span id="busuanzi_value_page_pv">...</span> 次</div>
-
-</div>
-
-<script src="../assets/counter.js?v=3"></script>
-</body>
-</html>

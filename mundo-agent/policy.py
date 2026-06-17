@@ -10,6 +10,7 @@
 - 每条规则都有理由，皇帝不接受无理由的裁决
 
 v2.2.0: 合并 approval.py 的用户审批逻辑，成为唯一审批引擎
+v2.2.6: 权限弹窗升级为 Rich Panel 可视化对话框
 """
 
 import re
@@ -337,6 +338,7 @@ class PolicyEngine:
         self._rules: List[Rule] = list(BUILTIN_RULES)
         self._overrides: Dict[str, Action] = {}
         self._audit_log: List[Dict] = []
+        self._session_allow_all: bool = False
 
     def add_rule(self, rule: Rule) -> None:
         self._rules = [r for r in self._rules if r.name != rule.name]
@@ -442,44 +444,85 @@ class PolicyEngine:
         return rules
 
     def ask_user_approval(self, command: str, reason: str, severity: Severity) -> bool:
-        """请求用户审批 — 用于 ASK 动作"""
-        if severity in (Severity.CRITICAL, Severity.HIGH):
-            # 危险操作：默认拒绝，需要明确确认
-            if _console:
-                _console.print(f"\n  [bold error]✗ 权限审批[/]")
-                _console.print(f"  [error]{reason}[/]")
-                _console.print(f"  [dim]命令: {command[:80]}[/]")
-                if severity == Severity.CRITICAL:
-                    _console.print(f"  [bold error]此操作可能导致不可逆的损害[/]")
-            else:
-                print(f"\n  ✗ 权限审批")
-                print(f"  {reason}")
-                print(f"  命令: {command[:80]}")
-                if severity == Severity.CRITICAL:
-                    print(f"  此操作可能导致不可逆的损害")
-            try:
-                answer = input(f"  \033[38;5;210m确认执行？[y/N]：\033[0m").strip().lower()
-            except (EOFError, KeyboardInterrupt):
-                return False
-            return answer == "y"
+        """请求用户审批 — Rich Panel 可视化弹窗"""
+        if not _console:
+            return self._ask_fallback(command, reason, severity)
+
+        from rich.panel import Panel
+        from rich.table import Table
+        from rich.text import Text
+
+        is_critical = severity in (Severity.CRITICAL, Severity.HIGH)
+
+        # 构建弹窗内容
+        tbl = Table(show_header=False, box=None, padding=(0, 2))
+        tbl.add_column(style="bold", width=10)
+        tbl.add_column()
+
+        severity_text = Text()
+        if severity == Severity.CRITICAL:
+            severity_text.append("● CRITICAL", style="bold red")
+        elif severity == Severity.HIGH:
+            severity_text.append("● HIGH", style="bold yellow")
         else:
-            # 中等风险：默认允许，需要明确拒绝
-            if _console:
-                _console.print(f"\n  [warning]⚠ 权限审批[/]")
-                _console.print(f"  [warning]{reason}[/]")
-                _console.print(f"  [dim]命令: {command[:80]}[/]")
-            else:
-                print(f"\n  ⚠ 权限审批")
-                print(f"  {reason}")
-                print(f"  命令: {command[:80]}")
-            try:
-                answer = input(f"  \033[38;5;223m是否继续？[Y/n]：\033[0m").strip().lower()
-            except (EOFError, KeyboardInterrupt):
-                return False
-            return answer != "n"
+            severity_text.append("● MEDIUM", style="bold cyan")
+
+        tbl.add_row("级别", severity_text)
+        tbl.add_row("原因", Text(reason, style="white"))
+        tbl.add_row("操作", Text(command[:100], style="dim"))
+
+        if is_critical:
+            tbl.add_row("", Text("此操作可能导致不可逆损害", style="bold red"))
+
+        border = "red" if is_critical else "yellow"
+        title = "🔒 需要权限" if is_critical else "⚠️  权限确认"
+
+        _console.print()
+        _console.print(Panel(
+            tbl, title=title, border_style=border,
+            width=min(_console.width, 72),
+            padding=(1, 2),
+        ))
+
+        prompt_style = "bold red" if is_critical else "bold yellow"
+        hint = "[y] 允许  [n] 拒绝  [a] 本次会话始终允许" if not is_critical else "[y] 允许  [n] 拒绝"
+        _console.print(f"  [{prompt_style}]{hint}[/]")
+
+        try:
+            answer = input("  ❯ ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            _console.print("  [dim]已拒绝[/]")
+            return False
+
+        if answer == "a" and not is_critical:
+            self._session_allow_all = True
+            _console.print("  [green]本次会话已放行同类操作[/]")
+            return True
+
+        if answer == "y":
+            _console.print("  [green]✓ 已授权[/]")
+            return True
+        else:
+            _console.print("  [red]✗ 已拒绝[/]")
+            return False
+
+    def _ask_fallback(self, command: str, reason: str, severity: Severity) -> bool:
+        """无 Rich 时的降级方案"""
+        is_critical = severity in (Severity.CRITICAL, Severity.HIGH)
+        print(f"\n  {'✗' if is_critical else '⚠'} 权限审批: {reason}")
+        print(f"  命令: {command[:80]}")
+        try:
+            answer = input(f"  {'确认执行？[y/N]' if is_critical else '是否继续？[Y/n]'}：").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            return False
+        return answer == "y" if is_critical else answer != "n"
 
     def approve_tool_call(self, tool_name: str, args: Dict) -> bool:
         """审批工具调用 — 合并了 approval.py 的逻辑"""
+        # 会话级放行（用户选择了 [a] 始终允许）
+        if self._session_allow_all:
+            return True
+
         ctx = PolicyContext(
             tool_name=tool_name,
             tool_args=args,
