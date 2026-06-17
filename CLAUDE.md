@@ -1,199 +1,95 @@
-# CLAUDE.md
+# CLAUDE.md — Claude Code 项目记忆
 
-This file provides guidance to Claude Code when working with code in this repository.
+> 此文件由 Hermes Agent 自动维护，同时 Claude Code 也可直接编辑。
+> 编辑后内容会反向同步到 Hermes 记忆系统。
 
-## Skill 自动调用（红线）
+---
 
-所有已安装 Skill 自动识别匹配，绝不手动输入 `/skill-name`：
+## 用户身份
 
-- **论文/实验报告/学术写作** → 自动调用 `nature-writing` + `nature-polishing`
-- **画图/做图/Figure/配图** → 自动调用 `nature-figure`
-- **引用/参考文献/CNS引用** → 自动调用 `nature-citation`
-- **数据声明/FAIR/数据仓库** → 自动调用 `nature-data`
-- **审稿回复/Reviewer** → 自动调用 `nature-response`
-- **PPT/组会/答辩/幻灯片** → 自动调用 `nature-paper2ppt`
-- **论文翻译/文献精读** → 自动调用 `nature-reader`
-- **查文献/搜索论文** → 自动调用 `nature-academic-search`
-- **卡住/报错/没思路** → 自动调用 `蒙多`
-- **写完代码** → 自动调用 `code-tidy`
-- **阶段结束/收尾** → 自动调用 `neat-freak`
-- **新增项目页面** → 自动调用 `homepage-layout`
+- 黄鹏，南京航空航天大学金城学院，新能源汽车工程 2023-2027
+- 求职方向：AI应用开发（首选）/ 汽车电子（次选）
+- 证书：AutoCAD + Creo 高级、低压电工证、C1 驾照、校级奖学金
+- 已投：大丁科技(DING AUTO)实习，上海，汽车电子HIL/ADAS
 
-## 关键信息
+## 回复风格（红线）
 
-- GitHub 仓库：`https://github.com/LiHongwei-cn/lihongwei-cn`
-- 网站地址：`https://lihongwei-cn.github.io/lihongwei-cn/`
-- Telegram Bot：`bot/tgbot.py`（蒙多学习引擎：自动搜索 GitHub + Stack Overflow，DeepSeek-V4-Pro 驱动，支持图片理解，22 项测试全通过）
-- 蒙多 v17：任务确认流程 + Loop 工作流 + 三层记忆系统（详见 `/蒙多` skill 和 `ARCHITECTURE_V17.md`）
-
-## 项目概览
-
-MATLAB 仿真工具包 + 家庭血压监测微信小程序。Claude Code 直接生成 Simulink 模型和仿真代码。
+- 简洁直接，不废话，不写"总结一下""以上就是"
+- 内容谦虚客观，不用"最强/最好/碾压"
+- 对比表格用"基础/部分/—"，不用贬低性词汇
+- 不泄露个人信息（真名、学校、专业），对外用化名
+- 代码注释只写"为什么"，不写"是什么"
+- 不创建 README/CHANGELOG/计划文档（除非明确要求）
+- 不使用 emoji（除非明确要求）
 
 ## 技术栈
 
-- **MATLAB/Simulink** R2016b 兼容（动力学、电机控制、能量管理）
-- **Python** 3.12 + FastAPI（Telegram 机器人、血压监测后端、自动化脚本）
-- **HTML/CSS**（GitHub Pages 静态页面）
-- **微信小程序**（WXML/WXSS/JS，bp-monitor 前端）
-- **Shell/Batch**（启动脚本、Git 自动化）
+- MATLAB R2016b（跨平台兼容，.m 文件 UTF-8，禁止 2017+ 函数）
+- CarSim 2019.0 + Simulink 联合仿真
+- Python 3.11/3.12
+- HTML/CSS（纯手写，深色主题，响应式）
+- 微信小程序
+- Git/GitHub
 
-## 目录架构
+## 项目结构
 
 ```
-1/
-├── matlab/                MATLAB 仿真代码（R2016b 兼容）
-│   ├── examples/          可运行示例脚本
-│   └── utils/             工具函数（FFT、滤波、RMS）
-├── bot/                   Telegram 机器人（DeepSeek 直接回复）
-├── matlab-tool/           安装包发布页面
-├── starter-kit/           通用模板（开源）
-├── bp-monitor/            家庭血压监测小程序（FastAPI + SQLite + DeepSeek）
-├── tools/                 自动化脚本
-├── docs/                  论文、实验报告
-├── vpn-guide/             VPN 教程页面
-├── win-optimize/          Windows 优化教程
-├── claude-code-tutorial/  Claude Code 入门教程
-├── index.html             GitHub Pages 主页
-└── CLAUDE.md              项目规范（本文件）
+~/Desktop/lihongwei-cn/          # GitHub 仓库主目录
+├── matlab/                       # MATLAB 仿真
+├── bot/                          # Telegram Bot
+├── bp-monitor/                   # 血压监测小程序
+├── tools/                        # 启动脚本
+├── docs/                         # 论文/报告
+├── index.html                    # GitHub Pages 主页
+├── global-specs/                 # 全局规范
+└── starter-kit/                  # 通用模板
 ```
 
-## MATLAB 规范
+## 已知坑（必须避开）
 
-- 兼容性底线：**R2016b**（不使用 2017+ 的函数，如 `rms`）
-- 文件命名：`snake_case.m`
-- 函数命名：`snake_case`
-- 每个脚本开头注释说明用途和兼容版本
-- 仿真参数集中声明，使用有意义的常量名
-- 禁止 `eval`、`feval` 等动态执行
-- 前向欧拉法写清楚注释，不使用隐式求解器
-- Simulink 模型生成脚本需检查 `bdIsLoaded` 防止重复
-- 数值单位在注释中标注（如 `[Ohm]`, `[rad/s]`, `[rpm]`）
-
-## Python 规范
-
-- `scripts/` 使用独立的虚拟环境
-- 密钥从环境变量读取，严禁硬编码
-- 错误处理：捕获具体异常，不裸露 `except`
-- 日志优先于 `print`
+- MATLAB R2016b：`%%` 长分隔线会导致图表垃圾文字
+- MATLAB .m 文件必须 UTF-8，不用 GBK（macOS 会乱码）
+- prompt_toolkit：ANSI 码显示乱码用 `HTML()` 代替
+- pywebview 在 macOS .app 中窗口不显示
+- `read_file` 返回格式是 "行号|内容"，编辑时需先剥离行号
+- GitHub Pages 从 `gh-pages` 分支构建，不是 `main`
+- `mimo-v2.5-pro-ultraspeed` 在 API 上不存在（返回 400）
 
 ## Git 规范
 
-- commit message: `<type>: <description>`（feat, fix, refactor, docs, chore）
-- 先 diff 再 commit，不提交 `.env`、密钥、`__pycache__`
-- 每次代码修改后自动 push 到 GitHub
+- Commit 格式：`<type>: <description>`（feat/fix/refactor/docs/chore）
+- 不提交 `.env`、密钥、`__pycache__`、`.DS_Store`
+- 每次代码修改后自动 add + commit + push
 
-## 代码质量
+## 代码规范
 
-- MATLAB 函数保持 <200 行
-- Python 函数保持 <50 行
-- 复用优先：utils/ 里的函数不要在各 example 里重写
-- 参数验证：公共函数入口检查参数合法性
+- 变量/函数：camelCase
+- 布尔值：is/has/should/can 前缀
+- 常量：UPPER_SNAKE_CASE
+- 函数 <50 行，文件 <800 行
+- 三个相似代码行 > 一个不必要的抽象
+- 不可变数据：创建新对象，不修改已有对象
+- 深层嵌套用提前返回展平
 
-## 安全红线
+## 关键项目记忆
 
-- **绝不硬编码密钥**（API Key、Token、密码）
-- 所有密钥从环境变量读取
-- `.env` 不提交到 Git
-- 已泄露的密钥立即在对应平台撤销并重新生成
-- 外部输入（用户消息、API 响应）在显示/执行前验证
+### Mundo Agent
+- 路径：~/.hermes/mundo-agent/
+- 版本：v2.2.6，54模块/30+模型
+- 七处同步：SKILL.md + README.md + index.html + GitHub Release + ~/.hermes/skills/ + Info.plist + 启动脚本
+- 蒙多UI：金色#D4AF37 + 深色#0a0a0f，厌恶紫色白色
 
-## 常用命令
+### 留白
+- 路径：~/Applications/留白/
+- 定位："倾诉的陌生人"，禁暴露心理医生身份
 
-```bash
-# 启动 Telegram 机器人（直接回复，不走任务队列）
-./bot/run.sh tgbot.py
+### Boss直聘自动化
+- 路径：~/Desktop/.boss-auto/
+- 启动：cd ~/Desktop/.boss-auto && ./start_browser.sh
+- 端口 8765
 
-# 发送通知
-./bot/run.sh notify.py "任务描述"
+## Claude Code 使用说明
 
-# 启动自动保存
-./tools/run.sh autosave.py
-
-# MATLAB（通过启动脚本）
-matlab.bat
-
-# bp-monitor 后端启动
-cd bp-monitor && bash deploy/start.sh        # macOS/Linux
-cd bp-monitor && deploy\setup-windows.bat     # Windows 首次部署
-cd bp-monitor && deploy\start.bat            # Windows 日常启动
-
-# bp-monitor 测试
-cd bp-monitor/backend && python -m pytest tests/ -v
-```
-
-## 页面开发
-
-子目录页面的视觉风格保持一致：
-- 深色主题，CSS 变量 `:root`
-- 卡片式的链接导航
-- sans-serif 字体栈（含中文回退）
-- 响应式 `max-width` 布局
-- 不引入外部 CSS/JS 框架，纯手写
-
-## 任务拆分原则
-
-- 复杂任务拆分为独立子任务
-- 每个子任务产出单一文件
-- 独立任务可并行执行
-- 不提前设计用不到的功能
-
-## 跨平台要求（红线）
-
-- 所有工具、脚本、教程必须同时覆盖 Windows 和 macOS
-- 新增脚本时同时提供 .bat/.ps1（Win）和 .sh/.command（Mac）
-- 教程页面必须包含两种系统的操作步骤
-
-## 开源同步（红线）
-
-- 网址内所有项目及内容必须在 GitHub 仓库中可找到，供所有人阅读、下载、使用
-- 完全免费开源，每次改动后自动同步到 GitHub
-- 网址内容与仓库代码保持一一对应，不允许网址有但仓库没有的内容
-
-## 任务收尾（红线）
-
-每次代码修改后：
-1. `git add` + `git commit` + `git push` 同步到 GitHub
-2. 检查 `bot/` 目录是否需要同步更新（系统提示词、启动脚本等）
-3. 确认 GitHub Pages 网址内容与代码一致
-
-## 全局规范同步（红线）
-
-每次修改全局规范文件（`~/.claude/CLAUDE.md`、`rules/`、`skills/`、`settings.json`）后，必须自动同步到 `global-specs/`：
-- `~/.claude/CLAUDE.md` → `global-specs/CLAUDE.md`
-- `~/.claude/rules/*.md` → `global-specs/rules/*.md`
-- 新增/修改的 skills → `global-specs/skills/`
-- 配置变更 → `global-specs/settings.json` / `settings.local.json`
-- 更新 `global-specs/README.md` 中受影响的说明
-
-## 全站校验（红线）
-
-每次新增项目页面后：
-1. 逐一验证所有页面的内部链接、外部链接、安装包下载链接
-2. 确保工具在 Windows 和 macOS 上均可运行
-3. 发现 404、空内容、链接错误、平台兼容问题时自行搜索并修复
-
-**增量校验原则**：已校验通过且未改动过的页面、链接、安装包，不重复校验。只校验新增或修改过的部分。
-
-## Scrapling 爬虫（红线）
-
-所有网页抓取任务**必须使用 Scrapling**，禁止裸写 requests/BeautifulSoup。
-
-```bash
-pip install "scrapling[all]" && scrapling install
-```
-
-快速用法：
-
-```python
-from scrapling.fetchers import Fetcher, StealthyFetcher
-
-# 普通页面
-page = Fetcher.get('https://example.com')
-data = page.css('.item::text').getall()
-
-# 受保护页面（Cloudflare）
-page = StealthyFetcher.fetch('https://example.com', headless=True)
-```
-
-详见全局规范 `~/.claude/CLAUDE.md` 中 Scrapling 章节。
+当你需要记住新的重要信息时，在本文件对应章节追加即可。
+当你发现用户纠正了你的行为，更新"回复风格"或"已知坑"章节。
+保持本文件精简，不超过 200 行。
