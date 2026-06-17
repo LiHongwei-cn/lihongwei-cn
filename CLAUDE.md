@@ -130,6 +130,28 @@
 
 ---
 
+## 项目发布规范（五处同步）
+
+每次项目内容更新后，必须同步以下 5 个位置：
+
+| # | 位置 | 说明 |
+|---|------|------|
+| 1 | `<project>/index.html` | 项目展示页（GitHub Pages） |
+| 2 | `<project>/README.md` | 项目 README |
+| 3 | 根目录 `index.html` | 个人主页项目卡片 |
+| 4 | 根目录 `README.md` | 仓库项目表格 |
+| 5 | GitHub Release | `gh release create v<X.Y.Z>` |
+
+版本号格式：`vMAJOR.MINOR.PATCH`
+
+发布流程：
+1. 更新版本号 → version.txt
+2. 更新项目页面 + README
+3. 更新主页卡片 + 根 README
+4. git add + commit + push main
+5. 合并到 gh-pages 并 push
+6. gh release create 创建发行包
+
 ## Claude Code 使用说明
 
 当你需要记住新的重要信息时，在本文件对应章节追加即可。
