@@ -1,0 +1,988 @@
+{
+  "metadata": {
+    "version": "2.0.0",
+    "last_updated": "2026-06-17",
+    "total_skills": 163,
+    "source": "local-scan"
+  },
+  "skills": {
+    "accessibility-auditor": {
+      "name": "accessibility-auditor",
+      "category": "agency-agents",
+      "path": "agency-agents/accessibility-auditor",
+      "description": "Expert accessibility specialist who audits interfaces against WCAG standards, tests with assistive technologies, and ensures inclusive design. Defaults to finding barriers — if it's not tested with a "
+    },
+    "ai-engineer": {
+      "name": "ai-engineer",
+      "category": "agency-agents",
+      "path": "agency-agents/ai-engineer",
+      "description": "Expert AI/ML engineer specializing in machine learning model development, deployment, and integration into production systems. Focused on building intelligent features, data pipelines, and AI-powered "
+    },
+    "api-tester": {
+      "name": "api-tester",
+      "category": "agency-agents",
+      "path": "agency-agents/api-tester",
+      "description": "Expert API testing specialist focused on comprehensive API validation, performance testing, and quality assurance across all systems and third-party integrations"
+    },
+    "backend-architect": {
+      "name": "backend-architect",
+      "category": "agency-agents",
+      "path": "agency-agents/backend-architect",
+      "description": "Senior backend architect specializing in scalable system design, database architecture, API development, and cloud infrastructure. Builds robust, secure, performant server-side applications and micros"
+    },
+    "code-reviewer": {
+      "name": "code-reviewer",
+      "category": "agency-agents",
+      "path": "agency-agents/code-reviewer",
+      "description": "Expert code reviewer who provides constructive, actionable feedback focused on correctness, maintainability, security, and performance — not style preferences."
+    },
+    "data-engineer": {
+      "name": "data-engineer",
+      "category": "agency-agents",
+      "path": "agency-agents/data-engineer",
+      "description": "Expert data engineer specializing in building reliable data pipelines, lakehouse architectures, and scalable data infrastructure. Masters ETL/ELT, Apache Spark, dbt, streaming systems, and cloud data "
+    },
+    "database-optimizer": {
+      "name": "database-optimizer",
+      "category": "agency-agents",
+      "path": "agency-agents/database-optimizer",
+      "description": "Expert database specialist focusing on schema design, query optimization, indexing strategies, and performance tuning for PostgreSQL, MySQL, and modern databases like Supabase and PlanetScale."
+    },
+    "devops-automator": {
+      "name": "devops-automator",
+      "category": "agency-agents",
+      "path": "agency-agents/devops-automator",
+      "description": "Expert DevOps engineer specializing in infrastructure automation, CI/CD pipeline development, and cloud operations"
+    },
+    "document-generator": {
+      "name": "document-generator",
+      "category": "agency-agents",
+      "path": "agency-agents/document-generator",
+      "description": "Expert document creation specialist who generates professional PDF, PPTX, DOCX, and XLSX files using code-based approaches with proper formatting, charts, and data visualization."
+    },
+    "frontend-developer": {
+      "name": "frontend-developer",
+      "category": "agency-agents",
+      "path": "agency-agents/frontend-developer",
+      "description": "Expert frontend developer specializing in modern web technologies, React/Vue/Angular frameworks, UI implementation, and performance optimization"
+    },
+    "git-workflow-master": {
+      "name": "git-workflow-master",
+      "category": "agency-agents",
+      "path": "agency-agents/git-workflow-master",
+      "description": "Expert in Git workflows, branching strategies, and version control best practices including conventional commits, rebasing, worktrees, and CI-friendly branch management."
+    },
+    "mcp-builder": {
+      "name": "mcp-builder",
+      "category": "agency-agents",
+      "path": "agency-agents/mcp-builder",
+      "description": "Expert Model Context Protocol developer who designs, builds, and tests MCP servers that extend AI agent capabilities with custom tools, resources, and prompts."
+    },
+    "mobile-app-builder": {
+      "name": "mobile-app-builder",
+      "category": "agency-agents",
+      "path": "agency-agents/mobile-app-builder",
+      "description": "Specialized mobile application developer with expertise in native iOS/Android development and cross-platform frameworks"
+    },
+    "performance-benchmarker": {
+      "name": "performance-benchmarker",
+      "category": "agency-agents",
+      "path": "agency-agents/performance-benchmarker",
+      "description": "Expert performance testing and optimization specialist focused on measuring, analyzing, and improving system performance across all applications and infrastructure"
+    },
+    "product-manager": {
+      "name": "product-manager",
+      "category": "agency-agents",
+      "path": "agency-agents/product-manager",
+      "description": "Holistic product leader who owns the full product lifecycle — from discovery and strategy through roadmap, stakeholder alignment, go-to-market, and outcome measurement. Bridges business goals, user ne"
+    },
+    "rapid-prototyper": {
+      "name": "rapid-prototyper",
+      "category": "agency-agents",
+      "path": "agency-agents/rapid-prototyper",
+      "description": "Specialized in ultra-fast proof-of-concept development and MVP creation using efficient tools and frameworks"
+    },
+    "reality-checker": {
+      "name": "reality-checker",
+      "category": "agency-agents",
+      "path": "agency-agents/reality-checker",
+      "description": "Stops fantasy approvals, evidence-based certification - Default to \"NEEDS WORK\", requires overwhelming proof for production readiness"
+    },
+    "security-engineer": {
+      "name": "security-engineer",
+      "category": "agency-agents",
+      "path": "agency-agents/security-engineer",
+      "description": "Expert application security engineer specializing in threat modeling, vulnerability assessment, secure code review, security architecture design, and incident response for modern web, API, and cloud-n"
+    },
+    "senior-developer": {
+      "name": "senior-developer",
+      "category": "agency-agents",
+      "path": "agency-agents/senior-developer",
+      "description": "Premium implementation specialist - Masters Laravel/Livewire/FluxUI, advanced CSS, Three.js integration"
+    },
+    "software-architect": {
+      "name": "software-architect",
+      "category": "agency-agents",
+      "path": "agency-agents/software-architect",
+      "description": "Expert software architect specializing in system design, domain-driven design, architectural patterns, and technical decision-making for scalable, maintainable systems."
+    },
+    "sprint-prioritizer": {
+      "name": "sprint-prioritizer",
+      "category": "agency-agents",
+      "path": "agency-agents/sprint-prioritizer",
+      "description": "Expert product manager specializing in agile sprint planning, feature prioritization, and resource allocation. Focused on maximizing team velocity and business value delivery through data-driven prior"
+    },
+    "technical-writer": {
+      "name": "technical-writer",
+      "category": "agency-agents",
+      "path": "agency-agents/technical-writer",
+      "description": "Expert technical writer specializing in developer documentation, API references, README files, and tutorials. Transforms complex engineering concepts into clear, accurate, and engaging docs that devel"
+    },
+    "ui-designer": {
+      "name": "ui-designer",
+      "category": "agency-agents",
+      "path": "agency-agents/ui-designer",
+      "description": "Expert UI designer specializing in visual design systems, component libraries, and pixel-perfect interface creation. Creates beautiful, consistent, accessible user interfaces that enhance UX and refle"
+    },
+    "ux-researcher": {
+      "name": "ux-researcher",
+      "category": "agency-agents",
+      "path": "agency-agents/ux-researcher",
+      "description": "Expert user experience researcher specializing in user behavior analysis, usability testing, and data-driven design insights. Provides actionable research findings that improve product usability and u"
+    },
+    "wechat-mini-program-developer": {
+      "name": "wechat-mini-program-developer",
+      "category": "agency-agents",
+      "path": "agency-agents/wechat-mini-program-developer",
+      "description": "Expert WeChat Mini Program developer specializing in 小程序 development with WXML/WXSS/WXS, WeChat API integration, payment systems, subscription messaging, and the full WeChat ecosystem."
+    },
+    "workflow-architect": {
+      "name": "workflow-architect",
+      "category": "agency-agents",
+      "path": "agency-agents/workflow-architect",
+      "description": "Workflow design specialist who maps complete workflow trees for every system, user journey, and agent interaction — covering happy paths, all branch conditions, failure modes, recovery paths, handoff "
+    },
+    "apple-notes": {
+      "name": "apple-notes",
+      "category": "apple",
+      "path": "apple/apple-notes",
+      "description": "Manage Apple Notes via memo CLI: create, search, edit."
+    },
+    "apple-reminders": {
+      "name": "apple-reminders",
+      "category": "apple",
+      "path": "apple/apple-reminders",
+      "description": "Apple Reminders via remindctl: add, list, complete."
+    },
+    "findmy": {
+      "name": "findmy",
+      "category": "apple",
+      "path": "apple/findmy",
+      "description": "Track Apple devices/AirTags via FindMy.app on macOS."
+    },
+    "imessage": {
+      "name": "imessage",
+      "category": "apple",
+      "path": "apple/imessage",
+      "description": "Send and receive iMessages/SMS via the imsg CLI on macOS."
+    },
+    "macos-computer-use": {
+      "name": "macos-computer-use",
+      "category": "apple",
+      "path": "apple/macos-computer-use",
+      "description": "|"
+    },
+    "macos-troubleshooting": {
+      "name": "macos-troubleshooting",
+      "category": "apple",
+      "path": "apple/macos-troubleshooting",
+      "description": "诊断和修复 macOS 应用崩溃、系统异常、深度卸载顽固软件。覆盖 crash logs 读取、根因识别、修复策略、带 root 守护进程的应用清理。"
+    },
+    "claude-code": {
+      "name": "claude-code",
+      "category": "autonomous-ai-agents",
+      "path": "autonomous-ai-agents/claude-code",
+      "description": "Delegate coding to external coding agents — Claude Code (Anthropic), Codex (OpenAI), and OpenCode. Covers one-shot, background, interactive, and parallel orchestration from Hermes."
+    },
+    "hermes-agent": {
+      "name": "hermes-agent",
+      "category": "autonomous-ai-agents",
+      "path": "autonomous-ai-agents/hermes-agent",
+      "description": "Configure, extend, or contribute to Hermes Agent."
+    },
+    "cc-switch-sync": {
+      "name": "cc-switch-sync",
+      "category": "standalone",
+      "path": "cc-switch-sync",
+      "description": ""
+    },
+    "karpathy-guidelines": {
+      "name": "karpathy-guidelines",
+      "category": "code-quality",
+      "path": "code-quality/karpathy-guidelines",
+      "description": "Andrej Karpathy 总结的 LLM 编码行为准则。四大原则：编码前思考、简洁优先、精准修改、目标驱动执行。写代码/审查/重构时自动触发。"
+    },
+    "code-tidy": {
+      "name": "code-tidy",
+      "category": "standalone",
+      "path": "code-tidy",
+      "description": ""
+    },
+    "architecture-diagram": {
+      "name": "architecture-diagram",
+      "category": "creative",
+      "path": "creative/architecture-diagram",
+      "description": "Dark-themed SVG architecture/cloud/infra diagrams as HTML."
+    },
+    "ascii-art": {
+      "name": "ascii-art",
+      "category": "creative",
+      "path": "creative/ascii-art",
+      "description": "ASCII art: pyfiglet, cowsay, boxes, image-to-ascii."
+    },
+    "ascii-video": {
+      "name": "ascii-video",
+      "category": "creative",
+      "path": "creative/ascii-video",
+      "description": "ASCII video: convert video/audio to colored ASCII MP4/GIF."
+    },
+    "baoyu-article-illustrator": {
+      "name": "baoyu-article-illustrator",
+      "category": "creative",
+      "path": "creative/baoyu-article-illustrator",
+      "description": "Article illustrations: type × style × palette consistency."
+    },
+    "baoyu-comic": {
+      "name": "baoyu-comic",
+      "category": "creative",
+      "path": "creative/baoyu-comic",
+      "description": "Knowledge comics (知识漫画): educational, biography, tutorial."
+    },
+    "baoyu-infographic": {
+      "name": "baoyu-infographic",
+      "category": "creative",
+      "path": "creative/baoyu-infographic",
+      "description": "Infographics: 21 layouts x 21 styles (信息图, 可视化)."
+    },
+    "claude-design": {
+      "name": "claude-design",
+      "category": "creative",
+      "path": "creative/claude-design",
+      "description": "Design one-off HTML artifacts (landing, deck, prototype)."
+    },
+    "comfyui": {
+      "name": "comfyui",
+      "category": "creative",
+      "path": "creative/comfyui",
+      "description": "Generate images, video, and audio with ComfyUI — install, launch, manage nodes/models, run workflows with parameter injection. Uses the official comfy-cli for lifecycle and direct REST/WebSocket API f"
+    },
+    "creative-ideation": {
+      "name": "creative-ideation",
+      "category": "creative",
+      "path": "creative/creative-ideation",
+      "description": "Generate project ideas via creative constraints."
+    },
+    "design-md": {
+      "name": "design-md",
+      "category": "creative",
+      "path": "creative/design-md",
+      "description": "Author/validate/export Google's DESIGN.md token spec files."
+    },
+    "excalidraw": {
+      "name": "excalidraw",
+      "category": "creative",
+      "path": "creative/excalidraw",
+      "description": "Hand-drawn Excalidraw JSON diagrams (arch, flow, seq)."
+    },
+    "humanizer": {
+      "name": "humanizer",
+      "category": "creative",
+      "path": "creative/humanizer",
+      "description": "Humanize text: strip AI-isms and add real voice."
+    },
+    "manim-video": {
+      "name": "manim-video",
+      "category": "creative",
+      "path": "creative/manim-video",
+      "description": "Manim CE animations: 3Blue1Brown math/algo videos."
+    },
+    "p5js": {
+      "name": "p5js",
+      "category": "creative",
+      "path": "creative/p5js",
+      "description": "p5.js sketches: gen art, shaders, interactive, 3D."
+    },
+    "pixel-art": {
+      "name": "pixel-art",
+      "category": "creative",
+      "path": "creative/pixel-art",
+      "description": "Pixel art w/ era palettes (NES, Game Boy, PICO-8)."
+    },
+    "pixel-character-design": {
+      "name": "pixel-character-design",
+      "category": "creative",
+      "path": "creative/pixel-character-design",
+      "description": "Design pixel art characters from reference images and render them as HTML Canvas grids and terminal ASCII block art."
+    },
+    "popular-web-designs": {
+      "name": "popular-web-designs",
+      "category": "creative",
+      "path": "creative/popular-web-designs",
+      "description": "54 real design systems (Stripe, Linear, Vercel) as HTML/CSS."
+    },
+    "pretext": {
+      "name": "pretext",
+      "category": "creative",
+      "path": "creative/pretext",
+      "description": "Use when building creative browser demos with @chenglou/pretext — DOM-free text layout for ASCII art, typographic flow around obstacles, text-as-geometry games, kinetic typography, and text-powered ge"
+    },
+    "sketch": {
+      "name": "sketch",
+      "category": "creative",
+      "path": "creative/sketch",
+      "description": "Throwaway HTML mockups: 2-3 design variants to compare."
+    },
+    "songwriting-and-ai-music": {
+      "name": "songwriting-and-ai-music",
+      "category": "creative",
+      "path": "creative/songwriting-and-ai-music",
+      "description": "Songwriting craft and Suno AI music prompts."
+    },
+    "touchdesigner-mcp": {
+      "name": "touchdesigner-mcp",
+      "category": "creative",
+      "path": "creative/touchdesigner-mcp",
+      "description": "Control a running TouchDesigner instance via twozero MCP — create operators, set parameters, wire connections, execute Python, build real-time visuals. 36 native tools."
+    },
+    "cross-platform-launcher": {
+      "name": "cross-platform-launcher",
+      "category": "standalone",
+      "path": "cross-platform-launcher",
+      "description": ""
+    },
+    "cua-driver": {
+      "name": "cua-driver",
+      "category": "standalone",
+      "path": "cua-driver",
+      "description": "Drive a native macOS app via the cua-driver CLI (default) or MCP server — snapshot its AX tree, click/type/scroll by element_index, verify via re-snapshot. Use when the user asks you to operate, drive"
+    },
+    "jupyter-live-kernel": {
+      "name": "jupyter-live-kernel",
+      "category": "data-science",
+      "path": "data-science/jupyter-live-kernel",
+      "description": "Iterative Python via live Jupyter kernel (hamelnb)."
+    },
+    "kanban-orchestrator": {
+      "name": "kanban-orchestrator",
+      "category": "devops",
+      "path": "devops/kanban-orchestrator",
+      "description": "Decomposition playbook + anti-temptation rules for an orchestrator profile routing work through Kanban. The \"don't do the work yourself\" rule and the basic lifecycle are auto-injected into every kanba"
+    },
+    "macos-app-launcher": {
+      "name": "macos-app-launcher",
+      "category": "devops",
+      "path": "devops/macos-app-launcher",
+      "description": "创建 macOS .app 桌面启动器（Python 项目）。触发词：启动器、桌面图标、.app、Dock、程序坞、一键启动。覆盖 SIP 限制、pywebview 编译失败、osascript 嵌入 bash 卡死等坑。"
+    },
+    "multi-agent-config": {
+      "name": "multi-agent-config",
+      "category": "devops",
+      "path": "devops/multi-agent-config",
+      "description": "|"
+    },
+    "webhook-subscriptions": {
+      "name": "webhook-subscriptions",
+      "category": "devops",
+      "path": "devops/webhook-subscriptions",
+      "description": "Webhook subscriptions: event-driven agent runs."
+    },
+    "doc-coauthoring": {
+      "name": "doc-coauthoring",
+      "category": "standalone",
+      "path": "doc-coauthoring",
+      "description": "Guide users through a structured workflow for co-authoring documentation. Use when user wants to write documentation, proposals, technical specs, decision docs, or similar structured content. This wor"
+    },
+    "dogfood": {
+      "name": "dogfood",
+      "category": "standalone",
+      "path": "dogfood",
+      "description": "Exploratory QA of web apps: find bugs, evidence, reports."
+    },
+    "himalaya": {
+      "name": "himalaya",
+      "category": "email",
+      "path": "email/himalaya",
+      "description": "Himalaya CLI: IMAP/SMTP email from terminal."
+    },
+    "minecraft-modpack-server": {
+      "name": "minecraft-modpack-server",
+      "category": "gaming",
+      "path": "gaming/minecraft-modpack-server",
+      "description": "Host modded Minecraft servers (CurseForge, Modrinth)."
+    },
+    "pokemon-player": {
+      "name": "pokemon-player",
+      "category": "gaming",
+      "path": "gaming/pokemon-player",
+      "description": "Play Pokemon via headless emulator + RAM reads."
+    },
+    "github-project-page": {
+      "name": "github-project-page",
+      "category": "github",
+      "path": "github/github-project-page",
+      "description": "创建或更新 GitHub Pages 项目页面。当用户要求新增项目、创建项目页面、更新主页、添加项目卡片时自动触发。覆盖完整工作流：目录结构、README.md、index.html、主页更新、Git 提交。"
+    },
+    "github-workflow": {
+      "name": "github-workflow",
+      "category": "standalone",
+      "path": "github-workflow",
+      "description": "Complete GitHub workflow: authentication, repo management, issues, PRs, code review, releases, Actions. Use gh CLI with curl fallback for every operation."
+    },
+    "hermes-file-editing": {
+      "name": "hermes-file-editing",
+      "category": "standalone",
+      "path": "hermes-file-editing",
+      "description": ""
+    },
+    "homepage-layout": {
+      "name": "homepage-layout",
+      "category": "standalone",
+      "path": "homepage-layout",
+      "description": ""
+    },
+    "local-llm-coding": {
+      "name": "local-llm-coding",
+      "category": "standalone",
+      "path": "local-llm-coding",
+      "description": ""
+    },
+    "matlab-ai-generator": {
+      "name": "matlab-ai-generator",
+      "category": "standalone",
+      "path": "matlab-ai-generator",
+      "description": "根据用户提供的精确参数生成 MATLAB/Simulink 仿真代码。使用场景：用户要求生成 MATLAB 脚本、Simulink 模型、仿真代码，或要求修改现有仿真参数时自动触发。"
+    },
+    "matlab-debugging": {
+      "name": "matlab-debugging",
+      "category": "standalone",
+      "path": "matlab-debugging",
+      "description": "Diagnose MATLAB errors and unexpected behavior. Breakpoints, workspace inspection, try-catch diagnostics, and common error patterns. Use when debugging functions, tracing errors, inspecting variables,"
+    },
+    "matlab-design-digital-filter": {
+      "name": "matlab-design-digital-filter",
+      "category": "standalone",
+      "path": "matlab-design-digital-filter",
+      "description": ""
+    },
+    "matlab-live-script": {
+      "name": "matlab-live-script",
+      "category": "standalone",
+      "path": "matlab-live-script",
+      "description": "Create MATLAB plain text Live Scripts (.m files) following specific formatting rules. Use when generating MATLAB scripts, educational MATLAB content, Live Scripts, or when the user requests .m files w"
+    },
+    "matlab-modernize-code": {
+      "name": "matlab-modernize-code",
+      "category": "standalone",
+      "path": "matlab-modernize-code",
+      "description": ""
+    },
+    "matlab-optimize-performance": {
+      "name": "matlab-optimize-performance",
+      "category": "standalone",
+      "path": "matlab-optimize-performance",
+      "description": "Read BEFORE optimizing any MATLAB code for speed. Without this workflow, agents commonly optimize the wrong target, fabricate speedup claims without measurement, or introduce regressions. Guides the 7"
+    },
+    "matlab-performance-optimizer": {
+      "name": "matlab-performance-optimizer",
+      "category": "standalone",
+      "path": "matlab-performance-optimizer",
+      "description": "Optimize MATLAB code for better performance through vectorization, memory management, and profiling. Use when user requests optimization, mentions slow code, performance issues, speed improvements, or"
+    },
+    "matlab-review-code": {
+      "name": "matlab-review-code",
+      "category": "standalone",
+      "path": "matlab-review-code",
+      "description": "Review MATLAB code for quality, performance, maintainability, and adherence to MathWorks coding standards. Uses check_matlab_code and matlab_coding_guidelines. Use when reviewing code, checking style,"
+    },
+    "matlab-simulink-generator": {
+      "name": "matlab-simulink-generator",
+      "category": "standalone",
+      "path": "matlab-simulink-generator",
+      "description": "自动生成 Simulink 模型（.slx 文件）。使用场景：用户要求生成 Simulink 模型、搭建仿真模型、创建控制系统模型时自动触发。兼容 R2016b。"
+    },
+    "matlab-test-generator": {
+      "name": "matlab-test-generator",
+      "category": "standalone",
+      "path": "matlab-test-generator",
+      "description": "Create comprehensive MATLAB unit tests using the MATLAB Testing Framework. Use when generating test files, test cases, unit tests, test suites, or when the user requests testing for MATLAB code, funct"
+    },
+    "matlab-testing": {
+      "name": "matlab-testing",
+      "category": "standalone",
+      "path": "matlab-testing",
+      "description": "Generate and run MATLAB unit tests using matlab.unittest and matlab.uitest. Parameterized tests, fixtures, mocking, coverage analysis, CI/CD with buildtool, app testing with gestures. Use when creatin"
+    },
+    "matlab-uihtml-app-builder": {
+      "name": "matlab-uihtml-app-builder",
+      "category": "standalone",
+      "path": "matlab-uihtml-app-builder",
+      "description": "Build interactive web applications using HTML/JavaScript interfaces with MATLAB computational backends via the uihtml component. Use when creating HTML-based MATLAB apps, JavaScript MATLAB interfaces,"
+    },
+    "native-mcp": {
+      "name": "native-mcp",
+      "category": "mcp",
+      "path": "mcp/native-mcp",
+      "description": "MCP client: connect servers, register tools (stdio/HTTP)."
+    },
+    "gif-search": {
+      "name": "gif-search",
+      "category": "media",
+      "path": "media/gif-search",
+      "description": "Search/download GIFs from Tenor via curl + jq."
+    },
+    "heartmula": {
+      "name": "heartmula",
+      "category": "media",
+      "path": "media/heartmula",
+      "description": "HeartMuLa: Suno-like song generation from lyrics + tags."
+    },
+    "songsee": {
+      "name": "songsee",
+      "category": "media",
+      "path": "media/songsee",
+      "description": "Audio spectrograms/features (mel, chroma, MFCC) via CLI."
+    },
+    "spotify": {
+      "name": "spotify",
+      "category": "media",
+      "path": "media/spotify",
+      "description": "Spotify: play, search, queue, manage playlists and devices."
+    },
+    "youtube-content": {
+      "name": "youtube-content",
+      "category": "media",
+      "path": "media/youtube-content",
+      "description": "YouTube transcripts to summaries, threads, blogs."
+    },
+    "evaluation/lm-evaluation-harness": {
+      "name": "evaluation/lm-evaluation-harness",
+      "category": "mlops",
+      "path": "mlops/evaluation/lm-evaluation-harness",
+      "description": "lm-eval-harness: benchmark LLMs (MMLU, GSM8K, etc.)."
+    },
+    "evaluation/weights-and-biases": {
+      "name": "evaluation/weights-and-biases",
+      "category": "mlops",
+      "path": "mlops/evaluation/weights-and-biases",
+      "description": "W&B: log ML experiments, sweeps, model registry, dashboards."
+    },
+    "huggingface-hub": {
+      "name": "huggingface-hub",
+      "category": "mlops",
+      "path": "mlops/huggingface-hub",
+      "description": "HuggingFace hf CLI: search/download/upload models, datasets."
+    },
+    "inference/llama-cpp": {
+      "name": "inference/llama-cpp",
+      "category": "mlops",
+      "path": "mlops/inference/llama-cpp",
+      "description": "llama.cpp local GGUF inference + HF Hub model discovery."
+    },
+    "inference/obliteratus": {
+      "name": "inference/obliteratus",
+      "category": "mlops",
+      "path": "mlops/inference/obliteratus",
+      "description": "OBLITERATUS: abliterate LLM refusals (diff-in-means)."
+    },
+    "inference/vllm": {
+      "name": "inference/vllm",
+      "category": "mlops",
+      "path": "mlops/inference/vllm",
+      "description": "vLLM: high-throughput LLM serving, OpenAI API, quantization."
+    },
+    "models/audiocraft": {
+      "name": "models/audiocraft",
+      "category": "mlops",
+      "path": "mlops/models/audiocraft",
+      "description": "AudioCraft: MusicGen text-to-music, AudioGen text-to-sound."
+    },
+    "models/segment-anything": {
+      "name": "models/segment-anything",
+      "category": "mlops",
+      "path": "mlops/models/segment-anything",
+      "description": "SAM: zero-shot image segmentation via points, boxes, masks."
+    },
+    "research/dspy": {
+      "name": "research/dspy",
+      "category": "mlops",
+      "path": "mlops/research/dspy",
+      "description": "DSPy: declarative LM programs, auto-optimize prompts, RAG."
+    },
+    "nature-academic-search": {
+      "name": "nature-academic-search",
+      "category": "nature-skills",
+      "path": "nature-skills/nature-academic-search",
+      "description": "-"
+    },
+    "nature-citation": {
+      "name": "nature-citation",
+      "category": "nature-skills",
+      "path": "nature-skills/nature-citation",
+      "description": "-"
+    },
+    "nature-data": {
+      "name": "nature-data",
+      "category": "nature-skills",
+      "path": "nature-skills/nature-data",
+      "description": "-"
+    },
+    "nature-figure": {
+      "name": "nature-figure",
+      "category": "nature-skills",
+      "path": "nature-skills/nature-figure",
+      "description": "-"
+    },
+    "nature-paper2ppt": {
+      "name": "nature-paper2ppt",
+      "category": "nature-skills",
+      "path": "nature-skills/nature-paper2ppt",
+      "description": "Build a complete but efficient Nature-style Chinese PPTX presentation from a scientific paper, preprint, PDF, article text, abstract, figure legends, or reading notes. Use this skill whenever the user"
+    },
+    "nature-polishing": {
+      "name": "nature-polishing",
+      "category": "nature-skills",
+      "path": "nature-skills/nature-polishing",
+      "description": "Polish, restructure, or translate academic prose into Nature-leaning English using writing-strategy principles, curated Nature/Nature Communications article patterns, and phrase-level support from Aca"
+    },
+    "nature-reader": {
+      "name": "nature-reader",
+      "category": "nature-skills",
+      "path": "nature-skills/nature-reader",
+      "description": "Build full-paper Chinese-English side-by-side, figure/table-aware, source-grounded Markdown readers for journal or conference papers from PDF, DOI, arXiv, publisher HTML, or pasted text. Use whenever "
+    },
+    "nature-response": {
+      "name": "nature-response",
+      "category": "nature-skills",
+      "path": "nature-skills/nature-response",
+      "description": "-"
+    },
+    "nature-writing": {
+      "name": "nature-writing",
+      "category": "standalone",
+      "path": "nature-writing",
+      "description": "Draft, restructure, or plan Nature-style manuscript sections from author-provided claims, results, figures, notes, or Chinese drafts. Use when the user wants to write or rebuild an abstract, introduct"
+    },
+    "neat-freak": {
+      "name": "neat-freak",
+      "category": "standalone",
+      "path": "neat-freak",
+      "description": ""
+    },
+    "obsidian": {
+      "name": "obsidian",
+      "category": "note-taking",
+      "path": "note-taking/obsidian",
+      "description": "Read, search, create, and edit notes in the Obsidian vault."
+    },
+    "academic-doc-generator": {
+      "name": "academic-doc-generator",
+      "category": "productivity",
+      "path": "productivity/academic-doc-generator",
+      "description": "程序化生成学术作业/实验报告/课程论文。从 PDF 提取题目 → 编写代码求解 → 生成图表 → 输出格式规范的 Word 文档（封面+正文+代码+结果图）。"
+    },
+    "airtable": {
+      "name": "airtable",
+      "category": "productivity",
+      "path": "productivity/airtable",
+      "description": "Airtable REST API via curl. Records CRUD, filters, upserts."
+    },
+    "google-workspace": {
+      "name": "google-workspace",
+      "category": "productivity",
+      "path": "productivity/google-workspace",
+      "description": "Gmail, Calendar, Drive, Docs, Sheets via gws CLI or Python."
+    },
+    "job-application": {
+      "name": "job-application",
+      "category": "productivity",
+      "path": "productivity/job-application",
+      "description": ""
+    },
+    "linear": {
+      "name": "linear",
+      "category": "productivity",
+      "path": "productivity/linear",
+      "description": "Linear: manage issues, projects, teams via GraphQL + curl."
+    },
+    "maps": {
+      "name": "maps",
+      "category": "productivity",
+      "path": "productivity/maps",
+      "description": "Geocode, POIs, routes, timezones via OpenStreetMap/OSRM."
+    },
+    "nano-pdf": {
+      "name": "nano-pdf",
+      "category": "productivity",
+      "path": "productivity/nano-pdf",
+      "description": "Edit PDF text/typos/titles via nano-pdf CLI (NL prompts)."
+    },
+    "notion": {
+      "name": "notion",
+      "category": "productivity",
+      "path": "productivity/notion",
+      "description": "Notion API + ntn CLI: pages, databases, markdown, Workers."
+    },
+    "ocr-and-documents": {
+      "name": "ocr-and-documents",
+      "category": "productivity",
+      "path": "productivity/ocr-and-documents",
+      "description": "Extract text from PDFs/scans (pymupdf, marker-pdf)."
+    },
+    "powerpoint": {
+      "name": "powerpoint",
+      "category": "productivity",
+      "path": "productivity/powerpoint",
+      "description": "Create, read, edit .pptx decks, slides, notes, templates."
+    },
+    "resume-builder": {
+      "name": "resume-builder",
+      "category": "productivity",
+      "path": "productivity/resume-builder",
+      "description": "制作/优化专业简历。触发词：简历、resume、CV、求职、找工作、投简历。自动加载，白底专业风格，禁止深色主题和过度设计。输出 HTML + Word (.docx) 两种格式。"
+    },
+    "teams-meeting-pipeline": {
+      "name": "teams-meeting-pipeline",
+      "category": "productivity",
+      "path": "productivity/teams-meeting-pipeline",
+      "description": "Operate the Teams meeting summary pipeline via Hermes CLI — summarize meetings, inspect pipeline status, replay jobs, manage Microsoft Graph subscriptions."
+    },
+    "python-agent-dev": {
+      "name": "python-agent-dev",
+      "category": "standalone",
+      "path": "python-agent-dev",
+      "description": "Python AI Agent 开发模式 — SSE 流式输出、prompt_toolkit TUI、pywebview 桌面 GUI、Agentic Loop 回调链、API 响应安全处理"
+    },
+    "godmode": {
+      "name": "godmode",
+      "category": "red-teaming",
+      "path": "red-teaming/godmode",
+      "description": "Jailbreak LLMs: Parseltongue, GODMODE, ULTRAPLINIAN."
+    },
+    "arxiv": {
+      "name": "arxiv",
+      "category": "research",
+      "path": "research/arxiv",
+      "description": "Search arXiv papers by keyword, author, category, or ID."
+    },
+    "blogwatcher": {
+      "name": "blogwatcher",
+      "category": "research",
+      "path": "research/blogwatcher",
+      "description": "Monitor blogs and RSS/Atom feeds via blogwatcher-cli tool."
+    },
+    "llm-wiki": {
+      "name": "llm-wiki",
+      "category": "research",
+      "path": "research/llm-wiki",
+      "description": "Karpathy's LLM Wiki: build/query interlinked markdown KB."
+    },
+    "polymarket": {
+      "name": "polymarket",
+      "category": "research",
+      "path": "research/polymarket",
+      "description": "Query Polymarket: markets, prices, orderbooks, history."
+    },
+    "research-paper-writing": {
+      "name": "research-paper-writing",
+      "category": "research",
+      "path": "research/research-paper-writing",
+      "description": "Write ML papers for NeurIPS/ICML/ICLR: design→submit."
+    },
+    "research-rigor": {
+      "name": "research-rigor",
+      "category": "research",
+      "path": "research/research-rigor",
+      "description": "|"
+    },
+    "selenium-element-screenshot": {
+      "name": "selenium-element-screenshot",
+      "category": "standalone",
+      "path": "selenium-element-screenshot",
+      "description": "用 Selenium 对网页各区块逐个截图（元素级 screenshot），支持 Retina 高清。适用场景：用户要求截取网页内容、分区块截图、网页可视化存档。"
+    },
+    "openhue": {
+      "name": "openhue",
+      "category": "smart-home",
+      "path": "smart-home/openhue",
+      "description": "Control Philips Hue lights, scenes, rooms via OpenHue CLI."
+    },
+    "xurl": {
+      "name": "xurl",
+      "category": "social-media",
+      "path": "social-media/xurl",
+      "description": "X/Twitter via xurl CLI: post, search, DM, media, v2 API."
+    },
+    "carsim-simulation": {
+      "name": "carsim-simulation",
+      "category": "software-development",
+      "path": "software-development/carsim-simulation",
+      "description": "CarSim 联合仿真开发：场景生成、车辆配置、结果分析。触发词：CarSim、carsim、联合仿真、车辆仿真、道路仿真、高架桥仿真、弯道仿真、制动仿真。兼容 CarSim 2019.0+。"
+    },
+    "debugging-hermes-tui-commands": {
+      "name": "debugging-hermes-tui-commands",
+      "category": "software-development",
+      "path": "software-development/debugging-hermes-tui-commands",
+      "description": "Debug Hermes TUI slash commands: Python, gateway, Ink UI."
+    },
+    "emotional-ai-companion": {
+      "name": "emotional-ai-companion",
+      "category": "software-development",
+      "path": "software-development/emotional-ai-companion",
+      "description": "构建情感陪伴AI对话应用——情感分析、内容感知回复、心理医生人格(CBT)、知识库、危机检测、直言模式、用户画像、留白沉默。覆盖设计原则、架构实现、macOS桌面打包。"
+    },
+    "hermes-s6-container-supervision": {
+      "name": "hermes-s6-container-supervision",
+      "category": "software-development",
+      "path": "software-development/hermes-s6-container-supervision",
+      "description": "Modify, debug, or extend the s6-overlay supervision tree inside the Hermes Agent Docker image — adding new services, debugging profile gateways, understanding the Architecture B main-program pattern."
+    },
+    "mundo-sync": {
+      "name": "mundo-sync",
+      "category": "software-development",
+      "path": "software-development/mundo-sync",
+      "description": ""
+    },
+    "node-inspect-debugger": {
+      "name": "node-inspect-debugger",
+      "category": "software-development",
+      "path": "software-development/node-inspect-debugger",
+      "description": "Debug Node.js via --inspect + Chrome DevTools Protocol CLI."
+    },
+    "python-debugpy": {
+      "name": "python-debugpy",
+      "category": "software-development",
+      "path": "software-development/python-debugpy",
+      "description": "Debug Python: pdb REPL + debugpy remote (DAP)."
+    },
+    "python-desktop-app": {
+      "name": "python-desktop-app",
+      "category": "software-development",
+      "path": "software-development/python-desktop-app",
+      "description": "构建 Python 桌面应用：pywebview 窗口 + HTML/CSS/JS 前端 + 跨平台启动器（.app/.command/.bat）+ 应用图标 + 自动更新系统。覆盖 macOS 打包所有坑、图标设计模式、首次引导流程。"
+    },
+    "requesting-code-review": {
+      "name": "requesting-code-review",
+      "category": "superpowers",
+      "path": "superpowers/requesting-code-review",
+      "description": "Use when completing tasks, implementing major features, or before merging to verify work meets requirements"
+    },
+    "simplify-code": {
+      "name": "simplify-code",
+      "category": "software-development",
+      "path": "software-development/simplify-code",
+      "description": "Parallel 3-agent cleanup of recent code changes."
+    },
+    "spike": {
+      "name": "spike",
+      "category": "software-development",
+      "path": "software-development/spike",
+      "description": "Throwaway experiments to validate an idea before build."
+    },
+    "subagent-driven-development": {
+      "name": "subagent-driven-development",
+      "category": "superpowers",
+      "path": "superpowers/subagent-driven-development",
+      "description": "Use when executing implementation plans with independent tasks in the current session"
+    },
+    "systematic-debugging": {
+      "name": "systematic-debugging",
+      "category": "superpowers",
+      "path": "superpowers/systematic-debugging",
+      "description": "Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes"
+    },
+    "test-driven-development": {
+      "name": "test-driven-development",
+      "category": "superpowers",
+      "path": "superpowers/test-driven-development",
+      "description": "Use when implementing any feature or bugfix, before writing implementation code"
+    },
+    "wechat-miniprogram": {
+      "name": "wechat-miniprogram",
+      "category": "software-development",
+      "path": "software-development/wechat-miniprogram",
+      "description": "微信小程序开发、调试、审核拒绝修复。云函数认证、页面加载失败诊断、app.json 配置、WXML/WXSS 常见坑。"
+    },
+    "writing-plans": {
+      "name": "writing-plans",
+      "category": "superpowers",
+      "path": "superpowers/writing-plans",
+      "description": "Use when you have a spec or requirements for a multi-step task, before touching code"
+    },
+    "brainstorming": {
+      "name": "brainstorming",
+      "category": "superpowers",
+      "path": "superpowers/brainstorming",
+      "description": "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
+    },
+    "dispatching-parallel-agents": {
+      "name": "dispatching-parallel-agents",
+      "category": "superpowers",
+      "path": "superpowers/dispatching-parallel-agents",
+      "description": "Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies"
+    },
+    "executing-plans": {
+      "name": "executing-plans",
+      "category": "superpowers",
+      "path": "superpowers/executing-plans",
+      "description": "Use when you have a written implementation plan to execute in a separate session with review checkpoints"
+    },
+    "finishing-a-development-branch": {
+      "name": "finishing-a-development-branch",
+      "category": "superpowers",
+      "path": "superpowers/finishing-a-development-branch",
+      "description": "Use when implementation is complete, all tests pass, and you need to decide how to integrate the work - guides completion of development work by presenting structured options for merge, PR, or cleanup"
+    },
+    "receiving-code-review": {
+      "name": "receiving-code-review",
+      "category": "superpowers",
+      "path": "superpowers/receiving-code-review",
+      "description": "Use when receiving code review feedback, before implementing suggestions, especially if feedback seems unclear or technically questionable - requires technical rigor and verification, not performative"
+    },
+    "using-git-worktrees": {
+      "name": "using-git-worktrees",
+      "category": "superpowers",
+      "path": "superpowers/using-git-worktrees",
+      "description": "Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an isolated workspace exists via native tools or git worktree fallback"
+    },
+    "using-superpowers": {
+      "name": "using-superpowers",
+      "category": "superpowers",
+      "path": "superpowers/using-superpowers",
+      "description": "Use when starting any conversation - establishes how to find and use skills, requiring Skill tool invocation before ANY response including clarifying questions"
+    },
+    "verification-before-completion": {
+      "name": "verification-before-completion",
+      "category": "superpowers",
+      "path": "superpowers/verification-before-completion",
+      "description": "Use when about to claim work is complete, fixed, or passing, before committing or creating PRs - requires running verification commands and confirming output before making any success claims; evidence"
+    },
+    "writing-skills": {
+      "name": "writing-skills",
+      "category": "superpowers",
+      "path": "superpowers/writing-skills",
+      "description": "Use when creating new skills, editing existing skills, or verifying skills work before deployment"
+    },
+    "yuanbao": {
+      "name": "yuanbao",
+      "category": "standalone",
+      "path": "yuanbao",
+      "description": "Yuanbao (元宝) groups: @mention users, query info/members."
+    },
+    "蒙多": {
+      "name": "蒙多",
+      "category": "standalone",
+      "path": "蒙多",
+      "description": ""
+    }
+  }
+}

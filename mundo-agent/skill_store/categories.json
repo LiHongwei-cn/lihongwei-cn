@@ -1,115 +1,280 @@
 {
-  "code-generation": {
-    "name": "代码生成",
-    "keywords": [
-      "code",
-      "generate",
-      "codegen",
-      "scaffold",
-      "boilerplate"
-    ],
-    "description": "自动生成代码、模板、脚手架"
+  "agency-agents": {
+    "count": 26,
+    "skills": [
+      "accessibility-auditor",
+      "ai-engineer",
+      "api-tester",
+      "backend-architect",
+      "code-reviewer",
+      "data-engineer",
+      "database-optimizer",
+      "devops-automator",
+      "document-generator",
+      "frontend-developer",
+      "git-workflow-master",
+      "mcp-builder",
+      "mobile-app-builder",
+      "performance-benchmarker",
+      "product-manager",
+      "rapid-prototyper",
+      "reality-checker",
+      "security-engineer",
+      "senior-developer",
+      "software-architect",
+      "sprint-prioritizer",
+      "technical-writer",
+      "ui-designer",
+      "ux-researcher",
+      "wechat-mini-program-developer",
+      "workflow-architect"
+    ]
   },
-  "code-review": {
-    "name": "代码审查",
-    "keywords": [
-      "review",
-      "lint",
-      "static-analysis",
-      "quality"
-    ],
-    "description": "代码审查、静态分析、质量检查"
+  "apple": {
+    "count": 6,
+    "skills": [
+      "apple-notes",
+      "apple-reminders",
+      "findmy",
+      "imessage",
+      "macos-computer-use",
+      "macos-troubleshooting"
+    ]
   },
-  "testing": {
-    "name": "测试",
-    "keywords": [
-      "test",
-      "tdd",
-      "bdd",
-      "coverage",
-      "e2e",
-      "unit-test"
-    ],
-    "description": "单元测试、集成测试、E2E 测试"
+  "autonomous-ai-agents": {
+    "count": 2,
+    "skills": [
+      "claude-code",
+      "hermes-agent"
+    ]
   },
-  "refactoring": {
-    "name": "重构优化",
-    "keywords": [
-      "refactor",
-      "clean",
-      "optimize",
-      "performance"
-    ],
-    "description": "代码重构、性能优化、死代码清理"
+  "code-quality": {
+    "count": 1,
+    "skills": [
+      "karpathy-guidelines"
+    ]
   },
-  "documentation": {
-    "name": "文档生成",
-    "keywords": [
-      "doc",
-      "readme",
-      "markdown",
-      "api-doc",
-      "changelog"
-    ],
-    "description": "文档生成、README、API 文档"
+  "creative": {
+    "count": 21,
+    "skills": [
+      "architecture-diagram",
+      "ascii-art",
+      "ascii-video",
+      "baoyu-article-illustrator",
+      "baoyu-comic",
+      "baoyu-infographic",
+      "claude-design",
+      "comfyui",
+      "creative-ideation",
+      "design-md",
+      "excalidraw",
+      "humanizer",
+      "manim-video",
+      "p5js",
+      "pixel-art",
+      "pixel-character-design",
+      "popular-web-designs",
+      "pretext",
+      "sketch",
+      "songwriting-and-ai-music",
+      "touchdesigner-mcp"
+    ]
   },
-  "security": {
-    "name": "安全",
-    "keywords": [
-      "security",
-      "audit",
-      "vulnerability",
-      "cve",
-      "pentest"
-    ],
-    "description": "安全审计、漏洞扫描、渗透测试"
+  "data-science": {
+    "count": 1,
+    "skills": [
+      "jupyter-live-kernel"
+    ]
   },
   "devops": {
-    "name": "DevOps",
-    "keywords": [
-      "ci",
-      "cd",
-      "deploy",
-      "docker",
-      "kubernetes",
-      "pipeline"
-    ],
-    "description": "CI/CD、部署、容器化、流水线"
+    "count": 4,
+    "skills": [
+      "kanban-orchestrator",
+      "macos-app-launcher",
+      "multi-agent-config",
+      "webhook-subscriptions"
+    ]
   },
-  "agent-framework": {
-    "name": "Agent 框架",
-    "keywords": [
-      "agent",
-      "framework",
-      "orchestration",
-      "workflow",
-      "multi-agent"
-    ],
-    "description": "AI Agent 框架、工作流编排"
+  "email": {
+    "count": 1,
+    "skills": [
+      "himalaya"
+    ]
   },
-  "prompt-engineering": {
-    "name": "提示工程",
-    "keywords": [
-      "prompt",
-      "chain-of-thought",
-      "few-shot",
-      "in-context"
-    ],
-    "description": "提示词优化、思维链、少样本学习"
+  "gaming": {
+    "count": 2,
+    "skills": [
+      "minecraft-modpack-server",
+      "pokemon-player"
+    ]
+  },
+  "github": {
+    "count": 1,
+    "skills": [
+      "github-project-page"
+    ]
   },
   "mcp": {
-    "name": "MCP 协议",
-    "keywords": [
-      "mcp",
-      "model-context-protocol",
-      "tool-use",
-      "function-call"
-    ],
-    "description": "MCP 服务器、工具调用、协议集成"
+    "count": 1,
+    "skills": [
+      "native-mcp"
+    ]
   },
-  "other": {
-    "name": "其他",
-    "keywords": [],
-    "description": "未分类的 skill 项目"
+  "media": {
+    "count": 5,
+    "skills": [
+      "gif-search",
+      "heartmula",
+      "songsee",
+      "spotify",
+      "youtube-content"
+    ]
+  },
+  "mlops": {
+    "count": 9,
+    "skills": [
+      "evaluation/lm-evaluation-harness",
+      "evaluation/weights-and-biases",
+      "huggingface-hub",
+      "inference/llama-cpp",
+      "inference/obliteratus",
+      "inference/vllm",
+      "models/audiocraft",
+      "models/segment-anything",
+      "research/dspy"
+    ]
+  },
+  "nature-skills": {
+    "count": 8,
+    "skills": [
+      "nature-academic-search",
+      "nature-citation",
+      "nature-data",
+      "nature-figure",
+      "nature-paper2ppt",
+      "nature-polishing",
+      "nature-reader",
+      "nature-response"
+    ]
+  },
+  "note-taking": {
+    "count": 1,
+    "skills": [
+      "obsidian"
+    ]
+  },
+  "productivity": {
+    "count": 12,
+    "skills": [
+      "academic-doc-generator",
+      "airtable",
+      "google-workspace",
+      "job-application",
+      "linear",
+      "maps",
+      "nano-pdf",
+      "notion",
+      "ocr-and-documents",
+      "powerpoint",
+      "resume-builder",
+      "teams-meeting-pipeline"
+    ]
+  },
+  "red-teaming": {
+    "count": 1,
+    "skills": [
+      "godmode"
+    ]
+  },
+  "research": {
+    "count": 6,
+    "skills": [
+      "arxiv",
+      "blogwatcher",
+      "llm-wiki",
+      "polymarket",
+      "research-paper-writing",
+      "research-rigor"
+    ]
+  },
+  "smart-home": {
+    "count": 1,
+    "skills": [
+      "openhue"
+    ]
+  },
+  "social-media": {
+    "count": 1,
+    "skills": [
+      "xurl"
+    ]
+  },
+  "software-development": {
+    "count": 11,
+    "skills": [
+      "carsim-simulation",
+      "debugging-hermes-tui-commands",
+      "emotional-ai-companion",
+      "hermes-s6-container-supervision",
+      "mundo-sync",
+      "node-inspect-debugger",
+      "python-debugpy",
+      "python-desktop-app",
+      "simplify-code",
+      "spike",
+      "wechat-miniprogram"
+    ]
+  },
+  "standalone": {
+    "count": 28,
+    "skills": [
+      "cc-switch-sync",
+      "code-tidy",
+      "cross-platform-launcher",
+      "cua-driver",
+      "doc-coauthoring",
+      "dogfood",
+      "github-workflow",
+      "hermes-file-editing",
+      "homepage-layout",
+      "local-llm-coding",
+      "matlab-ai-generator",
+      "matlab-debugging",
+      "matlab-design-digital-filter",
+      "matlab-live-script",
+      "matlab-modernize-code",
+      "matlab-optimize-performance",
+      "matlab-performance-optimizer",
+      "matlab-review-code",
+      "matlab-simulink-generator",
+      "matlab-test-generator",
+      "matlab-testing",
+      "matlab-uihtml-app-builder",
+      "nature-writing",
+      "neat-freak",
+      "python-agent-dev",
+      "selenium-element-screenshot",
+      "yuanbao",
+      "蒙多"
+    ]
+  },
+  "superpowers": {
+    "count": 14,
+    "skills": [
+      "brainstorming",
+      "dispatching-parallel-agents",
+      "executing-plans",
+      "finishing-a-development-branch",
+      "receiving-code-review",
+      "requesting-code-review",
+      "subagent-driven-development",
+      "systematic-debugging",
+      "test-driven-development",
+      "using-git-worktrees",
+      "using-superpowers",
+      "verification-before-completion",
+      "writing-plans",
+      "writing-skills"
+    ]
   }
 }
