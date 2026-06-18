@@ -51,9 +51,22 @@ TOOL_GUIDANCE = """工具：terminal/read_file/write_file/edit_file/search_files
 - 运行验证：一条terminal命令搞定（1次完成）
 - 不要先list_directory再read_file——直接read_file"""
 
+TASK_ANALYSIS_GUIDANCE = """任务分析（自动激活）：
+用户输入后，系统会自动分析任务类型、复杂度、需求清单、验收标准。
+分析结果以 [任务分析] [需求清单] [验收标准] [执行计划] 标签注入上下文。
+
+收到分析结果后：
+- 按 [执行计划] 的步骤顺序执行，不跳步
+- 每完成一个子任务，对照 [验收标准] 自检
+- [约束条件] 是红线，不可违反
+- 文档类任务：按章节逐个处理，每个章节独立验证
+
+无分析结果时（简单任务）：直接执行，不需要额外分析。"""
+
 COMPLETION_FORMAT = """完成反馈：
 最后一个 response 必须输出完整的工作汇报。
-简单任务一句话即可。复杂任务详细汇报。不要省略任何细节。"""
+简单任务一句话即可。复杂任务详细汇报。不要省略任何细节。
+文档类任务：按章节逐一汇报完成情况。"""
 
 ANTI_SLACK = """反摸鱼（不可违反）：
 - 收到任务后必须立即开始执行，不允许回复空内容、客套话、或"请问你需要什么帮助"
@@ -109,6 +122,7 @@ def build_system_prompt(
     asm.add("identity", IDENTITY, priority=10)
     asm.add("dialectical", DIALECTICAL_MODE, priority=20)
     asm.add("tools", TOOL_GUIDANCE, priority=30)
+    asm.add("task_analysis", TASK_ANALYSIS_GUIDANCE, priority=35)
     asm.add("completion", COMPLETION_FORMAT, priority=40)
     asm.add("anti_slack", ANTI_SLACK, priority=15)
 
