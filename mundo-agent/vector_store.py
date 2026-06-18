@@ -134,7 +134,7 @@ class EmbeddingGenerator:
             with urllib.request.urlopen(req, timeout=15) as resp:
                 data = json.loads(resp.read().decode())
                 return data["data"][0]["embedding"]
-        except Exception:
+        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, KeyError):
             return self._embed_local(text)
 
     def _embed_api_batch(self, texts: List[str]) -> List[List[float]]:
@@ -162,7 +162,7 @@ class EmbeddingGenerator:
                 data = json.loads(resp.read().decode())
                 sorted_results = sorted(data["data"], key=lambda x: x["index"])
                 return [item["embedding"] for item in sorted_results]
-        except Exception:
+        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, KeyError):
             return [self._embed_local(t) for t in texts]
 
 
@@ -207,12 +207,31 @@ class VectorStore:
                 metadata={"hnsw:space": "cosine"},
             )
             self._use_chromadb = True
-        except Exception:
+        except Exception:  # ChromaDB初始化失败，回退到本地内存（设计意图）
             self._use_chromadb = False
 
     @property
     def is_vector_backend(self) -> bool:
         return self._use_chromadb
+
+    @property
+    def stats(self) -> Dict[str, Any]:
+        """返回向量存储统计信息"""
+        count = 0
+        if self._use_chromadb and self._collection:
+            try:
+                count = self._collection.count()
+            except Exception:
+                pass
+        else:
+            count = len(self._fallback_vectors)
+
+        return {
+            "backend": "chromadb" if self._use_chromadb else "memory",
+            "collection": self._collection_name,
+            "document_count": count,
+            "embedding_mode": self._embedding._mode,
+        }
 
     def add(self, doc_id: str, text: str, metadata: Optional[Dict] = None):
         """添加文档向量"""
@@ -228,7 +247,7 @@ class VectorStore:
                     documents=[text],
                 )
                 return
-            except Exception:
+            except Exception:  # ChromaDB 写入失败，回退到内存存储
                 pass
 
         self._fallback_vectors[doc_id] = (vector, meta)
@@ -248,7 +267,7 @@ class VectorStore:
                     documents=texts,
                 )
                 return
-            except Exception:
+            except Exception:  # ChromaDB批量操作失败，回退到本地存储
                 pass
 
         for doc_id, vector, meta in zip(doc_ids, vectors, meta_list):
@@ -278,7 +297,7 @@ class VectorStore:
                         meta = results["metadatas"][0][i] if results.get("metadatas") else {}
                         output.append((doc_id, score, meta))
                 return output
-            except Exception:
+            except Exception:  # ChromaDB搜索失败，回退到本地搜索
                 pass
 
         # 回退：内存向量搜索
@@ -298,7 +317,7 @@ class VectorStore:
             try:
                 self._collection.delete(ids=[doc_id])
                 return
-            except Exception:
+            except Exception:  # ChromaDB删除失败，回退到本地删除
                 pass
         self._fallback_vectors.pop(doc_id, None)
 
@@ -307,7 +326,7 @@ class VectorStore:
         if self._use_chromadb and self._collection:
             try:
                 return self._collection.count()
-            except Exception:
+            except Exception:  # ChromaDB计数失败，回退到本地计数
                 pass
         return len(self._fallback_vectors)
 
