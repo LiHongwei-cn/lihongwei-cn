@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  mundo:
+    build: .
+    container_name: mundo-agent
+    restart: unless-stopped
+    volumes:
+      - mundo-data:/root/.hermes/mundo-agent
+      - ./.env:/app/.env:ro
+    environment:
+      - MUNDO_HOME=/root/.hermes/mundo-agent
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "3100:3100"  # MCP Server
+    healthcheck:
+      test: ["CMD", "python", "-c", "import mundo; print('ok')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # ChromaDB 独立服务（可选，替代嵌入式）
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: mundo-chromadb
+    restart: unless-stopped
+    volumes:
+      - chromadb-data:/chroma/chroma
+    ports:
+      - "8000:8000"
+    environment:
+      - ANONYMIZED_TELEMETRY=false
+
+volumes:
+  mundo-data:
+  chromadb-data:

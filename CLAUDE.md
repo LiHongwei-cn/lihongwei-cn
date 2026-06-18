@@ -46,7 +46,7 @@
 
 | 项目 | 路径 | 说明 |
 |------|------|------|
-| MUNDO Agent | ~/.hermes/mundo-agent/ | 独立AI智能体，v2.2.6，54模块/30+模型，七处同步 |
+| MUNDO Agent | ~/.hermes/mundo-agent/ | 独立AI智能体，v2.2.7，向量检索/评估框架/MCP Server/可观测性 |
 | 留白 | ~/Applications/留白/ | 情感陪伴小程序，"倾诉的陌生人"，内容感知回复 |
 | Boss直聘自动化 | ~/Desktop/.boss-auto/ | HTTP Server + 浏览器方案，端口8765，AI接mimo |
 
