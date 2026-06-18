@@ -92,6 +92,17 @@ class MCPServer:
             "arguments": arguments or [],
         }
 
+    def list_tools(self) -> List[Dict]:
+        """列出所有已注册工具"""
+        return [
+            {
+                "name": tool.name,
+                "description": tool.description,
+                "input_schema": tool.input_schema,
+            }
+            for tool in self._tools.values()
+        ]
+
     def start(self, background: bool = True):
         """启动 MCP Server"""
         if self._running:

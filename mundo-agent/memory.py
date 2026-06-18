@@ -165,8 +165,8 @@ class MundoMemory:
                 INSERT INTO conversations_fts(rowid, title, summary)
                 SELECT rowid, title, summary FROM conversations
             """)
-        except Exception:
-            pass  # 空表无数据
+        except sqlite3.Error:
+            pass  # 空表无数据或FTS表不存在
 
     # ═══════════════════════════════════════════════
     # 1. 自动 Memory — 从对话中提取关键信息

@@ -285,6 +285,23 @@ class MundoEngine:
             signal.signal(signal.SIGINT, self._old_signal_handler)
             self._old_signal_handler = None
 
+    def analyze_task(self, task: str) -> Dict:
+        """分析任务复杂度和类型"""
+        from task_analyzer import TaskAnalyzer
+        analyzer = TaskAnalyzer()
+        return analyzer.analyze(task)
+
+    def execute_task(self, task: str, **kwargs) -> str:
+        """执行任务（快捷方法）"""
+        return self.chat(task, **kwargs)
+
+    def reflect(self, conversation: List[Dict] = None) -> Dict:
+        """反思对话，提取教训和改进点"""
+        conv = conversation or self.messages
+        if not conv:
+            return {"status": "no_conversation", "lessons": []}
+        return self.reflection.reflect(conv)
+
     def _build_system_message(self, memory_context: str = "", knowledge_context: str = "") -> Dict:
         """构建 system message — 模块化组装 + 缓存优化
 
