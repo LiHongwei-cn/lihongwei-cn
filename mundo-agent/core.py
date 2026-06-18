@@ -497,13 +497,16 @@ class MundoEngine:
                 break
             fn = tc.get("function", {})
             name = fn.get("name", "")
+            raw_args = fn.get("arguments", "{}")
             try:
-                args = json.loads(fn.get("arguments", "{}"))
+                args = json.loads(raw_args)
             except json.JSONDecodeError:
-                # v2.2.0: 记录 JSON 解析失败，而不是静默忽略
-                if self.on_tool_output:
-                    self.on_tool_output("warning", f"工具参数 JSON 解析失败: {fn.get('arguments', '')[:100]}", True)
-                args = {}
+                # v2.2.7: 尝试 repair_json 修复不完整 JSON
+                args = repair_json(raw_args)
+                if args is None:
+                    if self.on_tool_output:
+                        self.on_tool_output("warning", f"工具参数 JSON 解析失败: {raw_args[:100]}", True)
+                    args = {}
             calls.append((tc, name, args))
 
         dispatch_calls = [
