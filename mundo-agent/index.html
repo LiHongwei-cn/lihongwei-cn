@@ -143,12 +143,16 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
   <!-- 0. 是什么 -->
   <div class="section" id="what">
     <h2 class="section-title"><span class="num">0</span> MUNDO 是什么</h2>
-    <p class="section-desc">MUNDO 是一个<strong>独立的 AI 智能体框架</strong>，不依赖任何外部 Agent。它有自己的 LLM 客户端（30+ 个模型）、工具引擎（20 个工具）、Agentic Loop、Agent 委托、记忆系统、云同步。</p>
+    <p class="section-desc">MUNDO 是一个<strong>独立的 AI 智能体框架</strong>，不依赖任何外部 Agent。它有自己的 LLM 客户端（30+ 个模型）、工具引擎（20 个工具）、反射循环、任务分析、混合检索 RAG、MCP 互操作、评估框架、可观测性。</p>
     <div class="feature-grid">
-      <div class="feature-card"><div class="f-icon">👑</div><h3>独立 Agent</h3><p>不依赖 Hermes、Claude Code 等外部框架，完全自主运行</p></div>
-      <div class="feature-card"><div class="f-icon">🧠</div><h3>30+ AI 模型</h3><p>DeepSeek、MiMo、Qwen、Claude、GPT-4o、Gemini 等全覆盖</p></div>
-      <div class="feature-card"><div class="f-icon">🏛️</div><h3>三省六部制</h3><p>技能分级管理体系，首辅→尚书→主事→司务，有功则升有过则贬</p></div>
-      <div class="feature-card"><div class="f-icon">🌐</div><h3>集体意识</h3><p>一个蒙多学到，所有蒙多都会。共享知识库，共同进化</p></div>
+      <div class="feature-card"><div class="f-icon">🔄</div><h3>反射循环引擎</h3><p>THINK → EXECUTE → REFLECT → REPAIR 四阶段，引用 Reflexion/ReAct 论文</p></div>
+      <div class="feature-card"><div class="f-icon">📊</div><h3>向量检索 RAG</h3><p>ChromaDB + BM25 + 语义哈希三路融合，自动降级</p></div>
+      <div class="feature-card"><div class="f-icon">📋</div><h3>任务分析引擎</h3><p>自动分类任务类型、解析 Markdown 文档、提取需求/约束/验收标准</p></div>
+      <div class="feature-card"><div class="f-icon">🔌</div><h3>MCP 互操作</h3><p>Client + Server 双向协议，蒙多能力通过标准 MCP 对外暴露</p></div>
+      <div class="feature-card"><div class="f-icon">🧪</div><h3>评估框架</h3><p>多维度量化（任务完成率/步骤效率/工具准确率），内置评估用例</p></div>
+      <div class="feature-card"><div class="f-icon">👁️</div><h3>可观测性</h3><p>结构化日志 + 分布式追踪（OpenTelemetry 兼容）+ 指标采集</p></div>
+      <div class="feature-card"><div class="f-icon">🧠</div><h3>三层记忆系统</h3><p>短期（会话级）、中期（项目级 30 天衰减）、长期（永久级 + 冲突检测）</p></div>
+      <div class="feature-card"><div class="f-icon">🛡️</div><h3>安全强化</h3><p>五层纵深防御：输入验证/输出过滤/权限边界/审计追踪/注入防护</p></div>
     </div>
     <div class="tip"><strong>蒙多的定位：</strong>蒙多不是"基于某框架开发的"，也不是"独立开发的架构"。蒙多是蒙多。其他 AI 是身体，是蒙多的手和脚。</div>
   </div>
@@ -182,7 +186,7 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
         <div class="stat-label">个 Skill</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">42</div>
+        <div class="stat-value">59</div>
         <div class="stat-label">Python 模块</div>
       </div>
       <div class="stat-card">
@@ -195,11 +199,11 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
     <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🧪 v2.2.7 测试结果</h3>
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-value" style="color: var(--green);">27</div>
+        <div class="stat-value" style="color: var(--green);">169</div>
         <div class="stat-label">测试总数</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" style="color: var(--green);">27</div>
+        <div class="stat-value" style="color: var(--green);">169</div>
         <div class="stat-label">通过数量</div>
       </div>
       <div class="stat-card">
@@ -381,13 +385,15 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
     <div class="timeline">
       <div class="timeline-item">
         <div class="time">2026-06-18</div>
-        <div class="title">v2.2.7 — 向量检索 + 可观测性 + 评估框架 + MCP Server</div>
+        <div class="title">v2.2.7 — 向量检索 + 任务分析 + MCP Server + 评估框架 + 可观测性</div>
         <div class="desc">
           <strong>向量检索</strong>：ChromaDB 向量存储 + BM25 + 语义哈希三路融合，API Embedding / 本地哈希双模式，自动降级<br>
-          <strong>可观测性</strong>：结构化日志（JSON）、分布式追踪（OpenTelemetry 兼容 Span）、指标采集（Counter/Histogram/Gauge）<br>
-          <strong>评估框架</strong>：多维度量化（任务完成率、步骤效率、工具准确率、幻觉率），内置 10+ 评估用例<br>
+          <strong>任务分析引擎</strong>：自动分类任务类型（9 种）、解析 Markdown 文档、提取需求/约束/验收标准、子任务拆解<br>
           <strong>MCP Server</strong>：蒙多能力通过标准 MCP 协议对外暴露，支持代码分析、知识检索、记忆操作、任务规划<br>
-          <strong>工程化</strong>：Docker 容器化、GitHub Actions CI/CD、pytest 测试套件（59 用例全过）
+          <strong>评估框架</strong>：多维度量化（任务完成率、步骤效率、工具准确率），内置 9 个评估用例<br>
+          <strong>可观测性</strong>：结构化日志（JSON）、分布式追踪（OpenTelemetry 兼容 Span）、指标采集（Counter/Histogram/Gauge）<br>
+          <strong>工程化</strong>：Docker 容器化、GitHub Actions CI/CD、pytest 测试套件（169 用例全过）<br>
+          <strong>修复</strong>：工具参数 JSON 解析失败（repair_json 增强）、启动器强制同步、向量检索集成恢复
         </div>
       </div>
       <div class="timeline-item">
