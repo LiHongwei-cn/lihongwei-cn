@@ -1,4 +1,4 @@
-# 👑 MUNDO Agent v2.2.7
+# 👑 MUNDO Agent v2.2.8
 
 **我是蒙多！蒙多想去哪就去哪！**
 
@@ -27,10 +27,10 @@
 
 ```bash
 # 下载最新版
-gh release download v2.2.7 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.7-macos.zip"
+gh release download v2.2.8 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.8-macos.zip"
 
 # 解压到安装目录
-unzip mundo-v2.2.7-macos.zip -d ~/.hermes/mundo-agent
+unzip mundo-v2.2.8-macos.zip -d ~/.hermes/mundo-agent
 
 # 运行
 python3 ~/.hermes/mundo-agent/mundo.py
@@ -161,7 +161,7 @@ curl -X POST http://127.0.0.1:3100 -H 'Content-Type: application/json' -d '{
 
 ## 📝 版本历史
 
-### v2.2.7 (2026-06-18)
+### v2.2.8 (2026-06-18)
 - 向量检索：ChromaDB + BM25 + 语义哈希三路融合
 - 任务分析引擎：自动分类、Markdown 解析、需求提取、子任务拆解
 - MCP Server：蒙多能力通过标准协议对外暴露
