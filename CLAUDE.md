@@ -91,6 +91,63 @@
 
 ---
 
+## 安全防火墙（Skill安全审核系统）
+
+**所有进入系统的skill、工具、代码、内容必须经过安全审核。**
+
+### 审核机制
+
+1. **检查缓存优先**：读取 `~/.hermes/security-cache.json`，已审核且通过的skill直接放行
+2. **执行安全扫描**：使用 `python3 ~/Desktop/SkillSpector/skill_security_integration.py check <路径>`
+3. **处理扫描结果**：
+   - 通过（分数≤20）：更新缓存，标记为`passed`，允许使用
+   - 未通过（分数>20）：向用户报告风险，让用户选择放弃或坚持使用
+
+### 适用场景
+
+- 安装/使用新skill
+- 爬取GitHub高星skill
+- 执行从外部获取的代码
+- 调用MCP工具
+- 下载文件或访问网页
+
+### 用户决策流程
+
+```
+⚠️ 安全警告
+
+Skill: [skill名称]
+风险分数: [分数]/100
+风险等级: [等级]
+发现的问题:
+- [问题1]
+- [问题2]
+
+建议：不建议安装使用此Skill。
+
+请选择：
+1. 放弃使用（推荐）
+2. 坚持使用（我了解风险）
+```
+
+### 批量审核
+
+```bash
+# 批量扫描所有skill
+python3 ~/Desktop/SkillSpector/scan_all_skills.py
+
+# 更新云仓库页面
+python3 ~/Desktop/SkillSpector/update_skill_store.py
+```
+
+### 定期维护
+
+- 每月重新扫描所有已安装的skill
+- 更新安全规则库
+- 清理过期缓存
+
+---
+
 ## 已知坑（必须避开）
 
 - MATLAB R2016b：`%%` 长分隔线会导致图表垃圾文字
