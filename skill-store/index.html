@@ -45,6 +45,43 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
 .footer a{color:var(--gold);text-decoration:none}
 .hidden{display:none!important}
 @media(max-width:640px){.container{padding:16px 12px 60px}.hero h1{font-size:24px}.skill-grid{grid-template-columns:1fr}.nav-bar{gap:4px}.nav-pill{font-size:11px;padding:4px 8px}}
+
+/* 安全徽章样式 */
+.security-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.security-badge.safe {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.security-badge.low-risk {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+.security-badge.medium-risk {
+  background: rgba(249, 115, 22, 0.15);
+  color: #f97316;
+  border: 1px solid rgba(249, 115, 22, 0.3);
+}
+.security-badge.high-risk {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+.security-badge.critical-risk {
+  background: rgba(220, 38, 38, 0.15);
+  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+}
+
 </style>
 </head>
 <body>
@@ -53,7 +90,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
   <header class="hero">
     <div class="hero-badge">Cloud Repository</div>
     <h1>Skill 云仓库</h1>
-    <div class="hero-sub">蒙多的所有武器。244 个 Skill，覆盖学术、工程、创意、AI 全领域。<br>包含 50 个 GitHub 高星项目，每天自动更新。<br>点击「查看」看详情，点击安装命令复制到剪贴板。</div>
+    <div class="hero-sub">蒙多的所有武器。244 个 Skill，覆盖学术、工程、创意、AI 全领域。<br>包含 50 个 GitHub 高星项目，每天自动更新。<br>所有 Skill 均通过 NVIDIA SkillSpector 安全检查。<br>点击「查看」看详情，点击安装命令复制到剪贴板。</div>
   </header>
   <div class="search-box">
     <input type="text" id="search" placeholder="搜索 Skill 名称或描述..." oninput="filterSkills(this.value)">
@@ -96,7 +133,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
       </div>
       <div class="skill-grid">
       <div class="skill-card" data-name="doc-coauthoring">
-        <div class="skill-name">doc-coauthoring</div>
+        <div class="skill-name">doc-coauthoring</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">Guide users through a structured workflow for co-authoring documentation. Use when user wants to write documentation, proposals, technical specs, deci</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/doc-coauthoring" target="_blank" class="btn-view">查看</a>
@@ -104,7 +141,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="nature-academic-search">
-        <div class="skill-name">nature-academic-search</div>
+        <div class="skill-name">nature-academic-search</div><span class="security-badge high-risk" title="高风险：存在较多安全问题">❌ 高风险</span>
         <div class="skill-desc">Multi-source literature search, citation verification, MeSH search strategy, citation file management (.nbib/.ris/.bib conversion), and reference mana</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/nature-academic-search" target="_blank" class="btn-view">查看</a>
@@ -112,7 +149,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="nature-citation">
-        <div class="skill-name">nature-citation</div>
+        <div class="skill-name">nature-citation</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">Add strict Nature/CNS citations to manuscript text by splitting long passages into citable segments, searching only accepted flagship and subjournal t</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/nature-citation" target="_blank" class="btn-view">查看</a>
@@ -120,7 +157,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="nature-data">
-        <div class="skill-name">nature-data</div>
+        <div class="skill-name">nature-data</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">Prepare, audit, or revise Nature-ready Data Availability statements, data repository plans, dataset citations, and FAIR metadata checklists for manusc</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/nature-data" target="_blank" class="btn-view">查看</a>
@@ -128,7 +165,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="nature-figure">
-        <div class="skill-name">nature-figure</div>
+        <div class="skill-name">nature-figure</div><span class="security-badge critical-risk" title="严重风险：存在严重安全问题">🚫 严重风险</span>
         <div class="skill-desc">Submission-grade Nature/high-impact journal figure workflow for Python or R. Use whenever the user asks to create, revise, audit, or polish manuscript</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/nature-figure" target="_blank" class="btn-view">查看</a>
@@ -136,7 +173,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="nature-paper2ppt">
-        <div class="skill-name">nature-paper2ppt</div>
+        <div class="skill-name">nature-paper2ppt</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">Build a complete but efficient Nature-style Chinese PPTX presentation from a scientific paper, preprint, PDF, article text, abstract, figure legends, </div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/nature-paper2ppt" target="_blank" class="btn-view">查看</a>
@@ -144,7 +181,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="nature-polishing">
-        <div class="skill-name">nature-polishing</div>
+        <div class="skill-name">nature-polishing</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">Polish, restructure, or translate academic prose into Nature-leaning English using writing-strategy principles, curated Nature/Nature Communications a</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/nature-polishing" target="_blank" class="btn-view">查看</a>
@@ -152,7 +189,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="nature-reader">
-        <div class="skill-name">nature-reader</div>
+        <div class="skill-name">nature-reader</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">Build full-paper Chinese-English side-by-side, figure/table-aware, source-grounded Markdown readers for journal or conference papers from PDF, DOI, ar</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/nature-reader" target="_blank" class="btn-view">查看</a>
@@ -160,7 +197,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="nature-response">
-        <div class="skill-name">nature-response</div>
+        <div class="skill-name">nature-response</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">Draft, audit, or revise point-by-point reviewer response letters for Nature-family manuscript revisions. Use when the user provides reviewer comments,</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/nature-response" target="_blank" class="btn-view">查看</a>
@@ -168,7 +205,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="nature-writing">
-        <div class="skill-name">nature-writing</div>
+        <div class="skill-name">nature-writing</div><span class="security-badge high-risk" title="高风险：存在较多安全问题">❌ 高风险</span>
         <div class="skill-desc">Draft, restructure, or plan Nature-style manuscript sections from author-provided claims, results, figures, notes, or Chinese drafts. Use when the use</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/nature-writing" target="_blank" class="btn-view">查看</a>
@@ -226,7 +263,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
       </div>
       <div class="skill-grid">
       <div class="skill-card" data-name="matlab-ai-generator">
-        <div class="skill-name">matlab-ai-generator</div>
+        <div class="skill-name">matlab-ai-generator</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">根据用户提供的精确参数生成 MATLAB/Simulink 仿真代码。使用场景：用户要求生成 MATLAB 脚本、Simulink 模型、仿真代码，或要求修改现有仿真参数时自动触发。</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/matlab-ai-generator" target="_blank" class="btn-view">查看</a>
@@ -234,7 +271,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="matlab-debugging">
-        <div class="skill-name">matlab-debugging</div>
+        <div class="skill-name">matlab-debugging</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">Diagnose MATLAB errors and unexpected behavior. Breakpoints, workspace inspection, try-catch diagnostics, and common error patterns. Use when debuggin</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/matlab-debugging" target="_blank" class="btn-view">查看</a>
@@ -242,7 +279,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="matlab-design-digital-filter">
-        <div class="skill-name">matlab-design-digital-filter</div>
+        <div class="skill-name">matlab-design-digital-filter</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">Design and validate digital filters in MATLAB. Use when cleaning up noisy signals, removing interference, filtering signals, designing FIR/IIR filters</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/matlab-design-digital-filter" target="_blank" class="btn-view">查看</a>
@@ -250,7 +287,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="matlab-live-script">
-        <div class="skill-name">matlab-live-script</div>
+        <div class="skill-name">matlab-live-script</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">Create MATLAB plain text Live Scripts (.m files) following specific formatting rules. Use when generating MATLAB scripts, educational MATLAB content, </div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/matlab-live-script" target="_blank" class="btn-view">查看</a>
@@ -258,7 +295,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="matlab-modernize-code">
-        <div class="skill-name">matlab-modernize-code</div>
+        <div class="skill-name">matlab-modernize-code</div><span class="security-badge low-risk" title="低风险：存在少量低风险问题">⚠️ 低风险</span>
         <div class="skill-desc">Modernize deprecated MATLAB functions and patterns. Use when check_matlab_code or checkcode reports "not recommended" or "to be removed" warnings, whe</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/matlab-modernize-code" target="_blank" class="btn-view">查看</a>
@@ -266,7 +303,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="matlab-optimize-performance">
-        <div class="skill-name">matlab-optimize-performance</div>
+        <div class="skill-name">matlab-optimize-performance</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">Read BEFORE optimizing any MATLAB code for speed. Without this workflow, agents commonly optimize the wrong target, fabricate speedup claims without m</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/matlab-optimize-performance" target="_blank" class="btn-view">查看</a>
@@ -274,7 +311,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="matlab-performance-optimizer">
-        <div class="skill-name">matlab-performance-optimizer</div>
+        <div class="skill-name">matlab-performance-optimizer</div><span class="security-badge low-risk" title="低风险：存在少量低风险问题">⚠️ 低风险</span>
         <div class="skill-desc">Optimize MATLAB code for better performance through vectorization, memory management, and profiling. Use when user requests optimization, mentions slo</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/matlab-performance-optimizer" target="_blank" class="btn-view">查看</a>
@@ -282,7 +319,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="matlab-review-code">
-        <div class="skill-name">matlab-review-code</div>
+        <div class="skill-name">matlab-review-code</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">Review MATLAB code for quality, performance, maintainability, and adherence to MathWorks coding standards. Uses check_matlab_code and matlab_coding_gu</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/matlab-review-code" target="_blank" class="btn-view">查看</a>
@@ -290,7 +327,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="matlab-simulink-generator">
-        <div class="skill-name">matlab-simulink-generator</div>
+        <div class="skill-name">matlab-simulink-generator</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">自动生成 Simulink 模型（.slx 文件）。使用场景：用户要求生成 Simulink 模型、搭建仿真模型、创建控制系统模型时自动触发。兼容 R2016b。</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/matlab-simulink-generator" target="_blank" class="btn-view">查看</a>
@@ -298,7 +335,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="matlab-test-generator">
-        <div class="skill-name">matlab-test-generator</div>
+        <div class="skill-name">matlab-test-generator</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">Create comprehensive MATLAB unit tests using the MATLAB Testing Framework. Use when generating test files, test cases, unit tests, test suites, or whe</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/matlab-test-generator" target="_blank" class="btn-view">查看</a>
@@ -306,7 +343,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="matlab-testing">
-        <div class="skill-name">matlab-testing</div>
+        <div class="skill-name">matlab-testing</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">Generate and run MATLAB unit tests using matlab.unittest and matlab.uitest. Parameterized tests, fixtures, mocking, coverage analysis, CI/CD with buil</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/matlab-testing" target="_blank" class="btn-view">查看</a>
@@ -314,7 +351,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="matlab-uihtml-app-builder">
-        <div class="skill-name">matlab-uihtml-app-builder</div>
+        <div class="skill-name">matlab-uihtml-app-builder</div><span class="security-badge low-risk" title="低风险：存在少量低风险问题">⚠️ 低风险</span>
         <div class="skill-desc">Build interactive web applications using HTML/JavaScript interfaces with MATLAB computational backends via the uihtml component. Use when creating HTM</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/matlab-uihtml-app-builder" target="_blank" class="btn-view">查看</a>
@@ -608,7 +645,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="code-tidy">
-        <div class="skill-name">code-tidy</div>
+        <div class="skill-name">code-tidy</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">代码洁癖级整理 — 清除死代码、冗余注释、未用导入；统一排序与结构； 每次写代码后自动触发。MUST trigger when user says: "整理代码", "tidy code", "clean code", "代码洁癖", "清理代码", "整理一下代码", "清理系统", "清理垃圾"</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/code-tidy" target="_blank" class="btn-view">查看</a>
@@ -759,7 +796,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="github-workflow">
-        <div class="skill-name">github-workflow</div>
+        <div class="skill-name">github-workflow</div><span class="security-badge critical-risk" title="严重风险：存在严重安全问题">🚫 严重风险</span>
         <div class="skill-desc">Complete GitHub workflow: authentication, repo management, issues, PRs, releases.</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/github-workflow" target="_blank" class="btn-view">查看</a>
@@ -767,7 +804,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="hermes-file-editing">
-        <div class="skill-name">hermes-file-editing</div>
+        <div class="skill-name">hermes-file-editing</div><span class="security-badge medium-risk" title="中风险：存在一定安全风险">⚠️ 中风险</span>
         <div class="skill-desc">Hermes file editing skill.</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/hermes-file-editing" target="_blank" class="btn-view">查看</a>
@@ -1064,7 +1101,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="python-agent-dev">
-        <div class="skill-name">python-agent-dev</div>
+        <div class="skill-name">python-agent-dev</div><span class="security-badge low-risk" title="低风险：存在少量低风险问题">⚠️ 低风险</span>
         <div class="skill-desc">Python AI Agent 开发模式 — SSE 流式输出、prompt_toolkit TUI、Agentic Loop 回调链、API 响应安全处理</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/python-agent-dev" target="_blank" class="btn-view">查看</a>
@@ -1352,7 +1389,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
       </div>
       <div class="skill-grid">
       <div class="skill-card" data-name="cc-switch-sync">
-        <div class="skill-name">cc-switch-sync</div>
+        <div class="skill-name">cc-switch-sync</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">同步 Hermes skills 到 CC Switch（macOS AI 模型选择工具）。 触发词：更新 cc switch、同步 skill 到 cc switch、cc switch 更新、 把 skill 更新到 cc switch、cc-switch。 自动检测需要更新的 skills，增</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/cc-switch-sync" target="_blank" class="btn-view">查看</a>
@@ -1368,7 +1405,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="cross-platform-launcher">
-        <div class="skill-name">cross-platform-launcher</div>
+        <div class="skill-name">cross-platform-launcher</div><span class="security-badge critical-risk" title="严重风险：存在严重安全问题">🚫 严重风险</span>
         <div class="skill-desc">创建跨平台项目启动器：HTML 可视化页面 + macOS .command 脚本 + Windows .bat 脚本。 自动检测应用程序路径 + 菜单式交互。触发：启动器、launcher、一键启动、双击即用、 桌面快捷方式、不想点 bat 文件。适用于 MATLAB、CCS、Hermes 等任何</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/cross-platform-launcher" target="_blank" class="btn-view">查看</a>
@@ -1376,7 +1413,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="cua-driver">
-        <div class="skill-name">cua-driver</div>
+        <div class="skill-name">cua-driver</div><span class="security-badge medium-risk" title="中风险：存在一定安全风险">⚠️ 中风险</span>
         <div class="skill-desc">Drive a native macOS app via the cua-driver CLI (default) or MCP server — snapshot its AX tree, click/type/scroll by element_index, verify via re-snap</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/cua-driver" target="_blank" class="btn-view">查看</a>
@@ -1384,7 +1421,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="dogfood">
-        <div class="skill-name">dogfood</div>
+        <div class="skill-name">dogfood</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">Exploratory QA of web apps: find bugs, evidence, reports.</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/dogfood" target="_blank" class="btn-view">查看</a>
@@ -1392,7 +1429,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="mundo">
-        <div class="skill-name">mundo</div>
+        <div class="skill-name">mundo</div><span class="security-badge critical-risk" title="严重风险：存在严重安全问题">🚫 严重风险</span>
         <div class="skill-desc"><span class="no-desc">暂无描述</span></div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/mundo" target="_blank" class="btn-view">查看</a>
@@ -1416,7 +1453,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="neat-freak">
-        <div class="skill-name">neat-freak</div>
+        <div class="skill-name">neat-freak</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">End-of-session knowledge cleanup with OCD-level rigor — reconciles project docs (CLAUDE.md, README.md, docs/) and agent memory against the code so not</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/neat-freak" target="_blank" class="btn-view">查看</a>
@@ -1424,7 +1461,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="yuanbao">
-        <div class="skill-name">yuanbao</div>
+        <div class="skill-name">yuanbao</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">Yuanbao (元宝) groups: @mention users, query info/members.</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/yuanbao" target="_blank" class="btn-view">查看</a>
@@ -1784,7 +1821,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="selenium-element-screenshot">
-        <div class="skill-name">selenium-element-screenshot</div>
+        <div class="skill-name">selenium-element-screenshot</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">用 Selenium 对网页各区块逐个截图（元素级 screenshot），支持 Retina 高清。适用场景：用户要求截取网页内容、分区块截图、网页可视化存档。</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/selenium-element-screenshot" target="_blank" class="btn-view">查看</a>
@@ -1810,7 +1847,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="homepage-layout">
-        <div class="skill-name">homepage-layout</div>
+        <div class="skill-name">homepage-layout</div><span class="security-badge safe" title="安全：通过所有安全检查">✅ 安全</span>
         <div class="skill-desc">网站首页布局自检与修复。每次新增/删除/修改项目页面后自动触发， 确保仪表盘无横向滚动条、卡片不重叠、列数随项目数量自适应。 MUST trigger when the user says: "主页布局", "首页排版", "check layout", "fix homepage", "检查页面"</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/homepage-layout" target="_blank" class="btn-view">查看</a>
@@ -1818,7 +1855,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang SC','M
         </div>
       </div>
       <div class="skill-card" data-name="蒙多">
-        <div class="skill-name">蒙多</div>
+        <div class="skill-name">蒙多</div><span class="security-badge medium-risk" title="中风险：存在一定安全风险">⚠️ 中风险</span>
         <div class="skill-desc">MUNDO - THE EMPEROR. The ultimate AI learning engine. No triggers needed. Every task, Mundo takes over. Consults ALL AIs, crawls ALL web, integrates A</div>
         <div class="skill-actions">
           <a href="https://github.com/LiHongwei-cn/lihongwei-cn/tree/main/global-specs/skills/蒙多" target="_blank" class="btn-view">查看</a>
