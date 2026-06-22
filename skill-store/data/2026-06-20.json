@@ -1,0 +1,74 @@
+[
+  {
+    "name": "DeusData/codebase-memory-mcp",
+    "url": "https://github.com/DeusData/codebase-memory-mcp",
+    "description": "High-performance code intelligence MCP server. Indexes codebases into a persistent knowledge graph — average repo in milliseconds. 158 languages, sub-ms queries, 99% fewer tokens. Single static binary, zero dependencies.",
+    "language": "C",
+    "stars": "None",
+    "today_stars": "",
+    "date": "2026-06-20"
+  },
+  {
+    "name": "BuilderIO/agent-native",
+    "url": "https://github.com/BuilderIO/agent-native",
+    "description": "A framework for building agent-native applications.",
+    "language": "TypeScript",
+    "stars": "None",
+    "today_stars": "",
+    "date": "2026-06-20"
+  },
+  {
+    "name": "chopratejas/headroom",
+    "url": "https://github.com/chopratejas/headroom",
+    "description": "Compress tool outputs, logs, files, and RAG chunks before they reach the LLM. 60-95% fewer tokens, same answers. Library, proxy, MCP server.",
+    "language": "Python",
+    "stars": "None",
+    "today_stars": "",
+    "date": "2026-06-20"
+  },
+  {
+    "name": "calesthio/OpenMontage",
+    "url": "https://github.com/calesthio/OpenMontage",
+    "description": "World's first open-source, agentic video production system. 12 pipelines, 52 tools, 500+ agent skills. Turn your AI coding assistant into a full video production studio.",
+    "language": "Python",
+    "stars": "None",
+    "today_stars": "",
+    "date": "2026-06-20"
+  },
+  {
+    "name": "zai-org/GLM-5",
+    "url": "https://github.com/zai-org/GLM-5",
+    "description": "GLM-5: From Vibe Coding to Agentic Engineering",
+    "language": "",
+    "stars": "None",
+    "today_stars": "",
+    "date": "2026-06-20"
+  },
+  {
+    "name": "withastro/flue",
+    "url": "https://github.com/withastro/flue",
+    "description": "The sandbox agent framework.",
+    "language": "TypeScript",
+    "stars": "None",
+    "today_stars": "",
+    "date": "2026-06-20"
+  },
+  {
+    "name": "obra/superpowers",
+    "url": "https://github.com/obra/superpowers",
+    "description": "An agentic skills framework & software development methodology that works.",
+    "language": "Shell",
+    "stars": "None",
+    "today_stars": "",
+    "date": "2026-06-20"
+  },
+  {
+    "name": "Kong/insomnia",
+    "url": "https://github.com/Kong/insomnia",
+    "description": "The open-source, cross-platform API client for GraphQL, REST, WebSockets, SSE and gRPC. With Cloud, Local and Git storage.",
+    "language": "TypeScript",
+    "stars": "None",
+    "today_stars": "",
+    "date": "2026-06-20"
+  }
+]

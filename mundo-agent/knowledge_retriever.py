@@ -226,7 +226,10 @@ class SemanticHashIndex:
 
 
 class KnowledgeRetriever:
-    """知识检索引擎 — 混合检索（BM25 + 语义）"""
+    """知识检索引擎 — 混合检索（BM25 + 向量 + 语义哈希）
+
+    v2.2.7 升级：ChromaDB 向量检索 + BM25 + 语义哈希三路融合
+    """
 
     def __init__(self, storage_path: Optional[Path] = None):
         self._chunks: Dict[str, KnowledgeChunk] = {}
@@ -234,8 +237,34 @@ class KnowledgeRetriever:
         self._semantic_index = SemanticHashIndex()
         self._storage_path = storage_path
 
+        # 向量检索（v2.2.7）
+        self._hybrid_retriever = None
+        self._use_vector = False
+        self._init_vector_store()
+
         if storage_path and storage_path.exists():
             self._load_from_disk()
+
+    def _init_vector_store(self):
+        """初始化向量存储（自动降级）"""
+        try:
+            from vector_store import VectorStore, HybridRetriever, EmbeddingGenerator
+            from constants import MUNDO_HOME
+            embedding = EmbeddingGenerator(mode="local")
+            vector_store = VectorStore(
+                collection_name="mundo_knowledge",
+                persist_dir=MUNDO_HOME / "data" / "chromadb",
+                embedding_generator=embedding,
+            )
+            self._hybrid_retriever = HybridRetriever(
+                vector_store=vector_store,
+                bm25_weight=0.3,
+                vector_weight=0.5,
+                rerank_weight=0.2,
+            )
+            self._use_vector = True
+        except Exception:
+            self._use_vector = False
 
     def add_knowledge(self, content: str, source: str, category: str = "general",
                       metadata: Dict = None) -> str:
@@ -252,6 +281,16 @@ class KnowledgeRetriever:
         self._tfidf_index.add_document(chunk.id, content)
         self._semantic_index.add(chunk.id, content)
 
+        # 向量索引（v2.2.7）
+        if self._use_vector and self._hybrid_retriever:
+            try:
+                self._hybrid_retriever.index(
+                    chunk.id, content,
+                    metadata={"source": source, "category": category},
+                )
+            except Exception:
+                pass
+
         return chunk.id
 
     def remove_knowledge(self, chunk_id: str):
@@ -260,25 +299,62 @@ class KnowledgeRetriever:
             del self._chunks[chunk_id]
             self._tfidf_index.remove_document(chunk_id)
             self._semantic_index.remove(chunk_id)
+            if self._use_vector and self._hybrid_retriever:
+                try:
+                    self._hybrid_retriever.remove(chunk_id)
+                except Exception:
+                    pass
 
     def search(self, query: str, top_k: int = 5, category: str = "") -> List[SearchResult]:
-        """混合搜索"""
-        # TF-IDF 搜索
-        tfidf_results = self._tfidf_index.search(query, top_k=top_k * 2)
+        """混合搜索 — v2.2.7 三路融合"""
+        if self._use_vector and self._hybrid_retriever:
+            return self._search_hybrid(query, top_k, category)
+        return self._search_legacy(query, top_k, category)
 
-        # 语义搜索
+    def _search_hybrid(self, query: str, top_k: int, category: str) -> List[SearchResult]:
+        """三路融合检索"""
+        where = {"category": category} if category else None
+        hybrid_results = self._hybrid_retriever.search(query, top_k=top_k * 2, where=where)
         semantic_results = self._semantic_index.search(query, top_k=top_k * 2)
 
-        # 合并分数
-        combined_scores: Dict[str, Tuple[float, List[str]]] = {}
+        combined: Dict[str, Tuple[float, List[str]]] = {}
+        for doc_id, score, reasons in hybrid_results:
+            if doc_id in self._chunks:
+                combined[doc_id] = (score, reasons)
+        for doc_id, score in semantic_results:
+            if doc_id in self._chunks:
+                if category and self._chunks[doc_id].category != category:
+                    continue
+                if doc_id in combined:
+                    old, reasons = combined[doc_id]
+                    combined[doc_id] = (old + score * 0.2, reasons + ["语义哈希"])
+                else:
+                    combined[doc_id] = (score * 0.2, ["语义哈希"])
 
+        results = []
+        for doc_id, (score, reasons) in combined.items():
+            chunk = self._chunks[doc_id]
+            age_hours = (time.time() - chunk.created_at) / 3600
+            time_factor = 1.0 / (1.0 + age_hours * 0.01)
+            access_factor = 1.0 + min(chunk.access_count * 0.05, 0.5)
+            results.append(SearchResult(chunk=chunk, score=score * time_factor * access_factor, match_reasons=reasons))
+        results.sort(key=lambda r: r.score, reverse=True)
+        for r in results[:top_k]:
+            r.chunk.access_count += 1
+        return results[:top_k]
+
+    def _search_legacy(self, query: str, top_k: int, category: str) -> List[SearchResult]:
+        """回退检索：TF-IDF + 语义哈希"""
+        tfidf_results = self._tfidf_index.search(query, top_k=top_k * 2)
+        semantic_results = self._semantic_index.search(query, top_k=top_k * 2)
+
+        combined_scores: Dict[str, Tuple[float, List[str]]] = {}
         for doc_id, score in tfidf_results:
             if doc_id in self._chunks:
                 chunk = self._chunks[doc_id]
                 if category and chunk.category != category:
                     continue
                 combined_scores[doc_id] = (score * 0.6, ["TF-IDF 匹配"])
-
         for doc_id, score in semantic_results:
             if doc_id in self._chunks:
                 chunk = self._chunks[doc_id]
@@ -286,10 +362,7 @@ class KnowledgeRetriever:
                     continue
                 if doc_id in combined_scores:
                     old_score, reasons = combined_scores[doc_id]
-                    combined_scores[doc_id] = (
-                        old_score + score * 0.4,
-                        reasons + ["语义相似"],
-                    )
+                    combined_scores[doc_id] = (old_score + score * 0.4, reasons + ["语义相似"])
                 else:
                     combined_scores[doc_id] = (score * 0.4, ["语义相似"])
 
@@ -393,11 +466,15 @@ class KnowledgeRetriever:
     def get_stats(self) -> Dict:
         """获取统计信息"""
         categories = Counter(chunk.category for chunk in self._chunks.values())
-        return {
+        stats = {
             "total_chunks": len(self._chunks),
             "by_category": dict(categories),
             "total_chars": sum(len(c.content) for c in self._chunks.values()),
+            "vector_enabled": self._use_vector,
         }
+        if self._use_vector and self._hybrid_retriever:
+            stats["vector_backend"] = self._hybrid_retriever.stats()
+        return stats
 
 
 # 全局单例

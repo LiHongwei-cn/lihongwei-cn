@@ -54,6 +54,7 @@ from intelligent_recovery import (
 )
 from knowledge_retriever import get_knowledge_retriever
 from workflow import WorkflowEngine, PhaseStatus
+from task_analyzer import get_task_analyzer
 
 
 # ═══════════════════════════════════════════════
@@ -284,6 +285,23 @@ class MundoEngine:
             signal.signal(signal.SIGINT, self._old_signal_handler)
             self._old_signal_handler = None
 
+    def analyze_task(self, task: str) -> Dict:
+        """分析任务复杂度和类型"""
+        from task_analyzer import TaskAnalyzer
+        analyzer = TaskAnalyzer()
+        return analyzer.analyze(task)
+
+    def execute_task(self, task: str, **kwargs) -> str:
+        """执行任务（快捷方法）"""
+        return self.chat(task, **kwargs)
+
+    def reflect(self, conversation: List[Dict] = None) -> Dict:
+        """反思对话，提取教训和改进点"""
+        conv = conversation or self.messages
+        if not conv:
+            return {"status": "no_conversation", "lessons": []}
+        return self.reflection.reflect(conv)
+
     def _build_system_message(self, memory_context: str = "", knowledge_context: str = "") -> Dict:
         """构建 system message — 模块化组装 + 缓存优化
 
@@ -496,13 +514,16 @@ class MundoEngine:
                 break
             fn = tc.get("function", {})
             name = fn.get("name", "")
+            raw_args = fn.get("arguments", "{}")
             try:
-                args = json.loads(fn.get("arguments", "{}"))
+                args = json.loads(raw_args)
             except json.JSONDecodeError:
-                # v2.2.0: 记录 JSON 解析失败，而不是静默忽略
-                if self.on_tool_output:
-                    self.on_tool_output("warning", f"工具参数 JSON 解析失败: {fn.get('arguments', '')[:100]}", True)
-                args = {}
+                # v2.2.7: 尝试 repair_json 修复不完整 JSON
+                args = repair_json(raw_args)
+                if args is None:
+                    if self.on_tool_output:
+                        self.on_tool_output("warning", f"工具参数 JSON 解析失败: {raw_args[:100]}", True)
+                    args = {}
             calls.append((tc, name, args))
 
         dispatch_calls = [
@@ -686,26 +707,48 @@ class MundoEngine:
         if not is_safe:
             return "[安全警告] 输入包含潜在不安全内容，已使用净化版本继续处理。"
 
+        # v2.2.7: 任务分析 — 先理解再执行
+        task_analysis = None
+        if not is_simple_query(sanitized_input):
+            try:
+                analyzer = get_task_analyzer()
+                task_analysis = analyzer.analyze(sanitized_input)
+            except Exception:
+                task_analysis = None
+
         # 快速响应检测
         if is_simple_query(sanitized_input):
             self._use_reasoning_effort = "low"
 
-        # 智能模型切换
-        self.switch_model_for_task(sanitized_input)
+        # 智能模型切换（结合任务分析结果）
+        if task_analysis:
+            self.switch_model_for_task(sanitized_input + " " + task_analysis.task_type.value)
+        else:
+            self.switch_model_for_task(sanitized_input)
 
-        # v2.2.0: RAG 知识检索
-        knowledge_context = self.knowledge.get_context_for_query(sanitized_input)
+        # v2.2.0: RAG 知识检索（结合任务分析关键词）
+        query_for_rag = sanitized_input
+        if task_analysis and task_analysis.keywords:
+            query_for_rag = sanitized_input + " " + " ".join(task_analysis.keywords[:5])
+        knowledge_context = self.knowledge.get_context_for_query(query_for_rag)
+
+        # 构建系统消息（注入任务分析上下文）
+        task_context = ""
+        if task_analysis:
+            task_context = task_analysis.to_prompt_context()
+
+        merged_context = "\n\n".join(filter(None, [extra_context, task_context]))
 
         if not self.messages:
             self.messages = [self._build_system_message(
-                memory_context=extra_context,
+                memory_context=merged_context,
                 knowledge_context=knowledge_context,
             )]
         else:
             # 如果已有消息，更新系统消息（合并上下文）
             if self.messages and self.messages[0].get("role") == "system":
                 self.messages[0] = self._build_system_message(
-                    memory_context=extra_context,
+                    memory_context=merged_context,
                     knowledge_context=knowledge_context,
                 )
 
