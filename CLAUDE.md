@@ -98,7 +98,7 @@
 ### 审核机制
 
 1. **检查缓存优先**：读取 `~/.hermes/security-cache.json`，已审核且通过的skill直接放行
-2. **执行安全扫描**：使用 `python3 ~/Desktop/SkillSpector/skill_security_integration.py check <路径>`
+2. **执行安全扫描**：使用 `python3 ~/Desktop/.SkillSpector/skill_security_integration.py check <路径>`
 3. **处理扫描结果**：
    - 通过（分数≤20）：更新缓存，标记为`passed`，允许使用
    - 未通过（分数>20）：向用户报告风险，让用户选择放弃或坚持使用
@@ -134,10 +134,10 @@ Skill: [skill名称]
 
 ```bash
 # 批量扫描所有skill
-python3 ~/Desktop/SkillSpector/scan_all_skills.py
+python3 ~/Desktop/.SkillSpector/scan_all_skills.py
 
 # 更新云仓库页面
-python3 ~/Desktop/SkillSpector/update_skill_store.py
+python3 ~/Desktop/.SkillSpector/update_skill_store.py
 ```
 
 ### 定期维护
