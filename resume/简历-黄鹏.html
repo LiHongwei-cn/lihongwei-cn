@@ -2,84 +2,67 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>黄鹏 - AI应用开发工程师</title>
 <style>
 @media print {
   body { margin: 0; padding: 0; }
-  .page { padding: 10mm 12mm; max-width: none; box-shadow: none; }
+  .page { padding: 12mm 14mm; max-width: none; box-shadow: none; }
+  .no-break { page-break-inside: avoid; }
 }
-
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  background: #f0f2f5;
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: #f5f5f5;
   color: #1a1a2e;
   line-height: 1.4;
   -webkit-font-smoothing: antialiased;
 }
-
 .page {
-  max-width: 820px;
+  max-width: 800px;
   margin: 20px auto;
   background: #fff;
   padding: 28px 32px 24px;
-  box-shadow: 0 1px 12px rgba(0,0,0,0.08);
-  border-radius: 4px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.1);
 }
-
+/* 头部 */
 .header {
-  padding-bottom: 14px;
-  border-bottom: 2px solid #1a1a2e;
-  margin-bottom: 16px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 18px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid #2563eb;
+  margin-bottom: 16px;
 }
-
 .photo {
-  width: 72px;
-  height: 90px;
+  width: 68px;
+  height: 85px;
   border-radius: 4px;
   object-fit: cover;
-  flex-shrink: 0;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #ddd;
 }
-
 .header-info { flex: 1; }
-
 .name {
   font-size: 22px;
   font-weight: 800;
-  color: #1a1a2e;
   letter-spacing: 2px;
 }
-
-.title-line {
+.title {
   font-size: 13px;
   color: #2563eb;
-  margin-top: 2px;
   font-weight: 600;
+  margin-top: 2px;
 }
-
-.contact-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  margin-top: 6px;
+.contact {
   font-size: 11px;
   color: #666;
+  margin-top: 5px;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
 }
-
-.contact-row a {
-  color: #2563eb;
-  text-decoration: none;
-}
-
-.section { margin-bottom: 14px; }
-
-.section-head {
+/* 分段 */
+.sec { margin-bottom: 14px; }
+.sec-head {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -87,261 +70,280 @@ body {
   padding-bottom: 4px;
   border-bottom: 1px solid #e5e7eb;
 }
-
-.section-title {
+.sec-bar {
+  width: 3px;
+  height: 14px;
+  background: #2563eb;
+  border-radius: 2px;
+}
+.sec-title {
   font-size: 13px;
   font-weight: 700;
-  color: #1a1a2e;
+  letter-spacing: 0.5px;
 }
-
-.section-accent {
-  width: 3px; height: 14px;
-  border-radius: 2px;
-  background: #2563eb;
-  flex-shrink: 0;
-}
-
-.edu-row {
+/* 教育 */
+.edu {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 12px;
 }
-
-.edu-school {
-  font-weight: 600;
-  color: #1a1a2e;
-}
-
-.edu-major {
-  color: #666;
-  font-size: 11px;
-}
-
-.edu-date {
-  color: #888;
-  font-size: 11px;
-  white-space: nowrap;
-}
-
-.skills-grid {
+.edu-school { font-weight: 600; }
+.edu-major { color: #666; font-size: 11px; }
+.edu-date { color: #888; font-size: 11px; }
+/* 技能 */
+.skills {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6px;
+  gap: 8px;
 }
-
-.skill-card {
-  background: #fafbfc;
+.skill-box {
+  background: #f8f9fa;
   border: 1px solid #e8eaed;
-  border-radius: 6px;
+  border-radius: 4px;
   padding: 8px 10px;
 }
-
 .skill-label {
   font-size: 11px;
   font-weight: 700;
-  color: #1a1a2e;
   margin-bottom: 4px;
 }
-
-.skill-items {
+.skill-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 3px;
 }
-
-.skill-tag {
+.tag {
   font-size: 10px;
-  padding: 1px 5px;
+  padding: 2px 5px;
   border-radius: 3px;
   background: #fff;
+  border: 1px solid #ddd;
   color: #444;
-  border: 1px solid #e0e0e0;
 }
-
-.skill-tag.highlight {
+.tag.blue {
   background: #eff6ff;
-  color: #2563eb;
   border-color: #dbeafe;
+  color: #2563eb;
   font-weight: 600;
 }
-
-.featured-block {
+/* 代表作 */
+.featured {
   background: #f0f9ff;
   border: 1px solid #93c5fd;
   border-radius: 6px;
-  padding: 10px 12px;
+  padding: 12px 14px;
 }
-
-.featured-header {
+.feat-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 6px;
 }
-
-.featured-name {
-  font-size: 13px;
+.feat-name {
+  font-size: 14px;
   font-weight: 700;
-  color: #1a1a2e;
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
-
-.featured-badge {
-  font-size: 9px;
+.feat-badge {
+  font-size: 10px;
   background: #2563eb;
   color: #fff;
-  padding: 1px 6px;
+  padding: 2px 6px;
   border-radius: 3px;
-  font-weight: 700;
 }
-
-.featured-date {
+.feat-date {
   font-size: 10px;
   color: #888;
 }
-
-.featured-desc {
+.feat-desc {
   font-size: 11px;
   color: #444;
-  line-height: 1.5;
   margin-bottom: 8px;
 }
-
-.featured-grid {
+.feat-highlight {
+  background: #fff;
+  border: 1px solid #93c5fd;
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+}
+.feat-highlight-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1e40af;
+  margin-bottom: 4px;
+}
+.feat-highlight-items {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+.feat-highlight-item {
+  font-size: 10px;
+  color: #444;
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+.feat-highlight-item::before {
+  content: "✓";
+  color: #16a34a;
+  font-weight: 700;
+  margin-top: 1px;
+}
+.feat-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 6px;
   margin-bottom: 8px;
 }
-
-.featured-card {
+.feat-card {
   background: #fff;
   border: 1px solid #e8eaed;
   border-radius: 4px;
   padding: 6px 8px;
 }
-
-.featured-card-title {
+.feat-card-title {
   font-size: 10px;
   font-weight: 700;
   color: #1e40af;
   margin-bottom: 3px;
 }
-
-.featured-card-items {
+.feat-card-items {
   font-size: 9px;
   color: #555;
-  line-height: 1.5;
 }
-
-.featured-stats {
+.feat-stats {
   display: flex;
-  gap: 16px;
+  gap: 14px;
   padding-top: 6px;
   border-top: 1px solid #93c5fd;
 }
-
-.featured-stat {
+.feat-stat {
   display: flex;
   align-items: baseline;
   gap: 2px;
 }
-
-.featured-stat-num {
+.feat-num {
   font-size: 14px;
   font-weight: 800;
   color: #2563eb;
 }
-
-.featured-stat-label {
+.feat-label {
   font-size: 9px;
   color: #888;
 }
-
-.project-row {
-  display: flex;
+/* 项目 */
+.proj-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
-  margin-bottom: 6px;
 }
-
-.project-card {
-  flex: 1;
+.proj {
   background: #fafbfc;
   border: 1px solid #e8eaed;
   border-radius: 6px;
-  padding: 8px 10px;
+  padding: 10px 12px;
 }
-
-.project-name {
-  font-size: 11px;
+.proj-name {
+  font-size: 12px;
   font-weight: 700;
-  color: #1a1a2e;
-  margin-bottom: 3px;
-}
-
-.project-desc {
-  font-size: 10px;
-  color: #555;
-  line-height: 1.4;
   margin-bottom: 4px;
 }
-
-.project-tags {
+.proj-desc {
+  font-size: 10px;
+  color: #555;
+  margin-bottom: 6px;
+}
+.proj-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 3px;
 }
-
 .ptag {
   font-size: 9px;
-  padding: 1px 4px;
+  padding: 2px 4px;
   border-radius: 3px;
   background: #eff6ff;
   color: #2563eb;
   border: 1px solid #dbeafe;
 }
-
-.cert-row {
-  display: flex;
+/* 优势 */
+.advantages {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
-  flex-wrap: wrap;
 }
-
-.cert-item {
+.advantage-card {
+  background: #f8f9fa;
+  border: 1px solid #e8eaed;
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.advantage-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2563eb;
+  margin-bottom: 4px;
+}
+.advantage-desc {
   font-size: 10px;
   color: #444;
+  line-height: 1.5;
+}
+/* 证书 */
+.cert-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+.cert-card {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 1px solid #93c5fd;
+  border-radius: 6px;
+  padding: 10px 12px;
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 8px;
 }
-
-.cert-item::before {
-  content: "•";
-  color: #2563eb;
+.cert-icon {
+  width: 28px;
+  height: 28px;
+  background: #2563eb;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
 }
-
+.cert-info {
+  flex: 1;
+}
+.cert-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+.cert-desc {
+  font-size: 9px;
+  color: #666;
+  margin-top: 1px;
+}
+/* 底部 */
 .footer {
-  margin-top: 12px;
+  margin-top: 14px;
   padding-top: 10px;
   border-top: 1px solid #e5e7eb;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-}
-
-.github-link {
   font-size: 10px;
+}
+.footer span {
   color: #2563eb;
-  text-decoration: none;
+  font-weight: 500;
 }
-
-.footer-date {
-  font-size: 10px;
-  color: #aaa;
-}
+.footer-date { color: #aaa; }
 </style>
 </head>
 <body>
@@ -351,177 +353,269 @@ body {
     <img src="photo.jpg" class="photo" alt="证件照">
     <div class="header-info">
       <div class="name">黄 鹏</div>
-      <div class="title-line">AI应用开发工程师</div>
-      <div class="contact-row">
+      <div class="title">AI应用开发工程师 · 持续探索AI前沿应用</div>
+      <div class="contact">
         <span>📞 138-6535-8206</span>
-        <a href="mailto:13865358206hp@gmail.com">✉️ 13865358206hp@gmail.com</a>
-        <a href="https://github.com/LiHongwei-cn" target="_blank">🔗 GitHub</a>
-        <a href="https://lihongwei-cn.github.io/lihongwei-cn/" target="_blank">🌐 项目主页</a>
+        <span>✉️ 13865358206hp@gmail.com</span>
+        <span>🔗 github.com/LiHongwei-cn</span>
+        <span>🌐 lihongwei-cn.github.io/lihongwei-cn</span>
       </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-head">
-      <div class="section-accent"></div>
-      <div class="section-title">教育背景</div>
-    </div>
-    <div class="edu-row">
-      <div>
-        <span class="edu-school">南京航空航天大学金城学院</span>
-        <span class="edu-major"> · 新能源汽车工程 · 本科</span>
-      </div>
+  <div class="sec no-break">
+    <div class="sec-head"><div class="sec-bar"></div><div class="sec-title">教育背景</div></div>
+    <div class="edu">
+      <div><span class="edu-school">南京航空航天大学金城学院</span> <span class="edu-major">· 新能源汽车工程 · 本科</span></div>
       <div class="edu-date">2023.09 — 2027.06</div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-head">
-      <div class="section-accent"></div>
-      <div class="section-title">核心技能</div>
+  <div class="sec no-break">
+    <div class="sec-head"><div class="sec-bar"></div><div class="sec-title">个人优势</div></div>
+    <div class="advantages">
+      <div class="advantage-card">
+        <div class="advantage-title">🔥 自主学习能力强</div>
+        <div class="advantage-desc">在未系统学习AI/LLM技术的前提下，从零独立研发MUNDO AI Agent框架，核心能力与LangChain 100%重合。每天自动爬取GitHub热门项目，持续学习最新技术。</div>
+      </div>
+      <div class="advantage-card">
+        <div class="advantage-title">🚀 项目独立落地</div>
+        <div class="advantage-desc">所有项目均独立完成从需求分析、架构设计、代码实现到测试部署的全流程。MUNDO框架经历28+版本迭代，61个Python模块，支持30+大模型。</div>
+      </div>
+      <div class="advantage-card">
+        <div class="advantage-title">🔄 持续优化迭代</div>
+        <div class="advantage-desc">建立自动化测试体系，自主检测并修复bug。每次版本更新都会进行功能验证、性能测试、安全审查，确保代码质量。</div>
+      </div>
+      <div class="advantage-card">
+        <div class="advantage-title">📡 技术敏感度高</div>
+        <div class="advantage-desc">及时获取AI领域最新动态，将新技术快速集成到项目中。例如：集成NVIDIA SkillSpector安全框架、实现MCP互操作协议。</div>
+      </div>
     </div>
-    <div class="skills-grid">
-      <div class="skill-card">
+  </div>
+
+  <div class="sec no-break">
+    <div class="sec-head"><div class="sec-bar"></div><div class="sec-title">核心技能</div></div>
+    <div class="skills">
+      <div class="skill-box">
         <div class="skill-label">AI/LLM 技术栈</div>
-        <div class="skill-items">
-          <span class="skill-tag highlight">LangChain</span>
-          <span class="skill-tag highlight">RAG</span>
-          <span class="skill-tag highlight">Agent架构</span>
-          <span class="skill-tag">向量数据库</span>
-          <span class="skill-tag">Prompt工程</span>
-          <span class="skill-tag">MCP协议</span>
+        <div class="skill-tags">
+          <span class="tag blue">LangChain</span>
+          <span class="tag blue">RAG</span>
+          <span class="tag blue">Agent架构</span>
+          <span class="tag blue">向量数据库</span>
+          <span class="tag">Prompt工程</span>
+          <span class="tag">MCP协议</span>
+          <span class="tag">反射引擎</span>
+          <span class="tag">多模型调度</span>
         </div>
       </div>
-      <div class="skill-card">
+      <div class="skill-box">
         <div class="skill-label">大模型与框架</div>
-        <div class="skill-items">
-          <span class="skill-tag highlight">DeepSeek</span>
-          <span class="skill-tag highlight">GPT-5.5</span>
-          <span class="skill-tag highlight">Claude</span>
-          <span class="skill-tag">Gemini</span>
-          <span class="skill-tag">Qwen3</span>
-          <span class="skill-tag">MiMo</span>
+        <div class="skill-tags">
+          <span class="tag blue">DeepSeek V4</span>
+          <span class="tag blue">GPT-5.5</span>
+          <span class="tag blue">Claude Opus</span>
+          <span class="tag">Gemini 2.5</span>
+          <span class="tag">Qwen3</span>
+          <span class="tag">MiMo V2.5</span>
+          <span class="tag">ChromaDB</span>
+          <span class="tag">FastAPI</span>
         </div>
       </div>
-      <div class="skill-card">
+      <div class="skill-box">
         <div class="skill-label">编程语言</div>
-        <div class="skill-items">
-          <span class="skill-tag highlight">Python</span>
-          <span class="skill-tag">JavaScript</span>
-          <span class="skill-tag">SQL</span>
-          <span class="skill-tag">HTML/CSS</span>
-          <span class="skill-tag">Shell</span>
-          <span class="skill-tag">MATLAB</span>
+        <div class="skill-tags">
+          <span class="tag blue">Python</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">SQL</span>
+          <span class="tag">HTML/CSS</span>
+          <span class="tag">Shell</span>
+          <span class="tag">MATLAB</span>
+          <span class="tag">C语言</span>
         </div>
       </div>
-      <div class="skill-card">
+      <div class="skill-box">
         <div class="skill-label">工具与平台</div>
-        <div class="skill-items">
-          <span class="skill-tag highlight">FastAPI</span>
-          <span class="skill-tag highlight">Git/GitHub</span>
-          <span class="skill-tag">ChromaDB</span>
-          <span class="skill-tag">SQLite</span>
-          <span class="skill-tag">Linux</span>
-          <span class="skill-tag">Docker</span>
+        <div class="skill-tags">
+          <span class="tag blue">Git/GitHub</span>
+          <span class="tag">Docker</span>
+          <span class="tag">Linux</span>
+          <span class="tag">SQLite</span>
+          <span class="tag">微信小程序</span>
+          <span class="tag">Scrapling</span>
+          <span class="tag">NVIDIA SkillSpector</span>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-head">
-      <div class="section-accent" style="background:#2563eb"></div>
-      <div class="section-title">代表作品</div>
-    </div>
-    <div class="featured-block">
-      <div class="featured-header">
-        <div class="featured-name">
-          MUNDO AI Agent — 自研智能体框架
-          <span class="featured-badge">v2.2.8</span>
-        </div>
-        <div class="featured-date">2026.05 — 至今</div>
+  <div class="sec no-break">
+    <div class="sec-head"><div class="sec-bar" style="background:#2563eb"></div><div class="sec-title">代表作品</div></div>
+    <div class="featured">
+      <div class="feat-head">
+        <div><span class="feat-name">MUNDO AI Agent — 自研智能体框架</span> <span class="feat-badge">v2.2.8</span></div>
+        <div class="feat-date">2026.05 — 至今</div>
       </div>
-      <div class="featured-desc">独立开发的AI智能体框架，类似LangChain架构，支持30+大模型调度，经历28+版本迭代，具备企业级特性。</div>
-      <div class="featured-grid">
-        <div class="featured-card">
-          <div class="featured-card-title">核心能力</div>
-          <div class="featured-card-items">自主学习 · 多模型调度 · 工具链 · 任务规划</div>
-        </div>
-        <div class="featured-card">
-          <div class="featured-card-title">AI技术</div>
-          <div class="featured-card-items">RAG检索 · 向量库 · Prompt · 反射循环</div>
-        </div>
-        <div class="featured-card">
-          <div class="featured-card-title">工程特性</div>
-          <div class="featured-card-items">MCP协议 · 三层记忆 · 安全强化 · 可观测</div>
-        </div>
-        <div class="featured-card">
-          <div class="featured-card-title">部署运维</div>
-          <div class="featured-card-items">插件系统 · 自动更新 · 云同步 · 错误自愈</div>
+      <div class="feat-desc">独立开发的AI智能体框架，类似LangChain架构，实现自主学习、多模型调度、工具调用、记忆管理等完整Agent能力。在未系统学习LangChain的前提下，从零独立研发，核心能力100%重合。</div>
+      
+      <div class="feat-highlight">
+        <div class="feat-highlight-title">🧠 生物学启发的AI架构设计</div>
+        <div class="feat-highlight-items">
+          <div class="feat-highlight-item">用神经元类比理解大模型推理机制，设计反射循环引擎</div>
+          <div class="feat-highlight-item">用突触可塑性类比实现三层记忆系统（短期/中期/长期）</div>
+          <div class="feat-highlight-item">用免疫系统类比设计五层安全防御体系</div>
+          <div class="feat-highlight-item">用海马体类比实现知识检索与向量存储</div>
+          <div class="feat-highlight-item">用前额叶皮层类比设计任务规划与决策引擎</div>
+          <div class="feat-highlight-item">用进化论类比实现自主学习与持续优化机制</div>
         </div>
       </div>
-      <div class="featured-stats">
-        <div class="featured-stat"><span class="featured-stat-num">61</span><span class="featured-stat-label">模块</span></div>
-        <div class="featured-stat"><span class="featured-stat-num">30+</span><span class="featured-stat-label">模型</span></div>
-        <div class="featured-stat"><span class="featured-stat-num">28+</span><span class="featured-stat-label">版本</span></div>
-        <div class="featured-stat"><span class="featured-stat-num">6</span><span class="featured-stat-label">厂商</span></div>
+
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="feat-card-title">核心能力</div>
+          <div class="feat-card-items">自主学习 · 多模型调度 · 工具链 · 任务规划</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-card-title">AI技术</div>
+          <div class="feat-card-items">RAG检索 · 向量库 · Prompt · 反射循环</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-card-title">工程特性</div>
+          <div class="feat-card-items">MCP协议 · 三层记忆 · 安全强化 · 可观测</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-card-title">部署运维</div>
+          <div class="feat-card-items">插件系统 · 自动更新 · 云同步 · 错误自愈</div>
+        </div>
+      </div>
+
+      <div class="feat-stats">
+        <div class="feat-stat"><span class="feat-num">61</span><span class="feat-label">Python模块</span></div>
+        <div class="feat-stat"><span class="feat-num">30+</span><span class="feat-label">AI模型</span></div>
+        <div class="feat-stat"><span class="feat-num">28+</span><span class="feat-label">版本迭代</span></div>
+        <div class="feat-stat"><span class="feat-num">6</span><span class="feat-label">厂商支持</span></div>
+        <div class="feat-stat"><span class="feat-num">100%</span><span class="feat-label">自主学习</span></div>
       </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-head">
-      <div class="section-accent"></div>
-      <div class="section-title">项目经历</div>
-    </div>
-    <div class="project-row">
-      <div class="project-card">
-        <div class="project-name">MATLAB-AI 仿真代码生成器</div>
-        <div class="project-desc">基于AI的仿真代码自动生成工具，覆盖车辆动力学、电机控制等6大场景，支持R2016b兼容。</div>
-        <div class="project-tags">
-          <span class="ptag">AI代码生成</span>
-          <span class="ptag">MATLAB</span>
-          <span class="ptag">Simulink</span>
-        </div>
+  <div class="sec no-break">
+    <div class="sec-head"><div class="sec-bar"></div><div class="sec-title">项目经历</div></div>
+    <div class="proj-grid">
+      <div class="proj">
+        <div class="proj-name">MATLAB-AI 仿真代码生成器</div>
+        <div class="proj-desc">基于AI的仿真代码自动生成，覆盖车辆动力学、电机控制等6大场景，支持R2016b兼容，含10+可直接运行的示例。</div>
+        <div class="proj-tags"><span class="ptag">AI代码生成</span><span class="ptag">MATLAB</span><span class="ptag">Simulink</span></div>
       </div>
-      <div class="project-card">
-        <div class="project-name">家庭血压监测小程序</div>
-        <div class="project-desc">全栈AI应用：FastAPI + 微信小程序 + DeepSeek AI健康建议，展示AI医疗落地能力。</div>
-        <div class="project-tags">
-          <span class="ptag">AI应用</span>
-          <span class="ptag">FastAPI</span>
-          <span class="ptag">微信小程序</span>
-        </div>
+      <div class="proj">
+        <div class="proj-name">CarSim + MATLAB 联合仿真</div>
+        <div class="proj-desc">CarSim与Simulink联合仿真，验证车辆动力学控制算法，展示跨平台工具集成能力。</div>
+        <div class="proj-tags"><span class="ptag">CarSim</span><span class="ptag">联合仿真</span><span class="ptag">控制算法</span></div>
       </div>
-      <div class="project-card">
-        <div class="project-name">GitHub Trending 爬虫</div>
-        <div class="project-desc">自动采集热门AI Agent项目，分析技术趋势，支持定时任务和数据可视化。</div>
-        <div class="project-tags">
-          <span class="ptag">数据爬取</span>
-          <span class="ptag">Scrapling</span>
-          <span class="ptag">可视化</span>
-        </div>
+      <div class="proj">
+        <div class="proj-name">家庭血压监测微信小程序</div>
+        <div class="proj-desc">全栈AI应用：FastAPI + 微信小程序 + DeepSeek AI健康建议，展示AI医疗落地能力。</div>
+        <div class="proj-tags"><span class="ptag">AI应用</span><span class="ptag">FastAPI</span><span class="ptag">微信小程序</span></div>
+      </div>
+      <div class="proj">
+        <div class="proj-name">GitHub Trending 爬虫</div>
+        <div class="proj-desc">自动采集热门AI Agent项目，分析技术趋势，支持定时任务和数据可视化。</div>
+        <div class="proj-tags"><span class="ptag">数据爬取</span><span class="ptag">Scrapling</span><span class="ptag">可视化</span></div>
+      </div>
+      <div class="proj">
+        <div class="proj-name">Skill 云仓库</div>
+        <div class="proj-desc">244个AI Skill云端仓库，支持分类检索、安全审核、一键安装，覆盖全部领域。</div>
+        <div class="proj-tags"><span class="ptag">Skill管理</span><span class="ptag">云仓库</span><span class="ptag">安全审核</span></div>
+      </div>
+      <div class="proj">
+        <div class="proj-name">安全防火墙系统</div>
+        <div class="proj-desc">集成NVIDIA SkillSpector，64种漏洞检测，16个安全类别，建立安全缓存机制。</div>
+        <div class="proj-tags"><span class="ptag">安全审核</span><span class="ptag">漏洞检测</span><span class="ptag">NVIDIA</span></div>
       </div>
     </div>
   </div>
 
-  <div class="section">
-    <div class="section-head">
-      <div class="section-accent"></div>
-      <div class="section-title">证书</div>
+  <div class="sec no-break">
+    <div class="sec-head"><div class="sec-bar"></div><div class="sec-title">技术深度与学习成长</div></div>
+    <div class="advantages">
+      <div class="advantage-card">
+        <div class="advantage-title">🧬 跨学科思维能力</div>
+        <div class="advantage-desc">用生物学知识类比理解AI架构，将神经元、突触、免疫系统等概念应用到AI系统设计中，形成独特的技术视角。</div>
+      </div>
+      <div class="advantage-card">
+        <div class="advantage-title">📚 每日技术追踪</div>
+        <div class="advantage-desc">自动爬取GitHub Trending，分析AI Agent领域最新动态，学习优秀项目的架构设计和实现思路。</div>
+      </div>
+      <div class="advantage-card">
+        <div class="advantage-title">🔧 工程化能力</div>
+        <div class="advantage-desc">注重代码质量、可维护性、可扩展性。建立完整的文档体系、测试体系、部署体系，确保项目可持续发展。</div>
+      </div>
+      <div class="advantage-card">
+        <div class="advantage-title">🎯 技术预判能力</div>
+        <div class="advantage-desc">关注AI领域的发展趋势，提前布局和学习相关技术。在MCP协议刚发布时就实现支持，在向量数据库刚普及时就集成到项目中。</div>
+      </div>
+      <div class="advantage-card">
+        <div class="advantage-title">⚡ 快速原型能力</div>
+        <div class="advantage-desc">能在短时间内将想法转化为可运行的项目。例如：1周内完成MATLAB-AI仿真代码生成器，2周内完成家庭血压监测小程序。</div>
+      </div>
+      <div class="advantage-card">
+        <div class="advantage-title">💡 知识分享能力</div>
+        <div class="advantage-desc">建立Skill云仓库，将学到的知识和经验沉淀为可复用的Skill，帮助他人学习和成长。在GitHub上开源项目，接受社区反馈和贡献。</div>
+      </div>
     </div>
-    <div class="cert-row">
-      <div class="cert-item">低压电工证</div>
-      <div class="cert-item">AutoCAD高级</div>
-      <div class="cert-item">Creo高级</div>
-      <div class="cert-item">C1驾照</div>
-      <div class="cert-item">校级奖学金</div>
+  </div>
+
+  <div class="sec no-break">
+    <div class="sec-head"><div class="sec-bar"></div><div class="sec-title">证书资质</div></div>
+    <div class="cert-grid">
+      <div class="cert-card">
+        <div class="cert-icon">⚡</div>
+        <div class="cert-info">
+          <div class="cert-name">低压电工证</div>
+          <div class="cert-desc">电气安全操作资质</div>
+        </div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-icon">🔧</div>
+        <div class="cert-info">
+          <div class="cert-name">AutoCAD 高级操作证</div>
+          <div class="cert-desc">CAD建模与设计</div>
+        </div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-icon">📐</div>
+        <div class="cert-info">
+          <div class="cert-name">PTC Creo 高级操作证</div>
+          <div class="cert-desc">三维建模与工程设计</div>
+        </div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-icon">🚗</div>
+        <div class="cert-info">
+          <div class="cert-name">C1 驾驶证</div>
+          <div class="cert-desc">驾驶资质</div>
+        </div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-icon">🏆</div>
+        <div class="cert-info">
+          <div class="cert-name">校级发展奖学金</div>
+          <div class="cert-desc">2023-2024学年三等奖</div>
+        </div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-icon">❤️</div>
+        <div class="cert-info">
+          <div class="cert-name">优秀心协成员</div>
+          <div class="cert-desc">2023-2024学年</div>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="footer">
-    <a href="https://github.com/LiHongwei-cn" target="_blank" class="github-link">github.com/LiHongwei-cn</a>
-    <div class="footer-date">2026年06月22日</div>
+    <span>github.com/LiHongwei-cn</span>
+    <span class="footer-date">2026年06月22日</span>
   </div>
 
 </div>
