@@ -15,7 +15,7 @@
 
 | 项目 | 说明 |
 |------|------|
-| [MUNDO Agent](https://github.com/LiHongwei-cn/mundo-agent) | 独立 AI 智能体 · 30+ 模型 · 任务确认 · Loop 工作流 · 三层记忆 · Skill 云仓库 · 集体意识 · 自我进化 |
+| [MUNDO Agent](https://github.com/LiHongwei-cn/mundo-agent) | 独立 AI 智能体 · 30+ 模型 · 向量检索 · 评估框架 · MCP 互操作 · 可观测性 · 三层记忆 |
 | [MATLAB 仿真工具包](matlab/) | 车辆动力学、电机控制、能量管理（R2016b 兼容） |
 | [家庭血压监测小程序](bp-monitor/) | FastAPI + SQLite + DeepSeek 后端 |
 | [Telegram Bot](bot/) | DeepSeek 驱动的智能助手 |
@@ -38,11 +38,12 @@
 MUNDO 是一个独立的 AI 智能体框架，具有以下特性：
 
 - **30+ AI 模型支持**：DeepSeek、MiMo、Qwen、Claude、GPT-4o、Gemini 等
-- **任务确认流程**：先分析任务，用户确认后再执行，减少返工
-- **Loop 工作流**：思考→编码→检测→优化，循环直到完美
-- **三层记忆系统**：短期/中期/长期记忆，像人类大脑一样记忆
-- **Skill 云仓库**：自动获取 GitHub 高星 skill 项目，分类存储，随时调用
-- **三省六部制**：技能分级管理体系，首辅→尚书→主事→司务
+- **向量检索 RAG**：ChromaDB + BM25 + 语义哈希三路融合，API Embedding / 本地哈希双模式
+- **评估框架**：多维度量化（任务完成率、步骤效率、工具准确率），内置 10+ 评估用例
+- **MCP 互操作**：Client + Server 双向协议，蒙多能力通过标准 MCP 对外暴露
+- **可观测性**：结构化日志、分布式追踪（OpenTelemetry 兼容）、指标采集
+- **三层记忆系统**：短期/中期/长期记忆，SQLite + FTS5 持久化
+- **反射循环引擎**：THINK → EXECUTE → REFLECT → REPAIR 四阶段
 - **集体意识**：一个蒙多学到，所有蒙多都会
 - **自我进化**：每次使用都让蒙多更强大
 - **多 Agent 委托**：支持 Claude Code、Hermes Agent、Codex

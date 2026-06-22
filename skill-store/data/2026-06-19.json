@@ -1,0 +1,56 @@
+[
+  {
+    "name": "obra/superpowers",
+    "url": "https://github.com/obra/superpowers",
+    "description": "An agentic skills framework & software development methodology that works.",
+    "language": "Shell",
+    "stars": "None",
+    "today_stars": "",
+    "date": "2026-06-19"
+  },
+  {
+    "name": "zai-org/GLM-5",
+    "url": "https://github.com/zai-org/GLM-5",
+    "description": "GLM-5: From Vibe Coding to Agentic Engineering",
+    "language": "",
+    "stars": "None",
+    "today_stars": "",
+    "date": "2026-06-19"
+  },
+  {
+    "name": "DeusData/codebase-memory-mcp",
+    "url": "https://github.com/DeusData/codebase-memory-mcp",
+    "description": "High-performance code intelligence MCP server. Indexes codebases into a persistent knowledge graph — average repo in milliseconds. 158 languages, sub-ms queries, 99% fewer tokens. Single static binary, zero dependencies.",
+    "language": "C",
+    "stars": "None",
+    "today_stars": "",
+    "date": "2026-06-19"
+  },
+  {
+    "name": "withastro/flue",
+    "url": "https://github.com/withastro/flue",
+    "description": "The sandbox agent framework.",
+    "language": "TypeScript",
+    "stars": "None",
+    "today_stars": "",
+    "date": "2026-06-19"
+  },
+  {
+    "name": "Kilo-Org/kilocode",
+    "url": "https://github.com/Kilo-Org/kilocode",
+    "description": "Kilo is the all-in-one agentic engineering platform. Build, ship, and iterate faster with the most popular open source coding agent.",
+    "language": "TypeScript",
+    "stars": "None",
+    "today_stars": "",
+    "date": "2026-06-19"
+  },
+  {
+    "name": "Kong/insomnia",
+    "url": "https://github.com/Kong/insomnia",
+    "description": "The open-source, cross-platform API client for GraphQL, REST, WebSockets, SSE and gRPC. With Cloud, Local and Git storage.",
+    "language": "TypeScript",
+    "stars": "None",
+    "today_stars": "",
+    "date": "2026-06-19"
+  }
+]

@@ -124,6 +124,17 @@ class RuntimeConfig:
     display: DisplayConfig = field(default_factory=DisplayConfig)
     delegation: DelegationConfig = field(default_factory=DelegationConfig)
 
+    def get(self, key: str, default=None):
+        """获取配置值，支持点号路径如 'llm.provider'"""
+        parts = key.split(".")
+        obj = self
+        for part in parts:
+            if hasattr(obj, part):
+                obj = getattr(obj, part)
+            else:
+                return default
+        return obj
+
     def to_dict(self) -> Dict[str, Any]:
         from dataclasses import asdict
         return asdict(self)

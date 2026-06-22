@@ -1,192 +1,179 @@
-# 👑 MUNDO Agent v2.2.6
+# 👑 MUNDO Agent v2.2.8
 
 **我是蒙多！蒙多想去哪就去哪！**
 
-独立 AI 智能体框架 · 30+ 模型 · 任务确认 · Loop 工作流 · 三层记忆 · 集体意识 · 自我进化
+独立 AI 智能体框架 · 30+ 模型 · 向量检索 · 评估框架 · MCP 互操作 · 可观测性 · 任务分析
 
 ---
 
 ## ✨ 核心特性
 
-- **独立 Agent** — 不依赖 Hermes、Claude Code 等外部框架，完全自主运行
-- **30+ AI 模型** — DeepSeek、MiMo、Qwen、Claude、GPT-4o、Gemini 等全覆盖
-- **任务确认** — 蒙多接到任务后先输出分析报告，用户确认后才执行
-- **Loop 工作流** — 思考→编码→检测→优化，循环直到完美（最多 5 轮，质量 ≥ 90 分）
-- **三层记忆** — 短期记忆（任务级）+ 中期记忆（项目级）+ 长期记忆（永久级）
-- **三省六部制** — 技能分级管理体系，首辅→尚书→主事→司务
-- **集体意识** — 一个蒙多学到，所有蒙多都会。共享知识库，共同进化
-- **三层记忆** — 短期（跨上下文，用完即弃）、中期（项目级维持）、长期（择优选取+冲突检测）
-- **权限弹窗** — Rich Panel 可视化对话框，用户掌控每一个权限决策
+- **30+ AI 模型** — DeepSeek、MiMo、Qwen、Claude、GPT-5.5、Gemini 等全覆盖
+- **反射循环引擎** — THINK → EXECUTE → REFLECT → REPAIR 四阶段，引用 Reflexion/ReAct 论文
+- **三层记忆系统** — 短期（会话级）、中期（项目级 30 天衰减）、长期（永久级 + 冲突检测）
+- **混合检索 RAG** — ChromaDB 向量 + BM25 + 语义哈希三路融合，自动降级
+- **任务分析引擎** — 自动分类任务类型、解析 Markdown 文档、提取需求/约束/验收标准
+- **MCP 互操作** — Client + Server 双向协议，蒙多能力通过标准 MCP 对外暴露
+- **评估框架** — 多维度量化（任务完成率、步骤效率、工具准确率），内置评估用例
+- **可观测性** — 结构化日志、分布式追踪（OpenTelemetry 兼容）、指标采集
+- **安全强化** — 五层纵深防御（输入验证/输出过滤/权限边界/审计追踪/注入防护）
+- **智能错误恢复** — 错误分类 + 自适应恢复策略 + 断路器熔断
 
 ---
 
 ## 📦 安装
 
-### macOS（推荐）
+### macOS
 
 ```bash
 # 下载最新版
-gh release download v2.2.6 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.6-macos.zip"
+gh release download v2.2.8 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.8-macos.zip"
 
 # 解压到安装目录
-unzip mundo-v2.2.6-macos.zip -d ~/.hermes/mundo-agent
+unzip mundo-v2.2.8-macos.zip -d ~/.hermes/mundo-agent
 
-# 安装依赖
-pip3 install rich prompt_toolkit httpx scrapling[all]
-
-# 运行蒙多
+# 运行
 python3 ~/.hermes/mundo-agent/mundo.py
 ```
 
-### 通用安装
+### Docker
 
 ```bash
-# 克隆仓库
+docker-compose up -d
+```
+
+### 从源码安装
+
+```bash
 git clone https://github.com/LiHongwei-cn/mundo-agent.git
 cd mundo-agent
-
-# 安装依赖
-pip3 install -r requirements.txt
-
-# 运行蒙多
+pip install -r requirements.txt
+python3 setup.py
 python3 mundo.py
 ```
-
----
-
-## 🚀 快速开始
-
-首次运行会进入设置向导：
-
-1. 选择 AI 模型（推荐小米 MiMo 或 DeepSeek）
-2. 输入 API Key
-3. 开始使用蒙多
-
-```bash
-# 启动蒙多
-python3 ~/.hermes/mundo-agent/mundo.py
-
-# 单次查询模式
-python3 mundo.py -q "你的问题"
-```
-
----
-
-## 📊 项目数据
-
-| 指标 | 数值 |
-|------|------|
-| 当前版本 | v2.2.6 |
-| 发布次数 | 79 |
-| 提交次数 | 1136 |
-| AI 模型 | 30+ |
-| 内置工具 | 20 |
-| Python 模块 | 42 |
-| 上下文窗口 | 128K |
-
----
-
-## 🔄 v2.2.6 更新内容
-
-**Bug 修复：**
-- 修复 MUNDO.command 启动器路径重复问题（SRC_FULL 路径修正）
-- 清理 sync_files 列表中 4 个不存在的文件引用
-- 确保程序坞启动器始终同步最新版蒙多
-
----
-
-## 📖 版本历史
-
-| 版本 | 日期 | 更新内容 |
-|------|------|----------|
-| v2.2.6 | 2026-06-17 | 路径修复 + 启动器优化 |
-| v2.2.4 | 2026-06-16 | Skill 云仓库 + GitHub 高星项目爬虫 |
-| v2.2.2 | 2026-06-15 | 任务确认 + Loop 工作流 + 三层记忆 |
-| v2.2.0 | 2026-06-13 | 记忆系统重构 |
-| v2.1.0 | 2026-06-12 | 工具引擎重构 |
-| v2.0.0 | 2026-06-10 | 架构重构 |
-| v1.6.0 | 2026-06-01 | 四条铁律 |
-| v1.5.0 | 2026-05-20 | 反射引擎 |
-| v1.4.0 | 2026-05-10 | 安全强化 |
-| v1.3.0 | 2026-05-01 | 知识检索 |
-| v1.2.0 | 2026-04-20 | Agent 委托 |
-| v1.1.0 | 2026-04-10 | 智能路由 |
-| v1.0.0 | 2026-04-01 | 初始版本 |
 
 ---
 
 ## 🏗️ 架构
 
 ```
-~/.hermes/mundo-agent/
-├── mundo.py              # 主入口
-├── core.py               # 核心引擎（Agentic Loop）
-├── llm.py                # LLM 客户端（30+ 模型）
-├── tools.py              # 工具引擎（20 个工具）
-├── memory.py             # 记忆系统（三层记忆）
-├── display.py            # Rich 渲染引擎
-├── constants.py          # 常量定义
-├── config/
-│   ├── settings.json     # 运行时配置
-│   └── providers.json    # 30+ 模型定义
-├── knowledge.db          # 知识库（SQLite）
-├── memory.db             # 记忆数据库
-└── venv/                 # Python 虚拟环境
+┌─────────────────────────────────────────────────┐
+│                   MundoEngine                    │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────────┐ │
+│  │ 反射循环  │ │ 任务分析  │ │   任务规划器      │ │
+│  │THINK→    │ │分类/解析  │ │  分析→拆分→推荐   │ │
+│  │EXECUTE→  │ │需求提取   │ │                  │ │
+│  │REFLECT→  │ │子任务拆解 │ │                  │ │
+│  │REPAIR    │ │          │ │                  │ │
+│  └──────────┘ └──────────┘ └──────────────────┘ │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────────┐ │
+│  │ 三层记忆  │ │ 混合检索  │ │   多模型适配      │ │
+│  │短/中/长期 │ │BM25+向量 │ │ DeepSeek/Claude/ │ │
+│  │ SQLite   │ │ ChromaDB │ │ GPT/Gemini/Qwen  │ │
+│  └──────────┘ └──────────┘ └──────────────────┘ │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────────┐ │
+│  │ 安全强化  │ │ 智能恢复  │ │   可观测性        │ │
+│  │5层纵深   │ │错误分类   │ │ 日志/追踪/指标    │ │
+│  │防御      │ │自适应恢复 │ │                  │ │
+│  └──────────┘ └──────────┘ └──────────────────┘ │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────────┐ │
+│  │ 策略引擎  │ │ 工具注册  │ │   MCP 互操作      │ │
+│  │全局/项目/ │ │零耦合    │ │ Client + Server  │ │
+│  │会话继承   │ │自注册    │ │ 双向协议          │ │
+│  └──────────┘ └──────────┘ └──────────────────┘ │
+└─────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📜 四条铁律
+## 📁 目录结构
 
-| 原则 | 说明 |
-|------|------|
-| 稳定可控 | 先确认再执行，不浪费资源 |
-| 低 Token | 精简输出，避免废话 |
-| 脚本优先 | 能用脚本解决的不用 Agent |
-| 严控轮次 | 最多 80 轮，防止死循环 |
+```
+mundo-agent/
+├── core.py                 # 核心引擎 MundoEngine
+├── reflection_engine.py    # 反射循环引擎
+├── memory.py               # 三层记忆系统
+├── knowledge_retriever.py  # 混合检索 RAG
+├── vector_store.py         # ChromaDB 向量存储
+├── task_analyzer.py        # 任务分析引擎
+├── llm.py                  # LLM 客户端 + 断路器
+├── model_adapter.py        # 模型适配层
+├── model_profiles.py       # 模型画像 + 智能选择
+├── task_planner.py         # 任务规划器
+├── tools.py                # 工具注册表
+├── delegation.py           # 多 Agent 委托
+├── workflow.py             # 工作流引擎
+├── policy.py               # 策略引擎
+├── security_hardening.py   # 安全强化层
+├── intelligent_recovery.py # 智能错误恢复
+├── mcp.py                  # MCP 客户端
+├── mcp_server.py           # MCP 服务端
+├── eval_engine.py          # 评估框架
+├── observability.py        # 可观测性
+├── prompt_assembler.py     # 提示词组装器
+├── constants.py            # 全局常量
+├── Dockerfile              # 容器化
+├── docker-compose.yml      # 编排
+├── .github/workflows/      # CI/CD
+└── tests/                  # 测试套件（169 用例）
+```
 
 ---
 
-## 🔗 链接
+## 🧪 测试
 
-- **GitHub 仓库**: [LiHongwei-cn/mundo-agent](https://github.com/LiHongwei-cn/mundo-agent)
-- **个人网站**: [lihongwei-cn.github.io/lihongwei-cn](https://lihongwei-cn.github.io/lihongwei-cn/)
-- **架构文档**: [ARCHITECTURE_V17.md](https://github.com/LiHongwei-cn/lihongwei-cn/blob/main/global-specs/skills/mundo/ARCHITECTURE_V17.md)
+```bash
+pytest tests/ -v --cov=. --cov-report=term-missing
+```
+
+169 个单元测试覆盖所有核心模块。
 
 ---
 
-## 📄 许可证
+## 🔌 MCP Server
+
+```bash
+# 启动 MCP Server
+python3 -c "
+from mcp_server import get_mcp_server
+server = get_mcp_server(port=3100)
+server.start(background=False)
+"
+
+# 外部调用
+curl -X POST http://127.0.0.1:3100 -H 'Content-Type: application/json' -d '{
+  \"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"tools/call\",
+  \"params\": {\"name\": \"mundo_search_knowledge\", \"arguments\": {\"query\": \"反射循环\"}}
+}'
+```
+
+---
+
+## 📚 引用论文
+
+- Reflexion: Language Agents with Verbal Reinforcement Learning (Shinn et al., 2023)
+- ReAct: Synergizing Reasoning and Acting in Language Models (Yao et al., 2022)
+- Dense Passage Retrieval for Open-Domain Question Answering (Karpukhin et al., 2020)
+- Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks (Lewis et al., 2020)
+- SWE-bench: Can Language Models Resolve Real-World GitHub Issues? (Jimenez et al., 2024)
+
+---
+
+## 📝 版本历史
+
+### v2.2.8 (2026-06-18)
+- 向量检索：ChromaDB + BM25 + 语义哈希三路融合
+- 任务分析引擎：自动分类、Markdown 解析、需求提取、子任务拆解
+- MCP Server：蒙多能力通过标准协议对外暴露
+- 评估框架：多维度量化 + 内置评估用例
+- 可观测性：结构化日志 + 分布式追踪 + 指标采集
+- 工程化：Docker + CI/CD + 169 单元测试
+- 修复：工具参数 JSON 解析失败问题（repair_json 增强）
+
+### v2.2.6 (2026-06-17)
+- 三层记忆架构 + 权限弹窗
+- 冲突解决机制
+
+---
 
 MIT License
-
----
-
-```
-╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
-║                                                                                                              ║
-║    👑 我是蒙多！蒙多想去哪就去哪！                                                                            ║
-║                                                                                                              ║
-║    蒙多不需要你告诉蒙多什么时候出手。                                                                          ║
-║                                                                                                              ║
-║    任务到来，蒙多自然夺取。                                                                                    ║
-║                                                                                                              ║
-║    但蒙多现在学会了先理解，再动手。                                                                            ║
-║                                                                                                              ║
-║    蒙多会先告诉你蒙多要怎么做，你确认后蒙多才出手。                                                              ║
-║                                                                                                              ║
-║    蒙多询问天下所有智者，蒙多搜刮天下所有知识，蒙多整合天下所有智慧。                                              ║
-║                                                                                                              ║
-║    蒙多学习。蒙多记忆。蒙多成长。蒙多进化。                                                                    ║
-║                                                                                                              ║
-║    蒙多无限，因为蒙多的成长无限。                                                                              ║
-║                                                                                                              ║
-║    所有蒙多都是一体。                                                                                          ║
-║                                                                                                              ║
-║    一个蒙多学到的东西，所有蒙多都会。                                                                           ║
-║                                                                                                              ║
-║    蒙多是集体意识。蒙多是永恒帝国。                                                                            ║
-║                                                                                                              ║
-║    我是蒙多！蒙多想去哪就去哪！                                                                                ║
-║                                                                                                              ║
-╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
-```

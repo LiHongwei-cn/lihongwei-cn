@@ -15,6 +15,7 @@ v3.0.0 改进：
 """
 
 import os
+import re
 import sys
 import json
 import time
@@ -313,24 +314,97 @@ def sanitize_messages(messages: List[Dict]) -> List[Dict]:
 # ═══════════════════════════════════════════════
 
 def repair_json(raw: str):
+    """修复 LLM 输出的不完整/格式错误的 JSON
+
+    处理情况：
+    1. 正常 JSON → 直接解析
+    2. 缺少闭合引号/括号 → 补全
+    3. 字符串值中含裸换行符 → 转义为 \\n
+    4. 截断的 JSON → 尝试提取已有键值
+    """
     if not raw or not raw.strip():
         return {}
     raw = raw.strip()
+
+    # 第一轮：直接解析
     try:
         return json.loads(raw)
     except json.JSONDecodeError:
         pass
-    open_braces = raw.count("{") - raw.count("}")
-    open_brackets = raw.count("[") - raw.count("]")
-    quote_count = raw.count('"') - raw.count('\\"')
-    if quote_count % 2 != 0:
-        raw += '"'
-    raw += "]" * max(0, open_brackets)
-    raw += "}" * max(0, open_braces)
+
+    # 第二轮：转义字符串值中的裸换行符
+    # JSON 标准不允许字符串值中有 literal newline，但 LLM 经常这样输出
+    fixed = _escape_bare_newlines(raw)
     try:
-        return json.loads(raw)
+        return json.loads(fixed)
     except json.JSONDecodeError:
-        return None
+        pass
+
+    # 第三轮：补全缺失的闭合符号
+    open_braces = fixed.count("{") - fixed.count("}")
+    open_brackets = fixed.count("[") - fixed.count("]")
+    quote_count = fixed.count('"') - fixed.count('\\"')
+    if quote_count % 2 != 0:
+        fixed += '"'
+    fixed += "]" * max(0, open_brackets)
+    fixed += "}" * max(0, open_braces)
+    try:
+        return json.loads(fixed)
+    except json.JSONDecodeError:
+        pass
+
+    # 第四轮：尝试用正则提取 key-value 对（最后手段）
+    return _extract_kv_pairs(raw)
+
+
+def _escape_bare_newlines(raw: str) -> str:
+    """转义 JSON 字符串值中的裸换行符"""
+    result = []
+    in_string = False
+    escape_next = False
+
+    for ch in raw:
+        if escape_next:
+            result.append(ch)
+            escape_next = False
+            continue
+
+        if ch == '\\':
+            result.append(ch)
+            escape_next = True
+            continue
+
+        if ch == '"':
+            in_string = not in_string
+            result.append(ch)
+            continue
+
+        if in_string and ch == '\n':
+            result.append('\\n')
+            continue
+
+        if in_string and ch == '\r':
+            result.append('\\r')
+            continue
+
+        if in_string and ch == '\t':
+            result.append('\\t')
+            continue
+
+        result.append(ch)
+
+    return ''.join(result)
+
+
+def _extract_kv_pairs(raw: str) -> dict:
+    """从破损 JSON 中用正则提取 key-value 对（最后手段）"""
+    result = {}
+    # 匹配 "key": "value" 或 "key": number
+    for match in re.finditer(r'"(\w+)"\s*:\s*"((?:[^"\\]|\\.)*)"', raw):
+        result[match.group(1)] = match.group(2)
+    for match in re.finditer(r'"(\w+)"\s*:\s*(\d+(?:\.\d+)?)', raw):
+        result[match.group(1)] = match.group(2)
+    return result if result else None
 
 
 # ═══════════════════════════════════════════════

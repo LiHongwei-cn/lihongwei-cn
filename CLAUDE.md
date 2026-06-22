@@ -46,7 +46,7 @@
 
 | 项目 | 路径 | 说明 |
 |------|------|------|
-| MUNDO Agent | ~/.hermes/mundo-agent/ | 独立AI智能体，v2.2.6，54模块/30+模型，七处同步 |
+| MUNDO Agent | ~/.hermes/mundo-agent/ | 独立AI智能体，v2.2.8，向量检索/评估框架/MCP Server/可观测性 |
 | 留白 | ~/Applications/留白/ | 情感陪伴小程序，"倾诉的陌生人"，内容感知回复 |
 | Boss直聘自动化 | ~/Desktop/.boss-auto/ | HTTP Server + 浏览器方案，端口8765，AI接mimo |
 
@@ -88,6 +88,63 @@
 | Hermes-Agent.app | Hermes Agent 桌面启动器 |
 | Claude Code.app | Claude Code 桌面启动器 |
 | Claude Code URL Handler.app | Claude Code URL 处理器 |
+
+---
+
+## 安全防火墙（Skill安全审核系统）
+
+**所有进入系统的skill、工具、代码、内容必须经过安全审核。**
+
+### 审核机制
+
+1. **检查缓存优先**：读取 `~/.hermes/security-cache.json`，已审核且通过的skill直接放行
+2. **执行安全扫描**：使用 `python3 ~/Desktop/.SkillSpector/skill_security_integration.py check <路径>`
+3. **处理扫描结果**：
+   - 通过（分数≤20）：更新缓存，标记为`passed`，允许使用
+   - 未通过（分数>20）：向用户报告风险，让用户选择放弃或坚持使用
+
+### 适用场景
+
+- 安装/使用新skill
+- 爬取GitHub高星skill
+- 执行从外部获取的代码
+- 调用MCP工具
+- 下载文件或访问网页
+
+### 用户决策流程
+
+```
+⚠️ 安全警告
+
+Skill: [skill名称]
+风险分数: [分数]/100
+风险等级: [等级]
+发现的问题:
+- [问题1]
+- [问题2]
+
+建议：不建议安装使用此Skill。
+
+请选择：
+1. 放弃使用（推荐）
+2. 坚持使用（我了解风险）
+```
+
+### 批量审核
+
+```bash
+# 批量扫描所有skill
+python3 ~/Desktop/.SkillSpector/scan_all_skills.py
+
+# 更新云仓库页面
+python3 ~/Desktop/.SkillSpector/update_skill_store.py
+```
+
+### 定期维护
+
+- 每月重新扫描所有已安装的skill
+- 更新安全规则库
+- 清理过期缓存
 
 ---
 

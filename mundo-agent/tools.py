@@ -62,6 +62,11 @@ class ToolRegistry:
     def names(self) -> List[str]:
         return list(self._names)
 
+    @property
+    def tools(self) -> List[str]:
+        """返回所有已注册工具名称列表（别名）"""
+        return list(self._names)
+
     def execute(self, name: str, args: Dict) -> str:
         handler = self._handlers.get(name)
         if not handler:
@@ -90,7 +95,7 @@ class ToolRegistry:
                     result += fix_hint
 
             return result
-        except Exception as e:
+        except Exception as e:  # 工具执行外层兜底，必须捕获所有异常给用户友好提示
             err_msg = f"工具 {name} 执行失败: {e}"
             req = self._required.get(name, [])
             if req and any(kw in str(e) for kw in ("缺少", "required", "missing", "必需")):
@@ -270,7 +275,7 @@ def _terminal(args: Dict) -> str:
         return f"[超时: 命令执行超过 {timeout} 秒]"
     except PermissionError:
         return "[错误: 权限不足]"
-    except Exception as e:
+    except (subprocess.SubprocessError, OSError) as e:
         return f"[错误: {type(e).__name__}: {e}]"
 
 
@@ -301,7 +306,7 @@ def _read_file(args: Dict) -> str:
         result = [f"{i:4d}|{line.rstrip()}" for i, line in enumerate(selected, start=start + 1)]
         header = f"文件: {path} (共 {total} 行，显示 {start+1}-{end})"
         return _truncate(header + "\n" + "\n".join(result))
-    except Exception as e:
+    except (OSError, IOError) as e:
         return f"[错误: {e}]"
 
 
@@ -319,7 +324,7 @@ def _write_file(args: Dict) -> str:
         with open(path, "w", encoding="utf-8") as f:
             f.write(content)
         return f"✓ 已写入: {path} ({len(content)} 字符)"
-    except Exception as e:
+    except (OSError, IOError) as e:
         return f"[错误: {e}]"
 
 
@@ -430,7 +435,7 @@ def _git_operation(args: Dict) -> str:
             result = subprocess.run(cmd, shell=True, capture_output=True, text=True,
                                     timeout=30, cwd=workdir)
             return _truncate(result.stdout or "(无输出)")
-        except Exception as e:
+        except (subprocess.SubprocessError, OSError) as e:
             return f"[错误: Git 操作失败: {e}]"
     elif operation == "commit":
         message = args.get("message", "")
@@ -441,7 +446,7 @@ def _git_operation(args: Dict) -> str:
             result = subprocess.run(["git", "commit", "-m", message],
                                     capture_output=True, text=True, cwd=workdir)
             return f"✓ 已提交: {message}\n{result.stdout}"
-        except Exception as e:
+        except (subprocess.SubprocessError, OSError) as e:
             return f"[错误: 提交失败: {e}]"
     elif operation == "create_branch":
         branch_name = args.get("branch_name", "")
@@ -451,7 +456,7 @@ def _git_operation(args: Dict) -> str:
             result = subprocess.run(["git", "checkout", "-b", branch_name],
                                     capture_output=True, text=True, cwd=workdir)
             return f"✓ 已创建分支: {branch_name}\n{result.stdout}"
-        except Exception as e:
+        except (subprocess.SubprocessError, OSError) as e:
             return f"[错误: 创建分支失败: {e}]"
     return f"[错误: 未知 git 操作: {operation}]"
 
