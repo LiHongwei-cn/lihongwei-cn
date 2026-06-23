@@ -1,5 +1,5 @@
 #!/bin/bash
-# MUNDO Agent v2.2.6 — macOS .app 启动脚本
+# MUNDO Agent v2.2.9 — macOS .app 启动脚本（自动同步最新版）
 # 自包含版本：自动检测源码目录，确保启动最新版蒙多
 
 export PATH="/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:$PATH"
@@ -79,9 +79,7 @@ mkdir -p "$HOME/.hermes"
 
 cat > "$HOME/.hermes/MUNDO.command" << 'COMMAND'
 #!/bin/bash
-cd "$HOME/.hermes/mundo-agent"
-source venv/bin/activate 2>/dev/null
-exec python3 mundo.py "$@"
+exec bash "$HOME/.hermes/mundo-agent/mundo.sh" "$@"
 COMMAND
 chmod +x "$HOME/.hermes/MUNDO.command"
 
