@@ -1,22 +1,8 @@
-"""蒙多模型适配层 v2.1.0 — DeepSeek 优先，全模型兼容
+"""蒙多模型适配层 v3.2.0 — 运行时模型适配
 
-核心思想：
-- 每个模型有自己的"性格"，蒙多要学会用不同的方式和它们交流
-- DeepSeek 优先优化，其他模型保持兼容
-- 用最少的 token 做最高效的事
-
-DeepSeek 特性：
-- V3 (deepseek-chat)：通用模型，快速响应，支持 function calling
-- R1 (deepseek-reasoner)：推理模型，支持 CoT，输出 reasoning_content
-- Coder：代码专用，编码能力最强
-- Context Caching：缓存前缀可降成本
-- Anthropic API 兼容端点
-
-其他模型特性：
-- OpenAI GPT-4o/o3：原生 function calling，结构化输出
-- Claude Opus/Sonnet：长上下文，精确遵循指令
-- Gemini 2.5：超长上下文 (1M tokens)，多模态
-- Mistral：快速推理，欧洲合规
+职责：单模型运行时行为调整（token 限制、温度、payload 优化、流式支持）。
+不要放模型选择逻辑 → 去 model_profiles.py。
+不要放 provider 注册数据 → 去 setup.py PROVIDERS。
 """
 
 import os

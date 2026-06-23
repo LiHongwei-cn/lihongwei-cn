@@ -189,8 +189,8 @@ class InputValidator:
         return ValidationResult(is_valid=True, sanitized_value=user_input)
 
     def sanitize_output(self, output: str) -> str:
-        """消毒输出内容，防止敏感信息泄露"""
-        # 移除可能的 API key
+        """消毒输出内容，防止敏感信息泄露 — v3.2.0 扩展覆盖"""
+        # API key / secret / token
         output = re.sub(
             r"['\"]?(?:api[_-]?key|secret|token|password)['\"]?\s*[:=]\s*['\"][^'\"]+['\"]",
             "[REDACTED]",
@@ -198,12 +198,54 @@ class InputValidator:
             flags=re.IGNORECASE,
         )
 
-        # 移除私钥
+        # Bearer Token / JWT
         output = re.sub(
-            r"-----BEGIN\s+(RSA\s+)?PRIVATE\s+KEY-----.*?-----END\s+(RSA\s+)?PRIVATE\s+KEY-----",
+            r"(?:Bearer|Authorization)\s+['\"]?[\w\-.]+\.[\w\-.]+\.[\w\-]+['\"]?",
+            "[BEARER TOKEN REDACTED]",
+            output,
+            flags=re.IGNORECASE,
+        )
+        # 独立 JWT (eyJ 开头)
+        output = re.sub(
+            r"eyJ[\w\-]+\.[\w\-]+\.[\w\-]+",
+            "[JWT REDACTED]",
+            output,
+        )
+
+        # 数据库连接串
+        output = re.sub(
+            r"(?:mongodb|postgres(?:ql)?|mysql|redis|sqlite|jdbc|sqlserver)://[^\s\"'<>]+",
+            "[DB_CONNECTION REDACTED]",
+            output,
+            flags=re.IGNORECASE,
+        )
+
+        # AWS/GCP 密钥
+        output = re.sub(
+            r"(?:AKIA|ASIA)[A-Z0-9]{16}",
+            "[AWS_KEY REDACTED]",
+            output,
+        )
+        output = re.sub(
+            r"AIza[0-9A-Za-z\-_]{35}",
+            "[GCP_KEY REDACTED]",
+            output,
+        )
+
+        # 私钥（覆盖更多格式）
+        output = re.sub(
+            r"-----BEGIN\s+(?:RSA\s+|EC\s+|DSA\s+|OPENSSH\s+)?PRIVATE\s+KEY-----.*?-----END\s+(?:RSA\s+|EC\s+|DSA\s+|OPENSSH\s+)?PRIVATE\s+KEY-----",
             "[PRIVATE KEY REDACTED]",
             output,
             flags=re.DOTALL,
+        )
+
+        # Session cookie / CSRF token
+        output = re.sub(
+            r"(?:session[_-]?id|csrf[_-]?token|auth[_-]?token)\s*[:=]\s*['\"]?[\w\-]{20,}['\"]?",
+            "[SESSION REDACTED]",
+            output,
+            flags=re.IGNORECASE,
         )
 
         # 脱敏手机号
@@ -435,3 +477,9 @@ def get_security() -> SecurityHardening:
     if _security is None:
         _security = SecurityHardening()
     return _security
+
+
+def reset_security():
+    """重置安全模块单例 — 用于测试隔离"""
+    global _security
+    _security = None

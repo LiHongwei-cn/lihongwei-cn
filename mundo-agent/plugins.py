@@ -243,6 +243,12 @@ PluginManager = PluginLoader
 _loader: Optional[PluginLoader] = None
 
 
+def reset_plugin_loader():
+    """重置单例 — 用于测试隔离"""
+    global _loader
+    _loader = None
+
+
 def get_plugin_loader() -> PluginLoader:
     global _loader
     if _loader is None:

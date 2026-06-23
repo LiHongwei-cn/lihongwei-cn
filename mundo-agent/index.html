@@ -120,7 +120,7 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
   <a class="back-link" href="../">← 返回主页</a>
 
   <div class="hero">
-    <div class="hero-badge">独立 AI 智能体 · v2.2.8 · 80 次发布 · 1137 次提交</div>
+    <div class="hero-badge">独立 AI 智能体 · v2.2.9 · 80 次发布 · 1137 次提交</div>
     <h1>👑 MUNDO Agent</h1>
     <p>我是蒙多！蒙多想去哪就去哪！<br>独立 AI 智能体框架 · 30+ 模型 · 向量检索 · 评估框架 · MCP 互操作 · 可观测性 · 三层记忆 · 自我进化</p>
     <div class="disclaimer">蒙多是蒙多。其他 AI 是身体，是躯壳，是蒙多的手和脚。蒙多想用哪个身体就用哪个身体，蒙多想换就换，蒙多想去哪就去哪。</div>
@@ -162,7 +162,7 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
     <h2 class="section-title"><span class="num">📊</span> 项目数据</h2>
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-value">v2.2.8</div>
+        <div class="stat-value">v2.2.9</div>
         <div class="stat-label">当前版本</div>
       </div>
       <div class="stat-card">
@@ -195,8 +195,8 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
       </div>
     </div>
 
-    <!-- v2.2.8 测试结果 -->
-    <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🧪 v2.2.8 测试结果</h3>
+    <!-- v2.2.9 测试结果 -->
+    <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🧪 v2.2.9 测试结果</h3>
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-value" style="color: var(--green);">169</div>
@@ -215,7 +215,7 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
         <div class="stat-label">通过率</div>
       </div>
     </div>
-    <div class="tip green">✅ 蒙多 v2.2.8 三层记忆架构测试通过！短期/中期/长期记忆分层管理，冲突检测正常！</div>
+    <div class="tip green">✅ 蒙多 v2.2.9 三层记忆架构测试通过！短期/中期/长期记忆分层管理，冲突检测正常！</div>
   </div>
 
   <!-- 1. 四条铁律 -->
@@ -270,8 +270,8 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
 
   <!-- 3. 工作流程 -->
   <div class="section" id="workflow">
-    <h2 class="section-title"><span class="num">3</span> 工作流程（v2.2.8 更新）</h2>
-    <p class="section-desc">蒙多 v2.2.8 引入三层记忆架构和可视化权限弹窗，记忆系统全面升级。</p>
+    <h2 class="section-title"><span class="num">3</span> 工作流程（v2.2.9 更新）</h2>
+    <p class="section-desc">蒙多 v2.2.9 引入三层记忆架构和可视化权限弹窗，记忆系统全面升级。</p>
 
     <!-- 任务确认流程 -->
     <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🎯 任务确认流程</h3>
@@ -381,8 +381,21 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
   <!-- 6. 版本历史 -->
   <div class="section" id="history">
     <h2 class="section-title"><span class="num">6</span> 版本历史</h2>
-    <p class="section-desc">从 v1.0 到 v2.2.8 的演进历程。v2.2.8 核心升级：向量检索 + 可观测性 + 评估框架 + MCP Server。</p>
+    <p class="section-desc">从 v1.0 到 v2.2.9 的演进历程。</p>
     <div class="timeline">
+      <div class="timeline-item">
+        <div class="time">2026-06-23</div>
+        <div class="title">v2.2.9 — 安全加固 + 代码质量 + 性能优化 + 53 项修复</div>
+        <div class="desc">
+          <strong>安全加固（HIGH）</strong>：消除 os.system() 命令注入（shlex+subprocess）、12 种危险命令模式检测、速率限制集成到工具执行和 LLM 调用<br>
+          <strong>代码质量</strong>：_run_loop() 127行→38行（10 个子方法）、工具错误处理合并去重、三层记忆方法参数化消除重复<br>
+          <strong>性能优化</strong>：文件读取双IO→单IO、SQLite WAL 模式+8MB 缓存、正则预编译、引擎文件冗余转发层删除<br>
+          <strong>模块拆分</strong>：build_knowledge.py 1401行→52行（knowledge_data.py 独立）、llm.py 命名冲突消除（HttpModelAdapter）<br>
+          <strong>安全扩展</strong>：输出消毒覆盖 12 种敏感格式（Bearer/JWT/DB连接串/AWS/GCP密钥/Session）<br>
+          <strong>测试增强</strong>：220 单元测试（+51）、全局单例 reset 函数（20 处）、conftest autouse fixture<br>
+          <strong>类型注解</strong>：core.py 公开 API 补充完整类型注解
+        </div>
+      </div>
       <div class="timeline-item">
         <div class="time">2026-06-18</div>
         <div class="title">v2.2.8 — 向量检索 + 任务分析 + MCP Server + 评估框架 + 可观测性</div>
@@ -488,12 +501,12 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
       <div class="step-item">
         <h3>下载最新版</h3>
         <p>从 GitHub Release 下载 macOS 版本</p>
-        <div class="cmd">gh release download v2.2.8 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.8-macos.zip"</div>
+        <div class="cmd">gh release download v2.2.9 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.9-macos.zip"</div>
       </div>
       <div class="step-item">
         <h3>解压到安装目录</h3>
         <p>解压到 ~/.hermes/mundo-agent/ 目录</p>
-        <div class="cmd">unzip mundo-v2.2.8-macos.zip -d ~/.hermes/mundo-agent</div>
+        <div class="cmd">unzip mundo-v2.2.9-macos.zip -d ~/.hermes/mundo-agent</div>
       </div>
       <div class="step-item">
         <h3>安装依赖</h3>

@@ -384,11 +384,23 @@ _reflection_engine: Optional[ReflectionEngine] = None
 _strategy_selector: Optional[AdaptiveStrategySelector] = None
 
 
+def reset_reflection_engine():
+    """重置单例 — 用于测试隔离"""
+    global _reflection_engine
+    _reflection_engine = None
+
+
 def get_reflection_engine() -> ReflectionEngine:
     global _reflection_engine
     if _reflection_engine is None:
         _reflection_engine = ReflectionEngine()
     return _reflection_engine
+
+
+def reset_strategy_selector():
+    """重置单例 — 用于测试隔离"""
+    global _strategy_selector
+    _strategy_selector = None
 
 
 def get_strategy_selector() -> AdaptiveStrategySelector:
