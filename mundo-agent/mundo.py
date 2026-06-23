@@ -442,7 +442,7 @@ class MundoCLI:
             console.print(f"    最近: {p['seen']}")
 
     def cmd_update(self):
-        """自动更新蒙多到最新版本"""
+        """自动更新蒙多到最新版本 — v3.2.0 通配同步，无需维护文件列表"""
         import shutil
         console.print("\n  [gold]检查更新...[/]")
 
@@ -454,7 +454,6 @@ class MundoCLI:
         console.print(f"  [yellow]发现新版本: v{latest}[/]")
         console.print(f"  [dim]当前版本: v{VERSION}[/]\n")
 
-        # 检查仓库目录是否存在
         repo_dir = Path.home() / "Desktop" / "lihongwei-cn" / "mundo-agent"
         if not repo_dir.exists():
             console.print(f"  [error]✗ 仓库目录不存在: {repo_dir}[/]")
@@ -463,22 +462,18 @@ class MundoCLI:
 
         console.print(f"  [gold]正在从仓库同步...[/]")
 
-        # 需要同步的文件列表
-        sync_files = [
-            "mundo.py", "constants.py", "core.py", "llm.py",
-            "delegation.py", "hermes_integration.py", "claude_integration.py",
-            "codex_integration.py", "tools.py", "display.py", "setup.py",
-            "approval.py", "memory.py", "cache.py",
-            "context_mapper.py", "dispatch.py",
-            "events.py", "security_hardening.py",
-            "model_adapter.py", "model_profiles.py",
-            "reflection_engine.py", "intelligent_recovery.py",
-            "knowledge_retriever.py", "knowledge_data.py",
-            "agents.py", "version.txt"
-        ]
-
         synced = 0
-        for fname in sync_files:
+        # 同步所有 .py 文件（不再维护硬编码列表）
+        for src in sorted(repo_dir.glob("*.py")):
+            dst = MUNDO_HOME / src.name
+            try:
+                shutil.copy2(str(src), str(dst))
+                synced += 1
+            except Exception as e:
+                console.print(f"  [error]✗ 同步失败 {src.name}: {e}[/]")
+
+        # 同步核心配置文件
+        for fname in ["version.txt", "requirements.txt", "mundo.sh"]:
             src = repo_dir / fname
             dst = MUNDO_HOME / fname
             if src.exists():
@@ -488,7 +483,24 @@ class MundoCLI:
                 except Exception as e:
                     console.print(f"  [error]✗ 同步失败 {fname}: {e}[/]")
 
-        console.print(f"\n  [success]✓ 同步完成: {synced}/{len(sync_files)} 个文件[/]")
+        # 同步子目录
+        for sub in ["tests", "skills", "config", "mundo_agent", "skill_store"]:
+            sub_src = repo_dir / sub
+            sub_dst = MUNDO_HOME / sub
+            if sub_src.is_dir():
+                try:
+                    if sub_dst.exists():
+                        shutil.rmtree(sub_dst)
+                    shutil.copytree(
+                        sub_src, sub_dst,
+                        ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+                        dirs_exist_ok=True,
+                    )
+                    synced += 1
+                except Exception as e:
+                    console.print(f"  [error]✗ 同步目录 {sub} 失败: {e}[/]")
+
+        console.print(f"\n  [success]✓ 同步完成: {synced} 项[/]")
         console.print(f"  [gold]请重启蒙多以使用新版本 v{latest}[/]\n")
 
     # ─────────────────────────────────────────
