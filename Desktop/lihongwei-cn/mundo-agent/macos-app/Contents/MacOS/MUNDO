@@ -1,12 +1,18 @@
 #!/bin/bash
-# MUNDO Agent v2.2.1 — macOS .app 启动脚本
+# MUNDO Agent v2.2.9 — macOS .app 启动入口
+# 程序坞点击 → 自动同步最新版 → 启动蒙多
 
-SCRIPT_PATH="$HOME/.hermes/mundo-agent/mundo.sh"
+MUNDO_SH="$HOME/.hermes/mundo-agent/mundo.sh"
+
+if [ ! -f "$MUNDO_SH" ]; then
+    osascript -e "display dialog \"蒙多未安装！\n\n请先运行安装脚本。\n\n路径: $HOME/.hermes/mundo-agent/\" buttons {\"确定\"} default button \"确定\" with icon stop with title \"MUNDO 错误\""
+    exit 1
+fi
 
 osascript <<EOF
 tell application "Terminal"
     activate
-    do script "bash \"$SCRIPT_PATH\""
+    do script "bash '$MUNDO_SH'"
     set custom title of front window to "MUNDO — THE EMPEROR"
 end tell
 EOF
