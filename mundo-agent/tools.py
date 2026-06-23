@@ -243,11 +243,45 @@ def _truncate(text: str, limit: int = MAX_OUTPUT_CHARS) -> str:
 # 工具实现
 # ═══════════════════════════════════════════════
 
+# 终端命令安全模式 — 防御纵深第二层
+_DANGEROUS_CMD_PATTERNS = [
+    r"\brm\s+-rf\s+/",           # 递归删除根目录
+    r"\bmkfs\b",                  # 格式化文件系统
+    r"\bdd\s+.*of=/dev/",         # 写入设备
+    r":\(\)\{.*\|.*&\s*\};\:",    # Fork bomb
+    r"\bchmod\s+777\s+/",         # 全局可写
+    r"\bwipefs\b",                # 清除文件系统签名
+    r"\bshutdown\b",              # 关机
+    r"\breboot\b",                # 重启
+    r"\binit\s+[06]\b",           # 切换运行级别
+    r">\s*/dev/sd[a-z]",          # 覆盖磁盘设备
+    r">\s*/dev/nvme",             # 覆盖 NVMe 设备
+    r"\bcurl.*\|\s*(ba)?sh\b",   # curl-pipe-shell 模式
+    r"\bwget.*\|\s*(ba)?sh\b",   # wget-pipe-shell 模式
+]
+
+_DANGEROUS_CMD_RE = [re.compile(p, re.IGNORECASE) for p in _DANGEROUS_CMD_PATTERNS]
+
+
+def _validate_command_safety(cmd: str) -> Optional[str]:
+    """验证命令安全性 — 返回 None 表示安全，返回字符串表示危险原因"""
+    for pattern in _DANGEROUS_CMD_RE:
+        if pattern.search(cmd):
+            return f"命令包含危险模式: {pattern.pattern}"
+    return None
+
+
 def _terminal(args: Dict) -> str:
     cmd = args.get("command", "")
     if not cmd:
         keys = list(args.keys()) if args else []
         return f"[错误: terminal 缺少 command 参数，收到: {keys}]"
+
+    # 第一层防御：行内安全验证
+    danger_reason = _validate_command_safety(cmd)
+    if danger_reason:
+        return f"[安全拒绝] {danger_reason}"
+
     workdir = args.get("workdir") or os.getcwd()
     timeout = args.get("timeout", 120)
     try:
@@ -293,16 +327,12 @@ def _read_file(args: Dict) -> str:
     if os.path.isdir(path):
         return f"[错误: 是目录不是文件: {path}]"
     try:
-        from itertools import islice
         with open(path, "r", encoding="utf-8", errors="replace") as f:
-            if offset > 1:
-                list(islice(f, offset - 1))
-            selected = list(islice(f, limit))
-        total = 0
-        with open(path, "r", encoding="utf-8", errors="replace") as f:
-            total = sum(1 for _ in f)
+            all_lines = f.readlines()
+        total = len(all_lines)
         start = max(0, offset - 1)
-        end = min(total, start + len(selected))
+        end = min(total, start + limit)
+        selected = all_lines[start:end]
         result = [f"{i:4d}|{line.rstrip()}" for i, line in enumerate(selected, start=start + 1)]
         header = f"文件: {path} (共 {total} 行，显示 {start+1}-{end})"
         return _truncate(header + "\n" + "\n".join(result))

@@ -10,6 +10,54 @@ from unittest.mock import MagicMock
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
+# ═══════════════════════════════════════════════
+# 全局单例重置 — 确保每个测试独立运行
+# ═══════════════════════════════════════════════
+
+_SINGLETON_RESETS = [
+    ("security_hardening", "reset_security"),
+    ("policy", "reset_policy_engine"),
+    ("reflection_engine", "reset_reflection_engine"),
+    ("reflection_engine", "reset_strategy_selector"),
+    ("intelligent_recovery", "reset_recovery"),
+    ("intelligent_recovery", "reset_compressor"),
+    ("knowledge_retriever", "reset_knowledge_retriever"),
+    ("cache", "reset_cache_manager"),
+    ("events", "reset_event_bus"),
+    ("sandbox", "reset_sandbox"),
+    ("plugins", "reset_plugin_loader"),
+    ("skills", "reset_skill_registry"),
+    ("task_analyzer", "reset_task_analyzer"),
+    ("observability", "reset_logger"),
+    ("observability", "reset_tracer"),
+    ("observability", "reset_metrics"),
+    ("runtime_config", "reset_config"),
+    ("runtime_config", "reset_config_manager"),
+    ("mcp_server", "reset_mcp_server"),
+]
+
+
+def _reset_all_singletons():
+    """重置所有模块级全局单例 — 确保测试隔离"""
+    for module_name, func_name in _SINGLETON_RESETS:
+        try:
+            mod = __import__(module_name)
+            reset_fn = getattr(mod, func_name, None)
+            if reset_fn:
+                reset_fn()
+        except Exception:
+            pass  # 模块可能无法导入，跳过
+
+
+@pytest.fixture(autouse=True)
+def reset_singletons():
+    """每个测试前自动重置所有全局单例"""
+    _reset_all_singletons()
+    yield
+
+
+# ═══════════════════════════════════════════════
+
 @pytest.fixture
 def temp_dir(tmp_path):
     """创建临时目录"""

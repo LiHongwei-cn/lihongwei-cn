@@ -242,6 +242,12 @@ class CacheManager:
 _cache: Optional[CacheManager] = None
 
 
+def reset_cache_manager():
+    """重置单例 — 用于测试隔离"""
+    global _cache
+    _cache = None
+
+
 def get_cache_manager() -> CacheManager:
     global _cache
     if _cache is None:

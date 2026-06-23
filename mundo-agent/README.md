@@ -1,4 +1,4 @@
-# 👑 MUNDO Agent v2.2.8
+# 👑 MUNDO Agent v2.2.9
 
 **我是蒙多！蒙多想去哪就去哪！**
 
@@ -27,10 +27,10 @@
 
 ```bash
 # 下载最新版
-gh release download v2.2.8 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.8-macos.zip"
+gh release download v2.2.9 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.9-macos.zip"
 
 # 解压到安装目录
-unzip mundo-v2.2.8-macos.zip -d ~/.hermes/mundo-agent
+unzip mundo-v2.2.9-macos.zip -d ~/.hermes/mundo-agent
 
 # 运行
 python3 ~/.hermes/mundo-agent/mundo.py
@@ -161,7 +161,21 @@ curl -X POST http://127.0.0.1:3100 -H 'Content-Type: application/json' -d '{
 
 ## 📝 版本历史
 
-### v2.2.8 (2026-06-18)
+### v2.2.9 (2026-06-23)
+- 安全加固：消除 os.system() 命令注入，集成 shlex + subprocess 安全执行
+- 终端安全：12 种危险命令模式检测，纵深防御
+- 代码质量：_run_loop() 127行→38行，拆分为 10 个独立子方法
+- 代码去重：合并三层记忆方法、工具错误处理统一化
+- 性能优化：文件读取双 IO→单 IO、SQLite WAL 模式、正则预编译
+- 模块拆分：build_knowledge.py 1401行→52行（knowledge_data.py 独立）
+- 安全扩展：输出消毒覆盖 Bearer/JWT/DB连接串/AWS密钥等 12 种格式
+- 速率限制：集成到工具执行和 LLM 调用流程
+- 依赖注入：20 处全局单例添加 reset_*() 函数，测试 autouse fixture
+- 类型注解：core.py 公开 API 补充完整类型注解
+- 测试增强：新增 51 个单元测试（220 总计）
+- 模块边界：llm.py ModelAdapter → HttpModelAdapter，消除命名冲突
+
+### v2.2.9 (2026-06-18)
 - 向量检索：ChromaDB + BM25 + 语义哈希三路融合
 - 任务分析引擎：自动分类、Markdown 解析、需求提取、子任务拆解
 - MCP Server：蒙多能力通过标准协议对外暴露

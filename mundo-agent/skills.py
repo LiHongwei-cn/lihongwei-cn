@@ -247,6 +247,12 @@ class SkillRegistry:
 _registry: Optional[SkillRegistry] = None
 
 
+def reset_skill_registry():
+    """重置单例 — 用于测试隔离"""
+    global _registry
+    _registry = None
+
+
 def get_skill_registry() -> SkillRegistry:
     global _registry
     if _registry is None:

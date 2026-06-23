@@ -392,6 +392,12 @@ _tracer: Optional[Tracer] = None
 _metrics: Optional[MetricsCollector] = None
 
 
+def reset_logger():
+    """重置单例 — 用于测试隔离"""
+    global _logger
+    _logger = None
+
+
 def get_logger(module: str = "mundo") -> StructuredLogger:
     global _logger
     if _logger is None:
@@ -404,6 +410,12 @@ def get_logger(module: str = "mundo") -> StructuredLogger:
     return _logger
 
 
+def reset_tracer():
+    """重置单例 — 用于测试隔离"""
+    global _tracer
+    _tracer = None
+
+
 def get_tracer() -> Tracer:
     global _tracer
     if _tracer is None:
@@ -413,6 +425,12 @@ def get_tracer() -> Tracer:
             trace_file=MUNDO_HOME / "logs" / "traces.jsonl",
         )
     return _tracer
+
+
+def reset_metrics():
+    """重置单例 — 用于测试隔离"""
+    global _metrics
+    _metrics = None
 
 
 def get_metrics() -> MetricsCollector:

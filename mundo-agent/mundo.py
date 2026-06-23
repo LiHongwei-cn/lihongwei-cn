@@ -13,6 +13,7 @@ v2.2.5: 修复启动器路径问题 + 清理不存在的文件引用 + 同步最
 import os
 import sys
 import subprocess
+import shlex
 from pathlib import Path
 from typing import Optional
 import uuid
@@ -469,7 +470,10 @@ class MundoCLI:
             "codex_integration.py", "tools.py", "display.py", "setup.py",
             "approval.py", "memory.py", "cache.py",
             "context_mapper.py", "dispatch.py",
-            "events.py", "engine.py",
+            "events.py", "security_hardening.py",
+            "model_adapter.py", "model_profiles.py",
+            "reflection_engine.py", "intelligent_recovery.py",
+            "knowledge_retriever.py", "knowledge_data.py",
             "agents.py", "version.txt"
         ]
 
@@ -562,10 +566,33 @@ class MundoCLI:
             cmd = line[1:].strip()
             if cmd:
                 policy = get_policy_engine()
-                if policy.approve_tool_call("terminal", {"command": cmd}):
-                    os.system(cmd)
-                else:
+                if not policy.approve_tool_call("terminal", {"command": cmd}):
                     console.print("  [dim]命令已取消[/]")
+                    return True
+                # 安全检查
+                from security_hardening import get_security
+                sec_result = get_security().validate_tool_call("terminal", {"command": cmd})
+                if not sec_result.is_valid:
+                    console.print(f"  [error]安全拒绝: {', '.join(sec_result.threats)}[/]")
+                    return True
+                try:
+                    args = shlex.split(cmd)
+                    result = subprocess.run(
+                        args, capture_output=True, text=True,
+                        timeout=120, cwd=os.getcwd(),
+                    )
+                    if result.stdout:
+                        console.print(result.stdout.rstrip())
+                    if result.stderr:
+                        console.print(f"[stderr]\n{result.stderr.rstrip()[:2000]}")
+                    if result.returncode != 0:
+                        console.print(f"[dim]exit code: {result.returncode}[/]")
+                except FileNotFoundError:
+                    console.print(f"  [error]命令未找到: {shlex.split(cmd)[0] if cmd else cmd}[/]")
+                except subprocess.TimeoutExpired:
+                    console.print(f"  [error]命令超时 (120s)[/]")
+                except Exception as e:
+                    console.print(f"  [error]执行失败: {e}[/]")
             return True
         if not line.startswith("/"):
             return False
@@ -579,7 +606,7 @@ class MundoCLI:
             "/quit": lambda: self._exit(),
             "/exit": lambda: self._exit(),
             "/q": lambda: self._exit(),
-            "/clear": lambda: os.system("clear"),
+            "/clear": lambda: subprocess.run(["clear"], capture_output=False),
             "/status": lambda: self.show_status(),
             "/reset": lambda: self._reset(),
             "/tools": lambda: self._show_tools(),
