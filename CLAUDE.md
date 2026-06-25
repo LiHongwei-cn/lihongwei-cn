@@ -48,7 +48,7 @@
 |------|------|------|
 | MUNDO Agent | ~/.hermes/mundo-agent/ | 独立AI智能体，v2.2.8，向量检索/评估框架/MCP Server/可观测性 |
 | 留白 | ~/Applications/留白/ | 情感陪伴小程序，"倾诉的陌生人"，内容感知回复 |
-| 川土 Datasheet 生成器 | ~/Desktop/川土datasheet/川土datasheet/ | Flask + PyMuPDF，PDF提取→川土风格化→翻译→导出Word/PDF |
+| 川土 Datasheet 引擎 | ~/Desktop/川土datasheet/川土datasheet/ | 四层架构(Parser→AST→Translator→Renderer)，零结构破坏，已通过134块保真验证 |
 | Boss直聘自动化 | ~/Desktop/.boss-auto/ | HTTP Server + 浏览器方案，端口8765，AI接mimo |
 
 ### 仓库内项目（~/Desktop/lihongwei-cn/）
