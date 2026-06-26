@@ -28,3 +28,9 @@ bot/venv/
 tools/venv/
 mundo-cloud/venv/
 *.backup
+
+# Node.js
+node_modules/
+
+# 本地构建产物
+site/
