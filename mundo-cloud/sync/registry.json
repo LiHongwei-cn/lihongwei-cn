@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "last_sync": "2026-06-26T01:07:54.491792Z",
-    "total_projects": 96,
+    "last_sync": "2026-06-27T01:02:05.780559Z",
+    "total_projects": 94,
     "source": "github-search-api"
   },
   "projects": [
@@ -19,7 +19,7 @@
         "brainstorming"
       ],
       "last_updated": "Jun 25, 2026, 2:35 AM UTC",
-      "crawled_at": "2026-06-26T01:07:36.317798+00:00"
+      "crawled_at": "2026-06-27T01:01:51.193777+00:00"
     },
     {
       "name": "affaan-m/ECC",
@@ -35,17 +35,17 @@
         "claude"
       ],
       "last_updated": "Jun 25, 2026, 11:47 PM UTC",
-      "crawled_at": "2026-06-26T01:06:34.581360+00:00"
+      "crawled_at": "2026-06-27T01:00:49.832547+00:00"
     },
     {
       "name": "multica-ai/andrej-karpathy-skills",
       "url": "https://github.com/multica-ai/andrej-karpathy-skills",
       "description": "A single",
-      "stars": 182000,
+      "stars": 183000,
       "language": "",
       "topics": [],
       "last_updated": "Apr 20, 2026, 10:05 AM UTC",
-      "crawled_at": "2026-06-26T01:06:34.581776+00:00"
+      "crawled_at": "2026-06-27T01:00:49.833009+00:00"
     },
     {
       "name": "x1xhlol/system-prompts-and-models-of-ai-tools",
@@ -61,23 +61,23 @@
         "devin"
       ],
       "last_updated": "Jun 12, 2026, 8:45 AM UTC",
-      "crawled_at": "2026-06-26T01:06:57.317728+00:00"
+      "crawled_at": "2026-06-27T01:01:12.049731+00:00"
     },
     {
       "name": "anthropics/claude-code",
       "url": "https://github.com/anthropics/claude-code",
       "description": "None",
-      "stars": 134000,
+      "stars": 135000,
       "language": "Python",
       "topics": [],
-      "last_updated": "Jun 25, 2026, 9:45 PM UTC",
-      "crawled_at": "2026-06-26T01:06:57.318025+00:00"
+      "last_updated": "Jun 26, 2026, 9:29 PM UTC",
+      "crawled_at": "2026-06-27T01:01:12.050299+00:00"
     },
     {
       "name": "farion1231/cc-switch",
       "url": "https://github.com/farion1231/cc-switch",
       "description": "A cross-platform desktop All-in-One assistant for",
-      "stars": 108000,
+      "stars": 109000,
       "language": "Rust",
       "topics": [
         "desktop-app",
@@ -86,14 +86,14 @@
         "typescript",
         "skills"
       ],
-      "last_updated": "Jun 26, 2026, 1:06 AM UTC",
-      "crawled_at": "2026-06-26T01:06:57.318354+00:00"
+      "last_updated": "Jun 26, 2026, 3:30 PM UTC",
+      "crawled_at": "2026-06-27T01:01:12.050935+00:00"
     },
     {
       "name": "thedotmack/claude-mem",
       "url": "https://github.com/thedotmack/claude-mem",
       "description": "Persistent Context Across Sessions for Every",
-      "stars": 84300,
+      "stars": 84500,
       "language": "JavaScript",
       "topics": [
         "ai",
@@ -103,13 +103,13 @@
         "ai-agents"
       ],
       "last_updated": "Jun 25, 2026, 10:02 PM UTC",
-      "crawled_at": "2026-06-26T01:06:57.318689+00:00"
+      "crawled_at": "2026-06-27T01:01:12.051558+00:00"
     },
     {
       "name": "JuliusBrussee/caveman",
       "url": "https://github.com/JuliusBrussee/caveman",
       "description": "🪨 why use many token when few token do trick —",
-      "stars": 76900,
+      "stars": 77200,
       "language": "JavaScript",
       "topics": [
         "ai",
@@ -119,13 +119,13 @@
         "caveman"
       ],
       "last_updated": "Jun 12, 2026, 1:51 PM UTC",
-      "crawled_at": "2026-06-26T01:06:34.582162+00:00"
+      "crawled_at": "2026-06-27T01:00:49.833483+00:00"
     },
     {
       "name": "bytedance/deer-flow",
       "url": "https://github.com/bytedance/deer-flow",
       "description": "An open-source long-horizon SuperAgent harness that researches,",
-      "stars": 74700,
+      "stars": 74900,
       "language": "Python",
       "topics": [
         "nodejs",
@@ -134,14 +134,14 @@
         "typescript",
         "ai"
       ],
-      "last_updated": "Jun 25, 2026, 3:57 PM UTC",
-      "crawled_at": "2026-06-26T01:07:36.318145+00:00"
+      "last_updated": "Jun 26, 2026, 7:39 AM UTC",
+      "crawled_at": "2026-06-27T01:01:51.194163+00:00"
     },
     {
       "name": "safishamsi/graphify",
       "url": "https://github.com/safishamsi/graphify",
       "description": "AI",
-      "stars": 72100,
+      "stars": 72600,
       "language": "Python",
       "topics": [
         "tree-sitter",
@@ -150,14 +150,14 @@
         "knowledge-graph",
         "leiden"
       ],
-      "last_updated": "Jun 25, 2026, 7:33 PM UTC",
-      "crawled_at": "2026-06-26T01:06:34.582553+00:00"
+      "last_updated": "Jun 26, 2026, 5:08 PM UTC",
+      "crawled_at": "2026-06-27T01:00:49.833956+00:00"
     },
     {
       "name": "nexu-io/open-design",
       "url": "https://github.com/nexu-io/open-design",
       "description": "🎨 Local-first, open-source",
-      "stars": 71200,
+      "stars": 71700,
       "language": "TypeScript",
       "topics": [
         "desktop-app",
@@ -166,14 +166,14 @@
         "design-tools",
         "no-code"
       ],
-      "last_updated": "Jun 25, 2026, 7:43 PM UTC",
-      "crawled_at": "2026-06-26T01:06:34.582920+00:00"
+      "last_updated": "Jun 26, 2026, 4:57 PM UTC",
+      "crawled_at": "2026-06-27T01:00:49.834474+00:00"
     },
     {
       "name": "shareAI-lab/learn-claude-code",
       "url": "https://github.com/shareAI-lab/learn-claude-code",
       "description": "Bash is all you need - A nano",
-      "stars": 68400,
+      "stars": 68600,
       "language": "Python",
       "topics": [
         "python",
@@ -182,14 +182,14 @@
         "teaching",
         "educational"
       ],
-      "last_updated": "Jun 25, 2026, 6:42 PM UTC",
-      "crawled_at": "2026-06-26T01:06:57.319021+00:00"
+      "last_updated": "Jun 26, 2026, 7:36 PM UTC",
+      "crawled_at": "2026-06-27T01:01:12.052229+00:00"
     },
     {
       "name": "addyosmani/agent-skills",
       "url": "https://github.com/addyosmani/agent-skills",
       "description": "Production-grade engineering",
-      "stars": 66800,
+      "stars": 67000,
       "language": "Shell",
       "topics": [
         "skills",
@@ -199,13 +199,13 @@
         "claude-code"
       ],
       "last_updated": "Jun 25, 2026, 5:51 PM UTC",
-      "crawled_at": "2026-06-26T01:07:36.318490+00:00"
+      "crawled_at": "2026-06-27T01:01:51.194534+00:00"
     },
     {
       "name": "code-yeongyu/oh-my-openagent",
       "url": "https://github.com/code-yeongyu/oh-my-openagent",
       "description": "omo/lazycodex: The",
-      "stars": 63600,
+      "stars": 63700,
       "language": "TypeScript",
       "topics": [
         "typescript",
@@ -214,14 +214,14 @@
         "ide",
         "tui"
       ],
-      "last_updated": "Jun 25, 2026, 6:04 PM UTC",
-      "crawled_at": "2026-06-26T01:06:57.319349+00:00"
+      "last_updated": "Jun 26, 2026, 5:34 PM UTC",
+      "crawled_at": "2026-06-27T01:01:12.052751+00:00"
     },
     {
       "name": "ruvnet/ruflo",
       "url": "https://github.com/ruvnet/ruflo",
       "description": "🌊 The leading",
-      "stars": 61500,
+      "stars": 61600,
       "language": "TypeScript",
       "topics": [
         "npm",
@@ -230,14 +230,14 @@
         "multi-agent",
         "swarm"
       ],
-      "last_updated": "Jun 25, 2026, 11:59 PM UTC",
-      "crawled_at": "2026-06-26T01:06:57.319692+00:00"
+      "last_updated": "Jun 27, 2026, 12:34 AM UTC",
+      "crawled_at": "2026-06-27T01:01:12.053260+00:00"
     },
     {
       "name": "shanraisshan/claude-code-best-practice",
       "url": "https://github.com/shanraisshan/claude-code-best-practice",
       "description": "from vibe",
-      "stars": 60600,
+      "stars": 61100,
       "language": "HTML",
       "topics": [
         "ai",
@@ -246,14 +246,14 @@
         "ai-agents",
         "claude"
       ],
-      "last_updated": "Jun 25, 2026, 6:35 AM UTC",
-      "crawled_at": "2026-06-26T01:06:57.320165+00:00"
+      "last_updated": "Jun 26, 2026, 7:34 AM UTC",
+      "crawled_at": "2026-06-27T01:01:12.053780+00:00"
     },
     {
       "name": "DietrichGebert/ponytail",
       "url": "https://github.com/DietrichGebert/ponytail",
       "description": "Makes your AI",
-      "stars": 58100,
+      "stars": 60200,
       "language": "JavaScript",
       "topics": [
         "developer-tools",
@@ -262,14 +262,14 @@
         "yagni",
         "llm"
       ],
-      "last_updated": "Jun 26, 2026, 1:02 AM UTC",
-      "crawled_at": "2026-06-26T01:06:57.320513+00:00"
+      "last_updated": "Jun 26, 2026, 1:28 AM UTC",
+      "crawled_at": "2026-06-27T01:01:12.054281+00:00"
     },
     {
       "name": "santifer/career-ops",
       "url": "https://github.com/santifer/career-ops",
       "description": "AI-powered job search system built on",
-      "stars": 55700,
+      "stars": 56000,
       "language": "JavaScript",
       "topics": [
         "resume",
@@ -278,24 +278,24 @@
         "open-source",
         "automation"
       ],
-      "last_updated": "Jun 25, 2026, 7:40 PM UTC",
-      "crawled_at": "2026-06-26T01:06:34.583267+00:00"
+      "last_updated": "Jun 26, 2026, 9:52 PM UTC",
+      "crawled_at": "2026-06-27T01:00:49.834923+00:00"
     },
     {
       "name": "colbymchenry/codegraph",
       "url": "https://github.com/colbymchenry/codegraph",
       "description": "Pre-indexed",
-      "stars": 54600,
+      "stars": 55000,
       "language": "TypeScript",
       "topics": [],
-      "last_updated": "Jun 24, 2026, 10:20 PM UTC",
-      "crawled_at": "2026-06-26T01:07:03.588675+00:00"
+      "last_updated": "Jun 27, 2026, 12:31 AM UTC",
+      "crawled_at": "2026-06-27T01:01:18.335341+00:00"
     },
     {
       "name": "Leonxlnx/taste-skill",
       "url": "https://github.com/Leonxlnx/taste-skill",
       "description": "Taste-",
-      "stars": 51000,
+      "stars": 51600,
       "language": "JavaScript",
       "topics": [
         "agent",
@@ -305,13 +305,13 @@
         "skills"
       ],
       "last_updated": "Jun 20, 2026, 11:05 PM UTC",
-      "crawled_at": "2026-06-26T01:07:36.318826+00:00"
+      "crawled_at": "2026-06-27T01:01:51.194899+00:00"
     },
     {
       "name": "hesreallyhim/awesome-claude-code",
       "url": "https://github.com/hesreallyhim/awesome-claude-code",
       "description": "A curated list of awesome",
-      "stars": 47300,
+      "stars": 47400,
       "language": "Python",
       "topics": [
         "awesome",
@@ -321,13 +321,13 @@
         "claude"
       ],
       "last_updated": "Apr 27, 2026, 2:40 PM UTC",
-      "crawled_at": "2026-06-26T01:06:34.583627+00:00"
+      "crawled_at": "2026-06-27T01:00:49.835351+00:00"
     },
     {
       "name": "sickn33/antigravity-awesome-skills",
       "url": "https://github.com/sickn33/antigravity-awesome-skills",
       "description": "Installable GitHub library of 1,600+ agentic",
-      "stars": 41700,
+      "stars": 41800,
       "language": "Python",
       "topics": [
         "mcp",
@@ -336,14 +336,14 @@
         "ai-agents",
         "ai-workflows"
       ],
-      "last_updated": "Jun 25, 2026, 11:36 PM UTC",
-      "crawled_at": "2026-06-26T01:06:34.583984+00:00"
+      "last_updated": "Jun 26, 2026, 7:20 AM UTC",
+      "crawled_at": "2026-06-27T01:00:49.835755+00:00"
     },
     {
       "name": "danny-avila/LibreChat",
       "url": "https://github.com/danny-avila/LibreChat",
       "description": "Enhanced ChatGPT Clone: Features Agents, MCP,",
-      "stars": 39800,
+      "stars": 39900,
       "language": "TypeScript",
       "topics": [
         "aws",
@@ -352,14 +352,14 @@
         "clone",
         "azure"
       ],
-      "last_updated": "Jun 25, 2026, 11:23 PM UTC",
-      "crawled_at": "2026-06-26T01:06:34.584338+00:00"
+      "last_updated": "Jun 26, 2026, 8:20 PM UTC",
+      "crawled_at": "2026-06-27T01:00:49.836154+00:00"
     },
     {
       "name": "luongnv89/claude-howto",
       "url": "https://github.com/luongnv89/claude-howto",
       "description": "A visual, example-driven guide to",
-      "stars": 38200,
+      "stars": 38400,
       "language": "Python",
       "topics": [
         "tutorial",
@@ -367,13 +367,13 @@
         "claude-code"
       ],
       "last_updated": "Jun 24, 2026, 1:46 PM UTC",
-      "crawled_at": "2026-06-26T01:07:03.590189+00:00"
+      "crawled_at": "2026-06-27T01:01:18.337390+00:00"
     },
     {
       "name": "kepano/obsidian-skills",
       "url": "https://github.com/kepano/obsidian-skills",
       "description": "Agent",
-      "stars": 38200,
+      "stars": 38400,
       "language": "",
       "topics": [
         "markdown",
@@ -383,7 +383,7 @@
         "hermes"
       ],
       "last_updated": "Jun 8, 2026, 4:12 PM UTC",
-      "crawled_at": "2026-06-26T01:07:18.107769+00:00"
+      "crawled_at": "2026-06-27T01:01:30.896920+00:00"
     },
     {
       "name": "wshobson/agents",
@@ -399,7 +399,7 @@
         "multi-agent"
       ],
       "last_updated": "Jun 25, 2026, 1:03 PM UTC",
-      "crawled_at": "2026-06-26T01:07:03.590592+00:00"
+      "crawled_at": "2026-06-27T01:01:18.338025+00:00"
     },
     {
       "name": "Yeachan-Heo/oh-my-claudecode",
@@ -415,13 +415,13 @@
         "claude"
       ],
       "last_updated": "Jun 25, 2026, 8:56 PM UTC",
-      "crawled_at": "2026-06-26T01:07:03.590983+00:00"
+      "crawled_at": "2026-06-27T01:01:18.338667+00:00"
     },
     {
       "name": "coreyhaines31/marketingskills",
       "url": "https://github.com/coreyhaines31/marketingskills",
       "description": "Marketing",
-      "stars": 35000,
+      "stars": 35100,
       "language": "JavaScript",
       "topics": [
         "marketing",
@@ -429,13 +429,13 @@
         "claude"
       ],
       "last_updated": "Jun 17, 2026, 6:35 AM UTC",
-      "crawled_at": "2026-06-26T01:06:34.584674+00:00"
+      "crawled_at": "2026-06-27T01:00:49.836527+00:00"
     },
     {
       "name": "Imbad0202/academic-research-skills",
       "url": "https://github.com/Imbad0202/academic-research-skills",
       "description": "Academic Research",
-      "stars": 34500,
+      "stars": 34700,
       "language": "Python",
       "topics": [
         "claude",
@@ -445,13 +445,13 @@
         "ai-research"
       ],
       "last_updated": "Jun 24, 2026, 7:19 AM UTC",
-      "crawled_at": "2026-06-26T01:06:40.479278+00:00"
+      "crawled_at": "2026-06-27T01:00:55.631687+00:00"
     },
     {
       "name": "K-Dense-AI/scientific-agent-skills",
       "url": "https://github.com/K-Dense-AI/scientific-agent-skills",
       "description": "Turn any AI agent into an AI Scientist. The #1 Agent",
-      "stars": 29300,
+      "stars": 29400,
       "language": "Python",
       "topics": [
         "bioinformatics",
@@ -461,7 +461,7 @@
         "scientific-computing"
       ],
       "last_updated": "Jun 23, 2026, 11:48 PM UTC",
-      "crawled_at": "2026-06-26T01:06:40.479652+00:00"
+      "crawled_at": "2026-06-27T01:00:55.632378+00:00"
     },
     {
       "name": "iOfficeAI/AionUi",
@@ -476,8 +476,8 @@
         "opencode",
         "chatbot"
       ],
-      "last_updated": "Jun 25, 2026, 11:41 AM UTC",
-      "crawled_at": "2026-06-26T01:07:03.592109+00:00"
+      "last_updated": "Jun 26, 2026, 2:18 PM UTC",
+      "crawled_at": "2026-06-27T01:01:18.340575+00:00"
     },
     {
       "name": "BloopAI/vibe-kanban",
@@ -493,13 +493,13 @@
         "ai-agents"
       ],
       "last_updated": "Apr 24, 2026, 9:17 AM UTC",
-      "crawled_at": "2026-06-26T01:07:09.724427+00:00"
+      "crawled_at": "2026-06-27T01:01:24.850114+00:00"
     },
     {
       "name": "VoltAgent/awesome-agent-skills",
       "url": "https://github.com/VoltAgent/awesome-agent-skills",
       "description": "A curated collection of 1000+ agent",
-      "stars": 26500,
+      "stars": 26600,
       "language": "",
       "topics": [
         "awesome",
@@ -509,17 +509,17 @@
         "ai-agents"
       ],
       "last_updated": "Jun 24, 2026, 5:59 AM UTC",
-      "crawled_at": "2026-06-26T01:06:40.479980+00:00"
+      "crawled_at": "2026-06-27T01:00:55.633011+00:00"
     },
     {
       "name": "blader/humanizer",
       "url": "https://github.com/blader/humanizer",
       "description": "None",
-      "stars": 26200,
+      "stars": 26300,
       "language": "",
       "topics": [],
       "last_updated": "Jun 7, 2026, 11:28 PM UTC",
-      "crawled_at": "2026-06-26T01:06:40.480254+00:00"
+      "crawled_at": "2026-06-27T01:00:55.633540+00:00"
     },
     {
       "name": "oraios/serena",
@@ -534,8 +534,8 @@
         "language-server",
         "jetbrains"
       ],
-      "last_updated": "Jun 25, 2026, 9:08 PM UTC",
-      "crawled_at": "2026-06-26T01:07:09.725095+00:00"
+      "last_updated": "Jun 26, 2026, 11:45 AM UTC",
+      "crawled_at": "2026-06-27T01:01:24.850754+00:00"
     },
     {
       "name": "jarrodwatts/claude-hud",
@@ -551,13 +551,13 @@
         "claude"
       ],
       "last_updated": "Jun 20, 2026, 9:32 PM UTC",
-      "crawled_at": "2026-06-26T01:07:09.725438+00:00"
+      "crawled_at": "2026-06-27T01:01:24.851125+00:00"
     },
     {
       "name": "Kilo-Org/kilocode",
       "url": "https://github.com/Kilo-Org/kilocode",
       "description": "Kilo is the all-in-one",
-      "stars": 24600,
+      "stars": 24800,
       "language": "TypeScript",
       "topics": [
         "cli",
@@ -566,8 +566,8 @@
         "vscode",
         "gemini"
       ],
-      "last_updated": "Jun 25, 2026, 8:51 PM UTC",
-      "crawled_at": "2026-06-26T01:07:09.725774+00:00"
+      "last_updated": "Jun 26, 2026, 11:44 PM UTC",
+      "crawled_at": "2026-06-27T01:01:24.851614+00:00"
     },
     {
       "name": "rohitg00/agentmemory",
@@ -583,13 +583,13 @@
         "copilot"
       ],
       "last_updated": "Jun 22, 2026, 6:14 AM UTC",
-      "crawled_at": "2026-06-26T01:07:09.726104+00:00"
+      "crawled_at": "2026-06-27T01:01:24.852102+00:00"
     },
     {
       "name": "OthmanAdi/planning-with-files",
       "url": "https://github.com/OthmanAdi/planning-with-files",
       "description": "Persistent file-based planning for AI",
-      "stars": 23900,
+      "stars": 24000,
       "language": "Python",
       "topics": [
         "planning",
@@ -599,13 +599,29 @@
         "copilot"
       ],
       "last_updated": "Jun 16, 2026, 3:16 PM UTC",
-      "crawled_at": "2026-06-26T01:06:40.480591+00:00"
+      "crawled_at": "2026-06-27T01:00:55.634234+00:00"
+    },
+    {
+      "name": "calesthio/OpenMontage",
+      "url": "https://github.com/calesthio/OpenMontage",
+      "description": "World's first open-source, agentic video production system. 12 pipelines, 52 tools, 500+ agent",
+      "stars": 23600,
+      "language": "Python",
+      "topics": [
+        "python",
+        "agent",
+        "flux",
+        "open-source",
+        "text-to-speech"
+      ],
+      "last_updated": "Jun 26, 2026, 9:29 PM UTC",
+      "crawled_at": "2026-06-27T01:00:55.634787+00:00"
     },
     {
       "name": "zarazhangrui/frontend-slides",
       "url": "https://github.com/zarazhangrui/frontend-slides",
       "description": "Create beautiful slides on the web using a",
-      "stars": 23100,
+      "stars": 23300,
       "language": "JavaScript",
       "topics": [
         "html",
@@ -615,7 +631,7 @@
         "anthropic"
       ],
       "last_updated": "Jun 23, 2026, 8:08 PM UTC",
-      "crawled_at": "2026-06-26T01:06:40.480932+00:00"
+      "crawled_at": "2026-06-27T01:00:55.635315+00:00"
     },
     {
       "name": "Donchitos/Claude-Code-Game-Studios",
@@ -631,45 +647,13 @@
         "unreal-engine"
       ],
       "last_updated": "May 21, 2026, 11:33 PM UTC",
-      "crawled_at": "2026-06-26T01:06:40.481276+00:00"
-    },
-    {
-      "name": "calesthio/OpenMontage",
-      "url": "https://github.com/calesthio/OpenMontage",
-      "description": "World's first open-source, agentic video production system. 12 pipelines, 52 tools, 500+ agent",
-      "stars": 22100,
-      "language": "Python",
-      "topics": [
-        "python",
-        "agent",
-        "flux",
-        "open-source",
-        "text-to-speech"
-      ],
-      "last_updated": "Jun 25, 2026, 11:56 PM UTC",
-      "crawled_at": "2026-06-26T01:06:40.481620+00:00"
-    },
-    {
-      "name": "winfunc/opcode",
-      "url": "https://github.com/winfunc/opcode",
-      "description": "A powerful GUI app and Toolkit for",
-      "stars": 22100,
-      "language": "TypeScript",
-      "topics": [
-        "rust",
-        "ide",
-        "cursor",
-        "claude",
-        "tauri"
-      ],
-      "last_updated": "Oct 16, 2025, 12:05 PM UTC",
-      "crawled_at": "2026-06-26T01:07:09.727488+00:00"
+      "crawled_at": "2026-06-27T01:00:55.635848+00:00"
     },
     {
       "name": "mukul975/Anthropic-Cybersecurity-Skills",
       "url": "https://github.com/mukul975/Anthropic-Cybersecurity-Skills",
       "description": "817 structured cybersecurity",
-      "stars": 21200,
+      "stars": 21800,
       "language": "Python",
       "topics": [
         "security",
@@ -678,18 +662,18 @@
         "incident-response",
         "cybersecurity"
       ],
-      "last_updated": "Jun 22, 2026, 5:11 PM UTC",
-      "crawled_at": "2026-06-26T01:06:40.481962+00:00"
+      "last_updated": "Jun 26, 2026, 2:37 PM UTC",
+      "crawled_at": "2026-06-27T01:00:55.636380+00:00"
     },
     {
       "name": "alchaincyf/huashu-design",
       "url": "https://github.com/alchaincyf/huashu-design",
       "description": "Huashu Design · HTML-native design",
-      "stars": 19800,
+      "stars": 19900,
       "language": "HTML",
       "topics": [],
       "last_updated": "Jun 14, 2026, 12:25 PM UTC",
-      "crawled_at": "2026-06-26T01:06:40.482278+00:00"
+      "crawled_at": "2026-06-27T01:00:55.636875+00:00"
     },
     {
       "name": "alirezarezvani/claude-skills",
@@ -704,14 +688,14 @@
         "claude-ai",
         "anthropic-claude"
       ],
-      "last_updated": "Jun 24, 2026, 6:28 PM UTC",
-      "crawled_at": "2026-06-26T01:06:46.669491+00:00"
+      "last_updated": "Jun 26, 2026, 10:03 AM UTC",
+      "crawled_at": "2026-06-27T01:01:05.019660+00:00"
     },
     {
       "name": "teng-lin/notebooklm-py",
       "url": "https://github.com/teng-lin/notebooklm-py",
       "description": "Unofficial Python API and agentic",
-      "stars": 16800,
+      "stars": 16900,
       "language": "Python",
       "topics": [
         "python",
@@ -720,14 +704,14 @@
         "skills",
         "python-api"
       ],
-      "last_updated": "Jun 25, 2026, 5:25 PM UTC",
-      "crawled_at": "2026-06-26T01:06:46.669881+00:00"
+      "last_updated": "Jun 27, 2026, 12:53 AM UTC",
+      "crawled_at": "2026-06-27T01:01:05.020297+00:00"
     },
     {
       "name": "liyupi/ai-guide",
       "url": "https://github.com/liyupi/ai-guide",
       "description": "程序员鱼皮的 AI 资源大全 + Vibe",
-      "stars": 16300,
+      "stars": 16400,
       "language": "JavaScript",
       "topics": [
         "python",
@@ -737,7 +721,7 @@
         "mcp"
       ],
       "last_updated": "Jun 20, 2026, 2:45 AM UTC",
-      "crawled_at": "2026-06-26T01:06:46.670431+00:00"
+      "crawled_at": "2026-06-27T01:01:05.020919+00:00"
     },
     {
       "name": "wasp-lang/open-saas",
@@ -753,7 +737,7 @@
         "typescript"
       ],
       "last_updated": "Jun 19, 2026, 4:00 PM UTC",
-      "crawled_at": "2026-06-26T01:06:46.670816+00:00"
+      "crawled_at": "2026-06-27T01:01:05.021537+00:00"
     },
     {
       "name": "travisvn/awesome-claude-skills",
@@ -769,13 +753,13 @@
         "anthropic"
       ],
       "last_updated": "Apr 28, 2026, 7:30 PM UTC",
-      "crawled_at": "2026-06-26T01:06:46.671231+00:00"
+      "crawled_at": "2026-06-27T01:01:05.022106+00:00"
     },
     {
       "name": "wanshuiyin/Auto-claude-code-research-in-sleep",
       "url": "https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep",
       "description": "ARIS ⚔️ (Auto-Research-In-Sleep) — Lightweight Markdown-only",
-      "stars": 12600,
+      "stars": 12700,
       "language": "Python",
       "topics": [
         "machine-learning",
@@ -784,18 +768,18 @@
         "openai",
         "gpt"
       ],
-      "last_updated": "Jun 24, 2026, 4:07 AM UTC",
-      "crawled_at": "2026-06-26T01:06:46.671722+00:00"
+      "last_updated": "Jun 26, 2026, 12:50 PM UTC",
+      "crawled_at": "2026-06-27T01:01:05.022731+00:00"
     },
     {
       "name": "op7418/Humanizer-zh",
       "url": "https://github.com/op7418/Humanizer-zh",
       "description": "Humanizer 的汉化版本，",
-      "stars": 11600,
+      "stars": 11700,
       "language": "",
       "topics": [],
       "last_updated": "Jan 19, 2026, 7:46 AM UTC",
-      "crawled_at": "2026-06-26T01:06:46.672103+00:00"
+      "crawled_at": "2026-06-27T01:01:05.023214+00:00"
     },
     {
       "name": "numman-ali/openskills",
@@ -805,7 +789,7 @@
       "language": "TypeScript",
       "topics": [],
       "last_updated": "Jan 18, 2026, 1:09 PM UTC",
-      "crawled_at": "2026-06-26T01:07:42.530090+00:00"
+      "crawled_at": "2026-06-27T01:01:56.993709+00:00"
     },
     {
       "name": "Jeffallan/claude-skills",
@@ -821,7 +805,17 @@
         "claude-marketplace"
       ],
       "last_updated": "May 20, 2026, 1:35 PM UTC",
-      "crawled_at": "2026-06-26T01:06:46.672464+00:00"
+      "crawled_at": "2026-06-27T01:01:05.023829+00:00"
+    },
+    {
+      "name": "greensock/gsap-skills",
+      "url": "https://github.com/greensock/gsap-skills",
+      "description": "Official",
+      "stars": 10200,
+      "language": "",
+      "topics": [],
+      "last_updated": "Apr 21, 2026, 11:47 PM UTC",
+      "crawled_at": "2026-06-27T01:01:56.994016+00:00"
     },
     {
       "name": "Orchestra-Research/AI-Research-SKILLs",
@@ -837,23 +831,13 @@
         "claude"
       ],
       "last_updated": "Jun 16, 2026, 1:36 AM UTC",
-      "crawled_at": "2026-06-26T01:06:46.672867+00:00"
-    },
-    {
-      "name": "greensock/gsap-skills",
-      "url": "https://github.com/greensock/gsap-skills",
-      "description": "Official",
-      "stars": 10000,
-      "language": "",
-      "topics": [],
-      "last_updated": "Apr 21, 2026, 11:47 PM UTC",
-      "crawled_at": "2026-06-26T01:07:42.530665+00:00"
+      "crawled_at": "2026-06-27T01:01:05.024447+00:00"
     },
     {
       "name": "AgriciDaniel/claude-seo",
       "url": "https://github.com/AgriciDaniel/claude-seo",
       "description": "Universal SEO",
-      "stars": 9800,
+      "stars": 9900,
       "language": "Python",
       "topics": [
         "open-source",
@@ -863,7 +847,7 @@
         "ai-seo"
       ],
       "last_updated": "Jun 22, 2026, 6:08 AM UTC",
-      "crawled_at": "2026-06-26T01:06:46.673253+00:00"
+      "crawled_at": "2026-06-27T01:01:05.025069+00:00"
     },
     {
       "name": "nexu-io/html-anything",
@@ -879,7 +863,7 @@
         "html-editor"
       ],
       "last_updated": "Jun 16, 2026, 10:22 AM UTC",
-      "crawled_at": "2026-06-26T01:07:42.531299+00:00"
+      "crawled_at": "2026-06-27T01:01:56.995085+00:00"
     },
     {
       "name": "AgriciDaniel/claude-ads",
@@ -894,14 +878,14 @@
         "ai-marketing",
         "claude-code"
       ],
-      "last_updated": "Jun 19, 2026, 9:04 PM UTC",
-      "crawled_at": "2026-06-26T01:07:42.531611+00:00"
+      "last_updated": "Jun 26, 2026, 9:03 PM UTC",
+      "crawled_at": "2026-06-27T01:01:56.995663+00:00"
     },
     {
       "name": "jnMetaCode/superpowers-zh",
       "url": "https://github.com/jnMetaCode/superpowers-zh",
       "description": "🦸",
-      "stars": 5900,
+      "stars": 6000,
       "language": "JavaScript",
       "topics": [
         "tdd",
@@ -911,7 +895,7 @@
         "superpowers"
       ],
       "last_updated": "Jun 23, 2026, 3:29 PM UTC",
-      "crawled_at": "2026-06-26T01:07:42.531923+00:00"
+      "crawled_at": "2026-06-27T01:01:56.996273+00:00"
     },
     {
       "name": "deanpeters/Product-Manager-Skills",
@@ -927,7 +911,7 @@
         "pm-frameworks"
       ],
       "last_updated": "Jun 25, 2026, 6:23 PM UTC",
-      "crawled_at": "2026-06-26T01:07:51.213724+00:00"
+      "crawled_at": "2026-06-27T01:02:02.603737+00:00"
     },
     {
       "name": "ModelEngine-Group/nexent",
@@ -942,14 +926,14 @@
         "multi-agent",
         "harness"
       ],
-      "last_updated": "Jun 25, 2026, 1:04 PM UTC",
-      "crawled_at": "2026-06-26T01:07:51.214072+00:00"
+      "last_updated": "Jun 26, 2026, 10:31 AM UTC",
+      "crawled_at": "2026-06-27T01:02:02.604106+00:00"
     },
     {
       "name": "tech-leads-club/agent-skills",
       "url": "https://github.com/tech-leads-club/agent-skills",
       "description": "The secure, validated",
-      "stars": 4700,
+      "stars": 4800,
       "language": "TypeScript",
       "topics": [
         "agent",
@@ -958,8 +942,8 @@
         "cursor",
         "copilot"
       ],
-      "last_updated": "Jun 25, 2026, 3:27 PM UTC",
-      "crawled_at": "2026-06-26T01:07:51.214392+00:00"
+      "last_updated": "Jun 26, 2026, 4:00 PM UTC",
+      "crawled_at": "2026-06-27T01:02:02.604461+00:00"
     },
     {
       "name": "zebbern/claude-code-guide",
@@ -974,8 +958,8 @@
         "vscode-extension",
         "claude"
       ],
-      "last_updated": "Jun 25, 2026, 1:17 AM UTC",
-      "crawled_at": "2026-06-26T01:07:51.214715+00:00"
+      "last_updated": "Jun 26, 2026, 1:19 AM UTC",
+      "crawled_at": "2026-06-27T01:02:02.604811+00:00"
     },
     {
       "name": "twostraws/SwiftUI-Agent-Skill",
@@ -985,7 +969,7 @@
       "language": "",
       "topics": [],
       "last_updated": "Apr 20, 2026, 8:02 AM UTC",
-      "crawled_at": "2026-06-26T01:07:51.214966+00:00"
+      "crawled_at": "2026-06-27T01:02:02.605090+00:00"
     },
     {
       "name": "SamurAIGPT/Generative-Media-Skills",
@@ -1001,7 +985,7 @@
         "text-to-image"
       ],
       "last_updated": "Jun 22, 2026, 9:38 AM UTC",
-      "crawled_at": "2026-06-26T01:07:51.215321+00:00"
+      "crawled_at": "2026-06-27T01:02:02.605442+00:00"
     },
     {
       "name": "dotnet/skills",
@@ -1012,8 +996,8 @@
       "topics": [
         "agent-skills"
       ],
-      "last_updated": "Jun 25, 2026, 11:18 PM UTC",
-      "crawled_at": "2026-06-26T01:07:51.215617+00:00"
+      "last_updated": "Jun 27, 2026, 12:40 AM UTC",
+      "crawled_at": "2026-06-27T01:02:02.605946+00:00"
     },
     {
       "name": "gadievron/raptor",
@@ -1023,7 +1007,7 @@
       "language": "Python",
       "topics": [],
       "last_updated": "Jun 25, 2026, 9:34 PM UTC",
-      "crawled_at": "2026-06-26T01:07:18.108750+00:00"
+      "crawled_at": "2026-06-27T01:01:30.898372+00:00"
     },
     {
       "name": "google/agents-cli",
@@ -1038,8 +1022,8 @@
         "adk",
         "generative-ai"
       ],
-      "last_updated": "Jun 22, 2026, 8:25 PM UTC",
-      "crawled_at": "2026-06-26T01:07:51.215955+00:00"
+      "last_updated": "Jun 26, 2026, 5:36 PM UTC",
+      "crawled_at": "2026-06-27T01:02:02.606542+00:00"
     },
     {
       "name": "taishi-i/awesome-ChatGPT-repositories",
@@ -1055,17 +1039,7 @@
         "openai"
       ],
       "last_updated": "Jun 24, 2026, 3:57 PM UTC",
-      "crawled_at": "2026-06-26T01:07:51.216305+00:00"
-    },
-    {
-      "name": "AvdLee/SwiftUI-Agent-Skill",
-      "url": "https://github.com/AvdLee/SwiftUI-Agent-Skill",
-      "description": "Add expert SwiftUI Best Practices guidance to your",
-      "stars": 3100,
-      "language": "Python",
-      "topics": [],
-      "last_updated": "Jun 16, 2026, 8:47 AM UTC",
-      "crawled_at": "2026-06-26T01:07:51.216594+00:00"
+      "crawled_at": "2026-06-27T01:02:02.607258+00:00"
     },
     {
       "name": "SnailSploit/Claude-Red",
@@ -1081,7 +1055,7 @@
         "claude-skills"
       ],
       "last_updated": "May 8, 2026, 4:05 PM UTC",
-      "crawled_at": "2026-06-26T01:07:18.109110+00:00"
+      "crawled_at": "2026-06-27T01:01:30.898882+00:00"
     },
     {
       "name": "bergside/design-md-chrome",
@@ -1097,7 +1071,7 @@
         "ai"
       ],
       "last_updated": "May 25, 2026, 6:28 PM UTC",
-      "crawled_at": "2026-06-26T01:07:18.109447+00:00"
+      "crawled_at": "2026-06-27T01:01:30.899383+00:00"
     },
     {
       "name": "ciembor/agent-rules-books",
@@ -1113,7 +1087,7 @@
         "programming-books"
       ],
       "last_updated": "May 22, 2026, 11:00 AM UTC",
-      "crawled_at": "2026-06-26T01:07:18.109748+00:00"
+      "crawled_at": "2026-06-27T01:01:30.899866+00:00"
     },
     {
       "name": "elementalsouls/Claude-OSINT",
@@ -1127,7 +1101,7 @@
         "agentskills"
       ],
       "last_updated": "Jun 8, 2026, 8:41 PM UTC",
-      "crawled_at": "2026-06-26T01:07:18.110055+00:00"
+      "crawled_at": "2026-06-27T01:01:30.900282+00:00"
     },
     {
       "name": "FrancyJGLisboa/agent-skill-creator",
@@ -1137,7 +1111,7 @@
       "language": "Python",
       "topics": [],
       "last_updated": "Jun 13, 2026, 8:00 PM UTC",
-      "crawled_at": "2026-06-26T01:07:18.110342+00:00"
+      "crawled_at": "2026-06-27T01:01:30.900664+00:00"
     },
     {
       "name": "bergside/awesome-design-skills",
@@ -1152,13 +1126,13 @@
         "skills",
         "awesome-list"
       ],
-      "last_updated": "May 25, 2026, 6:28 PM UTC",
-      "crawled_at": "2026-06-26T01:07:24.261338+00:00"
+      "last_updated": "Jun 26, 2026, 7:18 PM UTC",
+      "crawled_at": "2026-06-27T01:01:36.938939+00:00"
     },
     {
       "name": "mohitagw15856/pm-claude-skills",
       "url": "https://github.com/mohitagw15856/pm-claude-skills",
-      "description": "238 professional Agent",
+      "description": "244 professional Agent",
       "stars": 1000,
       "language": "JavaScript",
       "topics": [
@@ -1168,34 +1142,34 @@
         "gemini",
         "slash-commands"
       ],
-      "last_updated": "Jun 24, 2026, 9:26 PM UTC",
-      "crawled_at": "2026-06-26T01:07:24.261721+00:00"
+      "last_updated": "Jun 26, 2026, 9:50 AM UTC",
+      "crawled_at": "2026-06-27T01:01:36.939486+00:00"
     },
     {
       "name": "GPTomics/bioSkills",
       "url": "https://github.com/GPTomics/bioSkills",
       "description": "a set of SKILLS.",
-      "stars": 950,
+      "stars": 952,
       "language": "Python",
       "topics": [],
-      "last_updated": "Jun 25, 2026, 5:38 PM UTC",
-      "crawled_at": "2026-06-26T01:07:24.262026+00:00"
+      "last_updated": "Jun 26, 2026, 6:29 PM UTC",
+      "crawled_at": "2026-06-27T01:01:36.939838+00:00"
     },
     {
       "name": "alchaincyf/huashu-md-html",
       "url": "https://github.com/alchaincyf/huashu-md-html",
       "description": "None",
-      "stars": 812,
+      "stars": 814,
       "language": "CSS",
       "topics": [],
       "last_updated": "May 28, 2026, 10:55 AM UTC",
-      "crawled_at": "2026-06-26T01:07:24.262338+00:00"
+      "crawled_at": "2026-06-27T01:01:36.940188+00:00"
     },
     {
       "name": "rohitg00/awesome-claude-design",
       "url": "https://github.com/rohitg00/awesome-claude-design",
       "description": "None",
-      "stars": 775,
+      "stars": 781,
       "language": "",
       "topics": [
         "awesome",
@@ -1205,7 +1179,7 @@
         "anthropic"
       ],
       "last_updated": "Apr 23, 2026, 1:37 PM UTC",
-      "crawled_at": "2026-06-26T01:07:24.262639+00:00"
+      "crawled_at": "2026-06-27T01:01:36.940541+00:00"
     },
     {
       "name": "iannuttall/dotagents",
@@ -1215,13 +1189,13 @@
       "language": "TypeScript",
       "topics": [],
       "last_updated": "Feb 4, 2026, 1:39 PM UTC",
-      "crawled_at": "2026-06-26T01:07:24.262924+00:00"
+      "crawled_at": "2026-06-27T01:01:36.940884+00:00"
     },
     {
       "name": "sno-ai/mda",
       "url": "https://github.com/sno-ai/mda",
       "description": "MDA Open Spec — a Markdown superset for agent-facing documents. One .mda source compiles to drop-in",
-      "stars": 609,
+      "stars": 610,
       "language": "TypeScript",
       "topics": [
         "json-schema",
@@ -1231,13 +1205,13 @@
         "conformance"
       ],
       "last_updated": "May 26, 2026, 4:37 AM UTC",
-      "crawled_at": "2026-06-26T01:07:24.263254+00:00"
+      "crawled_at": "2026-06-27T01:01:36.941284+00:00"
     },
     {
       "name": "TheDecipherist/claude-code-mastery",
       "url": "https://github.com/TheDecipherist/claude-code-mastery",
       "description": "The complete guide to",
-      "stars": 534,
+      "stars": 535,
       "language": "Shell",
       "topics": [
         "developer-tools",
@@ -1247,13 +1221,13 @@
         "llm"
       ],
       "last_updated": "May 7, 2026, 7:15 PM UTC",
-      "crawled_at": "2026-06-26T01:07:24.263586+00:00"
+      "crawled_at": "2026-06-27T01:01:36.941615+00:00"
     },
     {
       "name": "dzcmemory-web/bazi-ziwei-skill",
       "url": "https://github.com/dzcmemory-web/bazi-ziwei-skill",
       "description": "AI 八字 + 紫微斗数排盘与综合印证",
-      "stars": 508,
+      "stars": 518,
       "language": "TypeScript",
       "topics": [
         "bazi",
@@ -1263,17 +1237,17 @@
         "chinese-astrology"
       ],
       "last_updated": "Jun 14, 2026, 3:53 AM UTC",
-      "crawled_at": "2026-06-26T01:07:24.265920+00:00"
+      "crawled_at": "2026-06-27T01:01:36.941990+00:00"
     },
     {
       "name": "feicaiclub/video-spec-builder",
       "url": "https://github.com/feicaiclub/video-spec-builder",
       "description": "video-spec-builder —— 把我想做个视频逼成一份精确到秒的分镜脚本 video-spec.",
-      "stars": 501,
+      "stars": 510,
       "language": "JavaScript",
       "topics": [],
       "last_updated": "May 18, 2026, 6:21 AM UTC",
-      "crawled_at": "2026-06-26T01:07:24.266226+00:00"
+      "crawled_at": "2026-06-27T01:01:36.942310+00:00"
     },
     {
       "name": "hkcanan/katmer-code",
@@ -1289,13 +1263,13 @@
         "claude"
       ],
       "last_updated": "May 26, 2026, 11:54 AM UTC",
-      "crawled_at": "2026-06-26T01:07:30.174403+00:00"
+      "crawled_at": "2026-06-27T01:01:44.811176+00:00"
     },
     {
       "name": "mxyhi/ok-skills",
       "url": "https://github.com/mxyhi/ok-skills",
       "description": "Curated AI coding agent",
-      "stars": 434,
+      "stars": 435,
       "language": "HTML",
       "topics": [
         "ai",
@@ -1304,8 +1278,8 @@
         "codex",
         "ai-agents"
       ],
-      "last_updated": "Jun 24, 2026, 3:16 AM UTC",
-      "crawled_at": "2026-06-26T01:07:30.174756+00:00"
+      "last_updated": "Jun 26, 2026, 2:31 PM UTC",
+      "crawled_at": "2026-06-27T01:01:44.811545+00:00"
     },
     {
       "name": "realrossmanngroup/no_ai_slop_writing_rules",
@@ -1315,27 +1289,27 @@
       "language": "",
       "topics": [],
       "last_updated": "May 30, 2026, 8:41 PM UTC",
-      "crawled_at": "2026-06-26T01:07:30.175014+00:00"
+      "crawled_at": "2026-06-27T01:01:44.811812+00:00"
     },
     {
       "name": "haidang1810/md2html",
       "url": "https://github.com/haidang1810/md2html",
       "description": "Your AI writes docs — md2html turns them into pages people actually read. A portable",
-      "stars": 391,
+      "stars": 392,
       "language": "HTML",
       "topics": [],
       "last_updated": "May 14, 2026, 5:53 AM UTC",
-      "crawled_at": "2026-06-26T01:07:30.175299+00:00"
+      "crawled_at": "2026-06-27T01:01:44.812101+00:00"
     },
     {
       "name": "wilwaldon/Claude-Code-Frontend-Design-Toolkit",
       "url": "https://github.com/wilwaldon/Claude-Code-Frontend-Design-Toolkit",
       "description": "Everything I've found that actually makes",
-      "stars": 385,
+      "stars": 388,
       "language": "",
       "topics": [],
       "last_updated": "Apr 11, 2026, 11:57 AM UTC",
-      "crawled_at": "2026-06-26T01:07:30.175559+00:00"
+      "crawled_at": "2026-06-27T01:01:44.812362+00:00"
     },
     {
       "name": "agent-sh/agnix",
@@ -1350,14 +1324,14 @@
         "ai",
         "skills"
       ],
-      "last_updated": "Jun 25, 2026, 11:59 AM UTC",
-      "crawled_at": "2026-06-26T01:07:30.175903+00:00"
+      "last_updated": "Jun 26, 2026, 7:44 PM UTC",
+      "crawled_at": "2026-06-27T01:01:44.812766+00:00"
     },
     {
       "name": "arpitg1304/robotics-agent-skills",
       "url": "https://github.com/arpitg1304/robotics-agent-skills",
       "description": "Agent",
-      "stars": 295,
+      "stars": 296,
       "language": "Python",
       "topics": [
         "robotics",
@@ -1366,7 +1340,7 @@
         "claude-skills"
       ],
       "last_updated": "May 25, 2026, 11:26 PM UTC",
-      "crawled_at": "2026-06-26T01:07:30.176249+00:00"
+      "crawled_at": "2026-06-27T01:01:44.813096+00:00"
     },
     {
       "name": "win4r/openclaw-workspace",
@@ -1379,13 +1353,13 @@
         "openclaw-skills"
       ],
       "last_updated": "Mar 11, 2026, 3:08 PM UTC",
-      "crawled_at": "2026-06-26T01:07:30.176533+00:00"
+      "crawled_at": "2026-06-27T01:01:44.813388+00:00"
     },
     {
       "name": "kwakseongjae/oh-my-design",
       "url": "https://github.com/kwakseongjae/oh-my-design",
-      "description": "Give your AI coding agent a design system. One command installs 221 hand-verified company DESIGN.",
-      "stars": 274,
+      "description": "Give your AI coding agent a design system. One command installs 300+ hand-verified company DESIGN.",
+      "stars": 278,
       "language": "HTML",
       "topics": [
         "react",
@@ -1394,8 +1368,8 @@
         "typescript",
         "nextjs"
       ],
-      "last_updated": "Jun 25, 2026, 1:38 AM UTC",
-      "crawled_at": "2026-06-26T01:07:30.176883+00:00"
+      "last_updated": "Jun 26, 2026, 2:55 AM UTC",
+      "crawled_at": "2026-06-27T01:01:44.813873+00:00"
     },
     {
       "name": "leopiney/linus-torvalds-skills",
@@ -1411,7 +1385,7 @@
         "linus-torvalds"
       ],
       "last_updated": "Apr 23, 2026, 2:21 PM UTC",
-      "crawled_at": "2026-06-26T01:07:30.177203+00:00"
+      "crawled_at": "2026-06-27T01:01:44.814192+00:00"
     }
   ]
 }
