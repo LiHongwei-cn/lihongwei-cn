@@ -107,13 +107,8 @@ CONTEXT_OVERFLOW_CODES = {400, 413}
 # ═══════════════════════════════════════════════
 
 @dataclass
-class HttpModelAdapter:
-    """HTTP 层模型适配器 — 负责请求 payload 优化和 token 估算
-
-    与 model_adapter.ModelAdapter 职能不同：
-    - llm.HttpModelAdapter: HTTP 请求级（payload 温度、token 估算、流式支持）
-    - model_adapter.ModelAdapter: 引擎级（工具 schema 优化、系统提示风格）
-    """
+class ModelAdapter:
+    """模型特化适配器"""
     provider: str
     model: str
     supports_cache_control: bool = False
@@ -148,15 +143,15 @@ class HttpModelAdapter:
 
 
 # 模型适配器注册表
-MODEL_ADAPTERS: Dict[str, HttpModelAdapter] = {}
+MODEL_ADAPTERS: Dict[str, ModelAdapter] = {}
 
 
 def register_adapter(provider: str, model: str, **kwargs):
     key = f"{provider}/{model}"
-    MODEL_ADAPTERS[key] = HttpModelAdapter(provider=provider, model=model, **kwargs)
+    MODEL_ADAPTERS[key] = ModelAdapter(provider=provider, model=model, **kwargs)
 
 
-def get_adapter(provider: str, model: str) -> HttpModelAdapter:
+def get_adapter(provider: str, model: str) -> ModelAdapter:
     key = f"{provider}/{model}"
     if key in MODEL_ADAPTERS:
         return MODEL_ADAPTERS[key]
@@ -164,7 +159,7 @@ def get_adapter(provider: str, model: str) -> HttpModelAdapter:
     for k, v in MODEL_ADAPTERS.items():
         if v.provider == provider:
             return v
-    return HttpModelAdapter(provider=provider, model=model)
+    return ModelAdapter(provider=provider, model=model)
 
 
 # 预注册国产模型适配器

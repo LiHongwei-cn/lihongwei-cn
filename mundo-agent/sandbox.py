@@ -220,12 +220,6 @@ class Sandbox:
 _sandbox: Optional[Sandbox] = None
 
 
-def reset_sandbox():
-    """重置单例 — 用于测试隔离"""
-    global _sandbox
-    _sandbox = None
-
-
 def get_sandbox() -> Sandbox:
     global _sandbox
     if _sandbox is None:

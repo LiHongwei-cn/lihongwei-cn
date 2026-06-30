@@ -777,12 +777,6 @@ class TaskAnalyzer:
 _analyzer: Optional[TaskAnalyzer] = None
 
 
-def reset_task_analyzer():
-    """重置单例 — 用于测试隔离"""
-    global _analyzer
-    _analyzer = None
-
-
 def get_task_analyzer() -> TaskAnalyzer:
     global _analyzer
     if _analyzer is None:

@@ -481,12 +481,6 @@ class KnowledgeRetriever:
 _retriever: Optional[KnowledgeRetriever] = None
 
 
-def reset_knowledge_retriever():
-    """重置单例 — 用于测试隔离"""
-    global _retriever
-    _retriever = None
-
-
 def get_knowledge_retriever() -> KnowledgeRetriever:
     global _retriever
     if _retriever is None:

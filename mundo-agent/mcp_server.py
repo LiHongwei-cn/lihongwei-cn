@@ -483,12 +483,6 @@ class MCPServer:
 _mcp_server: Optional[MCPServer] = None
 
 
-def reset_mcp_server():
-    """重置单例 — 用于测试隔离"""
-    global _mcp_server
-    _mcp_server = None
-
-
 def get_mcp_server(host: str = "127.0.0.1", port: int = 3100) -> MCPServer:
     global _mcp_server
     if _mcp_server is None:

@@ -18,18 +18,6 @@ from typing import List, Dict, Optional, Tuple
 from constants import MUNDO_HOME, MEMORY_DB, MAX_CONTEXT_INJECT, MAX_FACTS_INJECT, MAX_CONVERSATION_RESULTS
 
 
-# 预编译 Auto-Extract 模式 — 模块加载时一次性编译，避免每次调用重复编译
-_AUTO_EXTRACT_PATTERNS = [
-    (re.compile(r"记住.{4,}|remember.{4,}|记一下.{4,}", re.IGNORECASE), "fact", 7),
-    (re.compile(r"我喜欢.{4,}|我偏好.{4,}|我习惯.{4,}|I prefer.{4,}", re.IGNORECASE), "preference", 8),
-    (re.compile(r"不要.{4,}|别用.{4,}|禁止.{4,}|don't.{4,}|never.{4,}", re.IGNORECASE), "constraint", 8),
-    (re.compile(r"以后.{4,}|下次.{4,}|always.{4,}|从现在起.{4,}", re.IGNORECASE), "rule", 7),
-    (re.compile(r"错误.{8,}|报错.{8,}|bug.{8,}|问题出在.{4,}", re.IGNORECASE), "lesson", 6),
-    (re.compile(r"用.{2,}框架|用.{2,}库|技术栈.{4,}|tech stack.{4,}", re.IGNORECASE), "code_pattern", 7),
-    (re.compile(r"目录.{4,}|文件结构.{4,}|项目结构.{4,}|project structure.{4,}", re.IGNORECASE), "code_pattern", 6),
-]
-
-
 class MundoMemory:
 
     def __repr__(self) -> str:
@@ -50,12 +38,6 @@ class MundoMemory:
 
     def _init_db(self):
         with sqlite3.connect(str(self.db_path)) as conn:
-            # v3.2.0: 性能优化 — WAL 模式 + 合理缓存
-            conn.execute("PRAGMA journal_mode=WAL")
-            conn.execute("PRAGMA synchronous=NORMAL")
-            conn.execute("PRAGMA cache_size=-8000")  # 8MB
-            conn.execute("PRAGMA busy_timeout=3000")
-
             existing_tables = {r[0] for r in conn.execute(
                 "SELECT name FROM sqlite_master WHERE type='table'"
             ).fetchall()}
@@ -192,10 +174,28 @@ class MundoMemory:
 
     def auto_extract(self, user_msg: str, assistant_msg: str,
                      project: str = "") -> List[int]:
-        """轻量规则提取，不调 LLM — v3.2.0 使用预编译模式"""
+        """轻量规则提取，不调 LLM
+
+        v2.2.0 改进：
+        - 收窄触发条件：需要同时包含动作+对象
+        - 增加最小长度阈值（>20 字符才提取）
+        - 增加去重检查（相似记忆不重复创建）
+        """
         extracted = []
-        for compiled_re, category, importance in _AUTO_EXTRACT_PATTERNS:
-            if compiled_re.search(user_msg):
+        patterns = [
+            # 需要同时包含动作+对象的模式
+            (r"记住.{4,}|remember.{4,}|记一下.{4,}", "fact", 7),
+            (r"我喜欢.{4,}|我偏好.{4,}|我习惯.{4,}|I prefer.{4,}", "preference", 8),
+            (r"不要.{4,}|别用.{4,}|禁止.{4,}|don't.{4,}|never.{4,}", "constraint", 8),
+            (r"以后.{4,}|下次.{4,}|always.{4,}|从现在起.{4,}", "rule", 7),
+            # 错误/bug 需要更具体的描述
+            (r"错误.{8,}|报错.{8,}|bug.{8,}|问题出在.{4,}", "lesson", 6),
+            # 技术栈需要具体说明
+            (r"用.{2,}框架|用.{2,}库|技术栈.{4,}|tech stack.{4,}", "code_pattern", 7),
+            (r"目录.{4,}|文件结构.{4,}|项目结构.{4,}|project structure.{4,}", "code_pattern", 6),
+        ]
+        for pattern, category, importance in patterns:
+            if re.search(pattern, user_msg, re.IGNORECASE):
                 content = user_msg.strip()[:200]
                 # 最小长度检查
                 if len(content) < 20:
@@ -631,69 +631,77 @@ class MundoMemory:
     # 7. 三层记忆架构 — v2.2.6
     # ═══════════════════════════════════════════════
 
-    # ── 分层记忆存储 — 统一接口 ──
+    # ── 短期记忆：跨上下文，用完即弃 ──
 
     def store_short(self, content: str, category: str = "fact",
                     session_id: str = "", importance: int = 5,
                     project: str = "", tags: str = "") -> int:
+        """存储短期记忆 — 会话级，跨上下文传递，会话结束即弃"""
         return self.remember(
             content=content, category=category, source="short_term",
             importance=importance, project=project, tags=tags,
-            memory_tier="short", session_id=session_id)
+            memory_tier="short", session_id=session_id,
+        )
+
+    def get_short_term(self, session_id: str, limit: int = 20) -> List[Tuple]:
+        """获取当前会话的短期记忆"""
+        with sqlite3.connect(str(self.db_path)) as conn:
+            return conn.execute(
+                """SELECT id, content, category, importance FROM memories
+                   WHERE memory_tier='short' AND session_id=?
+                   AND superseded_by=0
+                   ORDER BY created_at DESC LIMIT ?""",
+                (session_id, limit)
+            ).fetchall()
+
+    def clear_session(self, session_id: str) -> int:
+        """清除指定会话的所有短期记忆（用完即弃）"""
+        with sqlite3.connect(str(self.db_path)) as conn:
+            result = conn.execute(
+                "DELETE FROM memories WHERE memory_tier='short' AND session_id=?",
+                (session_id,)
+            )
+            return result.rowcount
+
+    def cleanup_expired_short(self) -> int:
+        """清理所有过期的短期记忆（无 session_id 的孤儿记录）"""
+        with sqlite3.connect(str(self.db_path)) as conn:
+            result = conn.execute(
+                "DELETE FROM memories WHERE memory_tier='short' AND session_id=''"
+            )
+            return result.rowcount
+
+    # ── 中期记忆：项目级维持 ──
 
     def store_mid(self, content: str, category: str = "fact",
                   project: str = "", importance: int = 6,
                   tags: str = "") -> int:
+        """存储中期记忆 — 绑定项目，项目活跃期间维持"""
         return self.remember(
             content=content, category=category, source="mid_term",
             importance=importance, project=project, tags=tags,
-            memory_tier="mid")
-
-    # ── 分层记忆查询/清理 — 参数化消除重复 ──
-
-    def _get_by_tier(self, tier: str, filter_col: str = "",
-                     filter_val: str = "", limit: int = 20,
-                     order: str = "created_at DESC") -> List[Tuple]:
-        """通用分层查询 — v3.2.0 合并 get_short/get_mid/get_long_term"""
-        where = "WHERE memory_tier=? AND superseded_by=0"
-        params = [tier]
-        if filter_col and filter_val:
-            if filter_col == "project":
-                where += f" AND ({filter_col}=? OR {filter_col}='')"
-            else:
-                where += f" AND {filter_col}=?"
-            params.append(filter_val)
-        with sqlite3.connect(str(self.db_path)) as conn:
-            return conn.execute(
-                f"SELECT id, content, category, importance FROM memories {where} ORDER BY {order} LIMIT ?",
-                params + [limit]
-            ).fetchall()
-
-    def _delete_by_tier(self, tier: str, filter_col: str = "",
-                        filter_val: str = "") -> int:
-        """通用分层清理 — v3.2.0 合并 clear_session/cleanup_project"""
-        where = "WHERE memory_tier=?"
-        params = [tier]
-        if filter_col and filter_val:
-            where += f" AND {filter_col}=?"
-            params.append(filter_val)
-        with sqlite3.connect(str(self.db_path)) as conn:
-            return conn.execute(f"DELETE FROM memories {where}", params).rowcount
-
-    def get_short_term(self, session_id: str, limit: int = 20) -> List[Tuple]:
-        return self._get_by_tier("short", "session_id", session_id, limit)
-
-    def clear_session(self, session_id: str) -> int:
-        return self._delete_by_tier("short", "session_id", session_id)
-
-    def cleanup_expired_short(self) -> int:
-        return self._delete_by_tier("short", "session_id", "")
+            memory_tier="mid",
+        )
 
     def get_mid_term(self, project: str, limit: int = 30) -> List[Tuple]:
-        return self._get_by_tier("mid", "project", project, limit, "importance DESC, updated_at DESC")
+        """获取指定项目的中期记忆"""
+        with sqlite3.connect(str(self.db_path)) as conn:
+            return conn.execute(
+                """SELECT id, content, category, importance FROM memories
+                   WHERE memory_tier='mid' AND (project=? OR project='')
+                   AND superseded_by=0
+                   ORDER BY importance DESC, updated_at DESC LIMIT ?""",
+                (project, limit)
+            ).fetchall()
 
     def cleanup_project(self, project: str) -> int:
-        return self._delete_by_tier("mid", "project", project)
+        """清除指定项目的所有中期记忆"""
+        with sqlite3.connect(str(self.db_path)) as conn:
+            result = conn.execute(
+                "DELETE FROM memories WHERE memory_tier='mid' AND project=?",
+                (project,)
+            )
+            return result.rowcount
 
     # ── 长期记忆：择优选取 + 时间戳 + 冲突检测 ──
 

@@ -189,7 +189,7 @@ class InputValidator:
         return ValidationResult(is_valid=True, sanitized_value=user_input)
 
     def sanitize_output(self, output: str) -> str:
-        """消毒输出内容，防止敏感信息泄露 — v3.2.0 扩展覆盖"""
+        """消毒输出内容，防止敏感信息泄露 — v2.3.0 扩展覆盖"""
         # API key / secret / token
         output = re.sub(
             r"['\"]?(?:api[_-]?key|secret|token|password)['\"]?\s*[:=]\s*['\"][^'\"]+['\"]",
@@ -205,7 +205,6 @@ class InputValidator:
             output,
             flags=re.IGNORECASE,
         )
-        # 独立 JWT (eyJ 开头)
         output = re.sub(
             r"eyJ[\w\-]+\.[\w\-]+\.[\w\-]+",
             "[JWT REDACTED]",
@@ -232,7 +231,7 @@ class InputValidator:
             output,
         )
 
-        # 私钥（覆盖更多格式）
+        # 私钥（RSA/EC/DSA/OpenSSH）
         output = re.sub(
             r"-----BEGIN\s+(?:RSA\s+|EC\s+|DSA\s+|OPENSSH\s+)?PRIVATE\s+KEY-----.*?-----END\s+(?:RSA\s+|EC\s+|DSA\s+|OPENSSH\s+)?PRIVATE\s+KEY-----",
             "[PRIVATE KEY REDACTED]",
@@ -240,10 +239,10 @@ class InputValidator:
             flags=re.DOTALL,
         )
 
-        # Session cookie / CSRF token
+        # Session / CSRF token
         output = re.sub(
-            r"(?:session[_-]?id|csrf[_-]?token|auth[_-]?token)\s*[:=]\s*['\"]?[\w\-]{20,}['\"]?",
-            "[SESSION REDACTED]",
+            r"(?:session[_-]?id|csrf[_-]?token)\s*[:=]\s*['\"][^'\"]+['\"]",
+            "[SESSION TOKEN REDACTED]",
             output,
             flags=re.IGNORECASE,
         )

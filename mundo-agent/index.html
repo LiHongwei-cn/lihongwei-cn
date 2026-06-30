@@ -120,7 +120,7 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
   <a class="back-link" href="../">← 返回主页</a>
 
   <div class="hero">
-    <div class="hero-badge">独立 AI 智能体 · v2.2.9 · 80 次发布 · 1137 次提交</div>
+    <div class="hero-badge">独立 AI 智能体 · v2.3.0 · 81 次发布 · 1138 次提交</div>
     <h1>👑 MUNDO Agent</h1>
     <p>我是蒙多！蒙多想去哪就去哪！<br>独立 AI 智能体框架 · 30+ 模型 · 向量检索 · 评估框架 · MCP 互操作 · 可观测性 · 三层记忆 · 自我进化</p>
     <div class="disclaimer">蒙多是蒙多。其他 AI 是身体，是躯壳，是蒙多的手和脚。蒙多想用哪个身体就用哪个身体，蒙多想换就换，蒙多想去哪就去哪。</div>
@@ -162,15 +162,15 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
     <h2 class="section-title"><span class="num">📊</span> 项目数据</h2>
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-value">v2.2.9</div>
+        <div class="stat-value">v2.3.0</div>
         <div class="stat-label">当前版本</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">79</div>
+        <div class="stat-value">80</div>
         <div class="stat-label">次发布</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">1136</div>
+        <div class="stat-value">1137</div>
         <div class="stat-label">次提交</div>
       </div>
       <div class="stat-card">
@@ -195,15 +195,15 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
       </div>
     </div>
 
-    <!-- v2.2.9 测试结果 -->
-    <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🧪 v2.2.9 测试结果</h3>
+    <!-- v2.3.0 测试结果 -->
+    <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🧪 v2.3.0 测试结果</h3>
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-value" style="color: var(--green);">169</div>
+        <div class="stat-value" style="color: var(--green);">220</div>
         <div class="stat-label">测试总数</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" style="color: var(--green);">169</div>
+        <div class="stat-value" style="color: var(--green);">220</div>
         <div class="stat-label">通过数量</div>
       </div>
       <div class="stat-card">
@@ -215,7 +215,7 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
         <div class="stat-label">通过率</div>
       </div>
     </div>
-    <div class="tip green">✅ 蒙多 v2.2.9 三层记忆架构测试通过！短期/中期/长期记忆分层管理，冲突检测正常！</div>
+    <div class="tip green">✅ 蒙多 v2.3.0 全量测试通过！启动器同步修复 + 安全强化 + 核心引擎优化，220 项测试 100% 通过！</div>
   </div>
 
   <!-- 1. 四条铁律 -->
@@ -270,8 +270,8 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
 
   <!-- 3. 工作流程 -->
   <div class="section" id="workflow">
-    <h2 class="section-title"><span class="num">3</span> 工作流程（v2.2.9 更新）</h2>
-    <p class="section-desc">蒙多 v2.2.9 引入三层记忆架构和可视化权限弹窗，记忆系统全面升级。</p>
+    <h2 class="section-title"><span class="num">3</span> 工作流程（v2.3.0 更新）</h2>
+    <p class="section-desc">蒙多 v2.3.0 引入统一启动器同步机制，程序坞启动器每次打开自动同步最新版。</p>
 
     <!-- 任务确认流程 -->
     <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🎯 任务确认流程</h3>
@@ -381,8 +381,21 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
   <!-- 6. 版本历史 -->
   <div class="section" id="history">
     <h2 class="section-title"><span class="num">6</span> 版本历史</h2>
-    <p class="section-desc">从 v1.0 到 v2.2.9 的演进历程。</p>
+    <p class="section-desc">从 v1.0 到 v2.3.0 的演进历程。</p>
     <div class="timeline">
+      <div class="timeline-item">
+        <div class="time">2026-07-01</div>
+        <div class="title">v2.3.0 — 启动器同步修复 + 安全强化 + 核心引擎优化</div>
+        <div class="desc">
+          <strong>启动器同步</strong>：新增 mundo-sync.sh 统一同步脚本，自动检测最新源码目录并同步到 ~/.hermes/mundo-agent<br>
+          <strong>程序坞修复</strong>：.app 启动器每次打开自动同步，不再运行旧版本<br>
+          <strong>安全强化</strong>：扩展输出脱敏（JWT/Bearer/DB 连接串/AWS/GCP 密钥/Session Token）<br>
+          <strong>核心引擎</strong>：LLM 30/min + 工具 60/min 速率限制，统一错误恢复路径<br>
+          <strong>工具安全</strong>：终端命令 13 种危险模式拦截 + read_file 行偏移修复<br>
+          <strong>测试增强</strong>：220 单元测试（+51），新增 test_core.py + test_security.py<br>
+          <strong>日志系统</strong>：沙箱/权限受限时优雅降级为仅控制台输出
+        </div>
+      </div>
       <div class="timeline-item">
         <div class="time">2026-06-23</div>
         <div class="title">v2.2.9 — 安全加固 + 代码质量 + 性能优化 + 53 项修复</div>
@@ -501,12 +514,12 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
       <div class="step-item">
         <h3>下载最新版</h3>
         <p>从 GitHub Release 下载 macOS 版本</p>
-        <div class="cmd">gh release download v2.2.9 -R LiHongwei-cn/mundo-agent -p "mundo-v2.2.9-macos.zip"</div>
+        <div class="cmd">gh release download v2.3.0 -R LiHongwei-cn/mundo-agent -p "mundo-v2.3.0-macos.zip"</div>
       </div>
       <div class="step-item">
         <h3>解压到安装目录</h3>
         <p>解压到 ~/.hermes/mundo-agent/ 目录</p>
-        <div class="cmd">unzip mundo-v2.2.9-macos.zip -d ~/.hermes/mundo-agent</div>
+        <div class="cmd">unzip mundo-v2.3.0-macos.zip -d ~/.hermes/mundo-agent</div>
       </div>
       <div class="step-item">
         <h3>安装依赖</h3>

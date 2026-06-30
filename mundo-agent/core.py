@@ -113,19 +113,19 @@ class IterationBudget:
         self._warned = False
 
     @property
-    def remaining(self) -> int:
+    def remaining(self):
         return max(0, self.max_prompt_tokens - self.prompt_tokens_used)
 
     @property
-    def usage_ratio(self) -> float:
+    def usage_ratio(self):
         return self.prompt_tokens_used / self.max_prompt_tokens if self.max_prompt_tokens else 0
 
     @property
-    def should_warn(self) -> bool:
+    def should_warn(self):
         return self.usage_ratio >= self.warn_threshold and not self._warned
 
     @property
-    def exhausted(self) -> bool:
+    def exhausted(self):
         if self.prompt_tokens_used >= self.max_prompt_tokens:
             return True
         if self.completion_tokens_used >= self.max_completion_tokens:
@@ -134,15 +134,15 @@ class IterationBudget:
             return True
         return False
 
-    def update(self, prompt_tokens: int = 0, completion_tokens: int = 0) -> None:
+    def update(self, prompt_tokens=0, completion_tokens=0):
         self.prompt_tokens_used += prompt_tokens
         self.completion_tokens_used += completion_tokens
         self.turns_used += 1
 
-    def mark_warned(self) -> None:
+    def mark_warned(self):
         self._warned = True
 
-    def reset(self) -> None:
+    def reset(self):
         self.prompt_tokens_used = 0
         self.completion_tokens_used = 0
         self.turns_used = 0
@@ -153,7 +153,7 @@ class TaskStats:
     def __init__(self):
         self.reset()
 
-    def reset(self) -> None:
+    def reset(self):
         self.start_time = time.time()
         self.turns = 0
         self.total_tokens = 0
@@ -168,11 +168,11 @@ class TaskStats:
         self.recovery_count = 0
 
     @property
-    def elapsed(self) -> float:
+    def elapsed(self):
         return time.time() - self.start_time
 
     @property
-    def elapsed_str(self) -> str:
+    def elapsed_str(self):
         s = self.elapsed
         if s < 60:
             return f"{s:.1f}s"
@@ -275,7 +275,7 @@ class MundoEngine:
         self.close()
         return False
 
-    def close(self) -> None:
+    def close(self):
         """清理资源：关闭线程池，恢复信号处理器"""
         if hasattr(self, '_tool_executor') and self._tool_executor:
             self._tool_executor.shutdown(wait=False)
@@ -338,7 +338,7 @@ class MundoEngine:
     def _model_display(self):
         return f"{self.provider}/{self.model_name}"
 
-    def switch_model_for_task(self, task_description: str) -> bool:
+    def switch_model_for_task(self, task_description: str):
         task_type = SmartModelSelector.detect_task_type(task_description)
         optimal_model = SmartModelSelector.select_model(self.provider, task_type)
         if optimal_model and optimal_model != self.model_name:
@@ -427,7 +427,7 @@ class MundoEngine:
         return None
 
     def _try_call_llm(self, attempt: int) -> Optional[Dict]:
-        # v3.2.0: LLM 调用速率限制
+        # v2.3.0: LLM 调用速率限制
         if not self.security.check_rate_limit(f"llm:{self.provider}", max_per_minute=30):
             return None
 
@@ -561,7 +561,7 @@ class MundoEngine:
             })
             return
 
-        # v3.2.0: 速率限制
+        # v2.3.0: 工具调用速率限制
         if not self.security.check_rate_limit(f"tool:{name}", max_per_minute=60):
             self.messages.append({
                 "role": "tool",
@@ -624,7 +624,7 @@ class MundoEngine:
 
             self._handle_tool_error(tc, name, args, e, duration, use_recovery=True)
 
-    def _handle_tool_result(self, tc: Dict, name: str, args: dict, output: str, is_error: bool, duration: float) -> None:
+    def _handle_tool_result(self, tc, name: str, args: dict, output: str, is_error: bool, duration: float):
         if is_error:
             self._handle_tool_error(tc, name, args, Exception(output), duration, use_recovery=False)
             return
@@ -647,11 +647,7 @@ class MundoEngine:
 
     def _handle_tool_error(self, tc, name: str, args: dict, error: Exception, duration: float,
                            use_recovery: bool = True):
-        """统一的工具错误处理 — v3.2.0 合并两个重复方法
-
-        Args:
-            use_recovery: True 时启用智能错误恢复（分析类型 + 获取恢复计划）
-        """
+        """统一的工具错误处理 — v2.3.0 合并重复方法"""
         self._consecutive_errors += 1
         self.stats.errors_count += 1
 
@@ -661,7 +657,6 @@ class MundoEngine:
             self._same_error_streak = 1
             self._last_error_tool = name
 
-        # 智能错误恢复（可选）
         if use_recovery:
             self.stats.recovery_count += 1
             category, confidence = self.recovery.analyze_error(error, str(error))
@@ -669,6 +664,7 @@ class MundoEngine:
 
         error_msg = f"[工具错误] {name}: {error}"
         self.messages.append({"role": "tool", "tool_call_id": tc.get("id", ""), "content": error_msg})
+
         if self.on_tool_output:
             self.on_tool_output(name, str(error), True)
 
@@ -760,183 +756,128 @@ class MundoEngine:
             self.on_task_done(result, self.stats)
         return result
 
-    # ── _run_loop 子方法 ────────────────────────────
-
-    def _check_long_task(self, turn: int):
-        """长任务提醒"""
-        from constants import LONG_TASK_THRESHOLD
-        if turn == LONG_TASK_THRESHOLD and self.on_tool_output:
-            self.on_tool_output("mundo", "⚡ 任务复杂，蒙多加大力度。", False)
-
-    def _check_progress(self, turn: int, last_time: float, last_hash: str):
-        """进度检查 — 返回 (should_break, last_hash, last_time)"""
-        from constants import PROGRESS_CHECK_INTERVAL, TASK_ABANDON_TIMEOUT
-        if turn % PROGRESS_CHECK_INTERVAL != 0:
-            return False, last_hash, last_time
-        current = self._get_recent_output_hash()
-        if current == last_hash and time.time() - last_time > TASK_ABANDON_TIMEOUT:
-            if self.on_tool_output:
-                self.on_tool_output("mundo", "⚠️ 30分钟无进展，蒙多换策略。", True)
-            return True, current, last_time
-        if current != last_hash:
-            return False, current, time.time()
-        return False, last_hash, last_time
-
-    def _notify_budget(self):
-        """预算警告通知"""
-        if self.budget.should_warn and self.on_budget_warn:
-            self.on_budget_warn(self.budget)
-            self.budget.mark_warned()
-
-    def _emit_turn_events(self, turn: int):
-        """发送回合开始事件"""
-        if self.on_turn_start:
-            self.on_turn_start(turn, self.stats)
-        if self.on_stream_start:
-            self.on_stream_start(turn)
-
-    def _emit_turn_end_events(self, turn: int):
-        """发送回合结束事件"""
-        if self.on_stream_end:
-            self.on_stream_end(turn)
-        if self.on_turn_end:
-            self.on_turn_end(turn, self.stats)
-
-    def _try_llm_with_recovery(self) -> Optional[Dict]:
-        """调用 LLM，失败时尝试恢复"""
-        llm_start = time.time()
-        result = self._call_llm()
-        if result is not None:
-            self.stats.llm_time += time.time() - llm_start
-            return result
-        # LLM 返回 None — 连续错误未达阈值则等待后返回 None（让调用方 continue）
-        if self._consecutive_errors < 5:
-            time.sleep(2)
-        return None
-
-    def _handle_no_tools_response(self, final_text: str, turn: int,
-                                   tools_used_so_far: int) -> Tuple[str, bool]:
-        """处理无工具调用的回复 — 返回 (结果或None, 是否continue)
-
-        返回值：
-        - (final_result, False) — 最终答案，循环结束
-        - (None, True) — 需要继续循环（摸鱼/反射触发）
-        """
-        # 反射检查
-        verdict = self.reflection.analyze_output(final_text)
-        self.reflection.record_reflection(ReflectionEntry(
-            turn=turn, phase=ReflectionPhase.REFLECT,
-            thought="检查最终输出质量", action="output_analysis",
-            result=final_text[:500], verdict=verdict, lessons=[],
-        ))
-
-        # 反摸鱼检测
-        slack_result = self._check_slack(final_text, tools_used_so_far)
-        if slack_result is not None:
-            return slack_result, True
-
-        # 反射失败 → 继续
-        if verdict == ReflectionVerdict.FAILURE and self.reflection.should_continue():
-            self.messages.append({"role": "assistant", "content": final_text})
-            self.messages.append({
-                "role": "system",
-                "content": f"【反射修正】上次结果不合格。{self.reflection.get_strategy_hint()}\n请重新执行任务。"
-            })
-            self.stats.reflection_count += 1
-            return None, True
-
-        self.messages.append({"role": "assistant", "content": final_text})
-        return final_text, False
-
-    def _check_slack(self, final_text: str, tools_used_so_far: int) -> Optional[str]:
-        """反摸鱼检测 — 返回 None 表示非摸鱼，返回 str 表示最终结果"""
-        if tools_used_so_far > 0 or len(final_text.strip()) >= 50:
-            return None
-        slack_count = getattr(self, '_slack_count', 0)
-        if slack_count >= 3:
-            return final_text or "蒙多执行完毕。"
-        self._slack_count = slack_count + 1
-        self.messages.append({"role": "assistant", "content": final_text})
-        self.messages.append({
-            "role": "system",
-            "content": "【帝皇斥责】蒙多，你在摸鱼！用户给了你任务，你没有调用任何工具就试图结束。"
-                       "现在立刻开始执行：分析任务需求，调用合适的工具完成它。不允许空回复。"
-        })
-        if self.on_tool_output:
-            self.on_tool_output("mundo", "⚡ 摸鱼检测触发：强制继续执行", False)
-        return None
-
-    def _record_assistant_tool_msg(self, assistant_msg: Dict, tool_calls: list):
-        """记录 assistant 的工具调用消息"""
-        self.messages.append({
-            "role": "assistant",
-            "content": assistant_msg.get("content") or "",
-            "tool_calls": tool_calls,
-        })
-
-    def _handle_stuck_tool(self):
-        """卡住工具处理 — 重置错误计数，提示换路"""
-        if self.on_tool_output:
-            self.on_tool_output("mundo", f"工具 {self._last_error_tool} 卡住，蒙多换路。", True)
-        self._same_error_streak = 0
-        self._last_error_tool = ""
-
-    # ── 主循环 ─────────────────────────────────────
-
     def _run_loop(self) -> str:
-        """v3.0.0: 反射循环 — 先思考→再执行→再检查→再修复
+        """v3.0.0: 反射循环 — 先思考→再执行→再检查→再修复"""
+        from constants import LONG_TASK_THRESHOLD, TASK_ABANDON_TIMEOUT, PROGRESS_CHECK_INTERVAL
 
-        v3.2.0: 拆分为子方法，每个方法 <30 行，职责单一。
-        """
         turn = 0
-        last_time = time.time()
-        last_hash = ""
-        tools_this_turn = 0
-        tools_all_turns = 0
+        last_progress_time = time.time()
+        last_output_hash = ""
+        total_tool_calls = 0
+        total_tools_across_all_turns = 0
 
         while turn < MAX_ITERATIONS:
-            if self._interrupted.is_set() or self.budget.exhausted:
+            if self._interrupted.is_set() or self.budget.exhausted:  # v2.2.0: 使用 threading.Event
                 break
 
             turn += 1
             self.stats.turns = turn
 
-            self._check_long_task(turn)
+            # 长任务提醒
+            if turn == LONG_TASK_THRESHOLD:
+                if self.on_tool_output:
+                    self.on_tool_output("mundo", "⚡ 任务复杂，蒙多加大力度。", False)
 
-            should_break, last_hash, last_time = self._check_progress(turn, last_time, last_hash)
-            if should_break:
-                break
+            # 进度检查
+            if turn % PROGRESS_CHECK_INTERVAL == 0:
+                current_output = self._get_recent_output_hash()
+                if current_output == last_output_hash:
+                    if time.time() - last_progress_time > TASK_ABANDON_TIMEOUT:
+                        if self.on_tool_output:
+                            self.on_tool_output("mundo", "⚠️ 30分钟无进展，蒙多换策略。", True)
+                        break
+                else:
+                    last_output_hash = current_output
+                    last_progress_time = time.time()
 
-            self._notify_budget()
-            self._emit_turn_events(turn)
+            if self.budget.should_warn and self.on_budget_warn:
+                self.on_budget_warn(self.budget)
+                self.budget.mark_warned()
 
-            assistant_msg = self._try_llm_with_recovery()
+            if self.on_turn_start:
+                self.on_turn_start(turn, self.stats)
+            if self.on_stream_start:
+                self.on_stream_start(turn)
+
+            llm_start = time.time()
+            assistant_msg = self._call_llm()
             if assistant_msg is None:
-                if self._consecutive_errors >= 5:
-                    break
-                continue
+                # v3.0.1: LLM 返回 None 不直接放弃，尝试恢复
+                if self._consecutive_errors < 5:
+                    time.sleep(2)
+                    continue  # 再试一轮
+                break
+            self.stats.llm_time += time.time() - llm_start
 
             self._update_token_stats(assistant_msg)
-            self._emit_turn_end_events(turn)
+
+            if self.on_stream_end:
+                self.on_stream_end(turn)
+            if self.on_turn_end:
+                self.on_turn_end(turn, self.stats)
 
             tool_calls = self._filter_tool_calls(assistant_msg.get("tool_calls", []))
 
             if not tool_calls:
                 final_text = assistant_msg.get("content") or ""
-                result, should_continue = self._handle_no_tools_response(
-                    final_text, turn, tools_all_turns)
-                tools_this_turn = 0
-                if not should_continue:
-                    return result
-                continue
 
-            self._record_assistant_tool_msg(assistant_msg, tool_calls)
+                # v3.0.0: 反射检查 — 检查输出质量
+                verdict = self.reflection.analyze_output(final_text)
+                self.reflection.record_reflection(ReflectionEntry(
+                    turn=turn,
+                    phase=ReflectionPhase.REFLECT,
+                    thought="检查最终输出质量",
+                    action="output_analysis",
+                    result=final_text[:500],
+                    verdict=verdict,
+                    lessons=[],
+                ))
+
+                # 反摸鱼检测（最多触发 3 次，避免死循环）
+                if total_tools_across_all_turns == 0 and len(final_text.strip()) < 50:
+                    slack_count = getattr(self, '_slack_count', 0)
+                    if slack_count >= 3:
+                        return final_text or "蒙多执行完毕。"
+                    self._slack_count = slack_count + 1
+                    self.messages.append({"role": "assistant", "content": final_text})
+                    self.messages.append({
+                        "role": "system",
+                        "content": "【帝皇斥责】蒙多，你在摸鱼！用户给了你任务，你没有调用任何工具就试图结束。"
+                                   "现在立刻开始执行：分析任务需求，调用合适的工具完成它。不允许空回复。"
+                    })
+                    if self.on_tool_output:
+                        self.on_tool_output("mundo", "⚡ 摸鱼检测触发：强制继续执行", False)
+                    total_tool_calls = 0
+                    continue
+
+                # 如果反射判定为失败，继续执行
+                if verdict == ReflectionVerdict.FAILURE and self.reflection.should_continue():
+                    self.messages.append({"role": "assistant", "content": final_text})
+                    hint = self.reflection.get_strategy_hint()
+                    self.messages.append({
+                        "role": "system",
+                        "content": f"【反射修正】上次结果不合格。{hint}\n请重新执行任务。"
+                    })
+                    self.stats.reflection_count += 1
+                    continue
+
+                self.messages.append({"role": "assistant", "content": final_text})
+                return final_text
+
+            self.messages.append({
+                "role": "assistant",
+                "content": assistant_msg.get("content") or "",
+                "tool_calls": tool_calls,
+            })
             self._execute_tool_calls(tool_calls)
-            tools_this_turn += len(tool_calls)
-            tools_all_turns += len(tool_calls)
+            total_tool_calls += len(tool_calls)
+            total_tools_across_all_turns += len(tool_calls)
 
             if self._same_error_streak >= STUCK_THRESHOLD:
-                self._handle_stuck_tool()
+                if self.on_tool_output:
+                    self.on_tool_output("mundo", f"工具 {self._last_error_tool} 卡住，蒙多换路。", True)
+                self._same_error_streak = 0
+                self._last_error_tool = ""
                 continue
 
             self._auto_compress()
@@ -1003,7 +944,7 @@ class MundoEngine:
         # 保存旧的信号处理器，以便后续恢复
         self._old_signal_handler = signal.signal(signal.SIGINT, handler)
 
-    def reset(self) -> None:
+    def reset(self):
         self.messages = []
         self.stats.reset()
         self.budget.reset()
@@ -1011,7 +952,7 @@ class MundoEngine:
         self.reflection.reset()
         self._context = ContextMapper(ContextBudget(max_tokens=CONTEXT_MAX_TOKENS))
 
-    def compact(self) -> Optional[tuple]:
+    def compact(self):
         if not self.messages:
             return
         old_count = len(self.messages)

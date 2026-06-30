@@ -60,14 +60,17 @@ class MundoLogger:
         console_handler.setFormatter(console_formatter)
         root_logger.addHandler(console_handler)
 
-        # 文件处理器
+        # 文件处理器（权限不足时降级为仅控制台）
         if file_logging:
-            log_file = LOG_DIR / f"mundo_{datetime.now(timezone.utc).strftime('%Y%m%d')}.log"
-            file_handler = logging.FileHandler(log_file, encoding="utf-8")
-            file_handler.setLevel(logging.DEBUG)
-            file_formatter = logging.Formatter(FILE_FORMAT, DATE_FORMAT)
-            file_handler.setFormatter(file_formatter)
-            root_logger.addHandler(file_handler)
+            try:
+                log_file = LOG_DIR / f"mundo_{datetime.now(timezone.utc).strftime('%Y%m%d')}.log"
+                file_handler = logging.FileHandler(log_file, encoding="utf-8")
+                file_handler.setLevel(logging.DEBUG)
+                file_formatter = logging.Formatter(FILE_FORMAT, DATE_FORMAT)
+                file_handler.setFormatter(file_formatter)
+                root_logger.addHandler(file_handler)
+            except (PermissionError, OSError):
+                pass  # 沙箱或权限受限时跳过文件日志
 
         cls._initialized = True
 

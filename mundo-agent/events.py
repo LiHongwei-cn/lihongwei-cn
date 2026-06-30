@@ -245,12 +245,6 @@ class EventBus:
 _bus: Optional[EventBus] = None
 
 
-def reset_event_bus():
-    """重置单例 — 用于测试隔离"""
-    global _bus
-    _bus = None
-
-
 def get_event_bus() -> EventBus:
     global _bus
     if _bus is None:

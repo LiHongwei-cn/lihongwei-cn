@@ -1,4 +1,4 @@
-"""安全模块单元测试 — v3.2.0"""
+"""安全模块单元测试 — v2.3.0"""
 
 import pytest
 from security_hardening import (
@@ -153,7 +153,6 @@ class TestSecurityHardening:
         assert self.security.check_rate_limit("test-key", max_per_minute=5) is False
 
     def test_get_security_summary(self):
-        # 触发一些事件
         self.security.validate_tool_call("terminal", {"command": "rm -rf /"})
         summary = self.security.get_security_summary()
         assert "blocked_operations" in summary
