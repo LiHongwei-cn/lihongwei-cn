@@ -1,8 +1,15 @@
-"""蒙多模型注册表 v3.2.0 — Provider 数据库 + 智能选择
+"""蒙多全模型夸克级适配系统 v1.0
 
-职责：Provider/Model 注册数据、任务类型检测、模型评分矩阵、SmartModelSelector。
-运行时适配行为 → model_adapter.py。
-Provider 连接信息 → setup.py PROVIDERS。
+自动检测用户选择的AI模型，根据任务类型智能选择最优子模型。
+用户只需输入API Key，蒙多自动完成所有适配。
+
+支持的模型家族：
+- 小米 MiMo: V2.5-Pro / V2.5 / Flash
+- DeepSeek: V4-Pro / V4-Flash / R1
+- OpenAI: GPT-5.5 / GPT-5.4 / o3 / o4-mini
+- Anthropic: Claude Opus 4 / Sonnet 4 / Haiku 4.5
+- Google: Gemini 2.5 Pro / Flash / Flash-Lite
+- 阿里 Qwen: Qwen3 Max / Qwen3.5 / Qwen3 Coder
 """
 
 from typing import Dict, List, Optional, Tuple

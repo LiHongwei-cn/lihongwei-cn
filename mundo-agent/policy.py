@@ -559,12 +559,6 @@ class PolicyEngine:
 _engine: Optional[PolicyEngine] = None
 
 
-def reset_policy_engine():
-    """重置单例 — 用于测试隔离"""
-    global _engine
-    _engine = None
-
-
 def get_policy_engine() -> PolicyEngine:
     global _engine
     if _engine is None:

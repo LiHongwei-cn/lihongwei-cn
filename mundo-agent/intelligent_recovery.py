@@ -404,23 +404,11 @@ _recovery: Optional[IntelligentRecovery] = None
 _compressor: Optional[ContextCompressor] = None
 
 
-def reset_recovery():
-    """重置单例 — 用于测试隔离"""
-    global _recovery
-    _recovery = None
-
-
 def get_recovery() -> IntelligentRecovery:
     global _recovery
     if _recovery is None:
         _recovery = IntelligentRecovery()
     return _recovery
-
-
-def reset_compressor():
-    """重置单例 — 用于测试隔离"""
-    global _compressor
-    _compressor = None
 
 
 def get_compressor() -> ContextCompressor:

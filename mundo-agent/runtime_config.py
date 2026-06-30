@@ -278,24 +278,12 @@ class ConfigManager:
 _manager: Optional[ConfigManager] = None
 
 
-def reset_config():
-    """重置单例 — 用于测试隔离"""
-    global _manager
-    _manager = None
-
-
 def get_config() -> RuntimeConfig:
     global _manager
     if _manager is None:
         _manager = ConfigManager()
         _manager.load()
     return _manager.config
-
-
-def reset_config_manager():
-    """重置单例 — 用于测试隔离"""
-    global _manager
-    _manager = None
 
 
 def get_config_manager() -> ConfigManager:

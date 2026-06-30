@@ -1,0 +1,42 @@
+#!/bin/bash
+# MUNDO Agent v2.3.0 — macOS 程序坞启动器
+# 每次启动自动同步最新版，然后运行
+
+export PATH="/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:$PATH"
+export LANG=zh_CN.UTF-8
+export LC_ALL=zh_CN.UTF-8
+
+# 定位同步脚本：优先 .app 内置，其次安装目录，最后源码目录
+SYNC_SCRIPT=""
+for candidate in \
+    "$(dirname "$0")/../../mundo-sync.sh" \
+    "$HOME/.hermes/mundo-agent/mundo-sync.sh" \
+    "$HOME/Desktop/MUNDO/mundo-agent/mundo-sync.sh" \
+    "$HOME/Desktop/lihongwei-cn/mundo-agent/mundo-sync.sh"; do
+    if [ -f "$candidate" ]; then
+        SYNC_SCRIPT="$candidate"
+        break
+    fi
+done
+
+if [ -n "$SYNC_SCRIPT" ]; then
+    bash "$SYNC_SCRIPT" 2>/dev/null || true
+fi
+
+MUNDO_HOME="$HOME/.hermes/mundo-agent"
+
+# 确保 setup_complete 存在
+if [ ! -f "$MUNDO_HOME/.setup_complete" ] && [ -f "$MUNDO_HOME/.env" ]; then
+    if grep -q "API_KEY" "$MUNDO_HOME/.env" 2>/dev/null; then
+        echo "xiaomi
+mimo-v2.5-pro" > "$MUNDO_HOME/.setup_complete"
+    fi
+fi
+
+osascript <<EOF
+tell application "Terminal"
+    activate
+    do script "cd \"$MUNDO_HOME\" && export PYTHONDONTWRITEBYTECODE=1 && python3 mundo.py"
+    set custom title of front window to "MUNDO — THE EMPEROR"
+end tell
+EOF

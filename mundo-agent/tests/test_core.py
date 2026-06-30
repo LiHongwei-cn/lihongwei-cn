@@ -1,10 +1,9 @@
-"""core.py 单元测试 — v3.2.0"""
+"""core.py 单元测试 — v2.3.0"""
 
 import pytest
 import time
 from unittest.mock import MagicMock
 
-# 测试 _classify_error
 from core import _classify_error, IterationBudget, TaskStats
 
 
@@ -139,7 +138,7 @@ class TestTaskStats:
     def test_elapsed_str_format(self):
         s = TaskStats()
         result = s.elapsed_str
-        assert "s" in result  # 刚创建，应该是秒
+        assert "s" in result
 
     def test_reset(self):
         s = TaskStats()

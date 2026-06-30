@@ -1,0 +1,15 @@
+.env
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+*.db
+events.jsonl
+.mundo_history
+.setup_complete
+pastes/
+checkpoints/
+timeline.db
+knowledge.db
+memory.db
+version.db

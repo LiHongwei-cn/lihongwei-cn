@@ -17,7 +17,7 @@ import subprocess
 import glob as glob_mod
 import time
 import random
-from typing import Dict, Callable, List, Optional
+from typing import Dict, Callable, List
 from pathlib import Path
 
 
@@ -245,19 +245,19 @@ def _truncate(text: str, limit: int = MAX_OUTPUT_CHARS) -> str:
 
 # 终端命令安全模式 — 防御纵深第二层
 _DANGEROUS_CMD_PATTERNS = [
-    r"\brm\s+-rf\s+/",           # 递归删除根目录
-    r"\bmkfs\b",                  # 格式化文件系统
-    r"\bdd\s+.*of=/dev/",         # 写入设备
-    r":\(\)\{.*\|.*&\s*\};\:",    # Fork bomb
-    r"\bchmod\s+777\s+/",         # 全局可写
-    r"\bwipefs\b",                # 清除文件系统签名
-    r"\bshutdown\b",              # 关机
-    r"\breboot\b",                # 重启
-    r"\binit\s+[06]\b",           # 切换运行级别
-    r">\s*/dev/sd[a-z]",          # 覆盖磁盘设备
-    r">\s*/dev/nvme",             # 覆盖 NVMe 设备
-    r"\bcurl.*\|\s*(ba)?sh\b",   # curl-pipe-shell 模式
-    r"\bwget.*\|\s*(ba)?sh\b",   # wget-pipe-shell 模式
+    r"\brm\s+-rf\s+/",
+    r"\bmkfs\b",
+    r"\bdd\s+.*of=/dev/",
+    r":\(\)\{.*\|.*&\s*\};\:",
+    r"\bchmod\s+777\s+/",
+    r"\bwipefs\b",
+    r"\bshutdown\b",
+    r"\breboot\b",
+    r"\binit\s+[06]\b",
+    r">\s*/dev/sd[a-z]",
+    r">\s*/dev/nvme",
+    r"\bcurl.*\|\s*(ba)?sh\b",
+    r"\bwget.*\|\s*(ba)?sh\b",
 ]
 
 _DANGEROUS_CMD_RE = [re.compile(p, re.IGNORECASE) for p in _DANGEROUS_CMD_PATTERNS]
@@ -277,7 +277,6 @@ def _terminal(args: Dict) -> str:
         keys = list(args.keys()) if args else []
         return f"[错误: terminal 缺少 command 参数，收到: {keys}]"
 
-    # 第一层防御：行内安全验证
     danger_reason = _validate_command_safety(cmd)
     if danger_reason:
         return f"[安全拒绝] {danger_reason}"
