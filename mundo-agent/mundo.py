@@ -2,12 +2,12 @@
 import warnings
 warnings.filterwarnings("ignore", message="urllib3 v2 only")
 """
-MUNDO Agent v2.2.5 — THE EMPEROR
+MUNDO Agent v2.3.1 — THE EMPEROR
 独立 AI Agent：LLM 直连 + 工具调用 + Agentic Loop + 权限审批
 融合 Hermes Agent + Claude Code 精华架构
 Rich 渲染所有输出，prompt_toolkit 只管输入
 
-v2.2.5: 修复启动器路径问题 + 清理不存在的文件引用 + 同步最新版
+v2.3.1: 交互式模型切换 ▼ + 启动器强制同步 + delegate/web_ai 工具 + DeepSeek V4
 """
 
 import os
@@ -77,7 +77,9 @@ from tools import registry as tool_registry, execute_tool as raw_execute_tool
 from setup import (
     is_setup_done, run_setup, load_local_env,
     get_saved_provider, get_saved_model, add_provider_interactive,
+    mark_setup_done,
 )
+from model_picker import run_model_picker, format_status_model, get_model_display_name
 from policy import get_policy_engine
 from display import TaskConsole, console
 
@@ -126,6 +128,10 @@ class MundoCLI:
         sys.exit(1)
 
     def _model_display(self) -> str:
+        model = self.model or PROVIDERS.get(self.provider, {}).get("model", "unknown")
+        return format_status_model(self.provider, model)
+
+    def _model_id(self) -> str:
         return self.model or PROVIDERS.get(self.provider, {}).get("model", "unknown")
 
     def _init_engine(self):
@@ -186,8 +192,11 @@ class MundoCLI:
 
     def show_banner(self):
         model_disp = self._model_display()
-        self.console.init_screen(f"{self.provider}/{model_disp}", VERSION)
-        console.print(f"\n[gold]  MUNDO[/] [dim]{VERSION} · {model_disp}[/]")
+        model_id = self._model_id()
+        label = get_model_display_name(self.provider, model_id)
+        self.console.init_screen(f"{self.provider}/{model_id}", VERSION)
+        console.print(f"\n[gold]  MUNDO[/] [dim]{VERSION} · {label} ▼[/]")
+        console.print(f"  [dim]Ctrl+M 或 /switch 切换模型[/]")
 
         # 启动时检查版本更新
         latest = self._check_latest_version()
@@ -209,11 +218,13 @@ class MundoCLI:
   [subtext]/reset[/]           重置对话上下文
 
 [gold.dim]模型[/]
-  [subtext]/model[/]           查看当前模型
-  [subtext]/models[/]          已配置模型列表
-  [subtext]/switch P[/]        切换 provider
-  [subtext]/providers[/]       全量模型列表
-  [subtext]/add[/]             添加新 AI 模型
+  [subtext]/switch[/]           交互式切换模型 ▼（Provider → 版本 → API Key）
+  [subtext]/model[/]            查看当前模型
+  [subtext]/models[/]           已配置模型列表
+  [subtext]/switch P[/]         快速切换 provider
+  [subtext]/providers[/]        全量模型列表
+  [subtext]/add[/]              添加新 AI 模型
+  [dim]Ctrl+M[/]                快捷打开模型切换菜单
 
 [gold.dim]上下文管理[/]
   [subtext]/compact[/]         压缩上下文（省 token）
@@ -252,7 +263,7 @@ class MundoCLI:
         console.print(f"""
 [bold gold]═══ 蒙多帝国状态 ═══[/]
 [gold.dim]Provider[/]:  {self.provider}
-[gold.dim]Model[/]:     {self._model_display()}
+[gold.dim]Model[/]:     {get_model_display_name(self.provider, self._model_id())} ({self._model_id()})
 [gold.dim]Effort[/]:    {self._effort}
 [gold.dim]Tokens[/]:    {s.total_tokens} (本次会话)
 [gold.dim]Budget[/]:    {b.prompt_tokens_used:,}/{b.max_prompt_tokens:,} prompt ({int(b.usage_ratio*100)}%)
@@ -470,7 +481,9 @@ class MundoCLI:
             "approval.py", "memory.py", "cache.py",
             "context_mapper.py", "dispatch.py",
             "events.py", "engine.py",
-            "agents.py", "version.txt"
+            "agents.py", "version.txt",
+            "model_picker.py", "web_ai.py", "model_profiles.py",
+            "mundo-sync.sh", "MUNDO.command", "MUNDO-app-launcher.sh",
         ]
 
         synced = 0
@@ -493,12 +506,20 @@ class MundoCLI:
 
     def cmd_model(self):
         console.print(f"  [gold.dim]Provider[/]: {self.provider}")
-        console.print(f"  [gold.dim]Model[/]:    {self._model_display()}")
+        console.print(f"  [gold.dim]Model[/]:    {get_model_display_name(self.provider, self._model_id())} ▼")
+        console.print(f"  [gold.dim]API ID[/]:   {self._model_id()}")
         console.print(f"  [gold.dim]Effort[/]:   {self._effort}")
+        console.print(f"  [dim]输入 /switch 或 Ctrl+M 切换模型[/]")
 
     def cmd_switch(self, args):
         if not args:
-            console.print("[error]用法: /switch <provider>[/]")
+            result = run_model_picker(self.provider, self.model)
+            if result:
+                self.provider, self.model = result
+                self._init_engine()
+                self.console.init_screen(
+                    f"{self.provider}/{self._model_id()}", VERSION
+                )
             return
         prov = args[0]
         if prov not in PROVIDERS:
@@ -511,7 +532,8 @@ class MundoCLI:
         self.provider = prov
         self.model = None
         self._init_engine()
-        console.print(f"[success]✓ 已切换到 {prov} ({PROVIDERS[prov]['model']})[/]")
+        mark_setup_done(prov, self._model_id())
+        console.print(f"[success]✓ 已切换到 {prov} ({self._model_id()})[/]")
 
     def cmd_providers(self):
         available = get_available_providers()
@@ -533,10 +555,9 @@ class MundoCLI:
         console.print()
 
     def cmd_add(self):
-        name, model = add_provider_interactive()
-        if name:
-            self.provider = name
-            self.model = model
+        result = run_model_picker(self.provider, self.model)
+        if result:
+            self.provider, self.model = result
             self._init_engine()
 
     def cmd_models(self):
@@ -628,6 +649,16 @@ class MundoCLI:
         self.engine.reset()
         console.print("[success]✓ 对话上下文已重置[/]")
 
+    def _open_model_picker(self):
+        result = run_model_picker(self.provider, self.model)
+        if result:
+            self.provider, self.model = result
+            self._init_engine()
+            self.console.init_screen(f"{self.provider}/{self._model_id()}", VERSION)
+            label = get_model_display_name(self.provider, self._model_id())
+            console.print(f"  [ok]✓ 已切换至 {label} ▼[/]")
+            self.console.print_status()
+
     def _exit(self):
         self.console.cleanup()
         console.print(f"\n  [gold]蒙多退朝。下次再战。[/]")
@@ -637,7 +668,7 @@ class MundoCLI:
         """主循环 — 不使用 patch_stdout，Rich 处理所有输出"""
         while True:
             try:
-                line = self.console.read_input().strip()
+                line = self.console.read_input(on_model_switch=self._open_model_picker).strip()
                 if not line:
                     continue
                 if self.process_command(line):

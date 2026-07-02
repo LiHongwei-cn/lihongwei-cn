@@ -1,14 +1,17 @@
-# 👑 MUNDO Agent v2.3.0
+# 👑 MUNDO Agent v2.3.1
 
 **我是蒙多！蒙多想去哪就去哪！**
 
-独立 AI 智能体框架 · 30+ 模型 · 向量检索 · 评估框架 · MCP 互操作 · 可观测性 · 任务分析
+独立 AI 智能体框架 · 30+ 模型 · 交互式模型切换 ▼ · Agent 委托 · Web AI 咨询 · 向量检索 · MCP 互操作
 
 ---
 
 ## ✨ 核心特性
 
-- **30+ AI 模型** — DeepSeek、MiMo、Qwen、Claude、GPT-5.5、Gemini 等全覆盖
+- **交互式模型切换 ▼** — `/switch` 或 Ctrl+M 打开两级菜单：Provider → 版本（DeepSeek V4/V4-Pro/R1 等）→ API Key
+- **Agent 委托** — 自动检测并委托 Claude Code、Hermes Agent、Codex、MiMo Code 执行任务
+- **Web AI 咨询** — 跨平台搜索 DeepSeek/ChatGPT/Claude 等公开讨论，交叉验证思路
+- **30+ AI 模型** — DeepSeek V4、MiMo、Qwen、Claude、GPT-5.5、Gemini 等全覆盖
 - **反射循环引擎** — THINK → EXECUTE → REFLECT → REPAIR 四阶段，引用 Reflexion/ReAct 论文
 - **三层记忆系统** — 短期（会话级）、中期（项目级 30 天衰减）、长期（永久级 + 冲突检测）
 - **混合检索 RAG** — ChromaDB 向量 + BM25 + 语义哈希三路融合，自动降级
@@ -27,10 +30,10 @@
 
 ```bash
 # 下载最新版
-gh release download v2.3.0 -R LiHongwei-cn/mundo-agent -p "mundo-v2.3.0-macos.zip"
+gh release download v2.3.1 -R LiHongwei-cn/mundo-agent -p "mundo-v2.3.1-macos.zip"
 
 # 解压到安装目录
-unzip mundo-v2.3.0-macos.zip -d ~/.hermes/mundo-agent
+unzip mundo-v2.3.1-macos.zip -d ~/.hermes/mundo-agent
 
 # 运行
 python3 ~/.hermes/mundo-agent/mundo.py

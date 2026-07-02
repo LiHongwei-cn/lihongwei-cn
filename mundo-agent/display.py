@@ -55,7 +55,7 @@ SLASH_COMMANDS = [
     "/model", "/models", "/switch", "/providers", "/add", "/setup",
     "/remember", "/recall", "/forget", "/memories", "/memory",
     "/compact", "/context", "/effort", "/tools",
-    "/search", "/projects",
+    "/search", "/projects", "/update",
 ]
 
 
@@ -213,12 +213,12 @@ class TaskConsole:
 
     def _build_status_bar(self) -> str:
         model = self._model.split("/")[-1] if "/" in self._model else self._model
-        if len(model) > 20:
-            model = model[:17] + "..."
+        if len(model) > 16:
+            model = model[:13] + "..."
 
         session_elapsed = _elapsed(self._session_start)
 
-        parts = [f"[gold]{model}[/]"]
+        parts = [f"[gold]{model} ▼[/]"]
 
         # 缓存命中率 — 核心指标
         if self._total_prompt_tokens > 0:
@@ -307,7 +307,7 @@ class TaskConsole:
     # 输入 — 一个提示符
     # ═══════════════════════════════════════
 
-    def read_input(self) -> str:
+    def read_input(self, on_model_switch=None) -> str:
         from prompt_toolkit import PromptSession
         from prompt_toolkit.keys import Keys
         from prompt_toolkit.styles import Style
@@ -321,6 +321,11 @@ class TaskConsole:
         navigating = [False]
         is_pasting = [False]
         history = _PersistentHistory(hist_path)
+
+        @kb.add("c-m")
+        def _(event):
+            if on_model_switch:
+                event.app.exit(result="__MUNDO_MODEL_SWITCH__")
 
         @kb.add("enter")
         def _(event):
@@ -398,6 +403,10 @@ class TaskConsole:
         try:
             from prompt_toolkit.formatted_text import HTML
             result = session.prompt(HTML("<ansiyellow><b> ❯ </b></ansiyellow>"))
+            if result == "__MUNDO_MODEL_SWITCH__":
+                if on_model_switch:
+                    on_model_switch()
+                return ""
             return (result or "").strip()
         except (EOFError, KeyboardInterrupt):
             return ""

@@ -779,6 +779,41 @@ def _code_analysis(args: Dict) -> str:
     return json.dumps(analysis, ensure_ascii=False, indent=2)
 
 
+def _delegate_agent(args: Dict) -> str:
+    """委托本地 Agent（Claude Code / Hermes / Codex / MiMo Code）"""
+    prompt = args.get("prompt", "")
+    if not prompt:
+        return "[错误: delegate_agent 缺少 prompt 参数]"
+    agent = args.get("agent", "auto")
+    timeout = min(int(args.get("timeout", 300)), 600)
+    workdir = args.get("workdir", os.getcwd())
+    try:
+        from delegation import AgentManager
+        mgr = AgentManager()
+        mgr.refresh()
+        result = mgr.delegate(agent, prompt, timeout=timeout, workdir=workdir)
+        return str(result)
+    except Exception as e:
+        return f"[delegate_agent 错误: {e}]"
+
+
+def _consult_web_ai(args: Dict) -> str:
+    """跨平台 Web AI 思路咨询 — 搜索各 AI 平台公开讨论"""
+    question = args.get("question", "")
+    if not question:
+        return "[错误: consult_web_ai 缺少 question 参数]"
+    platforms_raw = args.get("platforms", "deepseek,chatgpt,claude")
+    if isinstance(platforms_raw, str):
+        platforms = [p.strip() for p in platforms_raw.split(",") if p.strip()]
+    else:
+        platforms = platforms_raw
+    try:
+        from web_ai import consult_web_ai
+        return consult_web_ai(question, platforms=platforms)
+    except Exception as e:
+        return f"[consult_web_ai 错误: {e}]"
+
+
 # ═══════════════════════════════════════════════
 # 注册所有工具
 # ═══════════════════════════════════════════════
@@ -961,6 +996,26 @@ registry.register(
         "code": {"type": "string", "description": "要分析的代码"},
     }},
     _code_analysis, required=["code"],
+)
+
+registry.register(
+    "delegate_agent", "委托本地 Agent 执行任务（Claude Code / Hermes / Codex / MiMo Code）",
+    {"type": "object", "properties": {
+        "prompt": {"type": "string", "description": "委托任务描述"},
+        "agent": {"type": "string", "description": "agent 名称: auto/claude/hermes/codex/mimocode"},
+        "workdir": {"type": "string", "description": "工作目录"},
+        "timeout": {"type": "integer", "description": "超时秒数"},
+    }},
+    _delegate_agent, required=["prompt"],
+)
+
+registry.register(
+    "consult_web_ai", "跨平台 Web AI 思路咨询（搜索 DeepSeek/ChatGPT/Claude 等公开讨论）",
+    {"type": "object", "properties": {
+        "question": {"type": "string", "description": "要咨询的问题"},
+        "platforms": {"type": "string", "description": "平台列表，逗号分隔，如 deepseek,chatgpt,claude"},
+    }},
+    _consult_web_ai, required=["question"],
 )
 
 

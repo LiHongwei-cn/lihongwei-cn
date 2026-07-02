@@ -36,7 +36,7 @@ PROVIDERS = {
     },
     "deepseek": {
         "label": "DeepSeek",
-        "model": "deepseek-chat",
+        "model": "deepseek-v4",
         "env_key": "DEEPSEEK_API_KEY",
         "base_url": "https://api.deepseek.com/v1",
         "desc": "国产代码大模型，编码推理顶级，价格低",
@@ -441,7 +441,26 @@ def run_setup() -> Tuple[str, str]:
             continue
 
     selected = PROVIDERS[selected_key]
-    print(f"\n  {OK}✓ 选择：{selected['label']} ({selected['model']}){R}")
+    print(f"\n  {OK}✓ 选择：{selected['label']}{R}")
+
+    # 选择模型版本
+    from model_picker import get_provider_models
+    variants = get_provider_models(selected_key)
+    selected_model = selected["model"]
+    if len(variants) > 1:
+        print(f"\n  {A}━━ 选择模型版本 ━━{R}")
+        for i, v in enumerate(variants, 1):
+            cache = " [缓存]" if v.get("cache") else ""
+            print(f"    {G}[{i}]{R} {v['name']:22} {D}{v['id']}{cache}{R}")
+        while True:
+            vchoice = input(f"  {G}版本编号（回车默认 {selected_model}）：{R}").strip()
+            if not vchoice:
+                break
+            if vchoice.isdigit() and 1 <= int(vchoice) <= len(variants):
+                selected_model = variants[int(vchoice) - 1]["id"]
+                break
+            print(f"  {ERR}无效选择{R}")
+        print(f"  {OK}✓ 版本：{selected_model}{R}")
 
     env = load_local_env()
     existing_key = env.get(selected["env_key"], "")
@@ -450,8 +469,8 @@ def run_setup() -> Tuple[str, str]:
         print(f"  {D}已有 Key: {masked}{R}")
         reuse = input(f"  {G}继续使用已有 Key？[Y/n]：{R}").strip().lower()
         if reuse != "n":
-            mark_setup_done(selected_key, selected["model"])
-            return selected_key, selected["model"]
+            mark_setup_done(selected_key, selected_model)
+            return selected_key, selected_model
 
     print(f"\n  {A}获取 Key → {selected['url']}{R}")
     print(f"  {D}Key 仅保存在 ~/.hermes/mundo-agent/.env{R}\n")
@@ -467,11 +486,11 @@ def run_setup() -> Tuple[str, str]:
         break
 
     save_local_env(selected["env_key"], api_key)
-    mark_setup_done(selected_key, selected["model"])
+    mark_setup_done(selected_key, selected_model)
 
     masked = api_key[:8] + "..." + api_key[-4:]
     print(f"\n  {OK}✓ Key 已保存：{masked}{R}")
-    print(f"  {OK}✓ 模型已设置：{selected_key}/{selected['model']}{R}")
+    print(f"  {OK}✓ 模型已设置：{selected_key}/{selected_model}{R}")
 
     # 多模型协同选择
     print(f"\n  {A}━━ 多模型协同 ━━{R}")
@@ -523,7 +542,7 @@ def run_setup() -> Tuple[str, str]:
         print(f"  {G}  两个模型协同，主模型处理任务，辅助模型验证。{R}")
     print()
 
-    return selected_key, selected["model"]
+    return selected_key, selected_model
 
 
 def add_provider_interactive():
@@ -548,5 +567,8 @@ def add_provider_interactive():
         return None, None
 
     save_local_env(selected["env_key"], api_key)
-    print(f"  {OK}✓ {selected['label']} 已添加{R}")
-    return selected_key, selected["model"]
+    from model_picker import get_provider_models
+    variants = get_provider_models(selected_key)
+    model = variants[0]["id"] if variants else selected["model"]
+    print(f"  {OK}✓ {selected['label']} 已添加 ({model}){R}")
+    return selected_key, model
