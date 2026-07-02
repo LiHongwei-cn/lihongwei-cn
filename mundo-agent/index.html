@@ -143,9 +143,12 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
   <!-- 0. 是什么 -->
   <div class="section" id="what">
     <h2 class="section-title"><span class="num">0</span> MUNDO 是什么</h2>
-    <p class="section-desc">MUNDO 是一个<strong>独立的 AI 智能体框架</strong>，不依赖任何外部 Agent。它有自己的 LLM 客户端（30+ 个模型）、工具引擎（20 个工具）、反射循环、任务分析、混合检索 RAG、MCP 互操作、评估框架、可观测性。</p>
+    <p class="section-desc">MUNDO 是一个<strong>独立的 AI 智能体框架</strong>，不依赖任何外部 Agent。它有自己的 LLM 客户端（30+ 个模型）、工具引擎（22 个工具）、反射循环、任务分析、混合检索 RAG、MCP 互操作、评估框架、可观测性。</p>
     <div class="feature-grid">
       <div class="feature-card"><div class="f-icon">🔄</div><h3>反射循环引擎</h3><p>THINK → EXECUTE → REFLECT → REPAIR 四阶段，引用 Reflexion/ReAct 论文</p></div>
+      <div class="feature-card"><div class="f-icon">🔀</div><h3>/switch 模型切换</h3><p>两级菜单选择 Provider 与版本，DeepSeek V4 / V4-Pro / V4-Flash / R1 一键切换</p></div>
+      <div class="feature-card"><div class="f-icon">🤖</div><h3>Agent 委托</h3><p>delegate_agent 工具自动调用 Claude Code、Hermes、Codex、MiMo Code</p></div>
+      <div class="feature-card"><div class="f-icon">🌐</div><h3>Web AI 咨询</h3><p>consult_web_ai 跨平台搜索 DeepSeek/ChatGPT/Claude 公开讨论，交叉验证思路</p></div>
       <div class="feature-card"><div class="f-icon">📊</div><h3>向量检索 RAG</h3><p>ChromaDB + BM25 + 语义哈希三路融合，自动降级</p></div>
       <div class="feature-card"><div class="f-icon">📋</div><h3>任务分析引擎</h3><p>自动分类任务类型、解析 Markdown 文档、提取需求/约束/验收标准</p></div>
       <div class="feature-card"><div class="f-icon">🔌</div><h3>MCP 互操作</h3><p>Client + Server 双向协议，蒙多能力通过标准 MCP 对外暴露</p></div>
@@ -166,11 +169,11 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
         <div class="stat-label">当前版本</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">80</div>
+        <div class="stat-value">82</div>
         <div class="stat-label">次发布</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">1137</div>
+        <div class="stat-value">1140+</div>
         <div class="stat-label">次提交</div>
       </div>
       <div class="stat-card">
@@ -178,7 +181,7 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
         <div class="stat-label">AI 模型</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">20</div>
+        <div class="stat-value">22</div>
         <div class="stat-label">内置工具</div>
       </div>
       <div class="stat-card">
@@ -186,7 +189,7 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
         <div class="stat-label">个 Skill</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value">59</div>
+        <div class="stat-value">63</div>
         <div class="stat-label">Python 模块</div>
       </div>
       <div class="stat-card">
@@ -199,11 +202,11 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
     <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🧪 v2.3.1 测试结果</h3>
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-value" style="color: var(--green);">220</div>
+        <div class="stat-value" style="color: var(--green);">226</div>
         <div class="stat-label">测试总数</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" style="color: var(--green);">220</div>
+        <div class="stat-value" style="color: var(--green);">226</div>
         <div class="stat-label">通过数量</div>
       </div>
       <div class="stat-card">
@@ -254,8 +257,11 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
       <div class="feature-card"><div class="f-icon">🔄</div><h3>Loop 工作流</h3><p>思考→编码→检测→优化，循环直到完美，最多 5 轮，质量 ≥ 90 分</p></div>
       <div class="feature-card"><div class="f-icon">🧠</div><h3>三层记忆系统</h3><p>短期记忆（任务级）+ 中期记忆（项目级）+ 长期记忆（永久级）</p></div>
       <div class="feature-card"><div class="f-icon">🏪</div><h3>Skill 云仓库</h3><p>自动获取 GitHub 高星 skill 项目，分类存储，随时调用，每天自动更新</p></div>
-      <div class="feature-card"><div class="f-icon">🔧</div><h3>20 个内置工具</h3><p>terminal、file、web_search、code_execute、vision、delegate 等</p></div>
-      <div class="feature-card"><div class="f-icon">🤖</div><h3>Agent 委托</h3><p>自动检测并委托 Claude Code、Hermes Agent、Codex 执行任务</p></div>
+      <div class="feature-card"><div class="f-icon">🔧</div><h3>22 个内置工具</h3><p>terminal、file、web_search、delegate_agent、consult_web_ai 等</p></div>
+      <div class="feature-card"><div class="f-icon">🔀</div><h3>/switch 模型切换</h3><p>命令行两级菜单：Provider → 版本 → API Key，支持 DeepSeek V4 全系列</p></div>
+      <div class="feature-card"><div class="f-icon">🚀</div><h3>程序坞启动修复</h3><p>Finder 启动自动补全 HOME、强制同步最新版、版本验证后运行</p></div>
+      <div class="feature-card"><div class="f-icon">🤖</div><h3>Agent 委托</h3><p>自动检测并委托 Claude Code、Hermes Agent、Codex、MiMo Code 执行任务</p></div>
+      <div class="feature-card"><div class="f-icon">🌐</div><h3>Web AI 咨询</h3><p>跨平台搜索各 AI 公开讨论，获取思路与方案参考</p></div>
       <div class="feature-card"><div class="f-icon">🔄</div><h3>自我进化</h3><p>每次使用都让蒙多更强大，自动保存有价值的解决方案为 Skill</p></div>
       <div class="feature-card"><div class="f-icon">🛡️</div><h3>安全引擎</h3><p>策略引擎 + 安全强化 + 权限审批，三重保护</p></div>
       <div class="feature-card"><div class="f-icon">📊</div><h3>Token 追踪</h3><p>实时显示 token 消耗、缓存命中率、模型信息</p></div>
@@ -271,7 +277,26 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
   <!-- 3. 工作流程 -->
   <div class="section" id="workflow">
     <h2 class="section-title"><span class="num">3</span> 工作流程（v2.3.1 更新）</h2>
-    <p class="section-desc">蒙多 v2.3.1 支持 `/switch` 切换模型，程序坞启动器每次打开强制同步并验证版本。</p>
+    <p class="section-desc">蒙多 v2.3.1 支持 <code>/switch</code> 切换模型，程序坞启动器每次打开强制同步并验证版本。</p>
+
+    <!-- 模型切换流程 -->
+    <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🔀 /switch 模型切换</h3>
+    <div class="workflow-step">
+      <div class="w-num">1</div>
+      <div><h4>输入 /switch</h4><p>在蒙多对话框输入 <code>/switch</code>，打开两级选择菜单。</p></div>
+    </div>
+    <div class="workflow-step">
+      <div class="w-num">2</div>
+      <div><h4>选择 Provider</h4><p>从 DeepSeek、MiMo、Qwen、Claude、OpenAI 等 30+ 提供商中选择。</p></div>
+    </div>
+    <div class="workflow-step">
+      <div class="w-num">3</div>
+      <div><h4>选择版本</h4><p>例如 DeepSeek V4 / V4-Pro / V4-Flash / R1 / V3，按任务需求选择。</p></div>
+    </div>
+    <div class="workflow-step">
+      <div class="w-num">4</div>
+      <div><h4>输入 API Key</h4><p>若尚未配置，输入 Key 后立即生效；已配置则直接切换。</p></div>
+    </div>
 
     <!-- 任务确认流程 -->
     <h3 style="font-size: 16px; font-weight: 600; margin: 20px 0 12px; color: var(--gold);">🎯 任务确认流程</h3>
@@ -323,10 +348,11 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
           <tr><th>分类</th><th>模型</th><th>特点</th></tr>
         </thead>
         <tbody>
-          <tr><td rowspan="5">🇨🇳 中国模型</td><td>小米 MiMo</td><td>性价比极高，国内直连</td></tr>
-          <tr><td>DeepSeek</td><td>编码推理顶级，价格低</td></tr>
+          <tr><td rowspan="6">🇨🇳 中国模型</td><td>小米 MiMo</td><td>性价比极高，国内直连</td></tr>
+          <tr><td>DeepSeek V4</td><td>通用代码，性价比最高</td></tr>
+          <tr><td>DeepSeek V4-Pro</td><td>旗舰推理，代码 Agent 首选</td></tr>
+          <tr><td>DeepSeek V4-Flash</td><td>极速轻量，批量任务</td></tr>
           <tr><td>阿里通义千问</td><td>多语言能力强</td></tr>
-          <tr><td>智谱 GLM</td><td>工具调用强</td></tr>
           <tr><td>月之暗面 Kimi</td><td>128K 长上下文</td></tr>
           <tr><td rowspan="4">🌍 国际模型</td><td>OpenAI GPT-4o</td><td>全球顶级</td></tr>
           <tr><td>Anthropic Claude</td><td>代码推理顶级</td></tr>
@@ -343,33 +369,26 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
   <!-- 5. 架构 -->
   <div class="section" id="arch">
     <h2 class="section-title"><span class="num">5</span> 架构</h2>
-    <p class="section-desc">MUNDO 的核心架构——54 个 Python 模块，不依赖任何外部框架。</p>
+    <p class="section-desc">MUNDO 的核心架构——63 个 Python 模块，不依赖任何外部框架。</p>
     <div class="arch-diagram">~/.hermes/mundo-agent/
 ├── mundo.py              # CLI 入口 + REPL 循环
 ├── core.py               # Agentic Loop + 智能路由 + Agent 调度
 ├── llm.py                # LLM 客户端（30+ provider）
-├── tools.py              # 20 个内置工具
+├── tools.py              # 22 个内置工具
+├── model_picker.py       # /switch 两级模型选择菜单
+├── web_ai.py             # Web AI 跨平台咨询
+├── mundo-sync.sh         # 统一源码同步脚本
 ├── memory.py             # 记忆系统（SQLite + FTS5）
 ├── policy.py             # 策略引擎 + 用户审批
 ├── security_hardening.py # 安全强化（输入验证 + 输出消毒）
-├── delegation.py         # Agent 委托（Claude/Hermes/Codex）
+├── delegation.py         # Agent 委托（Claude/Hermes/Codex/MiMo）
 ├── display.py            # Rich UI（流式输出 + 状态栏）
-├── setup.py              # 首次向导（30+ 模型选择）
+├── setup.py              # 首次向导（30+ 模型 + 版本选择）
+├── model_profiles.py     # DeepSeek V4 等模型画像
 ├── reflection_engine.py  # 反射引擎（三思而后行）
 ├── knowledge_retriever.py # RAG 知识检索
-├── workflow.py           # 工作流引擎（任务分解）
-├── intelligent_recovery.py # 智能错误恢复
-├── context_mapper.py     # 上下文映射 + Token 管理
-├── model_adapter.py      # 模型适配器（自动优化 prompt）
-├── model_profiles.py     # 模型画像 + 智能选择
-├── task_planner.py       # 任务规划 + 多模型协调
-├── tool_guard.py         # 工具调用守护（安全检查）
-├── performance_optimizer.py # 性能优化（缓存 + 并行）
-├── cache.py              # 缓存管理器
-├── sandbox.py            # 沙箱执行环境
-├── events.py             # 事件总线
-├── timeline.py           # 时间线记录
-├── build_knowledge.py    # 知识库构建工具
+├── cache.py              # 三层缓存（prefix/semantic/result）
+├── macos-app/            # 程序坞 .app 启动器
 ├── config/               # 配置文件
 │   ├── settings.json     # 运行时配置
 │   └── providers.json    # 30+ 模型定义
@@ -532,9 +551,16 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
         <div class="cmd">pip3 install rich prompt_toolkit httpx scrapling[all]</div>
       </div>
       <div class="step-item">
-        <h3>运行蒙多</h3>
-        <p>首次运行会进入设置向导，选择 AI 模型并输入 API Key</p>
-        <div class="cmd">python3 ~/.hermes/mundo-agent/mundo.py</div>
+        <h3>程序坞启动（推荐）</h3>
+        <p>双击 MUNDO.app，自动同步最新版并启动 Terminal</p>
+        <div class="cmd"># 或手动同步后运行
+bash ~/Desktop/MUNDO/mundo-agent/mundo-sync.sh
+python3 ~/.hermes/mundo-agent/mundo.py</div>
+      </div>
+      <div class="step-item">
+        <h3>切换模型</h3>
+        <p>启动后输入 <code>/switch</code>，选择 Provider 和版本，输入 API Key 即可切换</p>
+        <div class="cmd">/switch</div>
       </div>
     </div>
   </div>
@@ -545,3 +571,28 @@ td a{color:var(--accent);text-decoration:none} td a:hover{text-decoration:underl
     <div class="link-block">
       <h3>📦 GitHub Release</h3>
       <div class="link-row">
+        <span class="label">最新版</span>
+        <a href="https://github.com/LiHongwei-cn/mundo-agent/releases/tag/v2.3.1" target="_blank">v2.3.1 — mundo-v2.3.1-macos.zip</a>
+      </div>
+      <div class="link-row">
+        <span class="label">源码</span>
+        <a href="https://github.com/LiHongwei-cn/mundo-agent" target="_blank">LiHongwei-cn/mundo-agent</a>
+      </div>
+      <div class="link-row">
+        <span class="label">文档</span>
+        <a href="https://github.com/LiHongwei-cn/mundo-agent/blob/main/README.md" target="_blank">README.md</a>
+      </div>
+    </div>
+    <div class="tip info">程序坞启动器每次打开自动调用 <code>mundo-sync.sh</code>，确保运行最新 v2.3.1。</div>
+  </div>
+
+  <div class="page-counter">本站总访问量 <span id="busuanzi_value_site_pv">...</span> 次</div>
+
+  <div class="footer">
+    <p>👑 MUNDO Agent v2.3.1 · <a href="https://github.com/LiHongwei-cn/mundo-agent">GitHub</a> · <a href="../">返回主页</a></p>
+  </div>
+
+</div>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</body>
+</html>
