@@ -2,13 +2,13 @@
 
 **我是蒙多！蒙多想去哪就去哪！**
 
-独立 AI 智能体框架 · 30+ 模型 · 交互式模型切换 ▼ · Agent 委托 · Web AI 咨询 · 向量检索 · MCP 互操作
+独立 AI 智能体框架 · 30+ 模型 · `/switch` 模型切换 · Agent 委托 · Web AI 咨询 · 向量检索 · MCP 互操作
 
 ---
 
 ## ✨ 核心特性
 
-- **交互式模型切换 ▼** — `/switch` 或 Ctrl+M 打开两级菜单：Provider → 版本（DeepSeek V4/V4-Pro/R1 等）→ API Key
+- **模型切换** — `/switch` 打开两级菜单：Provider → 版本（DeepSeek V4/V4-Pro/R1 等）→ API Key
 - **Agent 委托** — 自动检测并委托 Claude Code、Hermes Agent、Codex、MiMo Code 执行任务
 - **Web AI 咨询** — 跨平台搜索 DeepSeek/ChatGPT/Claude 等公开讨论，交叉验证思路
 - **30+ AI 模型** — DeepSeek V4、MiMo、Qwen、Claude、GPT-5.5、Gemini 等全覆盖

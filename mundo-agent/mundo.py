@@ -79,7 +79,7 @@ from setup import (
     get_saved_provider, get_saved_model, add_provider_interactive,
     mark_setup_done,
 )
-from model_picker import run_model_picker, format_status_model, get_model_display_name
+from model_picker import run_model_picker, get_model_display_name
 from policy import get_policy_engine
 from display import TaskConsole, console
 
@@ -129,7 +129,7 @@ class MundoCLI:
 
     def _model_display(self) -> str:
         model = self.model or PROVIDERS.get(self.provider, {}).get("model", "unknown")
-        return format_status_model(self.provider, model)
+        return get_model_display_name(self.provider, model)
 
     def _model_id(self) -> str:
         return self.model or PROVIDERS.get(self.provider, {}).get("model", "unknown")
@@ -195,8 +195,7 @@ class MundoCLI:
         model_id = self._model_id()
         label = get_model_display_name(self.provider, model_id)
         self.console.init_screen(f"{self.provider}/{model_id}", VERSION)
-        console.print(f"\n[gold]  MUNDO[/] [dim]{VERSION} · {label} ▼[/]")
-        console.print(f"  [dim]Ctrl+M 或 /switch 切换模型[/]")
+        console.print(f"\n[gold]  MUNDO[/] [dim]{VERSION} · {label}[/]")
 
         # 启动时检查版本更新
         latest = self._check_latest_version()
@@ -218,13 +217,12 @@ class MundoCLI:
   [subtext]/reset[/]           重置对话上下文
 
 [gold.dim]模型[/]
-  [subtext]/switch[/]           交互式切换模型 ▼（Provider → 版本 → API Key）
+  [subtext]/switch[/]           切换模型（Provider → 版本 → API Key）
   [subtext]/model[/]            查看当前模型
   [subtext]/models[/]           已配置模型列表
   [subtext]/switch P[/]         快速切换 provider
   [subtext]/providers[/]        全量模型列表
   [subtext]/add[/]              添加新 AI 模型
-  [dim]Ctrl+M[/]                快捷打开模型切换菜单
 
 [gold.dim]上下文管理[/]
   [subtext]/compact[/]         压缩上下文（省 token）
@@ -506,10 +504,9 @@ class MundoCLI:
 
     def cmd_model(self):
         console.print(f"  [gold.dim]Provider[/]: {self.provider}")
-        console.print(f"  [gold.dim]Model[/]:    {get_model_display_name(self.provider, self._model_id())} ▼")
+        console.print(f"  [gold.dim]Model[/]:    {get_model_display_name(self.provider, self._model_id())}")
         console.print(f"  [gold.dim]API ID[/]:   {self._model_id()}")
         console.print(f"  [gold.dim]Effort[/]:   {self._effort}")
-        console.print(f"  [dim]输入 /switch 或 Ctrl+M 切换模型[/]")
 
     def cmd_switch(self, args):
         if not args:
@@ -649,16 +646,6 @@ class MundoCLI:
         self.engine.reset()
         console.print("[success]✓ 对话上下文已重置[/]")
 
-    def _open_model_picker(self):
-        result = run_model_picker(self.provider, self.model)
-        if result:
-            self.provider, self.model = result
-            self._init_engine()
-            self.console.init_screen(f"{self.provider}/{self._model_id()}", VERSION)
-            label = get_model_display_name(self.provider, self._model_id())
-            console.print(f"  [ok]✓ 已切换至 {label} ▼[/]")
-            self.console.print_status()
-
     def _exit(self):
         self.console.cleanup()
         console.print(f"\n  [gold]蒙多退朝。下次再战。[/]")
@@ -668,7 +655,7 @@ class MundoCLI:
         """主循环 — 不使用 patch_stdout，Rich 处理所有输出"""
         while True:
             try:
-                line = self.console.read_input(on_model_switch=self._open_model_picker).strip()
+                line = self.console.read_input().strip()
                 if not line:
                     continue
                 if self.process_command(line):

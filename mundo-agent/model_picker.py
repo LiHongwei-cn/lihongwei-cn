@@ -118,7 +118,7 @@ def pick_model_variant(provider_id: str) -> Optional[str]:
 
     p = PROVIDERS.get(provider_id, {})
     _print_header(f"{p.get('label', provider_id)} — 选择版本")
-    console.print("  [dim]▼ 展开模型版本列表[/]\n")
+    console.print("  [dim]选择模型版本[/]\n")
 
     saved = get_saved_model()
     for i, m in enumerate(models, 1):
@@ -197,7 +197,8 @@ def run_model_picker(current_provider: str = None, current_model: str = None) ->
 
 
 def format_status_model(provider: str, model: str) -> str:
-    """状态栏模型显示：名称 + 展开键"""
+    """状态栏模型显示"""
     name = get_model_display_name(provider, model)
-    short = name if len(name) <= 18 else name[:15] + "..."
-    return f"{short} ▼"
+    if len(name) > 18:
+        return name[:15] + "..."
+    return name

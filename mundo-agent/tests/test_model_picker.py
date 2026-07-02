@@ -21,7 +21,8 @@ def test_get_model_display_name():
 
 def test_format_status_model():
     s = format_status_model("deepseek", "deepseek-v4")
-    assert "▼" in s
+    assert "DeepSeek" in s
+    assert "▼" not in s
 
 
 def test_list_configured_providers():
